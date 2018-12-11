@@ -1,0 +1,71 @@
+excel:
+  group:
+    sheet: group
+    skip-rows: 1
+    # Number of imports where group does not present
+    max-age: 10
+    code:
+      column: 0
+      regex: ^G[0-9]{3,3}$
+    name:
+      column: 1
+  data:
+    sheet: stock
+    skip-rows: 4
+    # Number of imports where product does not present
+    max-age: 20
+    field-sets:
+      -
+        name: group
+        default: false
+        fields:
+          -
+            name: group
+            column: 0
+            regex: ^G[0-9]{3,3}$
+          -
+            name: groupName
+            column: 1
+      -
+        name: product
+        default: true
+        fields:
+          -
+            name: oneSku
+            column: 0
+            regex: ^[0-9]{4,10}$
+          -
+            name: catalogSku
+            column: 1
+          -
+            name: russianName
+            column: 4
+          -
+            name: englishName
+            column: 5
+          -
+            name: manufacturer
+            column: 10
+          -
+            name: countryOfManufacture
+            column: 8
+          -
+            name: machineVendor
+            column: 6
+          -
+            name: machine
+            column: 7
+    #      -
+    #        name: machine_unit
+    #        column: 0
+          -
+            name: weight
+            column: 9
+database:
+  server:
+    host: localhost
+    port: 3306
+  db-name: oooast
+  user: root
+  password: root
+
