@@ -1,0 +1,8 @@
+source_code,sku,status,quantity
+default,"test product",1,100.0000
+default,"second produt",1,20.0000
+irkutsk,"test product",1,50.0000
+on-the-way,"test product",1,23.0000
+vladivostok,"test product",1,6.0000
+default,"Переходник 31N6-25110",1,100.0000
+default,Coupling,1,50.0000

@@ -1,0 +1,6 @@
+customer_group_id,customer_group_code,tax_class_id
+0,"NOT LOGGED IN",3
+1,General,3
+2,Wholesale,3
+3,Retailer,3
+4,"Discount 10",3

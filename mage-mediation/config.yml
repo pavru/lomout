@@ -1,0 +1,3 @@
+database: net.pototskiy.apps.magemediation.database.yml
+excel: excel.yml
+magento: magento.yml

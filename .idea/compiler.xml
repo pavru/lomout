@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="oooast-tools.buildSrc.main" target="1.8" />
+      <module name="oooast-tools.buildSrc.test" target="1.8" />
+      <module name="oooast-tools.import-products-config.main" target="1.7" />
+      <module name="oooast-tools.import-products-config.test" target="1.7" />
+      <module name="oooast-tools.mage-mediation.main" target="1.8" />
+      <module name="oooast-tools.mage-mediation.test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

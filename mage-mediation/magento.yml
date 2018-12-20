@@ -1,0 +1,16 @@
+# default attribute data type is varchar(1000)
+#category:
+product:
+  fields:
+    -
+      name: sku
+      # types: int, double, bool, varchar, text, date datetime and list variants - list<type>
+      # one more special type: attr-collection
+      type: varchar
+      list-delimter: ,
+      list-quote: "
+    -
+      name: additional_attributes
+      type: attr-collection
+#price:
+#inventory:

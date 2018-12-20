@@ -9,5 +9,5 @@ pluginManagement{
     }
 }
 
-include(":import-products")
+include(":mage-mediation")
 
