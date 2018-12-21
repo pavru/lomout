@@ -16,6 +16,7 @@ open class FieldSet : ConfigValidate {
     @field:XmlElement(name = "field", required = true)
     var fields: List<Field> = mutableListOf()
 
+    @Suppress("unused")
     @XmlTransient
     private val logger = LoggerFactory.getLogger(LOG_NAME)
 

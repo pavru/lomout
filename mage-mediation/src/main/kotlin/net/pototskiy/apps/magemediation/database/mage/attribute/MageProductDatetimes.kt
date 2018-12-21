@@ -1,21 +1,22 @@
-package net.pototskiy.apps.magemediation.database.attribute
+package net.pototskiy.apps.magemediation.database.mage.attribute
 
 import net.pototskiy.apps.magemediation.database.VersionEntity
+import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeTable
+import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntity
+import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.mage.MageProduct
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.joda.time.DateTime
-import org.joda.time.Duration
-import kotlin.math.abs
 
-object MageProductDatetimes : DatetimeAttribute("mage_product_datetime") {
+object MageProductDatetimes : TypedAttributeTable<DateTime>("mage_product_datetime") {
     override val product = reference("product", MageProducts, onDelete = ReferenceOption.CASCADE)
     override val value = datetime("value")
 }
 
-class MageProductDatetime(id: EntityID<Int>) : DatetimeAttributeEntity(id) {
-    companion object : DatetimeAttributeEntityClass<MageProductDatetime>(MageProductDatetimes)
+class MageProductDatetime(id: EntityID<Int>) : TypedAttributeEntity<DateTime>(id) {
+    companion object : TypedAttributeEntityClass<DateTime, MageProductDatetime>(MageProductDatetimes)
 
     override var product: VersionEntity by MageProduct referencedOn MageProductDatetimes.product
     override var index by MageProductDatetimes.index

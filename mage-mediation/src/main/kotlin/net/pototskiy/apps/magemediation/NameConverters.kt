@@ -1,5 +1,6 @@
-package net.pototskiy.apps.magemediation.importer
+package net.pototskiy.apps.magemediation
 
+@Suppress("unused")
 fun cctu(str: String): String {
     val builder = StringBuilder()
     for (c in str) {
@@ -13,6 +14,7 @@ fun cctu(str: String): String {
     return builder.toString()
 }
 
+@Suppress("unused")
 fun utcc(str: String): String {
     val builder = StringBuilder()
     var upperNext = false

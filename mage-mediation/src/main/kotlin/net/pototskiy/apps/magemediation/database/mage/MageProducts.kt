@@ -4,7 +4,7 @@ import net.pototskiy.apps.magemediation.IMPORT_DATETIME
 import net.pototskiy.apps.magemediation.database.VersionEntity
 import net.pototskiy.apps.magemediation.database.VersionEntityClass
 import net.pototskiy.apps.magemediation.database.VersionTable
-import net.pototskiy.apps.magemediation.importer.cctu
+import net.pototskiy.apps.magemediation.cctu
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
@@ -67,5 +67,7 @@ class MageProduct(id: EntityID<Int>) : VersionEntity(id) {
 
     override fun mainDataIsEqual(data: Map<String, Any?>): Boolean = false
 
-    override fun updateMainRecord(data: Map<String, Any?>) {}
+    override fun updateMainRecord(data: Map<String, Any?>) {
+        // This entity contains only key field and therefore it can not be updated
+    }
 }

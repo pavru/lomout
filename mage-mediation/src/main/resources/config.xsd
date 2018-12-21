@@ -93,11 +93,11 @@ server.password = root</xs:documentation>
 
   <xs:complexType name="data-set">
     <xs:sequence>
-      <xs:element name="source" type="dataSource" minOccurs="1" maxOccurs="unbounded"/>
-      <xs:element name="field-sets" minOccurs="1" maxOccurs="1">
+      <xs:element name="source" type="dataSource" maxOccurs="unbounded"/>
+      <xs:element name="field-sets">
         <xs:complexType>
           <xs:sequence>
-            <xs:element name="main" type="fieldSet" minOccurs="1" maxOccurs="1">
+            <xs:element name="main" type="fieldSet">
               <xs:unique name="mainFieldColumnUnique">
                 <xs:selector xpath="field"/>
                 <xs:field xpath="@column"/>
@@ -137,12 +137,12 @@ server.password = root</xs:documentation>
     </xs:sequence>
     <xs:attribute name="name" type="xs:string" use="required">
       <xs:annotation>
-        <xs:documentation>Internal dataset id, should be uniqe</xs:documentation>
+        <xs:documentation>Internal dataset id, should be unique</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="headers-row" type="xs:nonNegativeInteger">
       <xs:annotation>
-        <xs:documentation>Zero base row number that contains headers. If it is not defined - the data source does not contian headers.</xs:documentation>
+        <xs:documentation>Zero base row number that contains headers. If it is not defined - the data source does not contain headers.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="rows-to-skip" type="xs:int">
@@ -152,7 +152,7 @@ server.password = root</xs:documentation>
     </xs:attribute>
     <xs:attribute name="max-absent-age" type="xs:int">
       <xs:annotation>
-        <xs:documentation>Specify number of days to store objects in mediation database that does not exist in data soutrce.</xs:documentation>
+        <xs:documentation>Specify number of days to store objects in mediation database that does not exist in data source.</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="target" type="datasetTarget" use="required">
@@ -262,8 +262,8 @@ server.password = root</xs:documentation>
     <xs:attribute name="regex" type="xs:string"/>
     <xs:attribute name="type" type="fieldType" default="STRING"/>
     <xs:attribute name="key-field" type="xs:boolean"/>
-    <xs:attribute name="nested" type="xs:boolean" use="optional"/>
-    <xs:attribute name="parent" type="xs:string" use="optional"/>
+    <xs:attribute name="nested" type="xs:boolean"/>
+    <xs:attribute name="parent" type="xs:string"/>
     <xs:attribute default="false" name="optional" type="xs:boolean"/>
     <xs:attribute name="locale" type="xs:string">
       <xs:annotation>
@@ -307,7 +307,7 @@ server.password = root</xs:documentation>
   </xs:complexType>
 
   <xs:complexType name="listDefinition">
-    <xs:attribute name="delimeter" type="xs:string" use="required"/>
+    <xs:attribute name="delimiter" type="xs:string" use="required"/>
     <xs:attribute name="quote" type="xs:string" use="required"/>
   </xs:complexType>
 
@@ -379,7 +379,7 @@ server.password = root</xs:documentation>
   </xs:simpleType>
 
   <xs:complexType name="attrListDefinition">
-    <xs:attribute name="attr-delimeter" type="xs:string" use="required"/>
+    <xs:attribute name="attr-delimiter" type="xs:string" use="required"/>
     <xs:attribute name="attr-quote" type="xs:string" use="required"/>
     <xs:attribute name="name-value-delimiter" type="xs:string"/>
     <xs:attribute name="value-quote" type="xs:string"/>

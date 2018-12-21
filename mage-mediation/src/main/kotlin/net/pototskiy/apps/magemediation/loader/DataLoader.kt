@@ -16,7 +16,7 @@ object DataLoader {
                 val file = files.findLast { it.id == source.file }
                     ?: throw LoaderException("Source file id<${source.file}> is not defined")
                 val workbook = WorkbookFactory.create(file.path)
-                val loader = LoaderFactory.create(mapTagretToDestination(dataset.target))
+                val loader = LoaderFactory.create(mapTargetToDestination(dataset.target))
                 val regex = Regex(source.sheet)
                 workbook.forEach {
                     if (regex.matches(it.name)) {
@@ -28,7 +28,7 @@ object DataLoader {
         }
     }
 
-    private fun mapTagretToDestination(tagret: DatasetTarget): LoadDestination = when (tagret) {
+    private fun mapTargetToDestination(target: DatasetTarget): LoadDestination = when (target) {
         DatasetTarget.ONEC_PRODUCT -> LoadDestination.ONEC_PRODUCT
         DatasetTarget.ONEC_GROUP -> LoadDestination.ONEC_CATEGORY
         DatasetTarget.MAGE_PRODUCT -> LoadDestination.MAGE_PRODUCT

@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.loader.xls
+package net.pototskiy.apps.magemediation.source.xlsx
 
 import org.apache.poi.xssf.usermodel.XSSFCell
 import org.apache.poi.xssf.usermodel.XSSFRow

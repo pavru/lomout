@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package net.pototskiy.apps.magemediation.config
 
 class ConfigException: Exception {

@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.source
 
 import net.pototskiy.apps.magemediation.loader.LoaderException
-import net.pototskiy.apps.magemediation.loader.xls.XlsxWorkbook
+import net.pototskiy.apps.magemediation.source.xlsx.XlsxWorkbook
 import net.pototskiy.apps.magemediation.source.csv.CsvWorkbook
 import net.pototskiy.apps.magemediation.source.xls.XlsWorkbook
 import net.pototskiy.apps.magemediation.source.xls.setFileName

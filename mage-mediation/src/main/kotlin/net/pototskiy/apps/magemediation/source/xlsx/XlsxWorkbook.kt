@@ -1,8 +1,7 @@
-package net.pototskiy.apps.magemediation.loader.xls
+package net.pototskiy.apps.magemediation.source.xlsx
 
 import net.pototskiy.apps.magemediation.source.Workbook
 import net.pototskiy.apps.magemediation.source.WorkbookType
-import net.pototskiy.apps.magemediation.source.xlsx.getFileName
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 
 class XlsxWorkbook(

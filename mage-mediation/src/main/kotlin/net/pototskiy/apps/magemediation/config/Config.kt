@@ -16,6 +16,7 @@ class Config : ConfigValidate {
     @field:XmlElement(name = "dataset")
     var datasets: List<Dataset> = mutableListOf()
 
+    @Suppress("unused")
     @XmlTransient
     private val logger = LoggerFactory.getLogger(LOG_NAME)
 

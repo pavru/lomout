@@ -6,7 +6,6 @@ import net.pototskiy.apps.magemediation.source.WorkbookType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.File
-import java.io.Reader
 
 
 class CsvWorkbook(
@@ -47,7 +46,7 @@ class CsvWorkbook(
     val parser: CSVParser
         get() = _parser
 
-    public fun reset() {
+    fun reset() {
         reader.close()
         reader = file.reader()
         _parser = csvFormat.parse(reader)

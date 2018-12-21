@@ -4,13 +4,11 @@ import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
-import net.pototskiy.apps.magemediation.source.mage.MageProductLoader
 import org.apache.log4j.BasicConfigurator
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import kotlin.contracts.ExperimentalContracts
-import kotlin.math.abs
-import kotlin.math.floor
-import kotlin.math.sign
 
 const val LOG_NAME = "Import"
 val IMPORT_DATETIME = DateTime()
@@ -30,7 +28,19 @@ fun main(args: Array<String>) {
     if (Args.help || Args.files.isEmpty()) {
         jCommander.usage()
     }
+    setLogLevel()
     initDatabase()
     DataLoader.load()
+}
+
+fun setLogLevel() {
+    val logger = Logger.getLogger(LOG_NAME)
+    when(Args.logLevel) {
+        "debug" -> logger.level = Level.DEBUG
+        "info" -> logger.level = Level.INFO
+        "warn" -> logger.level = Level.WARN
+        "error" -> logger.level = Level.ERROR
+        else -> logger.level = Level.WARN
+    }
 }
 

@@ -9,5 +9,5 @@ interface Cell {
     val stringValue: String
     val row: Row
 
-    abstract fun asString(): String
+    fun asString(): String
 }

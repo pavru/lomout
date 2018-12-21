@@ -1,3 +1,5 @@
+import name.remal.gradle_plugins.dsl.extensions.java
+
 plugins {
     id("java")
     kotlin("jvm") version "1.3.11"
@@ -8,6 +10,7 @@ version = "1.0-SNAPSHOT"
 
 kotlin {
 }
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
@@ -33,10 +36,10 @@ dependencies {
     compile(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
     compile(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
     // JAXB
-    compile(group = "javax.xml.bind", name = "jaxb-api", version ="2.3.1")
-    compile(group = "com.sun.xml.bind", name="jaxb-core", version = "2.3.0.1")
-    compile(group = "com.sun.xml.bind", name="jaxb-impl", version = "2.3.1")
-    compile(group = "com.sun.xml.bind", name="jaxb-jxc", version = "2.3.1")
+    compile(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
+    compile(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
+    compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
+    compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
 //    compile(group="ch.qos.logback", name="logback-classic", version="1.2.3")
 //    compile(group="ch.qos.logback", name="logback-core", version="1.2.3")
     // YAML net.pototskiy.apps.magemediation.config.configuration

@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.loader.xls
+package net.pototskiy.apps.magemediation.source.xlsx
 
 import net.pototskiy.apps.magemediation.loader.*
 import net.pototskiy.apps.magemediation.source.*

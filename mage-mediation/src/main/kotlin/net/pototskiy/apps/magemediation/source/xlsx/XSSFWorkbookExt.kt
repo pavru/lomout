@@ -11,7 +11,7 @@ private data class WorkbookFile(
 private val files = mutableListOf<WorkbookFile>()
 
 
-public fun XSSFWorkbook.setFileName(name: String) {
+fun XSSFWorkbook.setFileName(name: String) {
     cleanFiles()
     files.removeIf { it.workbook.get() == this }
     files.add(
@@ -22,7 +22,7 @@ public fun XSSFWorkbook.setFileName(name: String) {
     )
 }
 
-public fun XSSFWorkbook.getFileName(): String {
+fun XSSFWorkbook.getFileName(): String {
     cleanFiles()
     return files.find { it.workbook.get() == this }?.file ?: ""
 }
