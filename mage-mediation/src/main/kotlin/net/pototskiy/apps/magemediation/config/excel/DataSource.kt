@@ -10,4 +10,6 @@ class DataSource {
     var file: String = ""
     @field:XmlAttribute(required = true)
     var sheet: String = ""
+    @field:XmlAttribute(name = "empty-row")
+    var emptyRowAction: EmptyRowAction = EmptyRowAction.IGNORE
 }

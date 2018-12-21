@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.database.onec
 
-import net.pototskiy.apps.magemediation.IMPORT_DATETIME
 import net.pototskiy.apps.magemediation.database.VersionEntity
 import net.pototskiy.apps.magemediation.database.VersionEntityClass
 import net.pototskiy.apps.magemediation.database.VersionTable
@@ -12,31 +11,29 @@ import org.joda.time.DateTime
 object OnecProducts : VersionTable("onec_product") {
     val sku = varchar(cctu("sku"), 100).uniqueIndex()
 
-    override fun findRecordByKeyFields(data: Map<String, Any?>): VersionEntity? {
-        return transaction {
-            OnecProduct.find { OnecProducts.sku eq (data[OnecProducts.sku.name] as String) }
-                .firstOrNull()
-        }
-    }
-
-    override fun insertNewRecord(data: Map<String, Any?>): VersionEntity {
-        return transaction {
-            OnecProduct.new {
-                sku = (data[this@OnecProducts.sku.name] as String)
-                createdInMedium = IMPORT_DATETIME
-                updatedInMedium = IMPORT_DATETIME
-                absentDays = 0
-            }
-        }
-    }
-
-    override fun mainDataIsEqual(current: VersionEntity, data: Map<String, Any?>): Boolean {
-        return false
-    }
-
-    override fun updateMainRecord(current: VersionEntity, data: Map<String, Any?>) {
-        return
-    }
+//    override fun findRecordByKeyFields(data: Map<String, Any?>): VersionEntity? {
+//        return transaction {
+//            OnecProduct.find { OnecProducts.sku eq (data[OnecProducts.sku.name] as String) }
+//                .firstOrNull()
+//        }
+//    }
+//
+//    override fun insertNewRecord(data: Map<String, Any?>): VersionEntity {
+//        return transaction {
+//            OnecProduct.new {
+//                sku = (data[this@OnecProducts.sku.name] as String)
+//                createdInMedium = IMPORT_DATETIME
+//                updatedInMedium = IMPORT_DATETIME
+//                absentDays = 0
+//            }
+//        }
+//    }
+//
+//    override fun mainDataIsNotEqual(current: VersionEntity, data: Map<String, Any?>): Boolean = false
+//
+//    override fun updateMainRecord(current: VersionEntity, data: Map<String, Any?>) {
+//        // All fields are key and therefore can not be updated
+//    }
 }
 
 
@@ -55,8 +52,8 @@ class OnecProduct(id: EntityID<Int>) : VersionEntity(id) {
             return transaction {
                 this@Companion.new {
                     sku = (data[OnecProducts.sku.name] as String)
-                    createdInMedium = IMPORT_DATETIME
-                    updatedInMedium = IMPORT_DATETIME
+                    createdInMedium = timestamp
+                    updatedInMedium = timestamp
                     absentDays = 0
                 }
             }
@@ -68,7 +65,7 @@ class OnecProduct(id: EntityID<Int>) : VersionEntity(id) {
     override var updatedInMedium by OnecProducts.updatedInMedium
     override var absentDays by OnecProducts.absentDays
 
-    override fun mainDataIsEqual(data: Map<String, Any?>): Boolean = false
+    override fun mainDataIsNotEqual(data: Map<String, Any?>): Boolean = false
 
     override fun updateMainRecord(data: Map<String, Any?>) {
         // This entity contains only key field and therefore it can not be updated

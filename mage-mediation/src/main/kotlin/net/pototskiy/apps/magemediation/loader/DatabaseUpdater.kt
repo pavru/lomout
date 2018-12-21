@@ -20,7 +20,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
                 updateMainRecord(entity, data)
         }
         val mainColumns = tableSet.mainTableHeaders.map { it.name }
-        val attrData = data.filter { it.key !in (mainColumns) }
+        val attrData = data.filter { it.key !in mainColumns }
         testAndUpdateAttributes(entity, attrData, headers)
     }
 
@@ -30,7 +30,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         testAndUpdateBoolAttributes(entity, data, headers)
         testAndUpdateDateAttributes(entity, data, headers)
         testAndUpdateDatetimeAttributes(entity, data, headers)
-        testAndUpdateTextAttributes(entity, data, headers)
+        testAndUpdateTextAtrributes(entity, data, headers)
         testAndUpdateStringAttributes(entity, data, headers)
     }
 
@@ -39,6 +39,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.varcharAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.STRING, FieldType.STRING_LIST),
             tableSet.varcharAttributes,
@@ -48,11 +51,14 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         )
     }
 
-    private fun testAndUpdateTextAttributes(
+    private fun testAndUpdateTextAtrributes(
         entity: VersionEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.textAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.TEXT),
             tableSet.textAttributes,
@@ -67,6 +73,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.datetimeAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.DATETIME, FieldType.DATETIME_LIST),
             tableSet.datetimeAttributes,
@@ -81,6 +90,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.dateAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.DATE, FieldType.DATE_LIST),
             tableSet.dateAttributes,
@@ -95,6 +107,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.boolAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.BOOL, FieldType.BOOL_LIST),
             tableSet.boolAttributes,
@@ -109,6 +124,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.doubleAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.DOUBLE, FieldType.DOUBLE_LIST),
             tableSet.doubleAttributes,
@@ -123,6 +141,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
+        if (tableSet.intAttributes == null) {
+            return
+        }
         testAndUpdateTypedAttributes(
             listOf(FieldType.INT, FieldType.INT_LIST),
             tableSet.intAttributes,
@@ -262,7 +283,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun areThereNewMainData(entity: VersionEntity, data: Map<String, Any?>): Boolean =
-        entity.mainDataIsEqual(data)
+        entity.mainDataIsNotEqual(data)
 
     private fun updateMainRecord(entity: VersionEntity, data: Map<String, Any?>) {
         entity.updateMainRecord(data)

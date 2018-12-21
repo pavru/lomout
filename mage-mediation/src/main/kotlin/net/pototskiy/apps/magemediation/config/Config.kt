@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.config
 
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.excel.Dataset
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -18,7 +18,7 @@ class Config : ConfigValidate {
 
     @Suppress("unused")
     @XmlTransient
-    private val logger = LoggerFactory.getLogger(LOG_NAME)
+    private val logger = Logger.getLogger(LOG_NAME)
 
     override fun validate(parent: Any?) {
         validateFileIdUnique()

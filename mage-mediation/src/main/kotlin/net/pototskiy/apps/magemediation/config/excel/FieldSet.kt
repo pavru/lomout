@@ -4,7 +4,7 @@ import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.ConfigValidate
 import net.pototskiy.apps.magemediation.config.excel.Field.Companion.UNDEFINED_COLUMN
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -18,7 +18,7 @@ open class FieldSet : ConfigValidate {
 
     @Suppress("unused")
     @XmlTransient
-    private val logger = LoggerFactory.getLogger(LOG_NAME)
+    private val logger = Logger.getLogger(LOG_NAME)
 
     override fun validate(parent: Any?) {
         if (type == FieldSetType.MAIN && !fields.any { it.keyField }) {
@@ -57,17 +57,17 @@ open class FieldSet : ConfigValidate {
     }
 
     private fun validateRecursiveRef() {
-        for(f in fields.filter { it.nested }) {
+        for (f in fields.filter { it.nested }) {
             val visited = mutableListOf<Field>()
             visited.add(f)
             var v = f
             do {
                 v = fields.find { it.name == v.parent }!!
-                if (visited.any{it.name == v.name}) {
+                if (visited.any { it.name == v.name }) {
                     throw ConfigException("Filed<${f.name}> has recursion in nested chain")
                 }
                 visited.add(v)
-            }while (v.nested)
+            } while (v.nested)
 
         }
     }

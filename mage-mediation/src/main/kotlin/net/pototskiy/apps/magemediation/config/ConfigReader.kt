@@ -2,12 +2,12 @@ package net.pototskiy.apps.magemediation.config
 
 import net.pototskiy.apps.magemediation.Args
 import net.pototskiy.apps.magemediation.LOG_NAME
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 import java.io.File
 import javax.xml.bind.JAXBContext
 
 fun readConfig(): Config? {
-    val logger = LoggerFactory.getLogger(LOG_NAME)
+    val logger = Logger.getLogger(LOG_NAME)
     val jaxbContext = JAXBContext.newInstance(Config::class.java)
     val unmarshaller = jaxbContext.createUnmarshaller()
     unmarshaller.listener = UnmarshallerListener()

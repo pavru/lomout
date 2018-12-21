@@ -24,7 +24,7 @@ abstract class AbstractLoader : LoaderInterface {
     abstract val tableSet: TargetTableSet
     private lateinit var updater: DatabaseUpdater
 
-    override fun load(sheet: Sheet, dataset: Dataset) {
+    override fun load(sheet: Sheet, dataset: Dataset, emptyRowAction: EmptyRowAction) {
         updater = DatabaseUpdater(tableSet)
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
         val mainHeaders = Headers(sheet, dataset).getHeaders()
@@ -35,9 +35,21 @@ abstract class AbstractLoader : LoaderInterface {
         validateKeyFieldColumns(allHeaders)
         val generalData = mutableMapOf<String, Map<String, Any?>>()
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
-        for (row in sheet) {
+        loop@ for (row in sheet) {
             if (row.rowNum == dataset.headersRow || row.rowNum < dataset.rowsToSkip) {
                 continue
+            }
+            if (row.countCell() == 0) {
+                when(emptyRowAction){
+                    EmptyRowAction.STOP -> {
+                        logger.info("Stop process workbook<${row.sheet.workbook.name}> sheet<${row.sheet.name} because row<${row.rowNum}> is empty and configured action is STOP")
+                        break@loop
+                    }
+                    EmptyRowAction.IGNORE -> {
+                        logger.info("Skip process row in workbook<${row.sheet.workbook.name}> sheet<${row.sheet.name} because row<${row.rowNum}> is empty and configured action is IGNORE")
+                        continue@loop
+                    }
+                }
             }
             try {
                 val rowFiledSet = findRowFieldSet(dataset, row)
@@ -52,7 +64,7 @@ abstract class AbstractLoader : LoaderInterface {
                     val data = getData(row, rowFiledSet.fields)
                     generalData[rowFiledSet.name] = data
                 }
-            } catch (e: LoaderException) {
+            } catch (e: Exception) {
                 logger.error(
                     "Workbook<${row.sheet.workbook.name}>, sheet<${row.sheet.name}>, row<${row.rowNum}> " +
                             "can not be processed, error: ${e.message}"
@@ -146,7 +158,7 @@ abstract class AbstractLoader : LoaderInterface {
         FieldType.DATE_LIST -> DateConverter(value, fieldDef).convertList()
         FieldType.DATETIME_LIST -> DatetimeConverter(value, fieldDef).convertList()
         FieldType.ATTRIBUTE_LIST ->
-            throw LoaderException("Field<${fieldDef.name}> attribute list can not converted to any type")
+            throw LoaderException("Field<${fieldDef.name}> attribute list can not conveterte to any type")
     }
 
     private fun findRowFieldSet(dataset: Dataset, row: Row): FieldSet {
