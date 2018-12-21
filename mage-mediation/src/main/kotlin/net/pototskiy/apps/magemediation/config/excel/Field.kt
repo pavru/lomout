@@ -40,69 +40,101 @@ class Field : ConfigValidate {
     private val logger = LoggerFactory.getLogger(LOG_NAME)
 
     override fun validate(parent: Any?) {
+        validateTypeDefinition()
+        validateNestedField(parent)
+        validateThatNestedIsNotKey()
+        validateLocale()
+    }
+
+    private fun validateNestedField(parent: Any?) {
+        if (nested && parent == null) {
+            throw ConfigException("Filed<$name> is nested but does not have parent")
+        }
+    }
+
+    private fun validateTypeDefinition() {
         when (type) {
             FieldType.BOOL,
             FieldType.INT,
             FieldType.DOUBLE,
             FieldType.STRING,
-            FieldType.TEXT ->
-                if (typeDefinitions.isNotEmpty()) {
-                    logger.warn("Filed<$name> has simple type that does not need any extra type definition")
-                }
-            FieldType.DATE ->
-                if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is DateDefinition }) {
-                    throw ConfigException("Field<$name> has type DATE, but date format is not defined")
-                } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is DateDefinition }) {
-                    logger.warn("Field<$name> has unnecessary type definition")
-                }
-            FieldType.DATETIME ->
-                if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is DatetimeDefinition }) {
-                    throw ConfigException("Field<$name> has type DATETIME, but date format is not defined")
-                } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is DatetimeDefinition }) {
-                    logger.warn("Field<$name> has unnecessary type definition")
-                }
-            FieldType.BOOL_LIST, FieldType.INT_LIST, FieldType.DOUBLE_LIST, FieldType.STRING_LIST ->
-                if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is ListDefinition }) {
-                    throw ConfigException("Field<$name> has type *_LIST, but list format is not defined")
-                } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is ListDefinition }) {
-                    logger.warn("Field<$name> has unnecessary type definition")
-                }
-            FieldType.DATE_LIST ->
-                if (typeDefinitions.isEmpty()
-                    || !typeDefinitions.any { it is DateDefinition }
-                    || !typeDefinitions.any { it is ListDefinition }
-                ) {
-                    throw ConfigException("Field<$name> has type DATE_LIST but it's not fully defined")
-                } else if (typeDefinitions.count() > 2
-                    && typeDefinitions.any { it is DateDefinition }
-                    && typeDefinitions.any { it is ListDefinition }
-                ) {
-                    logger.warn("Field<$name> has unnecessary type definition")
-                }
-            FieldType.DATETIME_LIST ->
-                if (typeDefinitions.isEmpty()
-                    || !typeDefinitions.any { it is DatetimeDefinition }
-                    || !typeDefinitions.any { it is ListDefinition }
-                ) {
-                    throw ConfigException("Field<$name> has type DATETIME_LIST but it's not fully defined")
-                } else if (typeDefinitions.count() > 2
-                    && typeDefinitions.any { it is DatetimeDefinition }
-                    && typeDefinitions.any { it is ListDefinition }
-                ) {
-                    logger.warn("Field<$name> has unnecessary type definition")
-                }
-            FieldType.ATTRIBUTE_LIST ->
-                if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is AttrListDefinition }) {
-                    throw ConfigException("Field<$name> has type ATTRIBUTE_LIST but not fully defined")
-                } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is AttrListDefinition }) {
-                    logger.warn("Field<$name> has extra unnecessary type definition")
-                }
+            FieldType.TEXT -> validateSimpleTypeDefinition()
+            FieldType.DATE -> validateDateTypeDefinition()
+            FieldType.DATETIME -> validateDatetimeTypeDefinition()
+            FieldType.BOOL_LIST,
+            FieldType.INT_LIST,
+            FieldType.DOUBLE_LIST,
+            FieldType.STRING_LIST -> validateSimpleTypeListDefinition()
+            FieldType.DATE_LIST -> validateDateTypeListValidation()
+            FieldType.DATETIME_LIST -> validateDatetimeTypeListDefinition()
+            FieldType.ATTRIBUTE_LIST -> validateAttributeListDefinition()
         }
-        if (nested && parent == null) {
-            throw ConfigException("Filed<$name> is nested but does not have parent")
+    }
+
+    private fun validateAttributeListDefinition() {
+        if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is AttrListDefinition }) {
+            throw ConfigException("Field<$name> has type ATTRIBUTE_LIST but not fully defined")
+        } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is AttrListDefinition }) {
+            logger.warn("Field<$name> has extra unnecessary type definition")
         }
-        validateThatNestedIsNotKey()
-        validateLocale()
+    }
+
+    private fun validateDatetimeTypeListDefinition() {
+        if (typeDefinitions.isEmpty()
+            || !typeDefinitions.any { it is DatetimeDefinition }
+            || !typeDefinitions.any { it is ListDefinition }
+        ) {
+            throw ConfigException("Field<$name> has type DATETIME_LIST but it's not fully defined")
+        } else if (typeDefinitions.count() > 2
+            && typeDefinitions.any { it is DatetimeDefinition }
+            && typeDefinitions.any { it is ListDefinition }
+        ) {
+            logger.warn("Field<$name> has unnecessary type definition")
+        }
+    }
+
+    private fun validateDateTypeListValidation() {
+        if (typeDefinitions.isEmpty()
+            || !typeDefinitions.any { it is DateDefinition }
+            || !typeDefinitions.any { it is ListDefinition }
+        ) {
+            throw ConfigException("Field<$name> has type DATE_LIST but it's not fully defined")
+        } else if (typeDefinitions.count() > 2
+            && typeDefinitions.any { it is DateDefinition }
+            && typeDefinitions.any { it is ListDefinition }
+        ) {
+            logger.warn("Field<$name> has unnecessary type definition")
+        }
+    }
+
+    private fun validateSimpleTypeListDefinition() {
+        if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is ListDefinition }) {
+            throw ConfigException("Field<$name> has type *_LIST, but list format is not defined")
+        } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is ListDefinition }) {
+            logger.warn("Field<$name> has unnecessary type definition")
+        }
+    }
+
+    private fun validateDatetimeTypeDefinition() {
+        if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is DatetimeDefinition }) {
+            throw ConfigException("Field<$name> has type DATETIME, but date format is not defined")
+        } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is DatetimeDefinition }) {
+            logger.warn("Field<$name> has unnecessary type definition")
+        }
+    }
+
+    private fun validateDateTypeDefinition() {
+        if (typeDefinitions.isEmpty() || !typeDefinitions.any { it is DateDefinition }) {
+            throw ConfigException("Field<$name> has type DATE, but date format is not defined")
+        } else if (typeDefinitions.count() > 1 && typeDefinitions.any { it is DateDefinition }) {
+            logger.warn("Field<$name> has unnecessary type definition")
+        }
+    }
+
+    private fun validateSimpleTypeDefinition() {
+        if (typeDefinitions.isNotEmpty()) {
+            logger.warn("Filed<$name> has simple type that does not need any extra type definition")
+        }
     }
 
     private fun validateLocale() {

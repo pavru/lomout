@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlAttribute
 @XmlAccessorType(XmlAccessType.FIELD)
 class ListDefinition {
     @field:XmlAttribute(required = true)
-    var delimeter: String = ","
+    var delimiter: String = ","
     @field:XmlAttribute(required = true)
     var quote: String = ""
 }

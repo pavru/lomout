@@ -14,7 +14,7 @@
             <source file="onec_product" sheet="group"/>
             <field-sets>
                 <main name="group">
-                    <field name="group_code" column="0" regex="^G[0-9]{3,3}$" type="STRING" key-field="true"/>
+                    <field name="group_code" column="0" regex="^G[0-9]{3,3}$" key-field="true"/>
                     <field name="group_name" column="1"/>
                 </main>
             </field-sets>
@@ -48,7 +48,7 @@
                 <main name="product" >
                     <field name="sku" key-field="true"/>
                     <field name="additional_attributes" type="ATTRIBUTE_LIST">
-                        <attr-list-format attr-delimeter="," attr-quote="" name-value-delimiter="=" value-quote='"'/>
+                        <attr-list-format attr-delimiter="," attr-quote="" name-value-delimiter="=" value-quote='"'/>
                     </field>
                     <field name="description" type="TEXT"/>
                     <field name="short_description" type="TEXT"/>
@@ -96,22 +96,22 @@
                     <field name="is_decimal_divided" type="BOOL"/>
                     <field name="website_id" type="INT"/>
                     <field name="related_skus" type="STRING_LIST">
-                        <list-format delimeter="," quote=""/>
+                        <list-format delimiter="," quote=""/>
                     </field>
                     <field name="crosssell_skus" type="STRING_LIST">
-                        <list-format delimeter="," quote=""/>
+                        <list-format delimiter="," quote=""/>
                     </field>
                     <field name="upsell_skus" type="STRING_LIST">
-                        <list-format delimeter="," quote=""/>
+                        <list-format delimiter="," quote=""/>
                     </field>
                     <field name="additional_images" type="STRING_LIST">
-                        <list-format delimeter="," quote=""/>
+                        <list-format delimiter="," quote=""/>
                     </field>
                     <field name="additional_image_labels" type="STRING_LIST">
-                        <list-format delimeter="," quote=""/>
+                        <list-format delimiter="," quote=""/>
                     </field>
                     <field name="associated_skus" type="STRING_LIST">
-                        <list-format delimeter="," quote=""/>
+                        <list-format delimiter="," quote=""/>
                     </field>
 
                     <field name="ratings_summary" type="DOUBLE" nested="true" parent="additional_attributes" optional="true"/>

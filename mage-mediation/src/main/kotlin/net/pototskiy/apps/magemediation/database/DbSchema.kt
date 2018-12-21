@@ -1,10 +1,9 @@
 package net.pototskiy.apps.magemediation.database
 
-import net.pototskiy.apps.magemediation.database.attribute.*
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
-import net.pototskiy.apps.magemediation.database.mage.attribute.MageProductBools
+import net.pototskiy.apps.magemediation.database.mage.attribute.*
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
-import net.pototskiy.apps.magemediation.database.onec.attribute.OnecProductBools
+import net.pototskiy.apps.magemediation.database.onec.attribute.*
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 

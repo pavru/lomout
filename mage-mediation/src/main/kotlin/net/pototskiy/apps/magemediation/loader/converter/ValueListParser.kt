@@ -17,8 +17,8 @@ class ValueListParser(
             format = format.withEscape('\\')
             format = format.withQuoteMode(QuoteMode.NONE)
         }
-        if (listDef.delimeter.isNotBlank()) {
-            format = format.withDelimiter(listDef.delimeter[0])
+        if (listDef.delimiter.isNotBlank()) {
+            format = format.withDelimiter(listDef.delimiter[0])
         }
         val records = CSVParser.parse(valueList, format).records
         return if (records.size == 0) {

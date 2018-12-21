@@ -1,10 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.database.attribute.*
 import net.pototskiy.apps.magemediation.database.onec.OnecProduct
-import net.pototskiy.apps.magemediation.database.onec.OnecProducts
-import net.pototskiy.apps.magemediation.database.onec.attribute.OnecProductBool
-import net.pototskiy.apps.magemediation.database.onec.attribute.OnecProductBools
+import net.pototskiy.apps.magemediation.database.onec.attribute.*
 
 class OnecProductLoader : AbstractLoader() {
     override val tableSet

@@ -1,7 +1,7 @@
 rootProject.name = "oooast-tools"
 rootProject.buildFileName = "build.gradle.kts"
 
-pluginManagement{
+pluginManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()

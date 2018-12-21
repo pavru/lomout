@@ -2,20 +2,22 @@ package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.config.excel.Field
 import net.pototskiy.apps.magemediation.config.excel.FieldType
-import net.pototskiy.apps.magemediation.database.*
-import net.pototskiy.apps.magemediation.database.attribute.*
+import net.pototskiy.apps.magemediation.database.VersionEntityClass
+import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 
 class TargetTableSet(
     val entity: VersionEntityClass<*>,
-    val intAttributes: IntAttributeEntityClass<*>,
-    val doubleAttributes: DoubleAttributeEntityClass<*>,
-    val boolAttributes: BoolAttributeEntityClass<*>,
-    val varcharAttributes: VarcharAttributeEntityClass<*>,
-    val textAttributes: TextAttributeEntityClass<*>,
-    val dateAttributes: DateAttributeEntityClass<*>,
-    val datetimeAttributes: DatetimeAttributeEntityClass<*>
+    val intAttributes: TypedAttributeEntityClass<Long, *>,
+    val doubleAttributes: TypedAttributeEntityClass<Double, *>,
+    val boolAttributes: TypedAttributeEntityClass<Boolean, *>,
+    val varcharAttributes: TypedAttributeEntityClass<String, *>,
+    val textAttributes: TypedAttributeEntityClass<String, *>,
+    val dateAttributes: TypedAttributeEntityClass<DateTime, *>,
+    val datetimeAttributes: TypedAttributeEntityClass<DateTime, *>
 ) {
     val mainTableHeaders: List<Column<*>>
         get() {

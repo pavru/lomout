@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.source.csv
 
-import net.pototskiy.apps.magemediation.loader.*
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellAddress
 import net.pototskiy.apps.magemediation.source.CellType
@@ -14,7 +13,7 @@ class CsvCell(
     override val address: CellAddress
         get() = _address
     override val cellType: CellType
-        get() = _value.recognze()
+        get() = _value.recognize()
     override val booleanValue: Boolean
         get() = _value.toBoolean()
     override val intValue: Long
@@ -31,7 +30,7 @@ class CsvCell(
     override val row: Row
         get() = _row
 
-    private fun String.recognze(): CellType {
+    private fun String.recognize(): CellType {
         return when {
             this.toLongOrNull() != null -> CellType.INT
             this.toDoubleOrNull() != null -> CellType.DOUBLE

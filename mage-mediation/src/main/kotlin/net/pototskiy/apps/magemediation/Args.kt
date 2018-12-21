@@ -25,18 +25,4 @@ object Args {
         arity = 1
     )
     var logLevel: String = "warn"
-    @Parameter(
-        names = ["--excel-product"],
-        description = "excel product file path",
-        arity = 1,
-        required = false
-    )
-    var excelProductFile: String = ""
-    @Parameter(
-        names = ["--mage-product"],
-        description = "magento product file path",
-        arity = 1,
-        required = false
-    )
-    var mageProductFile: String = ""
 }

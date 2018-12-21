@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.config.excel
 
-import net.pototskiy.apps.magemediation.config.DataFile
-
-import javax.xml.bind.annotation.*
+import javax.xml.bind.annotation.XmlAccessType
+import javax.xml.bind.annotation.XmlAccessorType
+import javax.xml.bind.annotation.XmlAttribute
 
 @XmlAccessorType(XmlAccessType.FIELD)
 class DataSource {

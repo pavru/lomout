@@ -1,11 +1,10 @@
-package net.pototskiy.apps.magemediation.loader.xls
+package net.pototskiy.apps.magemediation.source.excel
 
-import net.pototskiy.apps.magemediation.loader.*
+import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.*
-import org.apache.poi.xssf.usermodel.XSSFCell
 import java.text.NumberFormat
 
-class XlsxCell(private val cell: XSSFCell) : Cell {
+class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
     override val address: CellAddress
         get() = CellAddress(cell.rowIndex, cell.columnIndex)
     override val cellType: CellType
@@ -38,7 +37,7 @@ class XlsxCell(private val cell: XSSFCell) : Cell {
     override val stringValue: String
         get() = cell.stringCellValue
     override val row: Row
-        get() = XlsxRow(cell.row)
+        get() = ExcelRow(cell.row)
 
     override fun asString(): String {
         val format = NumberFormat.getInstance().apply {

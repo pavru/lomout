@@ -22,9 +22,10 @@ abstract class AbstractLoader : LoaderInterface {
     private val logger = LoggerFactory.getLogger(LOG_NAME)
 
     abstract val tableSet: TargetTableSet
-    private val updater = DatabaseUpdater(tableSet)
+    private lateinit var updater: DatabaseUpdater
 
     override fun load(sheet: Sheet, dataset: Dataset) {
+        updater = DatabaseUpdater(tableSet)
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
         val mainHeaders = Headers(sheet, dataset).getHeaders()
         val allHeaders = mainHeaders.plus(
@@ -69,7 +70,7 @@ abstract class AbstractLoader : LoaderInterface {
         if (!mainColumns.map { it.name }.containsAll(keyFields.map { it.name })) {
             throw LoaderException(
                 "Table<${tableSet.entity::class.simpleName}> has no all key " +
-                        "fields<${keyFields.map { it.name }.joinToString(", ")}>"
+                        "fields<${keyFields.joinToString(", ") { it.name }}>"
             )
         }
         keyFields.forEach { field ->
@@ -145,7 +146,7 @@ abstract class AbstractLoader : LoaderInterface {
         FieldType.DATE_LIST -> DateConverter(value, fieldDef).convertList()
         FieldType.DATETIME_LIST -> DatetimeConverter(value, fieldDef).convertList()
         FieldType.ATTRIBUTE_LIST ->
-            throw LoaderException("Field<${fieldDef.name}> attribute list can not conveterte to any type")
+            throw LoaderException("Field<${fieldDef.name}> attribute list can not converted to any type")
     }
 
     private fun findRowFieldSet(dataset: Dataset, row: Row): FieldSet {

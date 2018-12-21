@@ -31,6 +31,7 @@ class Dataset: ConfigValidate {
     @field:XmlAttribute(required = true)
     var target: DatasetTarget = DatasetTarget.MAGE_PRODUCT
 
+    @Suppress("unused")
     @XmlTransient
     private val logger = LoggerFactory.getLogger(LOG_NAME)
 

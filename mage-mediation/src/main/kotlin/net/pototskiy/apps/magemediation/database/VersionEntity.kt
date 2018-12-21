@@ -1,12 +1,10 @@
 package net.pototskiy.apps.magemediation.database
 
-import com.oracle.util.Checksums.update
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 
 abstract class VersionTable(table: String) : IntIdTable(table) {
@@ -18,14 +16,6 @@ abstract class VersionTable(table: String) : IntIdTable(table) {
     abstract fun insertNewRecord(data: Map<String, Any?>): VersionEntity
     abstract fun mainDataIsEqual(current: VersionEntity, data: Map<String, Any?>): Boolean
     abstract fun updateMainRecord(current: VersionEntity, data: Map<String, Any?>)
-
-    fun setUpdateDatetime(date: DateTime) {
-        transaction {
-            update {
-                it[updatedInMedium] = date
-            }
-        }
-    }
 }
 
 abstract class VersionEntity(id: EntityID<Int>) : IntEntity(id) {

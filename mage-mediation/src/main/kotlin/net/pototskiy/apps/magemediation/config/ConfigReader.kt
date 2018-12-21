@@ -10,7 +10,7 @@ fun readConfig(): Config? {
     val logger = LoggerFactory.getLogger(LOG_NAME)
     val jaxbContext = JAXBContext.newInstance(Config::class.java)
     val unmarshaller = jaxbContext.createUnmarshaller()
-    unmarshaller.listener = UnmarshalListener()
+    unmarshaller.listener = UnmarshallerListener()
     var config: Config? = null
     try {
         File(Args.configFile).reader().use {
