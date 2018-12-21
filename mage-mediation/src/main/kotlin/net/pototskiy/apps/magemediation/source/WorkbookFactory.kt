@@ -1,11 +1,9 @@
 package net.pototskiy.apps.magemediation.source
 
 import net.pototskiy.apps.magemediation.loader.LoaderException
-import net.pototskiy.apps.magemediation.source.xlsx.XlsxWorkbook
 import net.pototskiy.apps.magemediation.source.csv.CsvWorkbook
-import net.pototskiy.apps.magemediation.source.xls.XlsWorkbook
-import net.pototskiy.apps.magemediation.source.xls.setFileName
-import net.pototskiy.apps.magemediation.source.xlsx.setFileName
+import net.pototskiy.apps.magemediation.source.excel.ExcelWorkbook
+import net.pototskiy.apps.magemediation.source.excel.setFileName
 import org.apache.commons.csv.CSVFormat
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -22,13 +20,13 @@ class WorkbookFactory {
                     val wb = HSSFWorkbook(file.inputStream())
                     HSSFFormulaEvaluator.evaluateAllFormulaCells(wb)
                     wb.setFileName(fileName)
-                    XlsWorkbook(wb)
+                    ExcelWorkbook(wb)
                 }
                 "xlsx" -> {
                     val wb = XSSFWorkbook(file.inputStream())
                     XSSFFormulaEvaluator.evaluateAllFormulaCells(wb)
                     wb.setFileName(fileName)
-                    XlsxWorkbook(wb)
+                    ExcelWorkbook(wb)
                 }
                 "csv" -> {
                     val format = CSVFormat.RFC4180

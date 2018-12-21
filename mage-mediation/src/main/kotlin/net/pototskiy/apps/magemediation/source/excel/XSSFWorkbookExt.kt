@@ -1,17 +1,17 @@
-package net.pototskiy.apps.magemediation.source.xls
+package net.pototskiy.apps.magemediation.source.excel
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.ss.usermodel.Workbook
 import java.lang.ref.WeakReference
 
 private data class WorkbookFile(
-    val workbook: WeakReference<HSSFWorkbook>,
+    val workbook: WeakReference<Workbook>,
     val file: String
 )
 
 private val files = mutableListOf<WorkbookFile>()
 
 
-fun HSSFWorkbook.setFileName(name: String) {
+fun Workbook.setFileName(name: String) {
     cleanFiles()
     files.removeIf { it.workbook.get() == this }
     files.add(
@@ -22,10 +22,11 @@ fun HSSFWorkbook.setFileName(name: String) {
     )
 }
 
-fun HSSFWorkbook.getFileName(): String {
+fun Workbook.getFileName(): String {
     cleanFiles()
     return files.find { it.workbook.get() == this }?.file ?: ""
 }
+
 private fun cleanFiles() {
     files.removeIf { it.workbook.get() == null }
 }
