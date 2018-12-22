@@ -11,14 +11,10 @@ class AttributeCell(
     private val _value: String,
     private val _row: AttributeRow
 ) : Cell {
-    override fun asString(): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
+    override fun asString(): String = _value
 
-    override val address: CellAddress
-        get() = _address
-    override val cellType: CellType
-        get() = CellType.STRING
+    override val address: CellAddress = _address
+    override val cellType: CellType = CellType.STRING
     override val booleanValue: Boolean
         get() {
             throw LoaderException("${AttributeCell::class.simpleName} supports only string type value")
@@ -31,8 +27,6 @@ class AttributeCell(
         get() {
             throw LoaderException("${AttributeCell::class.simpleName} supports only string type value")
         }
-    override val stringValue: String
-        get() = _value
-    override val row: Row
-        get() = _row
+    override val stringValue: String = _value
+    override val row: Row = _row
 }

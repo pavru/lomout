@@ -162,15 +162,26 @@ abstract class AbstractLoader : LoaderInterface {
         headers.filter { !it.nested && it.type != FieldType.ATTRIBUTE_LIST }.forEach {
             val cell = row[it.column]
                 ?: throw LoaderException("There is no requested cell<${it.column + 1}> in row")
+            testFieldRegex(it, cell)
             data[it.name] = cell
         }
         headers.filter { it.nested }.forEach { header ->
             val processor = NestedAttrProcessor()
             processor.getAttrValue(header, row, headers)?.let {
+                testFieldRegex(header, it)
                 data[header.name] = it
             }
         }
         return convertValues(data.toMap(), headers)
+    }
+
+    private fun testFieldRegex(fieldDef: Field, cell: Cell) {
+        fieldDef.regex?.let {
+            val regex = Regex(it)
+            if (!regex.matches(cell.asString())) {
+                throw LoaderException("Field<${fieldDef.name}> does not match required regular expression")
+            }
+        }
     }
 
     private fun convertValues(cellValues: Map<String, Cell>, headers: List<Field>): Map<String, Any?> {
