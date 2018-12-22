@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.config
 
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 
 object Configuration {
     private var configCache: Config? = null
-    private val logger = LoggerFactory.getLogger("import")
+    private val logger = Logger.getLogger("import")
     val config: Config
         get() {
             val v = configCache

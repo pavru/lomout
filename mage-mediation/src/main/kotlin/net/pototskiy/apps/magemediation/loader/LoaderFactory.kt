@@ -6,6 +6,7 @@ class LoaderFactory {
             return when (type) {
                 LoadDestination.MAGE_PRODUCT -> MagentoProductLoader()
                 LoadDestination.ONEC_PRODUCT -> OnecProductLoader()
+                LoadDestination.ONEC_CATEGORY -> OnecGroupLoader()
                 else -> throw LoaderException("Can not create data loader")
             }
         }

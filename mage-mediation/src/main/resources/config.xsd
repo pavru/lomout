@@ -180,6 +180,7 @@ server.password = root</xs:documentation>
         <xs:documentation>Name of sheet contains data. For CSV files only one sheet supported - default</xs:documentation>
       </xs:annotation>
     </xs:attribute>
+    <xs:attribute name="empty-row" default="ignore" type="emptyRowAction"/>
   </xs:complexType>
 
   <xs:complexType name="field" final="#all">
@@ -260,7 +261,7 @@ server.password = root</xs:documentation>
     <xs:attribute name="name" type="xs:string" use="required"/>
     <xs:attribute name="column" type="xs:nonNegativeInteger"/>
     <xs:attribute name="regex" type="xs:string"/>
-    <xs:attribute name="type" type="fieldType" default="STRING"/>
+    <xs:attribute name="type" type="fieldType" default="string"/>
     <xs:attribute name="key-field" type="xs:boolean"/>
     <xs:attribute name="nested" type="xs:boolean"/>
     <xs:attribute name="parent" type="xs:string"/>
@@ -272,22 +273,22 @@ server.password = root</xs:documentation>
     </xs:attribute>
     <xs:assert
       test="
-        if (@type = 'BOOL_LIST' or @type = 'INT_LIST' or @type = 'DOUBLE_LIST' or @type = 'STRING_LIST') then
+        if (@type = 'bool-list' or @type = 'int-list' or @type = 'double-list' or @type = 'string-list') then
           exists(list-format)
         else
-          if (@type = 'DATE_LIST') then
+          if (@type = 'date-list') then
             (exists(list-format) and exists(date-format))
           else
-            if (@type = 'DATETIME_LIST') then
+            if (@type = 'datetime-list') then
               (exists(list-format) and exists(datetime-format))
             else
-              if (@type = 'DATE') then
+              if (@type = 'date') then
                 exists(date-format)
               else
-                if (@type = 'DATETIME') then
+                if (@type = 'date') then
                   exists(datetime-format)
                 else
-                  if (@type = 'ATTRIBUTE_LIST') then
+                  if (@type = 'attribute-list') then
                     exists(attr-list-format)
                   else
                     true()"/>
@@ -342,39 +343,32 @@ server.password = root</xs:documentation>
 
   <xs:simpleType name="datasetTarget">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="ONEC_PRODUCT"/>
-      <xs:enumeration value="ONEC_GROUP"/>
-      <xs:enumeration value="MAGE_PRODUCT"/>
-      <xs:enumeration value="MAGE_CATEGORY"/>
-      <xs:enumeration value="MAGE_PRICE"/>
-      <xs:enumeration value="MAGE_INVENTORY"/>
-      <xs:enumeration value="MAGE_USER_GROUP"/>
+      <xs:enumeration value="onec-product"/>
+      <xs:enumeration value="onec-group"/>
+      <xs:enumeration value="mage-product"/>
+      <xs:enumeration value="mage-category"/>
+      <xs:enumeration value="mage-price"/>
+      <xs:enumeration value="mage-inventory"/>
+      <xs:enumeration value="mage-user-group"/>
     </xs:restriction>
   </xs:simpleType>
 
   <xs:simpleType name="fieldType">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="BOOL"/>
-      <xs:enumeration value="INT"/>
-      <xs:enumeration value="DOUBLE"/>
-      <xs:enumeration value="STRING"/>
-      <xs:enumeration value="TEXT"/>
-      <xs:enumeration value="DATE"/>
-      <xs:enumeration value="DATETIME"/>
-      <xs:enumeration value="BOOL_LIST"/>
-      <xs:enumeration value="INT_LIST"/>
-      <xs:enumeration value="DOUBLE_LIST"/>
-      <xs:enumeration value="STRING_LIST"/>
-      <xs:enumeration value="DATE_LIST"/>
-      <xs:enumeration value="DATETIME_LIST"/>
-      <xs:enumeration value="ATTRIBUTE_LIST"/>
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="fieldSetType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="MAIN"/>
-      <xs:enumeration value="COMMON"/>
+      <xs:enumeration value="bool"/>
+      <xs:enumeration value="int"/>
+      <xs:enumeration value="double"/>
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="text"/>
+      <xs:enumeration value="date"/>
+      <xs:enumeration value="datetime"/>
+      <xs:enumeration value="bool-list"/>
+      <xs:enumeration value="int-list"/>
+      <xs:enumeration value="double-list"/>
+      <xs:enumeration value="string-list"/>
+      <xs:enumeration value="date-list"/>
+      <xs:enumeration value="datetime-list"/>
+      <xs:enumeration value="attribute-list"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -384,4 +378,11 @@ server.password = root</xs:documentation>
     <xs:attribute name="name-value-delimiter" type="xs:string"/>
     <xs:attribute name="value-quote" type="xs:string"/>
   </xs:complexType>
+  
+  <xs:simpleType name="emptyRowAction">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="stop"/>
+      <xs:enumeration value="ignore"/>
+    </xs:restriction>
+  </xs:simpleType>
 </xs:schema>

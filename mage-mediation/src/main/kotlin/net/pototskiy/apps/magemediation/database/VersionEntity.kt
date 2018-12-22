@@ -12,10 +12,6 @@ abstract class VersionTable(table: String) : IntIdTable(table) {
     val updatedInMedium = datetime("updated_in_medium").index()
     val absentDays = integer("absent_days").index()
 
-    abstract fun findRecordByKeyFields(data: Map<String, Any?>): VersionEntity?
-    abstract fun insertNewRecord(data: Map<String, Any?>): VersionEntity
-    abstract fun mainDataIsEqual(current: VersionEntity, data: Map<String, Any?>): Boolean
-    abstract fun updateMainRecord(current: VersionEntity, data: Map<String, Any?>)
 }
 
 abstract class VersionEntity(id: EntityID<Int>) : IntEntity(id) {
@@ -23,7 +19,7 @@ abstract class VersionEntity(id: EntityID<Int>) : IntEntity(id) {
     abstract var updatedInMedium: DateTime
     abstract var absentDays: Int
 
-    abstract fun mainDataIsEqual(data: Map<String, Any?>): Boolean
+    abstract fun mainDataIsNotEqual(data: Map<String, Any?>): Boolean
     abstract fun updateMainRecord(data: Map<String, Any?>)
 
     fun setUpdateDatetime(date: DateTime) = transaction {

@@ -24,44 +24,101 @@ abstract class AbstractLoader : LoaderInterface {
     abstract val tableSet: TargetTableSet
     private lateinit var updater: DatabaseUpdater
 
-    override fun load(sheet: Sheet, dataset: Dataset) {
+    override fun load(sheet: Sheet, dataset: Dataset, emptyRowAction: EmptyRowAction) {
         updater = DatabaseUpdater(tableSet)
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
         val mainHeaders = Headers(sheet, dataset).getHeaders()
-        val allHeaders = mainHeaders.plus(
-            dataset.fieldSets.filter { it.type != FieldSetType.MAIN }
-                .flatMap { it.fields }
-        )
+        val allHeaders = getAllHeadersList(mainHeaders, dataset)
         validateKeyFieldColumns(allHeaders)
         val generalData = mutableMapOf<String, Map<String, Any?>>()
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
-        for (row in sheet) {
+        loop@ for (row in sheet) {
             if (row.rowNum == dataset.headersRow || row.rowNum < dataset.rowsToSkip) {
                 continue
             }
-            try {
-                val rowFiledSet = findRowFieldSet(dataset, row)
-                if (rowFiledSet.type == FieldSetType.MAIN) {
-                    val data = getData(row, mainHeaders)
-                    generalData.forEach { _, gData ->
-                        data.plus(gData)
-                    }
-                    validateKeyFieldData(data, allHeaders)
-                    updateDatabase(data, allHeaders)
-                } else {
-                    val data = getData(row, rowFiledSet.fields)
-                    generalData[rowFiledSet.name] = data
+            when (checkEmptyRow(row, emptyRowAction)) {
+                EmptyRowTestResult.STOP -> break@loop
+                EmptyRowTestResult.SKIP -> continue@loop
+                EmptyRowTestResult.PROCESS -> { // process row }
                 }
-            } catch (e: LoaderException) {
-                logger.error(
-                    "Workbook<${row.sheet.workbook.name}>, sheet<${row.sheet.name}>, row<${row.rowNum}> " +
-                            "can not be processed, error: ${e.message}"
-                )
+            }
+            try {
+                processRow(dataset, row, mainHeaders, generalData, allHeaders)
+            } catch (e: Exception) {
+                rowException(row, e)
                 continue
             }
         }
         updateRecordAbsentAge()
         removeVeryOldRecords(dataset)
+    }
+
+    private fun processRow(
+        dataset: Dataset,
+        row: Row,
+        mainHeaders: List<Field>,
+        generalData: MutableMap<String, Map<String, Any?>>,
+        allHeaders: List<Field>
+    ) {
+        val rowFiledSet = findRowFieldSet(dataset, row)
+        if (rowFiledSet.type == FieldSetType.MAIN) {
+            val data = getData(row, mainHeaders)
+            plusAdditionalData(data, generalData)
+            validateKeyFieldData(data, allHeaders)
+            updateDatabase(data, allHeaders)
+        } else {
+            val data = getData(row, rowFiledSet.fields)
+            generalData[rowFiledSet.name] = data
+        }
+    }
+
+    private fun getAllHeadersList(
+        mainHeaders: List<Field>,
+        dataset: Dataset
+    ): List<Field> {
+        return mainHeaders.plus(
+            dataset.fieldSets.filter { it.type != FieldSetType.MAIN }
+                .flatMap { it.fields }
+        )
+    }
+
+    private fun rowException(row: Row, e: Exception) {
+        logger.error(
+            "Workbook<${row.sheet.workbook.name}>, sheet<${row.sheet.name}>, row<${row.rowNum + 1}> " +
+                    "can not be processed, error: ${e.message}"
+        )
+        if (e !is LoaderException) {
+            logger.error("Internal error", e)
+        }
+    }
+
+    private fun plusAdditionalData(
+        data: Map<String, Any?>,
+        generalData: MutableMap<String, Map<String, Any?>>
+    ) {
+        generalData.forEach { _, gData ->
+            data.plus(gData)
+        }
+    }
+
+    private fun checkEmptyRow(
+        row: Row,
+        emptyRowAction: EmptyRowAction
+    ): EmptyRowTestResult {
+        return if (row.countCell() == 0) {
+            when (emptyRowAction) {
+                EmptyRowAction.STOP -> {
+                    logger.info("Stop process workbook<${row.sheet.workbook.name}> sheet<${row.sheet.name} because row<${row.rowNum + 1}> is empty and configured action is STOP")
+                    EmptyRowTestResult.STOP
+                }
+                EmptyRowAction.IGNORE -> {
+                    logger.info("Skip process row in workbook<${row.sheet.workbook.name}> sheet<${row.sheet.name} because row<${row.rowNum + 1}> is empty and configured action is IGNORE")
+                    EmptyRowTestResult.SKIP
+                }
+            }
+        } else {
+            EmptyRowTestResult.PROCESS
+        }
     }
 
     private fun validateKeyFieldColumns(allHeaders: List<Field>) {
@@ -103,7 +160,9 @@ abstract class AbstractLoader : LoaderInterface {
     private fun getData(row: Row, headers: List<Field>): Map<String, Any?> {
         val data: MutableMap<String, Cell> = mutableMapOf()
         headers.filter { !it.nested && it.type != FieldType.ATTRIBUTE_LIST }.forEach {
-            data[it.name] = row[it.column]
+            val cell = row[it.column]
+                ?: throw LoaderException("There is no requested cell<${it.column + 1}> in row")
+            data[it.name] = cell
         }
         headers.filter { it.nested }.forEach { header ->
             val processor = NestedAttrProcessor()
@@ -155,8 +214,15 @@ abstract class AbstractLoader : LoaderInterface {
             for (set in dataset.fieldSets) {
                 var fit = true
                 for (field in set.fields.filter { field -> field.regex?.isNotBlank() ?: false }) {
+                    val cell = row[field.column]
+                        ?: throw LoaderException(
+                            "Workbook<${row.sheet.workbook.name}>, " +
+                                    "sheet<${row.sheet.name}>, " +
+                                    "row<${row.rowNum + 1}> " +
+                                    "does not exist, but it's required for roq classification"
+                        )
                     val regex = Regex(field.regex ?: ".*")
-                    if (!regex.matches(row[field.column].asString())) {
+                    if (!regex.matches(cell.asString())) {
                         fit = false
                     }
                 }
@@ -168,11 +234,12 @@ abstract class AbstractLoader : LoaderInterface {
             fittedSet
         } else {
             null
-        } ?: dataset.fieldSets.find { it.type == FieldSetType.MAIN }
-        ?: throw LoaderException(
-            "Row field set can not be found or dataset<${dataset.name}> has no main field set, " +
-                    "workbook<${row.sheet.workbook.name}>, sheet<${row.sheet.name}, row<${row.rowNum}>"
-        ))
+        }
+            ?: dataset.fieldSets.find { it.type == FieldSetType.MAIN }
+            ?: throw LoaderException(
+                "Row field set can not be found or dataset<${dataset.name}> has no main field set, " +
+                        "workbook<${row.sheet.workbook.name}>, sheet<${row.sheet.name}, row<${row.rowNum + 1}>"
+            ))
     }
 
     inner class NestedAttrProcessor {
@@ -181,7 +248,7 @@ abstract class AbstractLoader : LoaderInterface {
             val data = if (parentDef.nested) {
                 getAttrValue(parentDef, row, headers)?.toString()
             } else {
-                row[parentDef.column].stringValue
+                row[parentDef.column]?.stringValue
             }
             if (data == null && !fieldDef.optional) {
                 throw LoaderException("Nester attribute<${fieldDef.name}> is not optional bat can not found")
@@ -192,11 +259,11 @@ abstract class AbstractLoader : LoaderInterface {
                 AttributeListParser(data, parentDef),
                 parentDef.name
             )
-            val header = workbook[0][0].find { it.stringValue == fieldDef.name }
+            val header = workbook[0][0]?.find { it.stringValue == fieldDef.name }
             if (header == null && !fieldDef.optional) {
                 throw LoaderException("Nester attribute<${fieldDef.name}> is not optional bat can not found")
             }
-            return if (header == null) null else workbook[0][1][header.address.column]
+            return if (header == null) null else workbook[0][1]?.get(header.address.column)
         }
 
         private fun findParentDef(nested: Field, headers: List<Field>): Field {
@@ -212,12 +279,6 @@ abstract class AbstractLoader : LoaderInterface {
                 val days = Duration(it.createdInMedium, it.updatedInMedium).standardDays
                 it.absentDays = days.toInt()
             }
-//            entity.all().toList().forEach { row ->
-//                val days = Duration(row[entity.createdInMedium], row[entity.updatedInMedium]).standardDays
-//                entity.update({ entity.id eq row[entity.id] }) {
-//                    it[entity.absentDays] = days.toInt()
-//                }
-//            }
         }
     }
 
@@ -233,12 +294,6 @@ abstract class AbstractLoader : LoaderInterface {
                 .forEach {
                     it.delete()
                 }
-//            entityClass.select {
-//                ((entityClass.updatedInMedium neq IMPORT_DATETIME)
-//                        and (entityClass.absentDays greaterEq dataset.maxAbsentDays))
-//            }.toList().forEach { row ->
-//                entityClass.deleteWhere { entityClass.id eq row[entityClass.id] }
-//            }
         }
     }
 

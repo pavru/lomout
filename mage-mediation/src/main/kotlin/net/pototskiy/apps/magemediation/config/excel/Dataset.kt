@@ -5,19 +5,18 @@ import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.ConfigValidate
 import net.pototskiy.apps.magemediation.config.DatasetTarget
 import net.pototskiy.apps.magemediation.config.excel.Field.Companion.UNDEFINED_COLUMN
-import org.slf4j.LoggerFactory
-
+import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
 @XmlType(name = "data-set")
 @XmlAccessorType(XmlAccessType.FIELD)
-class Dataset: ConfigValidate {
+class Dataset : ConfigValidate {
     @field:XmlElement(name = "source")
     var sources: List<DataSource> = mutableListOf()
     @field:XmlElementWrapper(name = "field-sets")
     @field:XmlElements(
-        XmlElement(name="main", type = MainFieldSet::class),
-        XmlElement(name="additional", type = AdditionalFieldSet::class)
+        XmlElement(name = "main", type = MainFieldSet::class),
+        XmlElement(name = "additional", type = AdditionalFieldSet::class)
     )
     var fieldSets: List<FieldSet> = mutableListOf()
     @field:XmlAttribute(required = true)
@@ -33,7 +32,7 @@ class Dataset: ConfigValidate {
 
     @Suppress("unused")
     @XmlTransient
-    private val logger = LoggerFactory.getLogger(LOG_NAME)
+    private val logger = Logger.getLogger(LOG_NAME)
 
     override fun validate(parent: Any?) {
         validateDuplicatedNames()

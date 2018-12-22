@@ -1,15 +1,24 @@
 package net.pototskiy.apps.magemediation.loader
 
+import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.Configuration
 import net.pototskiy.apps.magemediation.config.DatasetTarget
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
+import java.util.logging.Logger
 
 object DataLoader {
+    private val logger = Logger.getLogger(LOG_NAME)
+
     fun load() {
         val files = Configuration.config.files
         val datasets = Configuration.config.datasets
         for (dataset in datasets) {
-            if (dataset.target !in listOf(DatasetTarget.MAGE_PRODUCT, DatasetTarget.ONEC_PRODUCT)) {
+            if (dataset.target !in listOf(
+                    DatasetTarget.MAGE_PRODUCT,
+                    DatasetTarget.ONEC_PRODUCT,
+                    DatasetTarget.ONEC_GROUP
+                )
+            ) {
                 continue
             }
             dataset.sources.forEach { source ->
@@ -18,9 +27,13 @@ object DataLoader {
                 val workbook = WorkbookFactory.create(file.path)
                 val loader = LoaderFactory.create(mapTargetToDestination(dataset.target))
                 val regex = Regex(source.sheet)
-                workbook.forEach {
-                    if (regex.matches(it.name)) {
-                        loader.load(it, dataset)
+                if (!workbook.any { regex.matches(it.name) }) {
+                    logger.warning("Sheet<${source.sheet}> can not be found in source<${source.file}>")
+                } else {
+                    workbook.forEach {
+                        if (regex.matches(it.name)) {
+                            loader.load(it, dataset, source.emptyRowAction)
+                        }
                     }
                 }
 

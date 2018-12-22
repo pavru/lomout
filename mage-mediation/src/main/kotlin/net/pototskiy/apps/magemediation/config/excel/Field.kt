@@ -3,7 +3,7 @@ package net.pototskiy.apps.magemediation.config.excel
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.ConfigValidate
-import org.slf4j.LoggerFactory
+import org.apache.log4j.Logger
 import java.util.*
 import javax.xml.bind.annotation.*
 
@@ -37,7 +37,7 @@ class Field : ConfigValidate {
     var locale: String? = null
 
     @XmlTransient
-    private val logger = LoggerFactory.getLogger(LOG_NAME)
+    private val logger = Logger.getLogger(LOG_NAME)
 
     override fun validate(parent: Any?) {
         validateTypeDefinition()
@@ -53,6 +53,10 @@ class Field : ConfigValidate {
     }
 
     private fun validateTypeDefinition() {
+        @Suppress("SENSELESS_COMPARISON")
+        if (type == null) {
+            throw ConfigException("Field<$name> has no type or type name is wrong")
+        }
         when (type) {
             FieldType.BOOL,
             FieldType.INT,

@@ -9,7 +9,7 @@ class ExcelSheet(private val sheet: org.apache.poi.ss.usermodel.Sheet) : Sheet {
     override val workbook: Workbook
         get() = ExcelWorkbook(sheet.workbook)
 
-    override fun get(row: Int): ExcelRow = ExcelRow(sheet.getRow(row))
+    override fun get(row: Int): ExcelRow? = sheet.getRow(row)?.let { ExcelRow(it) }
 
     override fun iterator(): Iterator<ExcelRow> = ExcelRowIterator(sheet)
 }

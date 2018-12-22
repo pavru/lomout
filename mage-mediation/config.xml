@@ -6,12 +6,13 @@
     </database>
     <files>
         <file id="onec_product" path="../.testdata/test-products.xls"/>
+        <file id="onec_group" path="../.testdata/test-products.xlsx"/>
         <file id="mage_product" path="../.testdata/catalog_product.csv"/>
         <file id="mage_user_group" path="../.testdata/customer_group.csv"/>
     </files>
     <data-sets>
-        <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="ONEC_GROUP">
-            <source file="onec_product" sheet="group"/>
+        <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="onec-group">
+            <source file="onec_group" sheet="Group" empty-row="stop"/>
             <field-sets>
                 <main name="group">
                     <field name="group_code" column="0" regex="^G[0-9]{3,3}$" key-field="true"/>
@@ -19,7 +20,7 @@
                 </main>
             </field-sets>
         </dataset>
-        <dataset name="onec_product" rows-to-skip="4" max-absent-age="10" target="ONEC_PRODUCT">
+        <dataset name="onec_product" rows-to-skip="4" max-absent-age="10" target="onec-product">
             <source file="onec_product" sheet="stock"/>
             <field-sets>
                 <main name="product">
@@ -34,7 +35,7 @@
                     <!--
                         <field name="machine_unit" column="0"/>
                     -->
-                    <field name="weight" column="9" type="DOUBLE"/>
+                    <field name="weight" column="9" type="double"/>
                 </main>
                 <additional name="group" >
                     <field name="group_code" column="0" regex="^G[0-9]{3,3}$"/>
@@ -42,80 +43,80 @@
                 </additional>
             </field-sets>
         </dataset>
-        <dataset name="mage_product" headers-row="0" rows-to-skip="0" max-absent-age="10" target="MAGE_PRODUCT">
+        <dataset name="mage_product" headers-row="0" rows-to-skip="0" max-absent-age="10" target="mage-product">
             <source file="mage_product" sheet=".*"/>
             <field-sets>
                 <main name="product" >
                     <field name="sku" key-field="true"/>
-                    <field name="additional_attributes" type="ATTRIBUTE_LIST">
+                    <field name="additional_attributes" type="attribute-list">
                         <attr-list-format attr-delimiter="," attr-quote="" name-value-delimiter="=" value-quote='"'/>
                     </field>
-                    <field name="description" type="TEXT"/>
-                    <field name="short_description" type="TEXT"/>
-                    <field name="weight" type="DOUBLE" optional="true"/>
-                    <field name="product_online" type="BOOL"/>
-                    <field name="price" type="DOUBLE"/>
-                    <field name="special_price" type="DOUBLE" optional="true"/>
-                    <field name="special_price_from_date" type="DATE" optional="true">
+                    <field name="description" type="text"/>
+                    <field name="short_description" type="text"/>
+                    <field name="weight" type="double" optional="true"/>
+                    <field name="product_online" type="bool"/>
+                    <field name="price" type="double"/>
+                    <field name="special_price" type="double" optional="true"/>
+                    <field name="special_price_from_date" type="date" optional="true">
                         <date-format format="d.M.yy"/>
                     </field>
-                    <field name="special_price_to_date" type="DATE" optional="true">
+                    <field name="special_price_to_date" type="date" optional="true">
                         <date-format format="d.M.yy"/>
                     </field>
-                    <field name="created_at" type="DATETIME">
+                    <field name="created_at" type="datetime">
                         <datetime-format format="d.M.yy, k:m"/>
                     </field>
-                    <field name="updated_at" type="DATETIME">
+                    <field name="updated_at" type="datetime">
                         <datetime-format format="d.M.yy, k:m"/>
                     </field>
-                    <field name="new_from_date" type="DATE" optional="true">
+                    <field name="new_from_date" type="date" optional="true">
                         <date-format format="d.M.yy"/>
                     </field>
-                    <field name="new_to_date" type="DATE" optional="true">
+                    <field name="new_to_date" type="date" optional="true">
                         <date-format format="d.M.yy"/>
                     </field>
-                    <field name="qty" type="DOUBLE"/>
-                    <field name="out_of_stock_qty" type="DOUBLE"/>
-                    <field name="use_config_min_qty" type="BOOL"/>
-                    <field name="is_qty_decimal" type="BOOL"/>
-                    <field name="allow_backorders" type="BOOL"/>
-                    <field name="use_config_backorders" type="BOOL"/>
-                    <field name="min_cart_qty" type="DOUBLE"/>
-                    <field name="use_config_min_sale_qty" type="BOOL"/>
-                    <field name="max_cart_qty" type="DOUBLE"/>
-                    <field name="use_config_max_sale_qty" type="BOOL"/>
-                    <field name="is_in_stock" type="BOOL"/>
-                    <field name="notify_on_stock_below" type="DOUBLE"/>
-                    <field name="use_config_notify_stock_qty" type="BOOL"/>
-                    <field name="manage_stock" type="BOOL"/>
-                    <field name="use_config_manage_stock" type="BOOL"/>
-                    <field name="use_config_qty_increments" type="BOOL"/>
-                    <field name="qty_increments" type="DOUBLE"/>
-                    <field name="use_config_enable_qty_inc" type="BOOL"/>
-                    <field name="enable_qty_increments" type="BOOL"/>
-                    <field name="is_decimal_divided" type="BOOL"/>
-                    <field name="website_id" type="INT"/>
-                    <field name="related_skus" type="STRING_LIST">
+                    <field name="qty" type="double"/>
+                    <field name="out_of_stock_qty" type="double"/>
+                    <field name="use_config_min_qty" type="bool"/>
+                    <field name="is_qty_decimal" type="bool"/>
+                    <field name="allow_backorders" type="bool"/>
+                    <field name="use_config_backorders" type="bool"/>
+                    <field name="min_cart_qty" type="double"/>
+                    <field name="use_config_min_sale_qty" type="bool"/>
+                    <field name="max_cart_qty" type="double"/>
+                    <field name="use_config_max_sale_qty" type="bool"/>
+                    <field name="is_in_stock" type="bool"/>
+                    <field name="notify_on_stock_below" type="double"/>
+                    <field name="use_config_notify_stock_qty" type="bool"/>
+                    <field name="manage_stock" type="bool"/>
+                    <field name="use_config_manage_stock" type="bool"/>
+                    <field name="use_config_qty_increments" type="bool"/>
+                    <field name="qty_increments" type="double"/>
+                    <field name="use_config_enable_qty_inc" type="bool"/>
+                    <field name="enable_qty_increments" type="bool"/>
+                    <field name="is_decimal_divided" type="bool"/>
+                    <field name="website_id" type="int"/>
+                    <field name="related_skus" type="string-list">
                         <list-format delimiter="," quote=""/>
                     </field>
-                    <field name="crosssell_skus" type="STRING_LIST">
+                    <field name="crosssell_skus" type="string-list">
                         <list-format delimiter="," quote=""/>
                     </field>
-                    <field name="upsell_skus" type="STRING_LIST">
+                    <field name="upsell_skus" type="string-list">
                         <list-format delimiter="," quote=""/>
                     </field>
-                    <field name="additional_images" type="STRING_LIST">
+                    <field name="additional_images" type="string-list">
                         <list-format delimiter="," quote=""/>
                     </field>
-                    <field name="additional_image_labels" type="STRING_LIST">
+                    <field name="additional_image_labels" type="string-list">
                         <list-format delimiter="," quote=""/>
                     </field>
-                    <field name="associated_skus" type="STRING_LIST">
+                    <field name="associated_skus" type="string-list">
                         <list-format delimiter="," quote=""/>
                     </field>
 
-                    <field name="ratings_summary" type="DOUBLE" nested="true" parent="additional_attributes" optional="true"/>
-                    <field name="cost" type="DOUBLE" nested="true" parent="additional_attributes" optional="true" locale="en_US"/>
+                    <field name="ratings_summary" type="double" nested="true" parent="additional_attributes" optional="true"/>
+                    <field name="cost" type="double" nested="true" parent="additional_attributes" optional="true" locale="en_US"/>
                     <!-- remove optional in this section -->
                     <field name="english_name" nested="true" parent="additional_attributes" optional="true"/>
                     <field name="catalog_sku" nested="true" parent="additional_attributes" optional="true"/>
@@ -123,9 +124,9 @@
                     <field name="machine_unit" nested="true" parent="additional_attributes" optional="true"/>
                     <field name="machine_vendor" nested="true" parent="additional_attributes" optional="true"/>
                     <!-- end of section -->
-                    <field name="ts_dimensions_length" type="DOUBLE" nested="true" parent="additional_attributes" optional="true"/>
-                    <field name="ts_dimensions_height" type="DOUBLE" nested="true" parent="additional_attributes" optional="true"/>
-                    <field name="ts_dimensions_width" type="DOUBLE" nested="true" parent="additional_attributes" optional="true"/>
+                    <field name="ts_dimensions_length" type="double" nested="true" parent="additional_attributes" optional="true"/>
+                    <field name="ts_dimensions_height" type="double" nested="true" parent="additional_attributes" optional="true"/>
+                    <field name="ts_dimensions_width" type="double" nested="true" parent="additional_attributes" optional="true"/>
                 </main>
             </field-sets>
         </dataset>
