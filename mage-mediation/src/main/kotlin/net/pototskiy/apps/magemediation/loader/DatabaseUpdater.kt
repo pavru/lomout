@@ -30,7 +30,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         testAndUpdateBoolAttributes(entity, data, headers)
         testAndUpdateDateAttributes(entity, data, headers)
         testAndUpdateDatetimeAttributes(entity, data, headers)
-        testAndUpdateTextAtrributes(entity, data, headers)
+        testAndUpdateTextAttributes(entity, data, headers)
         testAndUpdateStringAttributes(entity, data, headers)
     }
 
@@ -51,7 +51,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         )
     }
 
-    private fun testAndUpdateTextAtrributes(
+    private fun testAndUpdateTextAttributes(
         entity: VersionEntity,
         data: Map<String, Any?>,
         headers: List<Field>

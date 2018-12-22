@@ -14,7 +14,12 @@ class Headers(private val sheet: Sheet, private val dataset: Dataset) {
             ?: listOf()
         return if (dataset.headersRow != -1) {
             val sourceHeaders = mutableListOf<Field>()
-            sheet[dataset.headersRow].forEachIndexed { c, cell ->
+            val headerRow = sheet[dataset.headersRow]
+                ?: throw LoaderException(
+                    "Workbook<${sheet.workbook.name}> " +
+                            "sheet<${sheet.name}> does not have header row"
+                )
+            headerRow.forEachIndexed { c, cell ->
                 sourceHeaders.add(Field().apply {
                     name = cell.stringValue
                     column = c

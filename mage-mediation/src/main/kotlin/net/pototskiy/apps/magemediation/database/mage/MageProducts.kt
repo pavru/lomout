@@ -11,31 +11,6 @@ import org.joda.time.DateTime
 object MageProducts : VersionTable("mage_product") {
     val sku = varchar("sku", 100).uniqueIndex()
 
-//    override fun findRecordByKeyFields(data: Map<String, Any?>): VersionEntity? {
-//        return transaction {
-//            MageProduct.find { MageProducts.sku eq (data[MageProducts.sku.name] as String) }
-//                .firstOrNull()
-//        }
-//    }
-//
-//    override fun insertNewRecord(data: Map<String, Any?>): VersionEntity {
-//        return transaction {
-//            MageProduct.new {
-//                sku = (data[this@MageProducts.sku.name] as String)
-//                createdInMedium = IMPORT_DATETIME
-//                updatedInMedium = IMPORT_DATETIME
-//                absentDays = 0
-//            }
-//        }
-//    }
-//
-//    override fun mainDataIsEqual(current: VersionEntity, data: Map<String, Any?>): Boolean {
-//        return false
-//    }
-//
-//    override fun updateMainRecord(current: VersionEntity, data: Map<String, Any?>) {
-//        return
-//    }
 }
 
 
@@ -66,5 +41,7 @@ class MageProduct(id: EntityID<Int>) : VersionEntity(id) {
 
     override fun mainDataIsNotEqual(data: Map<String, Any?>): Boolean = false
 
-    override fun updateMainRecord(data: Map<String, Any?>) {}
+    override fun updateMainRecord(data: Map<String, Any?>) {
+        // all fields are key and therefore can not be updated
+    }
 }

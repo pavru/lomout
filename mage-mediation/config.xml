@@ -15,7 +15,7 @@
             <source file="onec_group" sheet="Group" empty-row="stop"/>
             <field-sets>
                 <main name="group">
-                    <field name="group_code" column="0" regex="^G[0-9]{3,3}$" type="string" key-field="true"/>
+                    <field name="group_code" column="0" regex="^G[0-9]{3,3}$" key-field="true"/>
                     <field name="group_name" column="1"/>
                 </main>
             </field-sets>
