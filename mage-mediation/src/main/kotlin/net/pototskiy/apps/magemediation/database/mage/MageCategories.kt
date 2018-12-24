@@ -1,19 +1,15 @@
 package net.pototskiy.apps.magemediation.database.mage
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
-import net.pototskiy.apps.magemediation.database.VersionEntityClass
-import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object MageCategories : VersionTable("mage_category") {
-    val entityID = long("entity_id").uniqueIndex()
-}
+object MageCategories : CategoryTable("mage_category")
 
-class MageCategory(id: EntityID<Int>) : VersionEntity(id) {
-    companion object : VersionEntityClass<MageCategory>(MageCategories) {
-        override fun findEntityByKeyFields(data: Map<String, Any?>): VersionEntity? {
+class MageCategory(id: EntityID<Int>) : CategoryEntity(id) {
+    companion object : CategoryEntityClass(MageCategories) {
+        override fun findEntityByKeyFields(data: Map<String, Any?>): SourceDataEntity? {
             return transaction {
                 MageCategory.find {
                     MageCategories.entityID eq data[MageCategories.entityID.name] as Long
@@ -21,7 +17,7 @@ class MageCategory(id: EntityID<Int>) : VersionEntity(id) {
             }
         }
 
-        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): VersionEntity {
+        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): SourceDataEntity {
             return transaction {
                 MageCategory.new {
                     entityID = data[MageCategories.entityID.name] as Long
@@ -33,7 +29,7 @@ class MageCategory(id: EntityID<Int>) : VersionEntity(id) {
         }
     }
 
-    var entityID by MageCategories.entityID
+    override var entityID by MageCategories.entityID
     override var createdInMedium by MageCategories.createdInMedium
     override var updatedInMedium by MageCategories.updatedInMedium
     override var absentDays by MageCategories.absentDays

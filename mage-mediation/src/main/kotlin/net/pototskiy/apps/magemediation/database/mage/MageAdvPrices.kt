@@ -1,29 +1,16 @@
 package net.pototskiy.apps.magemediation.database.mage
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
-import net.pototskiy.apps.magemediation.database.VersionEntityClass
-import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object MageAdvPrices : VersionTable("mage_adv_price") {
-    val sku = varchar("sku", 300).index()
-    val tierPriceWebsite = varchar("tier_price_website", 200).index()
-    val tierPriceCustomerGroup = varchar("tier_price_customer_group", 200).index()
-    val tierPriceQty = double("tier_price_qty")
-    val tierPrice = double("tier_price")
-    val tierPriceValueType = varchar("tier_price_value_type", 200)
+object MageAdvPrices : AdvPriceTable("mage_adv_price")
 
-    init {
-        uniqueIndex(sku, tierPriceWebsite, tierPriceCustomerGroup)
-    }
-}
-
-class MageAdvPrice(id: EntityID<Int>) : VersionEntity(id) {
-    companion object : VersionEntityClass<MageAdvPrice>(MageAdvPrices) {
-        override fun findEntityByKeyFields(data: Map<String, Any?>): VersionEntity? {
+class MageAdvPrice(id: EntityID<Int>) : AdvPriceEntity(id) {
+    companion object : AdvPriceEntityClass(MageAdvPrices) {
+        override fun findEntityByKeyFields(data: Map<String, Any?>): SourceDataEntity? {
             return transaction {
                 MageAdvPrice.find {
                     ((MageAdvPrices.sku eq data[MageAdvPrices.sku.name] as String)
@@ -33,7 +20,7 @@ class MageAdvPrice(id: EntityID<Int>) : VersionEntity(id) {
             }
         }
 
-        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): VersionEntity {
+        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): SourceDataEntity {
             return transaction {
                 MageAdvPrice.new {
                     sku = data[MageAdvPrices.sku.name] as String
@@ -51,12 +38,12 @@ class MageAdvPrice(id: EntityID<Int>) : VersionEntity(id) {
         }
     }
 
-    var sku by MageAdvPrices.sku
-    var tierPriceWebsite by MageAdvPrices.tierPriceWebsite
-    var tierPriceCustomerGroup by MageAdvPrices.tierPriceCustomerGroup
-    var tierPriceQty by MageAdvPrices.tierPriceQty
-    var tierPrice by MageAdvPrices.tierPrice
-    var tierPriceValueType by MageAdvPrices.tierPriceValueType
+    override var sku by MageAdvPrices.sku
+    override var tierPriceWebsite by MageAdvPrices.tierPriceWebsite
+    override var tierPriceCustomerGroup by MageAdvPrices.tierPriceCustomerGroup
+    override var tierPriceQty by MageAdvPrices.tierPriceQty
+    override var tierPrice by MageAdvPrices.tierPrice
+    override var tierPriceValueType by MageAdvPrices.tierPriceValueType
     override var createdInMedium by MageAdvPrices.createdInMedium
     override var updatedInMedium by MageAdvPrices.updatedInMedium
     override var absentDays by MageAdvPrices.absentDays

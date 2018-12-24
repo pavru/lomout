@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.database.onec.attribute
 
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntity
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeTable
+import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
+import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
+import net.pototskiy.apps.magemediation.database.TypedAttributeTable
 import net.pototskiy.apps.magemediation.database.onec.OnecProduct
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import org.jetbrains.exposed.dao.EntityID

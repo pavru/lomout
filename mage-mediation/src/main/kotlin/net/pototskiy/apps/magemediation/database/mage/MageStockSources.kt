@@ -1,27 +1,16 @@
 package net.pototskiy.apps.magemediation.database.mage
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
-import net.pototskiy.apps.magemediation.database.VersionEntityClass
-import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object MageStockSources : VersionTable("mage_stock_source") {
-    val sourceCode = varchar("source_code", 100).index()
-    val sku = varchar("sku", 300).index()
-    val status = bool("status")
-    val quantity = double("quantity")
+object MageStockSources : StockSourceTable("mage_stock_source")
 
-    init {
-        uniqueIndex(sourceCode, sku)
-    }
-}
-
-class MageStockSource(id: EntityID<Int>) : VersionEntity(id) {
-    companion object : VersionEntityClass<MageStockSource>(MageStockSources) {
-        override fun findEntityByKeyFields(data: Map<String, Any?>): VersionEntity? {
+class MageStockSource(id: EntityID<Int>) : StockSourceEntity(id) {
+    companion object : StockSourceEntityClass(MageStockSources) {
+        override fun findEntityByKeyFields(data: Map<String, Any?>): SourceDataEntity? {
             return transaction {
                 MageStockSource.find {
                     ((MageStockSources.sourceCode eq data[MageStockSources.sourceCode.name] as String)
@@ -30,7 +19,7 @@ class MageStockSource(id: EntityID<Int>) : VersionEntity(id) {
             }
         }
 
-        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): VersionEntity {
+        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): SourceDataEntity {
             return transaction {
                 MageStockSource.new {
                     sourceCode = data[MageStockSources.sourceCode.name] as String
@@ -45,10 +34,10 @@ class MageStockSource(id: EntityID<Int>) : VersionEntity(id) {
         }
     }
 
-    var sourceCode by MageStockSources.sourceCode
-    var sku by MageStockSources.sku
-    var status by MageStockSources.status
-    var quantity by MageStockSources.quantity
+    override var sourceCode by MageStockSources.sourceCode
+    override var sku by MageStockSources.sku
+    override var status by MageStockSources.status
+    override var quantity by MageStockSources.quantity
     override var createdInMedium by MageStockSources.createdInMedium
     override var updatedInMedium by MageStockSources.updatedInMedium
     override var absentDays by MageStockSources.absentDays
