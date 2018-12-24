@@ -12,6 +12,7 @@
         <file id="mage_group" path="../.testdata/catalog_category.csv"/>
         <file id="mage_customer_group" path="../.testdata/customer_group.csv"/>
         <file id="mage_adv_price" path="../.testdata/advanced_pricing.csv"/>
+        <file id="mage-stock-source" path="../.testdata/stock_sources.csv"/>
     </files>
     <data-sets>
         <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="onec-group">
@@ -189,6 +190,17 @@
                     <field name="tier_price_customer_group" key-field="true"/>
                     <field name="tier_price_qty" type="double"/>
                     <field name="tier_price" type="double"/>
+                </main>
+            </field-sets>
+        </dataset>
+        <dataset name="mage-stock-source" target="mage-inventory" headers-row="0" max-absent-age="10">
+            <source file="mage-stock-source" sheet=".*"/>
+            <field-sets>
+                <main name="stock-source">
+                    <field name="source_code" key-field="true"/>
+                    <field name="sku" key-field="true"/>
+                    <field name="status" type="bool"/>
+                    <field name="quantity" type="double"/>
                 </main>
             </field-sets>
         </dataset>
