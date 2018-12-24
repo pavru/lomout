@@ -1,0 +1,7 @@
+package net.pototskiy.apps.magemediation.mediator
+
+class CategoryMediator: AbstractMediator {
+    override fun merge() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}

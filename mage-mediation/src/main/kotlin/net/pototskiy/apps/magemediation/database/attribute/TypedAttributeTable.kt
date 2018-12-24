@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.database.attribute
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -15,7 +14,7 @@ abstract class TypedAttributeTable<V : Comparable<V>>(name: String) : IntIdTable
 }
 
 abstract class TypedAttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity(id) {
-    abstract var owner: VersionEntity
+    abstract var owner: IntEntity
     abstract var index: Int
     abstract var code: String
     abstract var value: V

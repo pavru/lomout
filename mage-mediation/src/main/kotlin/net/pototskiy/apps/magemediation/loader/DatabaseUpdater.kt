@@ -274,16 +274,16 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun getCurrentEntity(
-        attrTable: TypedAttributeEntityClass<*, *>,
+        attrEntityClass: TypedAttributeEntityClass<*, *>,
         table: TypedAttributeTable<*>,
         entity: VersionEntity,
         field: Field
     ): List<TypedAttributeEntity<*>> {
         return transaction {
-            attrTable.find {
+            attrEntityClass.find {
                 ((table.owner eq entity.id)
                         and (table.code eq field.name))
-            }.toList()
+            }.toList().sortedBy { it.index }
         }
     }
 

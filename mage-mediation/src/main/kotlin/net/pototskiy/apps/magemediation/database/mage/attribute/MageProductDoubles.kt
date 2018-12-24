@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.database.mage.attribute
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeTable
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.mage.MageProduct
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
 import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.sql.ReferenceOption
 
 object MageProductDoubles : TypedAttributeTable<Double>("mage_product_double") {
@@ -17,7 +17,7 @@ object MageProductDoubles : TypedAttributeTable<Double>("mage_product_double") {
 class MageProductDouble(id: EntityID<Int>) : TypedAttributeEntity<Double>(id) {
     companion object : TypedAttributeEntityClass<Double, MageProductDouble>(MageProductDoubles)
 
-    override var owner: VersionEntity by MageProduct referencedOn MageProductDoubles.owner
+    override var owner: IntEntity by MageProduct referencedOn MageProductDoubles.owner
     override var index by MageProductDoubles.index
     override var code by MageProductDoubles.code
     override var value by MageProductDoubles.value
