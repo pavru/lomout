@@ -11,6 +11,7 @@
         <file id="mage_user_group" path="../.testdata/customer_group.csv"/>
         <file id="mage_group" path="../.testdata/catalog_category.csv"/>
         <file id="mage_customer_group" path="../.testdata/customer_group.csv"/>
+        <file id="mage_adv_price" path="../.testdata/advanced_pricing.csv"/>
     </files>
     <data-sets>
         <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="onec-group">
@@ -176,6 +177,18 @@
                 <main name="customer-group">
                     <field name="customer_group_id" type="int" key-field="true"/>
                     <field name="tax_class_id" type="int"/>
+                </main>
+            </field-sets>
+        </dataset>
+        <dataset name="mage-adv-price" target="mage-price" headers-row="0" max-absent-age="10">
+            <source file="mage_adv_price" sheet=".*"/>
+            <field-sets>
+                <main name="mage-price">
+                    <field name="sku" key-field="true"/>
+                    <field name="tier_price_website" key-field="true"/>
+                    <field name="tier_price_customer_group" key-field="true"/>
+                    <field name="tier_price_qty" type="double"/>
+                    <field name="tier_price" type="double"/>
                 </main>
             </field-sets>
         </dataset>
