@@ -2,15 +2,15 @@ package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.config.excel.Field
 import net.pototskiy.apps.magemediation.config.excel.FieldType
-import net.pototskiy.apps.magemediation.database.VersionEntityClass
-import net.pototskiy.apps.magemediation.database.VersionTable
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
+import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
+import net.pototskiy.apps.magemediation.database.source.SourceDataTable
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
 class TargetTableSet(
-    val entity: VersionEntityClass<*>,
+    val entity: SourceDataEntityClass<*>,
     val intAttributes: TypedAttributeEntityClass<Long, *>? = null,
     val doubleAttributes: TypedAttributeEntityClass<Double, *>? = null,
     val boolAttributes: TypedAttributeEntityClass<Boolean, *>? = null,
@@ -21,12 +21,12 @@ class TargetTableSet(
 ) {
     val mainTableHeaders: List<Column<*>>
         get() {
-            entity.table as VersionTable
+            val table = entity.table as SourceDataTable
             return entity.table.columns.filter {
                 it.name != entity.table.id.name
-                        && it.name != entity.table.createdInMedium.name
-                        && it.name != entity.table.updatedInMedium.name
-                        && it.name != entity.table.absentDays.name
+                        && it.name != table.createdInMedium.name
+                        && it.name != table.updatedInMedium.name
+                        && it.name != table.absentDays.name
             }
         }
 

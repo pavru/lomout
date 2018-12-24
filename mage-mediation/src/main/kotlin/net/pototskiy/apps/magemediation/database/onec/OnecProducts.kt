@@ -1,22 +1,16 @@
 package net.pototskiy.apps.magemediation.database.onec
 
-import net.pototskiy.apps.magemediation.cctu
-import net.pototskiy.apps.magemediation.database.VersionEntity
-import net.pototskiy.apps.magemediation.database.VersionEntityClass
-import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object OnecProducts : VersionTable("onec_product") {
-    val sku = varchar(cctu("sku"), 100).uniqueIndex()
-}
+object OnecProducts : ProductTable("onec_product")
 
+class OnecProduct(id: EntityID<Int>) : ProductEntity(id) {
+    companion object : ProductEntityClass(OnecProducts) {
 
-class OnecProduct(id: EntityID<Int>) : VersionEntity(id) {
-    companion object : VersionEntityClass<OnecProduct>(OnecProducts) {
-
-        override fun findEntityByKeyFields(data: Map<String, Any?>): VersionEntity? {
+        override fun findEntityByKeyFields(data: Map<String, Any?>): SourceDataEntity? {
             return transaction {
                 OnecProduct.find {
                     (OnecProducts.sku eq (data[OnecProducts.sku.name] as String))
@@ -24,7 +18,7 @@ class OnecProduct(id: EntityID<Int>) : VersionEntity(id) {
             }
         }
 
-        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): VersionEntity {
+        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): SourceDataEntity {
             return transaction {
                 this@Companion.new {
                     sku = (data[OnecProducts.sku.name] as String)
@@ -36,7 +30,7 @@ class OnecProduct(id: EntityID<Int>) : VersionEntity(id) {
         }
     }
 
-    var sku by OnecProducts.sku
+    override var sku by OnecProducts.sku
     override var createdInMedium by OnecProducts.createdInMedium
     override var updatedInMedium by OnecProducts.updatedInMedium
     override var absentDays by OnecProducts.absentDays

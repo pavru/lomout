@@ -3,10 +3,10 @@ package net.pototskiy.apps.magemediation.loader
 import net.pototskiy.apps.magemediation.IMPORT_DATETIME
 import net.pototskiy.apps.magemediation.config.excel.Field
 import net.pototskiy.apps.magemediation.config.excel.FieldType
-import net.pototskiy.apps.magemediation.database.VersionEntity
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntity
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
-import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeTable
+import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
+import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
+import net.pototskiy.apps.magemediation.database.TypedAttributeTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -24,7 +24,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         testAndUpdateAttributes(entity, attrData, headers)
     }
 
-    private fun testAndUpdateAttributes(entity: VersionEntity, data: Map<String, Any?>, headers: List<Field>) {
+    private fun testAndUpdateAttributes(entity: SourceDataEntity, data: Map<String, Any?>, headers: List<Field>) {
         testAndUpdateIntAttributes(entity, data, headers)
         testAndUpdateDoubleAttributes(entity, data, headers)
         testAndUpdateBoolAttributes(entity, data, headers)
@@ -35,7 +35,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateStringAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -52,7 +52,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateTextAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -69,7 +69,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateDatetimeAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -86,7 +86,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateDateAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -103,7 +103,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateBoolAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -120,7 +120,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateDoubleAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -137,7 +137,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     }
 
     private fun testAndUpdateIntAttributes(
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
@@ -155,22 +155,22 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
 
     private fun testAndUpdateTypedAttributes(
         fieldType: List<FieldType>,
-        attrTable: TypedAttributeEntityClass<*, *>,
-        entity: VersionEntity,
+        entityClass: TypedAttributeEntityClass<*, *>,
+        entity: SourceDataEntity,
         data: Map<String, Any?>,
         headers: List<Field>
     ) {
         headers.filter { it.type in fieldType }.forEach { field ->
-            attrTable.table as TypedAttributeTable<*>
-            val current = getCurrentEntity(attrTable, attrTable.table, entity, field)
+            val table = entityClass.table as TypedAttributeTable<*>
+            val current = getCurrentEntity(entityClass, table, entity, field)
             val newValue = if (field.type in fieldType) data[field.name] else null
             val thereIsNewValue = newValue != null && (newValue !is List<*> || newValue.isNotEmpty())
             if (current.count() == 0 && thereIsNewValue) {
-                addNewAttribute(newValue!!, attrTable, entity, field)
+                addNewAttribute(newValue!!, entityClass, entity, field)
             } else if (current.count() != 0 && thereIsNewValue) {
-                updateExistingAttribute(field, current, newValue!!, attrTable, attrTable.table, entity)
+                updateExistingAttribute(field, current, newValue!!, entityClass, table, entity)
             } else if (current.count() != 0 && !thereIsNewValue) {
-                removeExistingAttribute(attrTable, attrTable.table, entity, field)
+                removeExistingAttribute(entityClass, table, entity, field)
             }
         }
     }
@@ -178,7 +178,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     private fun removeExistingAttribute(
         attrTable: TypedAttributeEntityClass<*, *>,
         table: TypedAttributeTable<*>,
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         field: Field
     ) {
         var count = 0
@@ -201,7 +201,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         newValue: Any,
         attrTable: TypedAttributeEntityClass<*, *>,
         table: TypedAttributeTable<*>,
-        entity: VersionEntity
+        entity: SourceDataEntity
     ) {
         var newValue1 = newValue
         val needToUpdate: Boolean = if (!field.type.isList) {
@@ -212,7 +212,9 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
                 true
             } else {
                 val list = newValue1
-                !current.all { c -> list.any { c.compareToWithTypeCheck(it!!) == 0 } } || current.count() != newValue1.count()
+                !current.all { c ->
+                    list.any { c.compareToWithTypeCheck(it!!) == 0 }
+                } || current.count() != newValue1.count()
             }
         }
         if (needToUpdate) {
@@ -245,7 +247,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     private fun addNewAttribute(
         newValue: Any,
         attrTable: TypedAttributeEntityClass<*, *>,
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         field: Field
     ) {
         var newValue1 = newValue
@@ -276,7 +278,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     private fun getCurrentEntity(
         attrEntityClass: TypedAttributeEntityClass<*, *>,
         table: TypedAttributeTable<*>,
-        entity: VersionEntity,
+        entity: SourceDataEntity,
         field: Field
     ): List<TypedAttributeEntity<*>> {
         return transaction {
@@ -287,15 +289,15 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         }
     }
 
-    private fun areThereNewMainData(entity: VersionEntity, data: Map<String, Any?>): Boolean =
+    private fun areThereNewMainData(entity: SourceDataEntity, data: Map<String, Any?>): Boolean =
         entity.mainDataIsNotEqual(data)
 
-    private fun updateMainRecord(entity: VersionEntity, data: Map<String, Any?>) {
+    private fun updateMainRecord(entity: SourceDataEntity, data: Map<String, Any?>) {
         entity.updateMainRecord(data)
         entity.setUpdateDatetime(IMPORT_DATETIME)
     }
 
-    private fun insertNewRecord(data: Map<String, Any?>): VersionEntity {
+    private fun insertNewRecord(data: Map<String, Any?>): SourceDataEntity {
         return tableSet.entity.insertNewRecord(data, IMPORT_DATETIME)
     }
 }

@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.database
 
 import net.pototskiy.apps.magemediation.database.mage.*
 import net.pototskiy.apps.magemediation.database.mage.attribute.*
-import net.pototskiy.apps.magemediation.database.mediation.category.MediCategories
+import net.pototskiy.apps.magemediation.database.mediation.category.MediumCategories
 import net.pototskiy.apps.magemediation.database.mediation.category.attribute.*
 import net.pototskiy.apps.magemediation.database.onec.OnecGroups
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
@@ -57,14 +57,14 @@ object DbSchema {
                 create(MageStockSources)
                 // Magento category tables
                 create(
-                    MediCategories,
-                    MediCatBools,
-                    MediCatVarchars,
-                    MediCatTexts,
-                    MediCatInts,
-                    MediCatDoubles,
-                    MediCatDatetimes,
-                    MediCatDates
+                    MediumCategories,
+                    CategoryBoolTable,
+                    CategoryVarcharTable,
+                    CategoryTextTable,
+                    CategoryIntTable,
+                    CategoryDoubleTable,
+                    CategoryDateTimeTable,
+                    CategoryDateTable
                 )
             }
         }

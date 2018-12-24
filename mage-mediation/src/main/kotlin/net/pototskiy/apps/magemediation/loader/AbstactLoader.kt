@@ -3,7 +3,7 @@ package net.pototskiy.apps.magemediation.loader
 import net.pototskiy.apps.magemediation.IMPORT_DATETIME
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.excel.*
-import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataTable
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser
 import net.pototskiy.apps.magemediation.loader.nested.AttributeWorkbook
@@ -295,11 +295,11 @@ abstract class AbstractLoader : LoaderInterface {
 
     private fun removeVeryOldRecords(dataset: Dataset) {
         val entity = tableSet.entity
-        entity.table as VersionTable
+        val table = entity.table as SourceDataTable
         transaction {
             entity.find {
-                ((entity.table.updatedInMedium less IMPORT_DATETIME)
-                        and (entity.table.absentDays greaterEq dataset.maxAbsentDays))
+                ((table.updatedInMedium less IMPORT_DATETIME)
+                        and (table.absentDays greaterEq dataset.maxAbsentDays))
             }
                 .toList()
                 .forEach {

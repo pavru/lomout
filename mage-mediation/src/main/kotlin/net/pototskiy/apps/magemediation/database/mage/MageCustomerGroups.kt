@@ -1,21 +1,15 @@
 package net.pototskiy.apps.magemediation.database.mage
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
-import net.pototskiy.apps.magemediation.database.VersionEntityClass
-import net.pototskiy.apps.magemediation.database.VersionTable
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-object MageCustomerGroups : VersionTable("mage_customer_group") {
-    val customerGroupID = long("customer_group_id").uniqueIndex()
-    val customerGroupCode = varchar("customer_group_code", 255)
-    val taxClassID = long("tax_class_id")
-}
+object MageCustomerGroups : CustomerGroupTable("mage_customer_group")
 
-class MageCustomerGroup(id: EntityID<Int>) : VersionEntity(id) {
-    companion object : VersionEntityClass<MageCustomerGroup>(MageCustomerGroups) {
-        override fun findEntityByKeyFields(data: Map<String, Any?>): VersionEntity? {
+class MageCustomerGroup(id: EntityID<Int>) : CustomerGroupEntity(id) {
+    companion object : CustomerGroupEntityClass(MageCustomerGroups) {
+        override fun findEntityByKeyFields(data: Map<String, Any?>): SourceDataEntity? {
             return transaction {
                 MageCustomerGroup.find {
                     MageCustomerGroups.customerGroupID eq (data[MageCustomerGroups.customerGroupID.name] as Long)
@@ -23,7 +17,7 @@ class MageCustomerGroup(id: EntityID<Int>) : VersionEntity(id) {
             }
         }
 
-        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): VersionEntity {
+        override fun insertNewRecord(data: Map<String, Any?>, timestamp: DateTime): SourceDataEntity {
             return transaction {
                 MageCustomerGroup.new {
                     createdInMedium = timestamp
@@ -37,9 +31,9 @@ class MageCustomerGroup(id: EntityID<Int>) : VersionEntity(id) {
         }
     }
 
-    var customerGroupID by MageCustomerGroups.customerGroupID
-    var customerGroupCode by MageCustomerGroups.customerGroupCode
-    var taxClassID by MageCustomerGroups.taxClassID
+    override var customerGroupID by MageCustomerGroups.customerGroupID
+    override var customerGroupCode by MageCustomerGroups.customerGroupCode
+    override var taxClassID by MageCustomerGroups.taxClassID
 
     override var createdInMedium by MageCustomerGroups.createdInMedium
     override var updatedInMedium by MageCustomerGroups.updatedInMedium
