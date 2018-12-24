@@ -164,11 +164,12 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
             attrTable.table as TypedAttributeTable<*>
             val current = getCurrentEntity(attrTable, attrTable.table, entity, field)
             val newValue = if (field.type in fieldType) data[field.name] else null
-            if (current.count() == 0 && newValue != null) {
-                addNewAttribute(newValue, attrTable, entity, field)
-            } else if (current.count() != 0 && newValue != null) {
-                updateExistingAttribute(field, current, newValue, attrTable, attrTable.table, entity)
-            } else if (current.count() != 0 && newValue == null) {
+            val thereIsNewValue = newValue != null && (newValue !is List<*> || newValue.isNotEmpty())
+            if (current.count() == 0 && thereIsNewValue) {
+                addNewAttribute(newValue!!, attrTable, entity, field)
+            } else if (current.count() != 0 && thereIsNewValue) {
+                updateExistingAttribute(field, current, newValue!!, attrTable, attrTable.table, entity)
+            } else if (current.count() != 0 && !thereIsNewValue) {
                 removeExistingAttribute(attrTable, attrTable.table, entity, field)
             }
         }
@@ -183,7 +184,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         var count = 0
         transaction {
             val list = attrTable.find {
-                ((table.product eq entity.id)
+                ((table.owner eq entity.id)
                         and (table.code eq field.name))
             }.toList()
             count = list.count()
@@ -217,7 +218,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         if (needToUpdate) {
             transaction {
                 attrTable.find {
-                    ((table.product eq entity.id)
+                    ((table.owner eq entity.id)
                             and (table.code eq field.name))
                 }.toList()
                     .forEach { it.delete() }
@@ -230,7 +231,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
             newValue1.forEach { valueToSet ->
                 transaction {
                     attrTable.new {
-                        product = entity
+                        owner = entity
                         code = field.name
                         index = listPosition++
                         setValueWithTypeCheck(valueToSet!!)
@@ -253,15 +254,19 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
         }
         newValue1 as List<*>
         var listPosition = 0
-        newValue1.forEach { valueToSet ->
-            transaction {
-                attrTable.new {
-                    product = entity
-                    code = field.name
-                    index = listPosition++
-                    setValueWithTypeCheck(valueToSet!!)
+        try {
+            newValue1.forEach { valueToSet ->
+                transaction {
+                    attrTable.new {
+                        owner = entity
+                        code = field.name
+                        index = listPosition++
+                        setValueWithTypeCheck(valueToSet!!)
+                    }
                 }
             }
+        } catch (e: Exception) {
+            throw LoaderException("Attribute<${field.name}> with value<${newValue1.joinToString(", ")}> can not be added")
         }
         if (newValue1.count() > 0) {
             entity.setUpdateDatetime(IMPORT_DATETIME)
@@ -276,7 +281,7 @@ class DatabaseUpdater(private val tableSet: TargetTableSet) {
     ): List<TypedAttributeEntity<*>> {
         return transaction {
             attrTable.find {
-                ((table.product eq entity.id)
+                ((table.owner eq entity.id)
                         and (table.code eq field.name))
             }.toList()
         }

@@ -29,7 +29,7 @@ class WorkbookFactory {
                     ExcelWorkbook(wb)
                 }
                 "csv" -> {
-                    val format = CSVFormat.RFC4180
+                    val format = CSVFormat.RFC4180.withEscape('\\')
                     CsvWorkbook(file, format, fileName)
                 }
                 else ->

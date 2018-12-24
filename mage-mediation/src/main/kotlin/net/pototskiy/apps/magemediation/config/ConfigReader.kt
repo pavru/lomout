@@ -16,8 +16,11 @@ fun readConfig(): Config? {
         File(Args.configFile).reader().use {
             config = unmarshaller.unmarshal(it) as Config
         }
-    } catch (e: ConfigException) {
+    } catch (e: Exception) {
         logger.error("Configuration error: ${e.message}")
+        if ( e !is ConfigException) {
+            logger.error("Internal error", e)
+        }
         System.exit(1)
     }
     return config

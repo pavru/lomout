@@ -8,14 +8,14 @@ import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Column
 
 abstract class TypedAttributeTable<V : Comparable<V>>(name: String) : IntIdTable(name) {
-    abstract val product: Column<EntityID<Int>>
+    abstract val owner: Column<EntityID<Int>>
     val index = integer("index")
     val code = varchar("code", 300)
     abstract val value: Column<V>
 }
 
 abstract class TypedAttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity(id) {
-    abstract var product: VersionEntity
+    abstract var owner: VersionEntity
     abstract var index: Int
     abstract var code: String
     abstract var value: V

@@ -11,14 +11,14 @@ import org.jetbrains.exposed.sql.ReferenceOption
 import org.joda.time.DateTime
 
 object MageProductDatetimes : TypedAttributeTable<DateTime>("mage_product_datetime") {
-    override val product = reference("product", MageProducts, onDelete = ReferenceOption.CASCADE)
+    override val owner = reference("owner", MageProducts, onDelete = ReferenceOption.CASCADE)
     override val value = datetime("value")
 }
 
 class MageProductDatetime(id: EntityID<Int>) : TypedAttributeEntity<DateTime>(id) {
     companion object : TypedAttributeEntityClass<DateTime, MageProductDatetime>(MageProductDatetimes)
 
-    override var product: VersionEntity by MageProduct referencedOn MageProductDatetimes.product
+    override var owner: VersionEntity by MageProduct referencedOn MageProductDatetimes.owner
     override var index by MageProductDatetimes.index
     override var code by MageProductDatetimes.code
     override var value by MageProductDatetimes.value

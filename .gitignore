@@ -42,5 +42,7 @@ hs_err_pid*
 /mage-mediation/build/
 /.gradle/
 .~lock*.xlsx#
+.~lock*.xls#
+.~lock*.csv#
 /buildSrc/.gradle/
 /buildSrc/build/

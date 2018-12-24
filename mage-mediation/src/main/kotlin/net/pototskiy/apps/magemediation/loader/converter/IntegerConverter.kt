@@ -38,7 +38,7 @@ class IntegerConverter(
         )
             .parse()
             .map {
-                cell.stringValue.toLongOrNull()
+                it.toLongOrNull()
                     ?: throw LoaderException("Field<${field.name}>, string can not converted to int")
             }
     }

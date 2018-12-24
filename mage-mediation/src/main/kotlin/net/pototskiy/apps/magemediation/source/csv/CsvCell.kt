@@ -34,7 +34,7 @@ class CsvCell(
         return when {
             this.toLongOrNull() != null -> CellType.INT
             this.toDoubleOrNull() != null -> CellType.DOUBLE
-            this.toLowerCase().contains(Regex("true|false")) -> CellType.BOOL
+            this.toLowerCase().contains(Regex("^(true|false)$")) -> CellType.BOOL
             else -> CellType.STRING
         }
     }

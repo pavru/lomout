@@ -1,7 +1,0 @@
-server:
-  host: localhost
-  port: 3306
-db-name: oooast
-user: root
-password: root
-

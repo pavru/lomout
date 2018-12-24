@@ -21,7 +21,6 @@ repositories {
 
 dependencies {
     compile(kotlin("stdlib-jdk8"))
-    compile(group = "commons-cli", name = "commons-cli", version = "1.4")
     compile(group = "com.beust", name = "jcommander", version = "1.71")
     // Database
     compile(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2")
@@ -40,13 +39,6 @@ dependencies {
     compile(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
     compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
     compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
-//    compile(group="ch.qos.logback", name="logback-classic", version="1.2.3")
-//    compile(group="ch.qos.logback", name="logback-core", version="1.2.3")
-    // YAML net.pototskiy.apps.magemediation.config.configuration
-    compile(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = "2.9.7")
-    compile(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = "2.9.7")
-    compile(group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version = "2.9.7")
-    compile(group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-xml", version = "2.9.7")
     // Test
     testCompile(group = "junit", name = "junit", version = "4.12")
 }

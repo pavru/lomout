@@ -4,16 +4,14 @@ import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellAddress
 import net.pototskiy.apps.magemediation.source.CellType
-import net.pototskiy.apps.magemediation.source.Row
 
 class AttributeCell(
-    private val _address: CellAddress,
+    override val address: CellAddress,
     private val _value: String,
-    private val _row: AttributeRow
+    override val row: AttributeRow
 ) : Cell {
     override fun asString(): String = _value
 
-    override val address: CellAddress = _address
     override val cellType: CellType = CellType.STRING
     override val booleanValue: Boolean
         get() {
@@ -28,5 +26,4 @@ class AttributeCell(
             throw LoaderException("${AttributeCell::class.simpleName} supports only string type value")
         }
     override val stringValue: String = _value
-    override val row: Row = _row
 }

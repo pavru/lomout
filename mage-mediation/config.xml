@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation="file:src/main/resources/config.xsd">
+        xsi:noNamespaceSchemaLocation="file:src/main/resources/config.xsd">
     <database name="magemediation">
         <server host="localhost" user="root" password="root"/>
     </database>
@@ -9,6 +9,7 @@
         <file id="onec_group" path="../.testdata/test-products.xlsx"/>
         <file id="mage_product" path="../.testdata/catalog_product.csv"/>
         <file id="mage_user_group" path="../.testdata/customer_group.csv"/>
+        <file id="mage_group" path="../.testdata/catalog_category.csv"/>
     </files>
     <data-sets>
         <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="onec-group">
@@ -37,7 +38,7 @@
                     -->
                     <field name="weight" column="9" type="double"/>
                 </main>
-                <additional name="group" >
+                <additional name="group">
                     <field name="group_code" column="0" regex="^G[0-9]{3,3}$"/>
                     <field name="group_name" column="1"/>
                 </additional>
@@ -46,7 +47,7 @@
         <dataset name="mage_product" headers-row="0" rows-to-skip="0" max-absent-age="10" target="mage-product">
             <source file="mage_product" sheet=".*"/>
             <field-sets>
-                <main name="product" >
+                <main name="product">
                     <field name="sku" key-field="true"/>
                     <field name="additional_attributes" type="attribute-list">
                         <attr-list-format attr-delimiter="," attr-quote="" name-value-delimiter="=" value-quote='"'/>
@@ -64,10 +65,10 @@
                         <date-format format="d.M.yy"/>
                     </field>
                     <field name="created_at" type="datetime">
-                        <datetime-format format="d.M.yy, k:m"/>
+                        <datetime-format format="d.M.yy, H:m"/>
                     </field>
                     <field name="updated_at" type="datetime">
-                        <datetime-format format="d.M.yy, k:m"/>
+                        <datetime-format format="d.M.yy, H:m"/>
                     </field>
                     <field name="new_from_date" type="date" optional="true">
                         <date-format format="d.M.yy"/>
@@ -115,8 +116,10 @@
                         <list-format delimiter="," quote=""/>
                     </field>
 
-                    <field name="ratings_summary" type="double" nested="true" parent="additional_attributes" optional="true"/>
-                    <field name="cost" type="double" nested="true" parent="additional_attributes" optional="true" locale="en_US"/>
+                    <field name="ratings_summary" type="double" nested="true" parent="additional_attributes"
+                           optional="true"/>
+                    <field name="cost" type="double" nested="true" parent="additional_attributes" optional="true"
+                           locale="en_US"/>
                     <!-- remove optional in this section -->
                     <field name="english_name" nested="true" parent="additional_attributes" optional="true"/>
                     <field name="catalog_sku" nested="true" parent="additional_attributes" optional="true"/>
@@ -124,9 +127,45 @@
                     <field name="machine_unit" nested="true" parent="additional_attributes" optional="true"/>
                     <field name="machine_vendor" nested="true" parent="additional_attributes" optional="true"/>
                     <!-- end of section -->
-                    <field name="ts_dimensions_length" type="double" nested="true" parent="additional_attributes" optional="true"/>
-                    <field name="ts_dimensions_height" type="double" nested="true" parent="additional_attributes" optional="true"/>
-                    <field name="ts_dimensions_width" type="double" nested="true" parent="additional_attributes" optional="true"/>
+                    <field name="ts_dimensions_length" type="double" nested="true" parent="additional_attributes"
+                           optional="true"/>
+                    <field name="ts_dimensions_height" type="double" nested="true" parent="additional_attributes"
+                           optional="true"/>
+                    <field name="ts_dimensions_width" type="double" nested="true" parent="additional_attributes"
+                           optional="true"/>
+                </main>
+            </field-sets>
+        </dataset>
+        <dataset name="mage_group" target="mage-category" headers-row="0" max-absent-age="10">
+            <source file="mage_group" sheet=".*" empty-row="stop"/>
+            <field-sets>
+                <main name="group">
+                    <field name="entity_type_id" type="int" optional="true"/>
+                    <field name="attribute_set_id" type="int"/>
+                    <field name="created_at" type="datetime">
+                        <datetime-format format="y-M-d H:m:s"/>
+                    </field>
+                    <field name="updated_at" type="datetime">
+                        <datetime-format format="y-M-d H:m:s"/>
+                    </field>
+                    <field name="parent_id" type="int"/>
+                    <field name="increment_id" type="int" optional="true"/>
+                    <field name="entity_id" type="int" key-field="true"/>
+                    <field name="children" optional="true"/>
+                    <field name="children_count" type="int"/>
+                    <field name="description" type="text"/>
+                    <field name="include_in_menu" type="bool"/>
+                    <field name="is_active" type="bool" optional="true"/>
+                    <field name="is_anchor" type="bool" optional="true"/>
+                    <field name="is_virtual_category" type="bool" optional="true"/>
+                    <field name="level" type="int"/>
+                    <field name="position" type="int"/>
+                    <field name="use_name_in_product_search" type="bool"/>
+                    <field name="gen_store_id" type="int"/>
+                    <field name="gen_products" type="int-list" optional="true">
+                        <list-format delimiter="|" quote=""/>
+                    </field>
+
                 </main>
             </field-sets>
         </dataset>

@@ -24,7 +24,7 @@ class ValueListParser(
         return if (records.size == 0) {
             listOf()
         } else {
-            records[0].map { it }
+            records[0].toList()
         }
 
     }

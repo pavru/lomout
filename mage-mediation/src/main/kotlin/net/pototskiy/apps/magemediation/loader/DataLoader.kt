@@ -13,14 +13,6 @@ object DataLoader {
         val files = Configuration.config.files
         val datasets = Configuration.config.datasets
         for (dataset in datasets) {
-            if (dataset.target !in listOf(
-                    DatasetTarget.MAGE_PRODUCT,
-                    DatasetTarget.ONEC_PRODUCT,
-                    DatasetTarget.ONEC_GROUP
-                )
-            ) {
-                continue
-            }
             dataset.sources.forEach { source ->
                 val file = files.findLast { it.id == source.file }
                     ?: throw LoaderException("Source file id<${source.file}> is not defined")

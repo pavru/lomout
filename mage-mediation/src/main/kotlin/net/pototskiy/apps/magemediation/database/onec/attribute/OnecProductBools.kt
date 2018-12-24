@@ -10,14 +10,14 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ReferenceOption
 
 object OnecProductBools : TypedAttributeTable<Boolean>("onec_product_bool") {
-    override val product = reference("product", OnecProducts, onDelete = ReferenceOption.CASCADE)
+    override val owner = reference("product", OnecProducts, onDelete = ReferenceOption.CASCADE)
     override val value = bool("value")
 }
 
 class OnecProductBool(id: EntityID<Int>) : TypedAttributeEntity<Boolean>(id) {
     companion object : TypedAttributeEntityClass<Boolean, OnecProductBool>(OnecProductBools)
 
-    override var product:VersionEntity by OnecProduct referencedOn OnecProductBools.product
+    override var owner:VersionEntity by OnecProduct referencedOn OnecProductBools.owner
     override var index by OnecProductBools.index
     override var code by OnecProductBools.code
     override var value by OnecProductBools.value

@@ -10,14 +10,14 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.ReferenceOption
 
 object OnecProductTexts : TypedAttributeTable<String>("onec_product_text") {
-    override val product = reference("product", OnecProducts, onDelete = ReferenceOption.CASCADE)
+    override val owner = reference("product", OnecProducts, onDelete = ReferenceOption.CASCADE)
     override val value = text("value")
 }
 
 class OnecProductText(id: EntityID<Int>) : TypedAttributeEntity<String>(id) {
     companion object : TypedAttributeEntityClass<String, OnecProductText>(OnecProductTexts)
 
-    override var product: VersionEntity by OnecProduct referencedOn OnecProductTexts.product
+    override var owner: VersionEntity by OnecProduct referencedOn OnecProductTexts.owner
     override var index by OnecProductTexts.index
     override var code by OnecProductTexts.code
     override var value by OnecProductTexts.value
