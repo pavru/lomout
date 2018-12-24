@@ -11,13 +11,13 @@ import org.joda.time.DateTime
 
 class TargetTableSet(
     val entity: VersionEntityClass<*>,
-    val intAttributes: TypedAttributeEntityClass<Long, *>?,
-    val doubleAttributes: TypedAttributeEntityClass<Double, *>?,
-    val boolAttributes: TypedAttributeEntityClass<Boolean, *>?,
-    val varcharAttributes: TypedAttributeEntityClass<String, *>?,
-    val textAttributes: TypedAttributeEntityClass<String, *>?,
-    val dateAttributes: TypedAttributeEntityClass<DateTime, *>?,
-    val datetimeAttributes: TypedAttributeEntityClass<DateTime, *>?
+    val intAttributes: TypedAttributeEntityClass<Long, *>? = null,
+    val doubleAttributes: TypedAttributeEntityClass<Double, *>? = null,
+    val boolAttributes: TypedAttributeEntityClass<Boolean, *>? = null,
+    val varcharAttributes: TypedAttributeEntityClass<String, *>? = null,
+    val textAttributes: TypedAttributeEntityClass<String, *>? = null,
+    val dateAttributes: TypedAttributeEntityClass<DateTime, *>? = null,
+    val datetimeAttributes: TypedAttributeEntityClass<DateTime, *>? = null
 ) {
     val mainTableHeaders: List<Column<*>>
         get() {
