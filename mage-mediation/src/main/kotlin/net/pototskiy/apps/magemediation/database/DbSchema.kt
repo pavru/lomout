@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.database
 
 import net.pototskiy.apps.magemediation.database.mage.MageCategories
+import net.pototskiy.apps.magemediation.database.mage.MageCustomerGroups
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
 import net.pototskiy.apps.magemediation.database.mage.attribute.*
 import net.pototskiy.apps.magemediation.database.onec.OnecGroups
@@ -47,9 +48,9 @@ object DbSchema {
                     OnecProductDates
                 )
                 // OneC group tables
-                create(
-                    OnecGroups
-                )
+                create(OnecGroups)
+                // Magento customer group tables
+                create(MageCustomerGroups)
             }
         }
     }

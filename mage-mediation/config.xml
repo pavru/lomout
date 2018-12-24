@@ -10,6 +10,7 @@
         <file id="mage_product" path="../.testdata/catalog_product.csv"/>
         <file id="mage_user_group" path="../.testdata/customer_group.csv"/>
         <file id="mage_group" path="../.testdata/catalog_category.csv"/>
+        <file id="mage_customer_group" path="../.testdata/customer_group.csv"/>
     </files>
     <data-sets>
         <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="onec-group">
@@ -166,6 +167,15 @@
                         <list-format delimiter="|" quote=""/>
                     </field>
 
+                </main>
+            </field-sets>
+        </dataset>
+        <dataset name="mage_customer_group" target="mage-user-group" headers-row="0" max-absent-age="10">
+            <source file="mage_customer_group" sheet=".*"/>
+            <field-sets>
+                <main name="customer-group">
+                    <field name="customer_group_id" type="int" key-field="true"/>
+                    <field name="tax_class_id" type="int"/>
                 </main>
             </field-sets>
         </dataset>

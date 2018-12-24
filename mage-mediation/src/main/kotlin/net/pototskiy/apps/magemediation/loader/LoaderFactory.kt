@@ -8,6 +8,7 @@ class LoaderFactory {
                 LoadDestination.ONEC_PRODUCT -> OnecProductLoader()
                 LoadDestination.ONEC_CATEGORY -> OnecGroupLoader()
                 LoadDestination.MAGE_CATEGORY -> MagentoCategoryLoader()
+                LoadDestination.MAGE_USER_GROUP -> MageCustomerGroupLoader()
                 else -> throw LoaderException("Can not create data loader")
             }
         }
