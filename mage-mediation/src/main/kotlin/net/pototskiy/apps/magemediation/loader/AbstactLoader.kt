@@ -62,7 +62,7 @@ abstract class AbstractLoader : LoaderInterface {
     ) {
         val rowFiledSet = findRowFieldSet(dataset, row)
         if (rowFiledSet.type == FieldSetType.MAIN) {
-            val data = getData(row, mainHeaders)
+            val data = getData(row, mainHeaders).toMutableMap()
             plusAdditionalData(data, generalData)
             validateKeyFieldData(data, allHeaders)
             updateDatabase(data, allHeaders)
@@ -93,11 +93,11 @@ abstract class AbstractLoader : LoaderInterface {
     }
 
     private fun plusAdditionalData(
-        data: Map<String, Any?>,
+        data: MutableMap<String, Any?>,
         generalData: MutableMap<String, Map<String, Any?>>
     ) {
         generalData.forEach { _, gData ->
-            data.plus(gData)
+            data.putAll(gData)
         }
     }
 
