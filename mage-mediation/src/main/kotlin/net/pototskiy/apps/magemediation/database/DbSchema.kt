@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.database
 
+import net.pototskiy.apps.magemediation.database.mage.MageAdvPrices
 import net.pototskiy.apps.magemediation.database.mage.MageCategories
 import net.pototskiy.apps.magemediation.database.mage.MageCustomerGroups
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
@@ -51,6 +52,8 @@ object DbSchema {
                 create(OnecGroups)
                 // Magento customer group tables
                 create(MageCustomerGroups)
+                // Magento advanced price
+                create(MageAdvPrices)
             }
         }
     }
