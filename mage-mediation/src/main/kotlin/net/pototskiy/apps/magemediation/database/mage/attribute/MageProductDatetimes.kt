@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.database.mage.attribute
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeTable
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.mage.MageProduct
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
 import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.joda.time.DateTime
 
@@ -18,7 +18,7 @@ object MageProductDatetimes : TypedAttributeTable<DateTime>("mage_product_dateti
 class MageProductDatetime(id: EntityID<Int>) : TypedAttributeEntity<DateTime>(id) {
     companion object : TypedAttributeEntityClass<DateTime, MageProductDatetime>(MageProductDatetimes)
 
-    override var owner: VersionEntity by MageProduct referencedOn MageProductDatetimes.owner
+    override var owner: IntEntity by MageProduct referencedOn MageProductDatetimes.owner
     override var index by MageProductDatetimes.index
     override var code by MageProductDatetimes.code
     override var value by MageProductDatetimes.value

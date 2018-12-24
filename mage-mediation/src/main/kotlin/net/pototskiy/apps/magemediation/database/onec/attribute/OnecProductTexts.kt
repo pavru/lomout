@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.database.onec.attribute
 
-import net.pototskiy.apps.magemediation.database.VersionEntity
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeTable
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.attribute.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.onec.OnecProduct
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.sql.ReferenceOption
 
 object OnecProductTexts : TypedAttributeTable<String>("onec_product_text") {
@@ -17,7 +17,7 @@ object OnecProductTexts : TypedAttributeTable<String>("onec_product_text") {
 class OnecProductText(id: EntityID<Int>) : TypedAttributeEntity<String>(id) {
     companion object : TypedAttributeEntityClass<String, OnecProductText>(OnecProductTexts)
 
-    override var owner: VersionEntity by OnecProduct referencedOn OnecProductTexts.owner
+    override var owner: IntEntity by OnecProduct referencedOn OnecProductTexts.owner
     override var index by OnecProductTexts.index
     override var code by OnecProductTexts.code
     override var value by OnecProductTexts.value
