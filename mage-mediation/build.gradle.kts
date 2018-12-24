@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    compile(project(":mage-mediation-api"))
     compile(kotlin("stdlib-jdk8"))
     compile(group = "com.beust", name = "jcommander", version = "1.71")
     // Database
