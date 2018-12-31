@@ -4,6 +4,12 @@ plugins {
     id("org.sonarqube") version "2.6.2"
 }
 
+buildscript{
+    dependencies{
+        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
+    }
+}
+
 group = "oooast-tools"
 version = "1.0-SNAPSHOT"
 
@@ -15,4 +21,8 @@ sonarqube {
         property("sonar.projectKey", "oooast-tools")
         property("sonar.projectVersion", "1.0")
     }
+}
+
+tasks.sonarqube.apply {
+    group = "verification"
 }

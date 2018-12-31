@@ -6,18 +6,19 @@ import net.pototskiy.apps.magemediation.source.WorkbookType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.File
+import java.net.URL
 
 
 class CsvWorkbook(
-    private val file: File,
-    private val csvFormat: CSVFormat,
-    private val _fileName: String
+    private val sourceURL: URL,
+    private val csvFormat: CSVFormat
 ) : Workbook {
-    private var reader = file.reader()
+
+    private var reader = sourceURL.openStream().reader()//file.reader()
     private var _parser: CSVParser = csvFormat.parse(reader)
 
     override val name: String
-        get() = _fileName
+        get() = File(sourceURL.file).name //_fileName
     override val type: WorkbookType
         get() = WorkbookType.CSV
 
@@ -48,7 +49,7 @@ class CsvWorkbook(
 
     fun reset() {
         reader.close()
-        reader = file.reader()
+        reader = sourceURL.openStream().reader()
         _parser = csvFormat.parse(reader)
     }
 }

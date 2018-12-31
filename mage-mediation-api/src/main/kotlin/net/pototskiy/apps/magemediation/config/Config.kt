@@ -1,14 +1,14 @@
 package net.pototskiy.apps.magemediation.config
 
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.excel.Dataset
+import net.pototskiy.apps.magemediation.config.dataset.Dataset
 import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 class Config : ConfigValidate {
-    var database = Database()
+    var database = DatabaseConfig()
     @field:XmlElementWrapper(name = "files", required = true)
     @field:XmlElement(name = "file")
     var files: List<DataFile> = mutableListOf()

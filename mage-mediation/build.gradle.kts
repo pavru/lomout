@@ -1,14 +1,38 @@
 import name.remal.gradle_plugins.dsl.extensions.java
+import name.remal.gradle_plugins.dsl.extensions.testImplementation
+import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
 
 plugins {
     id("java")
     kotlin("jvm") version "1.3.11"
+    id("idea")
+    id("jacoco")
 }
 
 group = "oooast-tools"
 version = "1.0-SNAPSHOT"
 
+idea {
+    module {
+        outputDir = file("build/classes/kotlin/main")
+        testOutputDir = file("build/classes/kotlin/test")
+    }
+}
+
 kotlin {
+
+}
+
+tasks.test {
+    @Suppress("UnstableApiUsage")
+    useJUnitPlatform()
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        noReflect = false
+    }
 }
 
 java {
@@ -18,6 +42,8 @@ java {
 repositories {
     jcenter()
 }
+
+
 
 dependencies {
     compile(project(":mage-mediation-api"))
@@ -41,7 +67,14 @@ dependencies {
     compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
     compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
     // Test
-    testCompile(group = "junit", name = "junit", version = "4.12")
+    // testCompile(group = "junit", name = "junit", version = "4.12")
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.0-rc.1").apply {
+        exclude("org.jetbarins.kotlin")
+    }
+    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.0-rc.1").apply {
+    }
+    testImplementation(group = "org.amshove.kluent", name = "kluent", version = "1.45")
 }
 
 //compileKotlin {
@@ -50,3 +83,31 @@ dependencies {
 //compileTestKotlin {
 //    kotlinOptions.jvmTarget = "1.8"
 //}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.isEnabled = true
+        html.isEnabled = true
+    }
+}
+
+sonarqube {
+    val coverageFiles = fileTree("$projectDir") {
+        include("build/jacoco/*.exec")
+    }
+    val javaBinaries = listOf(
+        "$projectDir/build/classes/kotlin/main",
+        "$projectDir/build/classes/java/main"
+    )
+    val testBinaries = listOf(
+        "$projectDir/build/classes/kotlin/test",
+        "$projectDir/build/classes/java/test"
+    )
+    properties {
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.java.source", "1.8")
+//        property("sonar.java.binaries", javaBinaries.joinToString(","))
+//        property("sonar.java.test.binaries", testBinaries.joinToString(","))
+//        property("sonar.jacoco.reportPaths", coverageFiles.joinToString(","))
+    }
+}

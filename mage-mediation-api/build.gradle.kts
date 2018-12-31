@@ -3,12 +3,27 @@ import name.remal.gradle_plugins.dsl.extensions.java
 plugins {
     id("java")
     kotlin("jvm") version "1.3.11"
+    id("idea")
 }
 
 group = "oooast-tools"
 version = "1.0-SNAPSHOT"
 
+idea {
+    module {
+        outputDir = file("build/classes/kotlin/main")
+        testOutputDir = file("build/classes/kotlin/test")
+    }
+}
+
 kotlin {
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+    kotlinOptions {
+        jvmTarget = "1.8"
+        noReflect = false
+    }
 }
 
 java {

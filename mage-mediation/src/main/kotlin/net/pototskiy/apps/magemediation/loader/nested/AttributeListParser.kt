@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader.nested
 
-import net.pototskiy.apps.magemediation.config.excel.AttrListDefinition
-import net.pototskiy.apps.magemediation.config.excel.Field
+import net.pototskiy.apps.magemediation.config.dataset.AttrListDefinition
+import net.pototskiy.apps.magemediation.config.dataset.Field
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.QuoteMode

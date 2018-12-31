@@ -1,10 +1,10 @@
-package net.pototskiy.apps.magemediation.config.excel
+package net.pototskiy.apps.magemediation.config.dataset
 
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.ConfigValidate
 import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.excel.Field.Companion.UNDEFINED_COLUMN
+import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
 import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
@@ -43,9 +43,14 @@ class Dataset : ConfigValidate {
         if (headersRow == UNDEFINED_COLUMN) {
             val noColumn = fieldSets
                 .flatMap { it.fields }
-                .any { it.column == UNDEFINED_COLUMN }
-            if (noColumn) {
-                throw ConfigException("Dataset<$name> has no headers row and there is field without column definition")
+                .filter { it.column == UNDEFINED_COLUMN && !it.nested}
+                .map { it.name }
+            if (noColumn.count() != 0) {
+                throw ConfigException(
+                    "Dataset<$name> has no headers row but fields<${noColumn.joinToString(
+                        ", "
+                    )} have no column definition>"
+                )
             }
         }
     }
@@ -55,7 +60,11 @@ class Dataset : ConfigValidate {
             .groupBy { it.name }
             .filter { it.value.count() > 1 }
         if (fields.any { it.value.count() > 1 }) {
-            throw ConfigException("Dataset<$name> has fields<${fields.keys.joinToString(", ")}> with duplicated name")
+            throw ConfigException(
+                "Dataset<$name> has fields<${fields.keys.joinToString(
+                    ", "
+                )}> with duplicated name"
+            )
         }
     }
 }

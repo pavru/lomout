@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.excel
+package net.pototskiy.apps.magemediation.config.dataset
 
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.ConfigValidate

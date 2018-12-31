@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.excel.ListDefinition
+import net.pototskiy.apps.magemediation.config.dataset.ListDefinition
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.QuoteMode

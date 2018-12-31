@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.excel
+package net.pototskiy.apps.magemediation.config.dataset
 
 class AdditionalFieldSet : FieldSet(){
     init {

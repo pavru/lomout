@@ -1,11 +1,12 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.excel.DatetimeDefinition
-import net.pototskiy.apps.magemediation.config.excel.Field
-import net.pototskiy.apps.magemediation.config.excel.ListDefinition
+import net.pototskiy.apps.magemediation.config.dataset.DatetimeDefinition
+import net.pototskiy.apps.magemediation.config.dataset.Field
+import net.pototskiy.apps.magemediation.config.dataset.ListDefinition
 import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellType
+import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.*
@@ -16,7 +17,7 @@ class DatetimeConverter(
 ) {
     fun convert(): DateTime = when (cell.cellType) {
         CellType.INT -> DateTime(Date(cell.intValue))
-        CellType.DOUBLE -> DateTime(Date(cell.doubleValue.toLong()))
+        CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(cell.doubleValue))
         CellType.BOOL -> throw LoaderException("Field<${field.name}, boolean can not be converted to datetime")
         CellType.STRING -> stringToDatetime(cell.stringValue)
     }
@@ -24,7 +25,7 @@ class DatetimeConverter(
     fun convertList(): List<DateTime> {
         return when(cell.cellType){
             CellType.INT -> listOf(DateTime(Date(cell.intValue)))
-            CellType.DOUBLE -> listOf(DateTime(Date(cell.doubleValue.toLong())))
+            CellType.DOUBLE -> listOf(DateTime(HSSFDateUtil.getJavaDate(cell.doubleValue)))
             CellType.BOOL -> throw LoaderException("Field<${field.name}, boolean can not be converted to datetime")
             CellType.STRING -> ValueListParser(
                 cell.stringValue,
@@ -38,7 +39,7 @@ class DatetimeConverter(
         val format = (field.typeDefinitions.findLast { it is DatetimeDefinition } as DatetimeDefinition)
             .format
         return try {
-            DateTimeFormat.forPattern(format).parseDateTime(value)
+            DateTimeFormat.forPattern(format).parseDateTime(value.trim())
         } catch (e: IllegalArgumentException) {
             throw LoaderException("Field<${field.name}>, string can not be converted to datetime with pattern $format")
         } catch (e: UnsupportedOperationException) {

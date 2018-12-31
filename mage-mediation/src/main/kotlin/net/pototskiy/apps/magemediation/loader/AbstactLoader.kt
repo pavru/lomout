@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.IMPORT_DATETIME
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.excel.*
-import net.pototskiy.apps.magemediation.database.source.SourceDataTable
+import net.pototskiy.apps.magemediation.config.dataset.*
+import net.pototskiy.apps.magemediation.config.dataset.FieldSet
+import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser
 import net.pototskiy.apps.magemediation.loader.nested.AttributeWorkbook
@@ -12,20 +12,21 @@ import net.pototskiy.apps.magemediation.source.CellType
 import net.pototskiy.apps.magemediation.source.Row
 import net.pototskiy.apps.magemediation.source.Sheet
 import net.pototskiy.apps.magemediation.source.csv.CsvWorkbook
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.joda.time.Duration
 import org.slf4j.LoggerFactory
 
 abstract class AbstractLoader : LoaderInterface {
 
     private val logger = LoggerFactory.getLogger(LOG_NAME)
 
-    abstract val tableSet: TargetTableSet
+    abstract val tableSet: SourceDataEntityClass<*>
+
     private lateinit var updater: DatabaseUpdater
 
     override fun load(sheet: Sheet, dataset: Dataset, emptyRowAction: EmptyRowAction) {
         updater = DatabaseUpdater(tableSet)
+        tableSet.resetTouchFlag()
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
         val mainHeaders = Headers(sheet, dataset).getHeaders()
         val allHeaders = getAllHeadersList(mainHeaders, dataset)
@@ -49,8 +50,9 @@ abstract class AbstractLoader : LoaderInterface {
                 continue
             }
         }
-        updateRecordAbsentAge()
-        removeVeryOldRecords(dataset)
+        tableSet.markEntitiesAsRemove()
+        tableSet.updateAbsentAge()
+        tableSet.removeOldEntities(dataset.maxAbsentDays)
     }
 
     private fun processRow(
@@ -60,7 +62,7 @@ abstract class AbstractLoader : LoaderInterface {
         generalData: MutableMap<String, Map<String, Any?>>,
         allHeaders: List<Field>
     ) {
-        val rowFiledSet = findRowFieldSet(dataset, row)
+        val rowFiledSet = findRowFieldSet(dataset, row, allHeaders)
         if (rowFiledSet.type == FieldSetType.MAIN) {
             val data = getData(row, mainHeaders).toMutableMap()
             plusAdditionalData(data, generalData)
@@ -126,20 +128,41 @@ abstract class AbstractLoader : LoaderInterface {
         val mainColumns = tableSet.mainTableHeaders
         if (!mainColumns.map { it.name }.containsAll(keyFields.map { it.name })) {
             throw LoaderException(
-                "Table<${tableSet.entity::class.simpleName}> has no all key " +
+                "Table<${tableSet.table.tableName}> has no all key " +
                         "fields<${keyFields.joinToString(", ") { it.name }}>"
             )
         }
         keyFields.forEach { field ->
             val column = mainColumns.find { it.name == field.name }
             column?.let {
-                if (!tableSet.isKeyFiledTypeCompatible(it, field)) {
+                if (!isKeyFiledTypeCompatible(it, field)) {
                     throw LoaderException(
-                        "Column<${column.name}> of entity<${tableSet.entity::class.simpleName}> " +
+                        "Column<${column.name}> of entity<${tableSet.table.tableName}> " +
                                 "type is not compatible with type of field<${field.name}>"
                     )
                 }
             }
+        }
+    }
+
+    private fun isKeyFiledTypeCompatible(column: Column<*>, field: Field): Boolean = transaction {
+        when {
+            column.columnType.sqlType().replace(Regex("\\(.+\\)"), "")
+                    == VarCharColumnType().sqlType().replace(Regex("\\(.*\\)"), "")
+                    && field.type == FieldType.STRING -> true
+            column.columnType.sqlType() == LongColumnType().sqlType()
+                    && field.type == FieldType.INT -> true
+            column.columnType.sqlType() == DoubleColumnType().sqlType()
+                    && field.type == FieldType.DOUBLE -> true
+            column.columnType.sqlType() == TextColumnType().sqlType()
+                    && field.type == FieldType.TEXT -> true
+            column.columnType.sqlType() == BooleanColumnType().sqlType()
+                    && field.type == FieldType.BOOL -> true
+            column.columnType.sqlType() == DateColumnType(false).sqlType()
+                    && field.type == FieldType.DATE -> true
+            column.columnType.sqlType() == DateColumnType(true).sqlType()
+                    && field.type == FieldType.DATETIME -> true
+            else -> false
         }
     }
 
@@ -219,13 +242,13 @@ abstract class AbstractLoader : LoaderInterface {
             throw LoaderException("Field<${fieldDef.name}> attribute list can not converted to any type")
     }
 
-    private fun findRowFieldSet(dataset: Dataset, row: Row): FieldSet {
+    private fun findRowFieldSet(dataset: Dataset, row: Row, headers: List<Field>): FieldSet {
         return (if (dataset.fieldSets.count() > 1) {
             var fittedSet: FieldSet? = null
             for (set in dataset.fieldSets) {
                 var fit = true
                 for (field in set.fields.filter { field -> field.regex?.isNotBlank() ?: false }) {
-                    val cell = row[field.column]
+                    val cell = row[headers.findLast { it.name == field.name }!!.column]
                         ?: throw LoaderException(
                             "Workbook<${row.sheet.workbook.name}>, " +
                                     "sheet<${row.sheet.name}>, " +
@@ -282,30 +305,4 @@ abstract class AbstractLoader : LoaderInterface {
                 ?: throw LoaderException("Can not find parent field for nested one")
         }
     }
-
-    private fun updateRecordAbsentAge() {
-        val entityClass = tableSet.entity
-        transaction {
-            entityClass.all().toList().forEach {
-                val days = Duration(it.createdInMedium, it.updatedInMedium).standardDays
-                it.absentDays = days.toInt()
-            }
-        }
-    }
-
-    private fun removeVeryOldRecords(dataset: Dataset) {
-        val entity = tableSet.entity
-        val table = entity.table as SourceDataTable
-        transaction {
-            entity.find {
-                ((table.updatedInMedium less IMPORT_DATETIME)
-                        and (table.absentDays greaterEq dataset.maxAbsentDays))
-            }
-                .toList()
-                .forEach {
-                    it.delete()
-                }
-        }
-    }
-
 }

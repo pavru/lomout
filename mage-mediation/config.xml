@@ -5,14 +5,14 @@
         <server host="localhost" user="root" password="root"/>
     </database>
     <files>
-        <file id="onec_product" path="../.testdata/test-products.xls"/>
-        <file id="onec_group" path="../.testdata/test-products.xlsx"/>
-        <file id="mage_product" path="../.testdata/catalog_product.csv"/>
-        <file id="mage_user_group" path="../.testdata/customer_group.csv"/>
-        <file id="mage_group" path="../.testdata/catalog_category.csv"/>
-        <file id="mage_customer_group" path="../.testdata/customer_group.csv"/>
-        <file id="mage_adv_price" path="../.testdata/advanced_pricing.csv"/>
-        <file id="mage-stock-source" path="../.testdata/stock_sources.csv"/>
+        <file id="onec_product" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/test-products.xls"/>
+        <file id="onec_group" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/test-products.xlsx"/>
+        <file id="mage_product" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/catalog_product.csv"/>
+        <file id="mage_user_group" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/customer_group.csv"/>
+        <file id="mage_group" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/catalog_category.csv"/>
+        <file id="mage_customer_group" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/customer_group.csv"/>
+        <file id="mage_adv_price" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/advanced_pricing.csv"/>
+        <file id="mage-stock-source" path="E:/home/alexander/Development/Web/oooast-tools/.testdata/stock_sources.csv"/>
     </files>
     <data-sets>
         <dataset name="onec_group" rows-to-skip="1" max-absent-age="10" target="onec-group">

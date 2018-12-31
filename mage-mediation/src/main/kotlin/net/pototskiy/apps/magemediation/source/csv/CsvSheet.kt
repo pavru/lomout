@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.source.csv
 
-import net.pototskiy.apps.magemediation.loader.*
+import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Sheet
 import net.pototskiy.apps.magemediation.source.Workbook
 import org.apache.commons.csv.CSVParser
@@ -15,7 +15,7 @@ class CsvSheet(
 
     override fun get(row: Int): CsvRow {
         val iterator = _workbook.parser.iterator()
-        val index = 0
+        var index = 0
         for (v in iterator) {
             if (index == row) {
                 val data = mutableListOf<String>()
@@ -24,6 +24,7 @@ class CsvSheet(
                 }
                 return CsvRow(index, data.toTypedArray(), this)
             }
+            index++
         }
         throw LoaderException("Index out of band")
     }
