@@ -6,6 +6,7 @@ import net.pototskiy.apps.magemediation.config.excel.ListDefinition
 import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellType
+import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.*
@@ -16,7 +17,7 @@ class DateConverter(
 ) {
     fun convert(): DateTime = when (cell.cellType) {
         CellType.INT -> DateTime(Date(cell.intValue))
-        CellType.DOUBLE -> DateTime(Date(cell.doubleValue.toLong()))
+        CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(cell.doubleValue))
         CellType.BOOL -> throw LoaderException("Field<${field.name}, boolean can not be converted to date")
         CellType.STRING -> stringToDate(cell.stringValue)
     }
@@ -24,7 +25,7 @@ class DateConverter(
     fun convertList(): List<DateTime> {
         return when (cell.cellType) {
             CellType.INT -> listOf(DateTime(Date(cell.intValue)))
-            CellType.DOUBLE -> listOf(DateTime(Date(cell.doubleValue.toLong())))
+            CellType.DOUBLE -> listOf(DateTime(HSSFDateUtil.getJavaDate(cell.doubleValue)))
             CellType.BOOL -> throw LoaderException("Field<${field.name}, boolean can not be converted to date")
             CellType.STRING -> ValueListParser(
                 cell.stringValue,

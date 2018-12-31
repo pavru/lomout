@@ -7,6 +7,15 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         jcenter()
+        maven(url="http://dl.bintray.com/jetbrains/spek")
+    }
+    resolutionStrategy {
+        eachPlugin {
+            when (requested.id.id) {
+                "org.junit.platform.gradle.plugin" ->
+                    useModule("org.junit.platform:junit-platform-gradle-plugin:${requested.version}")
+            }
+        }
     }
 }
 

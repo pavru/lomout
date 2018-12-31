@@ -2,20 +2,19 @@ package net.pototskiy.apps.magemediation
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
+import net.pototskiy.apps.magemediation.config.Configuration
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
-import org.joda.time.DateTime
 import kotlin.contracts.ExperimentalContracts
 
 const val LOG_NAME = "Import"
-val IMPORT_DATETIME = DateTime()
+lateinit var CONFIG: Configuration
 
 @ExperimentalContracts
 fun main(args: Array<String>) {
-    BasicConfigurator.configure()
     val jCommander = JCommander.Builder()
         .addObject(Args)
         .build()
@@ -28,9 +27,11 @@ fun main(args: Array<String>) {
     if (Args.help || Args.files.isEmpty()) {
         jCommander.usage()
     }
+    BasicConfigurator.configure()
+    CONFIG = Configuration(Args.configFile)
     setLogLevel()
-    initDatabase()
-    DataLoader.load()
+    initDatabase(CONFIG.config.database)
+    DataLoader.load(CONFIG.config)
 }
 
 fun setLogLevel() {
