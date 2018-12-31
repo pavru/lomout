@@ -3,23 +3,16 @@ package net.pototskiy.apps.magemediation.database.onec.attribute
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.TypedAttributeTable
-import net.pototskiy.apps.magemediation.database.onec.OnecProduct
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.sql.ReferenceOption
 import org.joda.time.DateTime
 
-object OnecProductDates : TypedAttributeTable<DateTime>("onec_product_date") {
-    override val owner = reference("owner", OnecProducts, onDelete = ReferenceOption.CASCADE)
-    override val value = date("value")
-}
+object OnecProductDates : TypedAttributeTable<DateTime>(
+    "onec_product_date",
+    OnecProducts,
+    { date("value") }
+)
 
 class OnecProductDate(id: EntityID<Int>) : TypedAttributeEntity<DateTime>(id) {
-    companion object : TypedAttributeEntityClass<DateTime, OnecProductDate>(OnecProductDates)
-
-    override var owner: IntEntity by OnecProduct referencedOn OnecProductDates.owner
-    override var index by OnecProductDates.index
-    override var code by OnecProductDates.code
-    override var value by OnecProductDates.value
+    companion object : TypedAttributeEntityClass<DateTime, OnecProductDate>(OnecProductDates, DateTime::class)
 }

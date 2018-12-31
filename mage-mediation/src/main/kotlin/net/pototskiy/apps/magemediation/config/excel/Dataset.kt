@@ -43,9 +43,10 @@ class Dataset : ConfigValidate {
         if (headersRow == UNDEFINED_COLUMN) {
             val noColumn = fieldSets
                 .flatMap { it.fields }
-                .any { it.column == UNDEFINED_COLUMN }
-            if (noColumn) {
-                throw ConfigException("Dataset<$name> has no headers row and there is field without column definition")
+                .filter { it.column == UNDEFINED_COLUMN && !it.nested}
+                .map { it.name }
+            if (noColumn.count() != 0) {
+                throw ConfigException("Dataset<$name> has no headers row but fields<${noColumn.joinToString(", ")} have no column definition>")
             }
         }
     }

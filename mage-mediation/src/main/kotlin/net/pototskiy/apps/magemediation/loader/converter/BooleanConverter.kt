@@ -20,7 +20,7 @@ class BooleanConverter(
     }
 
     private fun stringToBoolean(value: String): Boolean {
-        val v = value.toLowerCase()
+        val v = value.toLowerCase().trim()
         return if (v in stringBoolean)
             v in stringBooleanTrue
         else

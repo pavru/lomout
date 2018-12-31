@@ -4,22 +4,15 @@ import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.TypedAttributeTable
 import net.pototskiy.apps.magemediation.database.mage.MageCategories
-import net.pototskiy.apps.magemediation.database.mage.MageCategory
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
-import org.jetbrains.exposed.sql.ReferenceOption
 import org.joda.time.DateTime
 
-object MageCatDatetimes : TypedAttributeTable<DateTime>("mage_cat_datetime") {
-    override val owner = reference("category", MageCategories, ReferenceOption.CASCADE)
-    override val value = datetime("value")
-}
+object MageCatDatetimes : TypedAttributeTable<DateTime>(
+    "mage_cat_datetime",
+    MageCategories,
+    { datetime("value") }
+)
 
 class MageCatDatetime(id: EntityID<Int>) : TypedAttributeEntity<DateTime>(id) {
-    companion object : TypedAttributeEntityClass<DateTime, MageCatDatetime>(MageCatDatetimes)
-
-    override var owner: IntEntity by MageCategory referencedOn MageCatDatetimes.owner
-    override var index by MageCatDatetimes.index
-    override var code by MageCatDatetimes.code
-    override var value by MageCatDatetimes.value
+    companion object : TypedAttributeEntityClass<DateTime, MageCatDatetime>(MageCatDatetimes, DateTime::class)
 }
