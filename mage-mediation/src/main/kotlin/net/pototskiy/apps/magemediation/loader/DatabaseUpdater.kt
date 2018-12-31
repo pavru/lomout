@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.excel.Field
+import net.pototskiy.apps.magemediation.config.dataset.Field
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.TypedAttributeTable

@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.excel.Dataset
-import net.pototskiy.apps.magemediation.config.excel.EmptyRowAction
+import net.pototskiy.apps.magemediation.config.dataset.Dataset
+import net.pototskiy.apps.magemediation.config.dataset.EmptyRowAction
 import net.pototskiy.apps.magemediation.source.Sheet
 
 interface LoaderInterface {

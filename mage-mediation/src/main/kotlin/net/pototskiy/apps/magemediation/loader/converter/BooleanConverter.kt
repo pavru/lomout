@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.excel.Field
-import net.pototskiy.apps.magemediation.config.excel.ListDefinition
+import net.pototskiy.apps.magemediation.config.dataset.Field
+import net.pototskiy.apps.magemediation.config.dataset.ListDefinition
 import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellType

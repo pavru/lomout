@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.config
 
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.excel.Dataset
+import net.pototskiy.apps.magemediation.config.dataset.Dataset
 import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 

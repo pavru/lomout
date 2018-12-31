@@ -1,9 +1,9 @@
-package net.pototskiy.apps.magemediation.config.excel
+package net.pototskiy.apps.magemediation.config.dataset
 
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.ConfigValidate
-import net.pototskiy.apps.magemediation.config.excel.Field.Companion.UNDEFINED_COLUMN
+import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
 import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
@@ -12,7 +12,8 @@ open class FieldSet : ConfigValidate {
     @field:XmlAttribute(required = true)
     var name: String = ""
     @XmlTransient
-    var type: FieldSetType = FieldSetType.MAIN
+    var type: FieldSetType =
+        FieldSetType.MAIN
     @field:XmlElement(name = "field", required = true)
     var fields: List<Field> = mutableListOf()
 
@@ -37,7 +38,11 @@ open class FieldSet : ConfigValidate {
                 .filter { it.nested }
                 .filter { !fieldNames.contains(it.parent) }
                 .map { it.name }
-            throw ConfigException("Parents of fields<${hasWrongParent.joinToString(", ")}> do not exist")
+            throw ConfigException(
+                "Parents of fields<${hasWrongParent.joinToString(
+                    ", "
+                )}> do not exist"
+            )
         }
     }
 

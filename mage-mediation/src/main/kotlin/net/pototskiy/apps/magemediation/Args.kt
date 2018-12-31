@@ -4,7 +4,7 @@ import com.beust.jcommander.Parameter
 
 object Args {
     @Parameter(
-        description = "excel file to import"
+        description = "dataset file to import"
     )
     var files: List<String> = mutableListOf()
     @Parameter(

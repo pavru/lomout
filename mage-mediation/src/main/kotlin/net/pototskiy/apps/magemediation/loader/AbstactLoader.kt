@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.excel.*
-import net.pototskiy.apps.magemediation.config.excel.FieldSet
+import net.pototskiy.apps.magemediation.config.dataset.*
+import net.pototskiy.apps.magemediation.config.dataset.FieldSet
 import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser

@@ -22,3 +22,7 @@ sonarqube {
         property("sonar.projectVersion", "1.0")
     }
 }
+
+tasks.sonarqube.apply {
+    group = "verification"
+}

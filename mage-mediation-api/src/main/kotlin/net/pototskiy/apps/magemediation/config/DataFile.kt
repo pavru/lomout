@@ -1,15 +1,13 @@
-package net.pototskiy.apps.magemediation.config.excel
+package net.pototskiy.apps.magemediation.config
 
 import javax.xml.bind.annotation.XmlAccessType
 import javax.xml.bind.annotation.XmlAccessorType
 import javax.xml.bind.annotation.XmlAttribute
 
 @XmlAccessorType(XmlAccessType.FIELD)
-class DataSource {
+class DataFile {
     @field:XmlAttribute(required = true)
-    var file: String = ""
+    var id: String = ""
     @field:XmlAttribute(required = true)
-    var sheet: String = ""
-    @field:XmlAttribute(name = "empty-row")
-    var emptyRowAction: EmptyRowAction = EmptyRowAction.IGNORE
+    var path: String = ""
 }
