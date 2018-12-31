@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.excel.EmptyRowAction
+import net.pototskiy.apps.magemediation.config.dataset.EmptyRowAction
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import net.pototskiy.apps.magemediation.database.onec.attribute.*
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
@@ -223,8 +223,8 @@ object DataLoadingAttributesFeature : Spek({
                         val formatter = DateTimeFormat.forPattern("d.M.yy")
                         val expected = (i + 6..i + 7)
                             .toList()
-                            .mapIndexed { i, v ->
-                                formatter.parseDateTime("$v.${i % 2 + 11}.${i % 2 + 11}")
+                            .mapIndexed { j, v ->
+                                formatter.parseDateTime("$v.${j % 2 + 11}.${j % 2 + 11}")
                             }
                         actual shouldContainAll expected
                     }
@@ -245,8 +245,8 @@ object DataLoadingAttributesFeature : Spek({
                         val formatter = DateTimeFormat.forPattern("d.M.yy H:m")
                         val expected = (i + 6..i + 7)
                             .toList()
-                            .mapIndexed { i, v ->
-                                formatter.parseDateTime("$v.${i % 2 + 11}.${i % 2 + 11} $v:${i % 2 + 11}")
+                            .mapIndexed { j, v ->
+                                formatter.parseDateTime("$v.${j % 2 + 11}.${j % 2 + 11} $v:${j % 2 + 11}")
                             }
                         actual shouldContainAll expected
                     }

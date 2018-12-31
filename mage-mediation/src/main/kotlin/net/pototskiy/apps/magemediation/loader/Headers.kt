@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.excel.Dataset
-import net.pototskiy.apps.magemediation.config.excel.Field
-import net.pototskiy.apps.magemediation.config.excel.Field.Companion.UNDEFINED_COLUMN
-import net.pototskiy.apps.magemediation.config.excel.FieldSetType
-import net.pototskiy.apps.magemediation.config.excel.FieldType
+import net.pototskiy.apps.magemediation.config.dataset.Dataset
+import net.pototskiy.apps.magemediation.config.dataset.Field
+import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
+import net.pototskiy.apps.magemediation.config.dataset.FieldSetType
+import net.pototskiy.apps.magemediation.config.dataset.FieldType
 import net.pototskiy.apps.magemediation.source.Sheet
 
 class Headers(private val sheet: Sheet, private val dataset: Dataset) {

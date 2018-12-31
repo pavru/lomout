@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.excel
+package net.pototskiy.apps.magemediation.config.dataset
 
 import net.pototskiy.apps.magemediation.source.SourceFieldType
 import javax.xml.bind.annotation.XmlEnum

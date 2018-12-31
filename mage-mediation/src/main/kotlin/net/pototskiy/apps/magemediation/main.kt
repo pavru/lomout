@@ -10,7 +10,6 @@ import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import kotlin.contracts.ExperimentalContracts
 
-const val LOG_NAME = "Import"
 lateinit var CONFIG: Configuration
 
 @ExperimentalContracts

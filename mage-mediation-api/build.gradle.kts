@@ -21,7 +21,7 @@ kotlin {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
     kotlinOptions {
-        jvmTarget = "1.6"
+        jvmTarget = "1.8"
         noReflect = false
     }
 }
