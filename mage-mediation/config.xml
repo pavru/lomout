@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="file:src/main/resources/config.xsd">
+        xsi:noNamespaceSchemaLocation="file:../mage-mediation-api/src/main/xml/config/schema/config.xsd">
     <database name="magemediation">
         <server host="localhost" user="root" password="root"/>
     </database>
@@ -205,4 +205,20 @@
             </field-sets>
         </dataset>
     </data-sets>
+    <mediator>
+        <onec>
+            <group>
+                <group-code-structure structure="(G[0-9]{1,1})([0-9]{1,1})([0-9]{1,1})"
+                                      sub-group-filler="0"
+                                      root="/"
+                                      separator="/"/>
+            </group>
+        </onec>
+        <magento>
+            <category>
+                <path-attribute name="path" type="double"/>
+                <path-defaults root="" separator="/"/>
+            </category>
+        </magento>
+    </mediator>
 </config>

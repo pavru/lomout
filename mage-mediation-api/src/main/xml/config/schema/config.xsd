@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" vc:minVersion="1.1">
+
+    <xs:include schemaLocation="fieldType.xsd"/>
+    <xs:include schemaLocation="mediator.xsd"/>
+
+    <xs:element name="config" type="config">
+        <xs:key name="dataFileIdKey">
+            <xs:selector xpath="files/file"/>
+            <xs:field xpath="@id"/>
+        </xs:key>
+        <xs:keyref refer="dataFileIdKey" name="dataFileIdKeyRef">
+            <xs:selector xpath="data-sets/dataset/source"/>
+            <xs:field xpath="@file"/>
+        </xs:keyref>
+    </xs:element>
+
+    <xs:complexType name="config">
+        <xs:sequence>
+            <xs:element name="database" type="database" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>MySql (or compatible) database configuration. Default database configuration is:
+
+                        name = magemediation,
+                        server.host = localhost,
+                        server.port = 3306,
+                        server.user = root,
+                        server.password = root
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="files">
+                <xs:annotation>
+                    <xs:documentation>This section configures list of files that contain data to process. Allowable file
+                        types: xls, xlsx, csv.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="file" type="dataFile" nillable="true" minOccurs="0"
+                                    maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Data file path. ID should be used as reference in dataset sources.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="data-sets" minOccurs="0">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="dataset" type="data-set" nillable="true" minOccurs="0"
+                                    maxOccurs="unbounded">
+                            <xs:annotation>
+                                <xs:documentation>Describe source data that should be loaded to mediation database.
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+                <xs:unique name="datasetNameUnique">
+                    <xs:selector xpath="dataset"/>
+                    <xs:field xpath="@name"/>
+                </xs:unique>
+            </xs:element>
+            <xs:element name="mediator" minOccurs="0" type="MediatorConfiguration"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="database">
+        <xs:sequence>
+            <xs:element name="server" type="databaseServer"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>MySql database name</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="databaseServer">
+        <xs:attribute name="host" type="xs:string" use="required"/>
+        <xs:attribute name="port" type="xs:int"/>
+        <xs:attribute name="user" type="xs:string" use="required"/>
+        <xs:attribute name="password" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="dataFile">
+        <xs:attribute name="id" type="xs:token" use="required">
+            <xs:annotation>
+                <xs:documentation>Data source file id, to use in next configuration</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="path" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Data source file path</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="data-set">
+        <xs:sequence>
+            <xs:element name="source" type="dataSource" maxOccurs="unbounded"/>
+            <xs:element name="field-sets">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="main" type="fieldSet">
+                            <xs:unique name="mainFieldColumnUnique">
+                                <xs:selector xpath="field"/>
+                                <xs:field xpath="@column"/>
+                            </xs:unique>
+                            <xs:key name="mainParentFieldKey">
+                                <xs:selector xpath="field"/>
+                                <xs:field xpath="@name"/>
+                            </xs:key>
+                            <xs:keyref name="mainParentFieldKeyRef" refer="mainParentFieldKey">
+                                <xs:selector xpath="field"/>
+                                <xs:field xpath="@parent"/>
+                            </xs:keyref>
+                        </xs:element>
+
+                        <xs:element name="additional" type="fieldSet" minOccurs="0" maxOccurs="unbounded">
+                            <xs:unique name="commonF">
+                                <xs:selector xpath="field"/>
+                                <xs:field xpath="@column"/>
+                            </xs:unique>
+                            <xs:key name="commonParentFieldKey">
+                                <xs:selector xpath="field"/>
+                                <xs:field xpath="@name"/>
+                            </xs:key>
+                            <xs:keyref name="commonParentFieldKeyRef" refer="commonParentFieldKey">
+                                <xs:selector xpath="field"/>
+                                <xs:field xpath="@parent"/>
+                            </xs:keyref>
+                        </xs:element>
+
+                    </xs:sequence>
+                </xs:complexType>
+                <xs:key name="fieldNameKey">
+                    <xs:selector xpath="*/field"/>
+                    <xs:field xpath="@name"/>
+                </xs:key>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Internal dataset id, should be unique</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="headers-row" type="xs:nonNegativeInteger">
+            <xs:annotation>
+                <xs:documentation>Zero base row number that contains headers. If it is not defined - the data source
+                    does not contain headers.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="rows-to-skip" type="xs:int">
+            <xs:annotation>
+                <xs:documentation>Number of rows to skip before real data</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="max-absent-age" type="xs:int">
+            <xs:annotation>
+                <xs:documentation>Specify number of days to store objects in mediation database that does not exist in
+                    data source.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="target" type="datasetTarget" use="required">
+            <xs:annotation>
+                <xs:documentation>Destination mediation table</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:assert
+                test="
+        if (exists(@headers-row)) then
+          true()
+        else
+          count(field-sets/*/field/@column) = count(field-sets/*/field)"
+        />
+    </xs:complexType>
+
+    <xs:complexType name="dataSource">
+        <xs:attribute name="file" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Reference to file in files section</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="sheet" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Name of sheet contains data. For CSV files only one sheet supported - default
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:attribute name="empty-row" default="ignore" type="emptyRowAction"/>
+    </xs:complexType>
+
+    <xs:complexType name="field" final="#all">
+        <xs:sequence minOccurs="0">
+            <xs:element name="list-format" type="listDefinition" minOccurs="0"/>
+            <xs:element name="date-format" type="dateDefinition" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Symbol Meaning Presentation Examples
+                        ------ ------- ------------ -------
+                        G era text AD
+                        C century of era (>=0) number 20
+                        Y year of era (>=0) year 1996
+
+                        x weekyear year 1996
+                        w week of weekyear number 27
+                        e day of week number 2
+                        E day of week text Tuesday; Tue
+
+                        y year year 1996
+                        D day of year number 189
+                        M month of year month July; Jul; 07
+                        d day of month number 10
+
+                        a halfday of day text PM
+                        K hour of halfday (0~11) number 0
+                        h clockhour of halfday (1~12) number 12
+
+                        H hour of day (0~23) number 0
+                        k clockhour of day (1~24) number 24
+                        m minute of hour number 30
+                        s second of minute number 55
+                        S fraction of second number 978
+
+                        z time zone text Pacific Standard Time; PST
+                        Z time zone offset/id zone -0800; -08:00; America/Los_Angeles
+
+                        ' escape for text delimiter
+                        '' single quote literal '
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="datetime-format" type="datetimeDefinition" minOccurs="0"/>
+            <xs:element minOccurs="0" name="attr-list-format" type="attrListDefinition">
+                <xs:annotation>
+                    <xs:documentation>Symbol Meaning Presentation Examples
+                        ------ ------- ------------ -------
+                        G era text AD
+                        C century of era (>=0) number 20
+                        Y year of era (>=0) year 1996
+
+                        x weekyear year 1996
+                        w week of weekyear number 27
+                        e day of week number 2
+                        E day of week text Tuesday; Tue
+
+                        y year year 1996
+                        D day of year number 189
+                        M month of year month July; Jul; 07
+                        d day of month number 10
+
+                        a halfday of day text PM
+                        K hour of halfday (0~11) number 0
+                        h clockhour of halfday (1~12) number 12
+
+                        H hour of day (0~23) number 0
+                        k clockhour of day (1~24) number 24
+                        m minute of hour number 30
+                        s second of minute number 55
+                        S fraction of second number 978
+
+                        z time zone text Pacific Standard Time; PST
+                        Z time zone offset/id zone -0800; -08:00; America/Los_Angeles
+
+                        ' escape for text delimiter
+                        '' single quote literal '
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required"/>
+        <xs:attribute name="column" type="xs:nonNegativeInteger"/>
+        <xs:attribute name="regex" type="xs:string"/>
+        <xs:attribute name="type" type="fieldType" default="string"/>
+        <xs:attribute name="key-field" type="xs:boolean"/>
+        <xs:attribute name="nested" type="xs:boolean"/>
+        <xs:attribute name="parent" type="xs:string"/>
+        <xs:attribute default="false" name="optional" type="xs:boolean"/>
+        <xs:attribute name="locale" type="xs:string">
+            <xs:annotation>
+                <xs:documentation>Language and country code like ru_RU, en_US</xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:assert
+                test="
+        if (@type = 'bool-list' or @type = 'int-list' or @type = 'double-list' or @type = 'string-list') then
+          exists(list-format)
+        else
+          if (@type = 'date-list') then
+            (exists(list-format) and exists(date-format))
+          else
+            if (@type = 'datetime-list') then
+              (exists(list-format) and exists(datetime-format))
+            else
+              if (@type = 'date') then
+                exists(date-format)
+              else
+                if (@type = 'date') then
+                  exists(datetime-format)
+                else
+                  if (@type = 'attribute-list') then
+                    exists(attr-list-format)
+                  else
+                    true()"/>
+        <xs:assert
+                test="
+        if (@nested = true()) then
+          exists(@parent)
+        else
+          true()"/>
+        <xs:assert
+                test="
+        if (@nested = true()) then
+          not(@key-field)
+        else
+          true()"
+        />
+    </xs:complexType>
+
+    <xs:complexType name="listDefinition">
+        <xs:attribute name="delimiter" type="xs:string" use="required"/>
+        <xs:attribute name="quote" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="dateDefinition">
+        <xs:attribute name="format" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="datetimeDefinition">
+        <xs:attribute name="format" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:complexType name="fieldSet" mixed="false">
+        <xs:sequence>
+            <xs:element name="field" type="field" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:annotation>
+                <xs:documentation>Attribute name that should fit to name in data source. This name will be as attribute
+                    name in mediation.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:attribute>
+        <xs:assert
+                test="
+        if (name(.) = 'main') then
+          exists(field/@key-field) and field/@key-field = true()
+        else
+          true()">
+            <xs:annotation>
+                <xs:documentation>One field in main field set should have key-field attribute equals to true.
+                </xs:documentation>
+            </xs:annotation>
+        </xs:assert>
+    </xs:complexType>
+
+    <xs:simpleType name="datasetTarget">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="onec-product"/>
+            <xs:enumeration value="onec-group"/>
+            <xs:enumeration value="mage-product"/>
+            <xs:enumeration value="mage-category"/>
+            <xs:enumeration value="mage-price"/>
+            <xs:enumeration value="mage-inventory"/>
+            <xs:enumeration value="mage-user-group"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="fieldType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="bool"/>
+            <xs:enumeration value="int"/>
+            <xs:enumeration value="double"/>
+            <xs:enumeration value="string"/>
+            <xs:enumeration value="text"/>
+            <xs:enumeration value="date"/>
+            <xs:enumeration value="datetime"/>
+            <xs:enumeration value="bool-list"/>
+            <xs:enumeration value="int-list"/>
+            <xs:enumeration value="double-list"/>
+            <xs:enumeration value="string-list"/>
+            <xs:enumeration value="date-list"/>
+            <xs:enumeration value="datetime-list"/>
+            <xs:enumeration value="attribute-list"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="attrListDefinition">
+        <xs:attribute name="attr-delimiter" type="xs:string" use="required"/>
+        <xs:attribute name="attr-quote" type="xs:string" use="required"/>
+        <xs:attribute name="name-value-delimiter" type="xs:string"/>
+        <xs:attribute name="value-quote" type="xs:string"/>
+    </xs:complexType>
+
+    <xs:simpleType name="emptyRowAction">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="stop"/>
+            <xs:enumeration value="ignore"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

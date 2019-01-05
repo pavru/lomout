@@ -4,8 +4,8 @@ plugins {
     id("org.sonarqube") version "2.6.2"
 }
 
-buildscript{
-    dependencies{
+buildscript {
+    dependencies {
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
     }
 }
@@ -23,6 +23,4 @@ sonarqube {
     }
 }
 
-tasks.sonarqube.apply {
-    group = "verification"
-}
+tasks["sonarqube"].group = "verification"
