@@ -2,6 +2,7 @@ package net.pototskiy.apps.magemediation.config
 
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.dataset.Dataset
+import net.pototskiy.apps.magemediation.config.mediator.MediatorConfiguration
 import org.apache.log4j.Logger
 import javax.xml.bind.annotation.*
 
@@ -15,6 +16,8 @@ class Config : ConfigValidate {
     @field:XmlElementWrapper(name = "data-sets")
     @field:XmlElement(name = "dataset")
     var datasets: List<Dataset> = mutableListOf()
+    @field:XmlElement(name="mediator")
+    var mediator: MediatorConfiguration = MediatorConfiguration()
 
     @Suppress("unused")
     @XmlTransient

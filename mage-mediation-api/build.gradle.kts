@@ -1,4 +1,6 @@
 import name.remal.gradle_plugins.dsl.extensions.java
+import name.remal.gradle_plugins.dsl.extensions.runtime
+import name.remal.gradle_plugins.dsl.extensions.testImplementation
 
 plugins {
     id("java")
@@ -35,27 +37,35 @@ repositories {
 }
 
 dependencies {
-    compile(kotlin("stdlib-jdk8"))
-    compile(group = "com.beust", name = "jcommander", version = "1.71")
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(group = "com.beust", name = "jcommander", version = "1.71")
     // Database
-    compile(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2")
+    implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2")
     // Excel
-    compile(group = "org.apache.poi", name = "poi", version = "4.0.1")
-    compile(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")
+    implementation(group = "org.apache.poi", name = "poi", version = "4.0.1")
+    implementation(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")
     // CSV
-    compile(group = "org.apache.commons", name = "commons-csv", version = "1.6")
+    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.6")
     // MySql
-    compile(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
+    implementation(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
     // Logger
-    compile(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
-    compile(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
+    implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
+    implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
+    // Apache commons io
+    implementation("commons-io", "commons-io", "2.6")
     // JAXB
-    compile(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-    compile(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
-    compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
-    compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
+    implementation("javax.xml.bind", "jaxb-api", "2.3.1")
+    implementation("com.sun.xml.bind", "jaxb-core", "2.3.0.1")
+    //implementation(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
+    //implementation(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
+    // XML
+    implementation(group = "xerces", name = "xercesImpl", version = "2.12.0")
+    // Kotlin script
+    implementation(kotlin("script-runtime"))
+    implementation(kotlin("compiler-embeddable"))
+    implementation(kotlin("script-util"))
     // Test
-    testCompile(group = "junit", name = "junit", version = "4.12")
+    testImplementation(group = "junit", name = "junit", version = "4.12")
 }
 
 //compileKotlin {

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+           vc:minVersion="1.1">
+
+    <xs:simpleType name="OneCharStringType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="1"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="FieldType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="bool"/>
+            <xs:enumeration value="int"/>
+            <xs:enumeration value="double"/>
+            <xs:enumeration value="string"/>
+            <xs:enumeration value="text"/>
+            <xs:enumeration value="date"/>
+            <xs:enumeration value="datetime"/>
+            <xs:enumeration value="bool-list"/>
+            <xs:enumeration value="int-list"/>
+            <xs:enumeration value="double-list"/>
+            <xs:enumeration value="string-list"/>
+            <xs:enumeration value="date-list"/>
+            <xs:enumeration value="datetime-list"/>
+            <xs:enumeration value="attribute-list"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="FieldTypeDefinitionType">
+        <xs:sequence>
+            <xs:element name="list-format" type="ListDefinitionType" minOccurs="0"/>
+            <xs:element name="datetime-format" type="DateTimeDefinitionType" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="type" type="FieldType"/>
+        <xs:attribute name="locale" type="xs:string"/>
+        <xs:assert test="
+                if (@type = 'bool-list' or @type = 'int-list' or @type = 'double-list' or @type = 'string-list') then
+                    exists(list-format)
+                else
+                    if (@type = 'date-list' or @type = 'datetime-format') then
+                        (exists(list-format) and exists(datetime-format))
+                    else
+                        if (@type = 'date' or @type = 'datetime') then
+                            exists(datetime-format)
+                        else
+                            true()">
+            <xs:annotation>
+                <xs:documentation>List types must have list definition child, date and datetime types must have datetime
+                    definition child element
+                </xs:documentation>
+            </xs:annotation>
+        </xs:assert>
+        <xs:assert test="if (@type='attribute-list') then false() else true()"/>
+    </xs:complexType>
+
+    <xs:complexType name="DateTimeDefinitionType">
+        <xs:attribute name="format" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="ListDefinitionType">
+        <xs:attribute name="delimiter" type="OneCharStringType" use="required"/>
+        <xs:attribute name="quote" type="OneCharStringType" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="NestedFieldDefinitionType">
+        <xs:complexContent>
+            <xs:extension base="FieldTypeDefinitionType">
+                <xs:sequence>
+                    <xs:element name="attr-list-format"/>
+                </xs:sequence>
+                <xs:attribute name="parent" type="xs:string"/>
+                <xs:attribute name="nested" type="xs:boolean"/>
+                <xs:assert test="
+                    if (@type = 'attribute-list') then
+                        exists(attr-list-format)
+                    else
+                        true()"/>
+                <xs:assert test="if (@nested = true()) then not(@key-field) else true()">
+                    <xs:annotation>
+                        <xs:documentation>Nested field can not be used as key field</xs:documentation>
+                    </xs:annotation>
+                </xs:assert>
+                <xs:assert test="if (@nested = true()) then exists(@parent) else false()">
+                    <xs:annotation>
+                        <xs:documentation>Nested field must have defined parent</xs:documentation>
+                    </xs:annotation>
+                </xs:assert>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="AttrListDefinitionType">
+        <xs:attribute name="attr-delimiter" type="OneCharStringType" use="required"/>
+        <xs:attribute name="attr-quote" type="OneCharStringType" use="required"/>
+        <xs:attribute name="name-value-delimiter" type="OneCharStringType"/>
+        <xs:attribute name="value-quote" type="OneCharStringType"/>
+    </xs:complexType>
+
+</xs:schema>
