@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="file:../../../src/main/resources/config.xsd">
+        xsi:noNamespaceSchemaLocation="file:../../../../mage-mediation-api/src/main/xml/config/schema/config.xsd">
     <database name="magemediation">
         <server host="localhost" user="root" password="root"/>
     </database>

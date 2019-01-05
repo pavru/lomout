@@ -5,6 +5,8 @@ import com.beust.jcommander.ParameterException
 import net.pototskiy.apps.magemediation.config.Configuration
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
+import net.pototskiy.apps.magemediation.mediator.MediatorFactory
+import net.pototskiy.apps.magemediation.mediator.MediatorType
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
@@ -31,6 +33,7 @@ fun main(args: Array<String>) {
     setLogLevel()
     initDatabase(CONFIG.config.database)
     DataLoader.load(CONFIG.config)
+    MediatorFactory.create(MediatorType.CATEGORY).merge()
 }
 
 fun setLogLevel() {
