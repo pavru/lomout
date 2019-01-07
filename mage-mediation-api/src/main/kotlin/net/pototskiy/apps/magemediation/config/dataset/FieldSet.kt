@@ -12,8 +12,7 @@ open class FieldSet : ConfigValidate {
     @field:XmlAttribute(required = true)
     var name: String = ""
     @XmlTransient
-    var type: FieldSetType =
-        FieldSetType.MAIN
+    var type: FieldSetType = FieldSetType.MAIN
     @field:XmlElement(name = "field", required = true)
     var fields: List<Field> = mutableListOf()
 

@@ -1,18 +1,16 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.dataset.Field
-import net.pototskiy.apps.magemediation.config.dataset.ListDefinition
+import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
 import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellType
 import java.text.NumberFormat
 import java.text.ParseException
-import java.util.*
 
 
 class DoubleConverter(
     private val cell: Cell,
-    private val field: Field
+    private val field: FieldConfiguration
 ) {
     fun convert(): Double = when (cell.cellType) {
         CellType.INT -> cell.intValue.toDouble()
@@ -29,7 +27,7 @@ class DoubleConverter(
             CellType.STRING -> {
                 ValueListParser(
                     cell.stringValue,
-                    field.typeDefinitions.findLast { it is ListDefinition } as ListDefinition
+                    field.type
                 )
                     .parse()
                     .map { stringToDouble(it) }
@@ -38,10 +36,7 @@ class DoubleConverter(
     }
 
     private fun stringToDouble(value: String): Double {
-        val format = field.locale?.let {
-            val code = field.locale?.split("_") as List<String>
-            NumberFormat.getInstance(Locale(code[0], code[1]))
-        } ?: NumberFormat.getInstance()
+        val format = NumberFormat.getInstance(field.type.getLocaleObject())
         try {
             return format.parse(value).toDouble()
         } catch (e: ParseException) {

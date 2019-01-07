@@ -17,8 +17,7 @@ class Field : ConfigValidate {
     @field:XmlAttribute
     var regex: String? = null
     @field:XmlAttribute
-    var type: FieldType =
-        FieldType.STRING
+    var type: FieldType = FieldType.STRING
     @field:XmlElements(
         XmlElement(name = "list-format", type = ListDefinition::class),
         XmlElement(name = "date-format", type = DateDefinition::class),

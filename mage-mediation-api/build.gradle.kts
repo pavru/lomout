@@ -1,11 +1,7 @@
-import name.remal.gradle_plugins.dsl.extensions.java
-import name.remal.gradle_plugins.dsl.extensions.runtime
-import name.remal.gradle_plugins.dsl.extensions.testImplementation
-
 plugins {
-    id("java")
+    `java-library`
     kotlin("jvm") version "1.3.11"
-    id("idea")
+    idea
 }
 
 group = "oooast-tools"
@@ -39,8 +35,12 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(group = "com.beust", name = "jcommander", version = "1.71")
+    implementation(kotlin("reflect"))
     // Database
-    implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2")
+    implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2") {
+        exclude(group = "org.jetbrains.kotlin")
+        exclude(group = "org.slf4j")
+    }
     // Excel
     implementation(group = "org.apache.poi", name = "poi", version = "4.0.1")
     implementation(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")

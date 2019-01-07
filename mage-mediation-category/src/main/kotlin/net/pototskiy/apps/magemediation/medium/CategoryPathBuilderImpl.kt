@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.medium
 
-import net.pototskiy.apps.magemediation.config.Config
+import net.pototskiy.apps.magemediation.config.newOne.Config
 import net.pototskiy.apps.magemediation.database.mage.CategoryEntity
 import net.pototskiy.apps.magemediation.database.mage.CategoryEntityClass
 import net.pototskiy.apps.magemediation.database.onec.GroupEntity
@@ -21,8 +21,8 @@ class CategoryPathBuilderImpl(
     private fun getLinkedGroups(entity: GroupEntity): List<GroupEntity> {
         val elements = mutableListOf(entity)
         var parent: GroupEntity? = entity
-        config.mediator.onecConfiguration?.groupConfiguration?.let { groupMediatorConfiguration ->
-            val regex = Regex(groupMediatorConfiguration.groupCodeStructure)
+        config.mediator.onec.group.let { groupMediatorConfiguration ->
+            val regex = Regex(groupMediatorConfiguration.codeStructure)
             val filler = groupMediatorConfiguration.subGroupFiller
             var parentCode = getParentGroupCode(parent!!.groupCode, regex, filler)
             while (parentCode != null) {

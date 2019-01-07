@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.Config
 import net.pototskiy.apps.magemediation.config.DatasetTarget
+import net.pototskiy.apps.magemediation.config.newOne.Config
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
 import java.io.File
 import java.util.logging.Logger
@@ -11,17 +11,17 @@ object DataLoader {
     private val logger = Logger.getLogger(LOG_NAME)
 
     fun load(config: Config) {
-        val files = config.files
-        val datasets = config.datasets
+        val files = config.loader.files
+        val datasets = config.loader.datasets
         for (dataset in datasets) {
             dataset.sources.forEach { source ->
-                val file = files.findLast { it.id == source.file }
-                    ?: throw LoaderException("Source file id<${source.file}> is not defined")
+                val file = files.findLast { it.id == source.fileId }
+                    ?: throw LoaderException("Source file<${source.fileId}> is not configured")
                 val workbook = WorkbookFactory.create(File(file.path).toURI().toURL())
                 val loader = LoaderFactory.create(mapTargetToDestination(dataset.target))
                 val regex = Regex(source.sheet)
                 if (!workbook.any { regex.matches(it.name) }) {
-                    logger.warning("Sheet<${source.sheet}> can not be found in source<${source.file}>")
+                    logger.warning("Sheet<${source.sheet}> can not be found in source<${source.fileId}>")
                 } else {
                     workbook.forEach {
                         if (regex.matches(it.name)) {

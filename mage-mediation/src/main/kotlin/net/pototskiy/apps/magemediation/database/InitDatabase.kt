@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.database
 
 import com.mysql.cj.jdbc.MysqlDataSource
-import net.pototskiy.apps.magemediation.config.DatabaseConfig
+import net.pototskiy.apps.magemediation.config.newOne.DatabaseConfig
 import org.apache.log4j.Level
 import org.apache.log4j.Logger
 import org.jetbrains.exposed.sql.Database

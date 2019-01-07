@@ -1,14 +1,14 @@
 package net.pototskiy.apps.magemediation.loader.nested
 
-import net.pototskiy.apps.magemediation.config.dataset.AttrListDefinition
-import net.pototskiy.apps.magemediation.config.dataset.Field
+import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.newOne.type.AttributeAttributeListType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.QuoteMode
 
 class AttributeListParser(
     private val data: String,
-    private val fieldDef: Field
+    private val fieldDef: FieldConfiguration
 ) {
     private val attrs: Map<String, String> = parse()
     operator fun get(row: Int): Array<String> =
@@ -20,10 +20,10 @@ class AttributeListParser(
 
     private fun parse(): Map<String, String> {
         val result = mutableMapOf<String, String>()
-        val csvDef = fieldDef.typeDefinitions[0]
-        if (csvDef is AttrListDefinition) {
-            val nameValueFormat = getNameValueFormat(csvDef)
-            val attrFormat = getAttrFormat(csvDef)
+        val type = fieldDef.type
+        if (type is AttributeAttributeListType) {
+            val nameValueFormat = getNameValueFormat(type)
+            val attrFormat = getAttrFormat(type)
             val attrParser = CSVParser.parse(data, attrFormat)
             for (attr in attrParser.records[0]) {
                 val parsed = CSVParser.parse(attr, nameValueFormat).records
@@ -33,13 +33,13 @@ class AttributeListParser(
         return result
     }
 
-    private fun getAttrFormat(csvDef: AttrListDefinition): CSVFormat {
+    private fun getAttrFormat(csvDef: AttributeAttributeListType): CSVFormat {
         var format = CSVFormat.RFC4180
-        if (csvDef.attrDelimiter.isNotBlank()) {
-            format = format.withDelimiter(csvDef.attrDelimiter[0])
+        if (csvDef.delimiter.isNotBlank()) {
+            format = format.withDelimiter(csvDef.delimiter[0])
         }
-        if (csvDef.attrQuote.isNotBlank()) {
-            format = format.withQuote(csvDef.attrQuote[0])
+        if (csvDef.quote.isNotBlank()) {
+            format = format.withQuote(csvDef.quote[0])
         } else {
             format = format.withEscape('\\')
             format = format.withQuoteMode(QuoteMode.NONE)
@@ -47,11 +47,11 @@ class AttributeListParser(
         return format
     }
 
-    private fun getNameValueFormat(csvDef: AttrListDefinition): CSVFormat {
+    private fun getNameValueFormat(csvDef: AttributeAttributeListType): CSVFormat {
         var format = CSVFormat.RFC4180
 
-        if (csvDef.nameValueDelimiter.isNotBlank())
-            format = format.withDelimiter(csvDef.nameValueDelimiter[0])
+        if (csvDef.valueDelimiter.isNotBlank())
+            format = format.withDelimiter(csvDef.valueDelimiter[0])
         if (csvDef.valueQuote.isBlank()) {
             format = format.withEscape('\\')
             format = format.withQuoteMode(QuoteMode.NONE)

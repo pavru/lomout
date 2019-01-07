@@ -25,14 +25,13 @@ object DataLoadingAttributesFeature : Spek({
             SourceTestSet("test.headers.csv", "headers-test-product", "default")
         ).forEach { testData ->
             Scenario("load data from ${testData.file} with attributes") {
-                //            val hssfWorkbook = util.openHSSWorkbookFromResources(testData.file)
                 val loader = LoaderFactory.create(LoadDestination.ONEC_PRODUCT)
                 When("load product from data file") {
                     val workbook =
                         WorkbookFactory.create(this::class.java.classLoader.getResource(testData.file))//ExcelWorkbook(hssfWorkbook)
                     loader.load(
                         workbook[testData.sheet],
-                        config.datasets.findLast { it.name == testData.dataset }!!,
+                        config.loader.datasets.findLast { it.name == testData.dataset }!!,
                         EmptyRowAction.IGNORE
                     )
                 }

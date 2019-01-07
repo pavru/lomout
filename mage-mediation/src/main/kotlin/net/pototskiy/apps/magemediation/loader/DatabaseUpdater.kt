@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.dataset.Field
+import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.newOne.type.*
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.TypedAttributeTable
@@ -12,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
 
-    fun update(data: Map<String, Any?>, headers: List<Field>) {
+    fun update(data: Map<String, Any?>, headers: List<FieldConfiguration>) {
         var newEntityWasCreated = false
         var entity = table.findEntityByKeyFields(data)
         entity?.wasUnchanged()
@@ -37,7 +38,7 @@ class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
     private fun testAndUpdateTypedAttributes(
         entity: SourceDataEntity,
         data: Map<String, Any?>,
-        headers: List<Field>
+        headers: List<FieldConfiguration>
     ) {
         for (v in SourceFieldType.values().filter { it != SourceFieldType.ATTRIBUTE_LIST }) {
             val attrEntityClass = table.getAttrEntityClassFor(v)
@@ -67,7 +68,7 @@ class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
     private fun removeExistingAttribute(
         attrEntityClass: TypedAttributeEntityClass<*, *>,
         entity: SourceDataEntity,
-        field: Field
+        field: FieldConfiguration
     ) {
         val table = attrEntityClass.table as TypedAttributeTable<*>
         var count = 0
@@ -88,7 +89,7 @@ class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
         newValue: Any,
         attrEntityClass: TypedAttributeEntityClass<*, *>,
         entity: SourceDataEntity,
-        field: Field,
+        field: FieldConfiguration,
         current: List<TypedAttributeEntity<*>>
     ) {
         val table = attrEntityClass.table as TypedAttributeTable<*>
@@ -123,7 +124,7 @@ class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
         newValue: Any,
         attrTable: TypedAttributeEntityClass<*, *>,
         entity: SourceDataEntity,
-        field: Field
+        field: FieldConfiguration
     ) {
         var newValueList = newValue
         if (newValueList !is List<*>) {
@@ -160,5 +161,22 @@ class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
 
     private fun insertNewRecord(data: Map<String, Any?>): SourceDataEntity {
         return table.insertNewRecord(data)
+    }
+
+    private fun AttributeType.toSourceFieldType(): SourceFieldType = when (this) {
+        is AttributeStringType -> SourceFieldType.STRING
+        is AttributeIntType -> SourceFieldType.INT
+        is AttributeDoubleType -> SourceFieldType.DOUBLE
+        is AttributeBoolType -> SourceFieldType.BOOL
+        is AttributeTextType -> SourceFieldType.TEXT
+        is AttributeDateType -> SourceFieldType.DATE
+        is AttributeDateTimeType -> SourceFieldType.DATETIME
+        is AttributeStringListType -> SourceFieldType.STRING_LIST
+        is AttributeBoolListType -> SourceFieldType.BOOL_LIST
+        is AttributeIntListType -> SourceFieldType.INT_LIST
+        is AttributeDoubleListType -> SourceFieldType.DOUBLE_LIST
+        is AttributeDateListType -> SourceFieldType.DATE_LIST
+        is AttributeDateTimeListType -> SourceFieldType.DATETIME_LIST
+        is AttributeAttributeListType -> SourceFieldType.ATTRIBUTE_LIST
     }
 }
