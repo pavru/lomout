@@ -8,7 +8,7 @@ enum class MediumDataTarget {
     MAGE, ONEC
 }
 
-class MediumDataTargetColumnType() : ColumnType() {
+class MediumDataTargetColumnType : ColumnType() {
     override fun sqlType(): String = "VARCHAR(5)"
 
     override fun valueFromDB(value: Any): Any {

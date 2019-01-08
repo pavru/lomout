@@ -1,8 +1,12 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.dataset.*
-import net.pototskiy.apps.magemediation.config.dataset.FieldSet
+import net.pototskiy.apps.magemediation.config.EmptyRowAction
+import net.pototskiy.apps.magemediation.config.FieldSetType
+import net.pototskiy.apps.magemediation.config.loader.dataset.DatasetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldSetConfiguration
+import net.pototskiy.apps.magemediation.config.type.*
 import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser
@@ -24,7 +28,7 @@ abstract class AbstractLoader : LoaderInterface {
 
     private lateinit var updater: DatabaseUpdater
 
-    override fun load(sheet: Sheet, dataset: Dataset, emptyRowAction: EmptyRowAction) {
+    override fun load(sheet: Sheet, dataset: DatasetConfiguration, emptyRowAction: EmptyRowAction) {
         updater = DatabaseUpdater(tableSet)
         tableSet.resetTouchFlag()
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
@@ -56,11 +60,11 @@ abstract class AbstractLoader : LoaderInterface {
     }
 
     private fun processRow(
-        dataset: Dataset,
+        dataset: DatasetConfiguration,
         row: Row,
-        mainHeaders: List<Field>,
+        mainHeaders: List<FieldConfiguration>,
         generalData: MutableMap<String, Map<String, Any?>>,
-        allHeaders: List<Field>
+        allHeaders: List<FieldConfiguration>
     ) {
         val rowFiledSet = findRowFieldSet(dataset, row, allHeaders)
         if (rowFiledSet.type == FieldSetType.MAIN) {
@@ -75,9 +79,9 @@ abstract class AbstractLoader : LoaderInterface {
     }
 
     private fun getAllHeadersList(
-        mainHeaders: List<Field>,
-        dataset: Dataset
-    ): List<Field> {
+        mainHeaders: List<FieldConfiguration>,
+        dataset: DatasetConfiguration
+    ): List<FieldConfiguration> {
         return mainHeaders.plus(
             dataset.fieldSets.filter { it.type != FieldSetType.MAIN }
                 .flatMap { it.fields }
@@ -123,7 +127,7 @@ abstract class AbstractLoader : LoaderInterface {
         }
     }
 
-    private fun validateKeyFieldColumns(allHeaders: List<Field>) {
+    private fun validateKeyFieldColumns(allHeaders: List<FieldConfiguration>) {
         val keyFields = allHeaders.filter { it.keyField }
         val mainColumns = tableSet.mainTableHeaders
         if (!mainColumns.map { it.name }.containsAll(keyFields.map { it.name })) {
@@ -145,28 +149,28 @@ abstract class AbstractLoader : LoaderInterface {
         }
     }
 
-    private fun isKeyFiledTypeCompatible(column: Column<*>, field: Field): Boolean = transaction {
-        when {
-            column.columnType.sqlType().replace(Regex("\\(.+\\)"), "")
-                    == VarCharColumnType().sqlType().replace(Regex("\\(.*\\)"), "")
-                    && field.type == FieldType.STRING -> true
-            column.columnType.sqlType() == LongColumnType().sqlType()
-                    && field.type == FieldType.INT -> true
-            column.columnType.sqlType() == DoubleColumnType().sqlType()
-                    && field.type == FieldType.DOUBLE -> true
-            column.columnType.sqlType() == TextColumnType().sqlType()
-                    && field.type == FieldType.TEXT -> true
-            column.columnType.sqlType() == BooleanColumnType().sqlType()
-                    && field.type == FieldType.BOOL -> true
-            column.columnType.sqlType() == DateColumnType(false).sqlType()
-                    && field.type == FieldType.DATE -> true
-            column.columnType.sqlType() == DateColumnType(true).sqlType()
-                    && field.type == FieldType.DATETIME -> true
+    private fun isKeyFiledTypeCompatible(column: Column<*>, field: FieldConfiguration): Boolean = transaction {
+        when (field.type) {
+            is AttributeStringType,
+            is AttributeStringListType ->
+                (column.columnType.sqlType().replace(Regex("\\(.+\\)"), "")
+                        == VarCharColumnType().sqlType().replace(Regex("\\(.*\\)"), ""))
+            is AttributeIntType,
+            is AttributeIntListType -> column.columnType.sqlType() == LongColumnType().sqlType()
+            is AttributeDoubleType,
+            is AttributeDoubleListType -> column.columnType.sqlType() == DoubleColumnType().sqlType()
+            is AttributeTextType -> column.columnType.sqlType() == TextColumnType().sqlType()
+            is AttributeBoolType,
+            is AttributeBoolListType -> column.columnType.sqlType() == BooleanColumnType().sqlType()
+            is AttributeDateType,
+            is AttributeDateListType -> column.columnType.sqlType() == DateColumnType(false).sqlType()
+            is AttributeDateTimeType,
+            is AttributeDateTimeListType -> column.columnType.sqlType() == DateColumnType(true).sqlType()
             else -> false
         }
     }
 
-    private fun validateKeyFieldData(data: Map<String, Any?>, allHeaders: List<Field>) {
+    private fun validateKeyFieldData(data: Map<String, Any?>, allHeaders: List<FieldConfiguration>) {
         val keyFields = allHeaders.filter { it.keyField }
         keyFields.forEach {
             val v = data[it.name]
@@ -176,13 +180,13 @@ abstract class AbstractLoader : LoaderInterface {
         }
     }
 
-    private fun updateDatabase(data: Map<String, Any?>, allHeaders: List<Field>) {
+    private fun updateDatabase(data: Map<String, Any?>, allHeaders: List<FieldConfiguration>) {
         updater.update(data, allHeaders)
     }
 
-    private fun getData(row: Row, headers: List<Field>): Map<String, Any?> {
+    private fun getData(row: Row, headers: List<FieldConfiguration>): Map<String, Any?> {
         val data: MutableMap<String, Cell> = mutableMapOf()
-        headers.filter { !it.nested && it.type != FieldType.ATTRIBUTE_LIST }.forEach {
+        headers.filter { !it.nested && it.type !is AttributeAttributeListType }.forEach {
             val cell = row[it.column]
                 ?: throw LoaderException("There is no requested cell<${it.column + 1}> in row")
             testFieldRegex(it, cell)
@@ -198,19 +202,18 @@ abstract class AbstractLoader : LoaderInterface {
         return convertValues(data.toMap(), headers)
     }
 
-    private fun testFieldRegex(fieldDef: Field, cell: Cell) {
+    private fun testFieldRegex(fieldDef: FieldConfiguration, cell: Cell) {
         fieldDef.regex?.let {
-            val regex = Regex(it)
-            if (!regex.matches(cell.asString())) {
+            if (!it.matches(cell.asString())) {
                 throw LoaderException("Field<${fieldDef.name}> does not match required regular expression")
             }
         }
     }
 
-    private fun convertValues(cellValues: Map<String, Cell>, headers: List<Field>): Map<String, Any?> {
+    private fun convertValues(cellValues: Map<String, Cell>, headers: List<FieldConfiguration>): Map<String, Any?> {
         return cellValues
             .map { value ->
-                val field = headers.find { it.name == value.key } as Field
+                val field = headers.find { it.name == value.key } as FieldConfiguration
                 val newValue = try {
                     convertValue(value.value, field)
                 } catch (e: LoaderException) {
@@ -224,30 +227,34 @@ abstract class AbstractLoader : LoaderInterface {
             .toMap()
     }
 
-    private fun convertValue(value: Cell, fieldDef: Field): Any = when (fieldDef.type) {
-        FieldType.BOOL -> BooleanConverter(value, fieldDef).convert()
-        FieldType.INT -> IntegerConverter(value, fieldDef).convert()
-        FieldType.DOUBLE -> DoubleConverter(value, fieldDef).convert()
-        FieldType.STRING -> StringConverter(value, fieldDef).convert()
-        FieldType.TEXT -> StringConverter(value, fieldDef).convert()
-        FieldType.DATE -> DateConverter(value, fieldDef).convert()
-        FieldType.DATETIME -> DatetimeConverter(value, fieldDef).convert()
-        FieldType.BOOL_LIST -> BooleanConverter(value, fieldDef).convertList()
-        FieldType.INT_LIST -> IntegerConverter(value, fieldDef).convertList()
-        FieldType.DOUBLE_LIST -> DoubleConverter(value, fieldDef).convertList()
-        FieldType.STRING_LIST -> StringConverter(value, fieldDef).convertList()
-        FieldType.DATE_LIST -> DateConverter(value, fieldDef).convertList()
-        FieldType.DATETIME_LIST -> DatetimeConverter(value, fieldDef).convertList()
-        FieldType.ATTRIBUTE_LIST ->
+    private fun convertValue(value: Cell, fieldDef: FieldConfiguration): Any = when (fieldDef.type) {
+        is AttributeBoolType -> BooleanConverter(value, fieldDef).convert()
+        is AttributeIntType -> IntegerConverter(value, fieldDef).convert()
+        is AttributeDoubleType -> DoubleConverter(value, fieldDef).convert()
+        is AttributeStringType -> StringConverter(value, fieldDef).convert()
+        is AttributeTextType -> StringConverter(value, fieldDef).convert()
+        is AttributeDateType -> DateConverter(value, fieldDef).convert()
+        is AttributeDateTimeType -> DatetimeConverter(value, fieldDef).convert()
+        is AttributeBoolListType -> BooleanConverter(value, fieldDef).convertList()
+        is AttributeIntListType -> IntegerConverter(value, fieldDef).convertList()
+        is AttributeDoubleListType -> DoubleConverter(value, fieldDef).convertList()
+        is AttributeStringListType -> StringConverter(value, fieldDef).convertList()
+        is AttributeDateListType -> DateConverter(value, fieldDef).convertList()
+        is AttributeDateTimeListType -> DatetimeConverter(value, fieldDef).convertList()
+        is AttributeAttributeListType ->
             throw LoaderException("Field<${fieldDef.name}> attribute list can not converted to any type")
     }
 
-    private fun findRowFieldSet(dataset: Dataset, row: Row, headers: List<Field>): FieldSet {
+    private fun findRowFieldSet(
+        dataset: DatasetConfiguration,
+        row: Row,
+        headers: List<FieldConfiguration>
+    ): FieldSetConfiguration {
         return (if (dataset.fieldSets.count() > 1) {
-            var fittedSet: FieldSet? = null
+            var fittedSet: FieldSetConfiguration? = null
             for (set in dataset.fieldSets) {
                 var fit = true
-                for (field in set.fields.filter { field -> field.regex?.isNotBlank() ?: false }) {
+                for (field in set.fields.filter { field -> field.regex != null }) {
                     val cell = row[headers.findLast { it.name == field.name }!!.column]
                         ?: throw LoaderException(
                             "Workbook<${row.sheet.workbook.name}>, " +
@@ -255,7 +262,7 @@ abstract class AbstractLoader : LoaderInterface {
                                     "row<${row.rowNum + 1}> " +
                                     "does not exist, but it's required for roq classification"
                         )
-                    val regex = Regex(field.regex ?: ".*")
+                    val regex = field.regex ?: Regex(".*")
                     if (!regex.matches(cell.asString())) {
                         fit = false
                     }
@@ -277,7 +284,7 @@ abstract class AbstractLoader : LoaderInterface {
     }
 
     inner class NestedAttrProcessor {
-        fun getAttrValue(fieldDef: Field, row: Row, headers: List<Field>): Cell? {
+        fun getAttrValue(fieldDef: FieldConfiguration, row: Row, headers: List<FieldConfiguration>): Cell? {
             val parentDef = findParentDef(fieldDef, headers)
             val data = if (parentDef.nested) {
                 getAttrValue(parentDef, row, headers)?.toString()
@@ -300,7 +307,7 @@ abstract class AbstractLoader : LoaderInterface {
             return if (header == null) null else workbook[0][1]?.get(header.address.column)
         }
 
-        private fun findParentDef(nested: Field, headers: List<Field>): Field {
+        private fun findParentDef(nested: FieldConfiguration, headers: List<FieldConfiguration>): FieldConfiguration {
             return headers.find { it.name == nested.parent }
                 ?: throw LoaderException("Can not find parent field for nested one")
         }

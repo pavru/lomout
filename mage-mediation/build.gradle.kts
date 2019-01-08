@@ -1,11 +1,7 @@
-import name.remal.gradle_plugins.dsl.extensions.java
-import name.remal.gradle_plugins.dsl.extensions.testImplementation
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
-
 plugins {
-    id("java")
+    java
     kotlin("jvm") version "1.3.11"
-    id("idea")
+    idea
     id("jacoco")
 }
 
@@ -14,6 +10,11 @@ version = "1.0-SNAPSHOT"
 
 idea {
     module {
+        sourceDirs = setOf(
+            file("$projectDir/src/main/kotlin"),
+            file("$projectDir/src/main/java"),
+            file("$projectDir/config/.")
+        )
         outputDir = file("build/classes/kotlin/main")
         testOutputDir = file("build/classes/kotlin/test")
     }
@@ -22,6 +23,20 @@ idea {
 kotlin {
 
 }
+sourceSets {
+    main {
+        java.srcDir(file("$projectDir/config/."))
+    }
+//    create("config") {
+//        java.srcDir(file("$projectDir/config"))
+//        compileClasspath += sourceSets.main.get().output
+//        runtimeClasspath += sourceSets.main.get().output
+//    }
+}
+
+//val configImplementation: Configuration by configurations.getting {
+////    extendsFrom(configurations.implementation.get())
+//}
 
 tasks.test {
     @Suppress("UnstableApiUsage")
@@ -39,6 +54,16 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks.jar {
+    manifest {
+        attributes("Main-Class" to "net.pototskiy.apps.magemediation.MainKt")
+    }
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}
+
 repositories {
     jcenter()
 }
@@ -46,34 +71,39 @@ repositories {
 
 
 dependencies {
-    compile(project(":mage-mediation-api"))
-    compile(project(":mage-mediation-category"))
-    compile(kotlin("stdlib-jdk8"))
-    compile(group = "com.beust", name = "jcommander", version = "1.71")
+    //    configImplementation(project(":mage-mediation-api"))
+    implementation(project(":mage-mediation-api"))
+    implementation(project(":mage-mediation-category"))
+    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("reflect"))
+    implementation(group = "com.beust", name = "jcommander", version = "1.71")
     // Database
-    compile(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2")
+    implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2") {
+        exclude(group = "org.jetbrains.kotlin")
+        exclude(group = "org.slf4j")
+    }
     // Excel
-    compile(group = "org.apache.poi", name = "poi", version = "4.0.1")
-    compile(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")
+    implementation(group = "org.apache.poi", name = "poi", version = "4.0.1")
+    implementation(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")
     // CSV
-    compile(group = "org.apache.commons", name = "commons-csv", version = "1.6")
+    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.6")
     // MySql
-    compile(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
+    implementation(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
     // Logger
-    compile(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
-    compile(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
-    // JAXB
-//    compile(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
+    implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
+    implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
+    // Kotlin script
+    implementation(kotlin("script-runtime"))
+    implementation(kotlin("compiler-embeddable"))
+    implementation(kotlin("script-util"))
     // Test
     // testCompile(group = "junit", name = "junit", version = "4.12")
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.0-rc.1").apply {
+    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.0-rc.1") {
         exclude("org.jetbarins.kotlin")
     }
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.0-rc.1").apply {
+    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.0-rc.1") {
+        exclude(group = "org.jetbrains.kotlin")
     }
     testImplementation(group = "org.amshove.kluent", name = "kluent", version = "1.45")
 }
