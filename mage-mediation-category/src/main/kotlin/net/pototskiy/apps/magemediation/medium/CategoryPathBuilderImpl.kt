@@ -21,8 +21,8 @@ class CategoryPathBuilderImpl(
     private fun getLinkedGroups(entity: GroupEntity): List<GroupEntity> {
         val elements = mutableListOf(entity)
         var parent: GroupEntity? = entity
-        config.mediator.onecConfiguration?.groupConfiguration?.let { groupMediatorConfiguration ->
-            val regex = Regex(groupMediatorConfiguration.groupCodeStructure)
+        config.mediator.onec.group.let { groupMediatorConfiguration ->
+            val regex = Regex(groupMediatorConfiguration.codeStructure)
             val filler = groupMediatorConfiguration.subGroupFiller
             var parentCode = getParentGroupCode(parent!!.groupCode, regex, filler)
             while (parentCode != null) {

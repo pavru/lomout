@@ -18,6 +18,8 @@ abstract class DataEntityWithAttributeClass<out E : IntEntity>(
     entityClass: Class<E>? = null,
     vararg attrEntityClass: TypedAttributeEntityClass<*, *>
 ) : IntEntityClass<E>(table, entityClass) {
+
+    @Suppress("MemberVisibilityCanBePrivate")
     protected val attributes: List<TypedAttributeEntityClass<*, *>> = attrEntityClass.toList()
 
     fun getAttrEntityClassFor(type: SourceFieldType): TypedAttributeEntityClass<*, *>? = transaction {

@@ -9,7 +9,7 @@ object DataLoadingInNormalWay: Spek({
         Scenario("Loading data in production mode") {
             val util = LoadingDataTestPrepare()
             val config = util.loadConfiguration(
-                "E:/home/alexander/Development/Web/oooast-tools/mage-mediation/config.xml"
+                "E:/home/alexander/Development/Web/oooast-tools/mage-mediation/config/config.kts"
             )
             util.initDataBase()
             When("load data like configured") {

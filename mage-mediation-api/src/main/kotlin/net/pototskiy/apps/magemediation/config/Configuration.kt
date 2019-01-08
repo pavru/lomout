@@ -1,27 +1,15 @@
 package net.pototskiy.apps.magemediation.config
 
-import net.pototskiy.apps.magemediation.LOG_NAME
-import org.apache.commons.io.input.TeeInputStream
 import org.apache.log4j.Logger
 import java.io.File
 import java.io.InputStream
-import java.io.PipedInputStream
-import java.io.PipedOutputStream
+import javax.script.Compilable
 import javax.script.ScriptEngineManager
-import javax.xml.bind.JAXBContext
-import javax.xml.transform.stream.StreamSource
-import javax.xml.validation.SchemaFactory
+import javax.script.ScriptException
 
 class Configuration(private val input: InputStream) {
 
     constructor(file: String) : this(File(file).inputStream())
-
-    private val inForConfigRead: InputStream
-    private val inForConfigValidate: InputStream
-    init {
-        inForConfigRead = PipedInputStream()
-        inForConfigValidate = TeeInputStream(input, PipedOutputStream(inForConfigRead))
-    }
 
     private var configCache: Config? = null
     private val logger = Logger.getLogger("import")
@@ -48,37 +36,53 @@ class Configuration(private val input: InputStream) {
     }
 
     private fun readConfig(): Config? {
-        validateAgainstSchema()
-        val logger = Logger.getLogger(LOG_NAME)
-        val jaxbContext = JAXBContext.newInstance(Config::class.java)
-        val unmarshaller = jaxbContext.createUnmarshaller()
-        unmarshaller.listener = UnmarshallerListener()
         var config: Config? = null
         try {
-            inForConfigRead.use {
-                config = unmarshaller.unmarshal(it) as Config
+            System.setProperty("idea.io.use.fallback", "true")
+            val scriptEngine = ScriptEngineManager(Thread.currentThread().contextClassLoader)
+                .getEngineByExtension("kts")
+            input.reader().use {
+                val compiledScript = (scriptEngine as Compilable).compile(it)
+                config = compiledScript.eval() as Config
             }
         } catch (e: Exception) {
-            logger.error("Configuration error: ${e.message}")
-            if (e !is ConfigException) {
-                logger.error("Internal error", e)
+            when (e) {
+                is ConfigException -> logger.error(createConfigExceptionMessage(e))
+                is ScriptException -> logger.error(createScriptExceptionMessage(e))
+                else -> logger.error("Internal error", e)
             }
             System.exit(1)
         }
         return config
     }
 
-    private fun validateAgainstSchema() {
-        val v = ScriptEngineManager(Thread.currentThread().contextClassLoader).getEngineByExtension("kts")
-        inForConfigValidate.use {
-            val doc = StreamSource(it.reader())
-            val schemaDoc = StreamSource(File("E:\\home\\alexander\\Development\\Web\\oooast-tools\\mage-mediation-api\\src\\main\\xml\\config\\schema\\config.xsd"))
-            val sf = SchemaFactory.newInstance("http://www.w3.org/XML/XMLSchema/v1.1")
-            sf.setProperty("http://saxon.sf.net/feature/xsd-version", "1.1")
-            val s = sf.newSchema(schemaDoc)
-            val v = s.newValidator()
-            v.validate(doc)
+    private fun createScriptExceptionMessage(e: ScriptException): Any? {
+        val regex = Regex("${ConfigException::class.qualifiedName}: ")
+        val firstLine = e.message?.lines()?.get(0)
+        val lines = e.message?.lines() ?: listOf()
+        var lineNumber = 0
+        return if (firstLine != null && firstLine.contains(regex)) {
+            val message = firstLine.replace(regex, "")
+            for (line in lines) {
+                if (line.contains(Regex("\\.kts:[0-9]*"))) {
+                    val extractLine = Regex(".*\\.kts:([0-9]*).*")
+                    lineNumber = extractLine.matchEntire(line)?.groupValues?.get(1)?.toInt() ?: 0
+                    break
+                }
+            }
+            "Configuration error: line<$lineNumber>: $message"
+        } else {
+            val error = firstLine?.toLowerCase()?.replace("error: ", "")
+            "Configuration compilation error: ${error ?: e.message}"
         }
     }
 
+    private fun createConfigExceptionMessage(e: ConfigException): Any? {
+        val line = findLine(e)
+        return "Configuration error: line<$line>: ${e.message}"
+    }
+
+    private fun findLine(e: Exception): Int {
+        return e.stackTrace.find { it.fileName.endsWith(".kts") }?.lineNumber ?: 0
+    }
 }

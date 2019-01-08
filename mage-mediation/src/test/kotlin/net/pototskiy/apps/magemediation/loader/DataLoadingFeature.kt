@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.dataset.EmptyRowAction
+import net.pototskiy.apps.magemediation.config.EmptyRowAction
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import net.pototskiy.apps.magemediation.database.source.SourceDataStatus
 import net.pototskiy.apps.magemediation.source.excel.ExcelWorkbook
@@ -31,7 +31,7 @@ object DataLoadingFeature : Spek({
                 assertEquals(0, transaction { OnecProducts.selectAll().count() })
             }
             When("load product data to database") {
-                val dataset = config.datasets.find { it.name == "onec-test-product" }!!
+                val dataset = config.loader.datasets.find { it.name == "onec-test-product" }!!
                 loader.load(
                     workbook["test-stock"],
                     dataset,
@@ -55,7 +55,7 @@ object DataLoadingFeature : Spek({
                 )
             }
             When("repeat loading of product date without one of them") {
-                val dataset = config.datasets.find { it.name == "onec-test-product" }!!
+                val dataset = config.loader.datasets.find { it.name == "onec-test-product" }!!
                 val row = hssfWorkbook.getSheet("test-stock").getRow(5)
                 hssfWorkbook
                     .getSheet("test-stock")

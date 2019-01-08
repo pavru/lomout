@@ -1,14 +1,13 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.dataset.Field
-import net.pototskiy.apps.magemediation.config.dataset.ListDefinition
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
 import net.pototskiy.apps.magemediation.loader.LoaderException
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellType
 
 class BooleanConverter(
     private val cell: Cell,
-    private val field: Field
+    private val field: FieldConfiguration
 ) {
     fun convert(): Boolean {
         return when (cell.cellType) {
@@ -35,7 +34,7 @@ class BooleanConverter(
             CellType.STRING -> {
                 ValueListParser(
                     cell.stringValue,
-                    field.typeDefinitions.findLast { it is ListDefinition } as ListDefinition
+                    field.type
                 )
                     .parse()
                     .map { stringToBoolean(it) }

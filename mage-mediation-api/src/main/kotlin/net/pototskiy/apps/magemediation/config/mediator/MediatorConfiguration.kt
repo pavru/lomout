@@ -1,11 +1,9 @@
 package net.pototskiy.apps.magemediation.config.mediator
 
-import javax.xml.bind.annotation.XmlAccessType
-import javax.xml.bind.annotation.XmlAccessorType
-import javax.xml.bind.annotation.XmlElement
+import net.pototskiy.apps.magemediation.config.mediator.mage.MageMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.onec.OnecMediatorConfiguration
 
-@XmlAccessorType(XmlAccessType.FIELD)
-class MediatorConfiguration {
-    @field:XmlElement(name = "onec", required = false)
-    var onecConfiguration: OnecMediatorConfiguration? = null
-}
+data class MediatorConfiguration(
+    val onec: OnecMediatorConfiguration,
+    val magento: MageMediatorConfiguration
+)
