@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.config
 
-import net.pototskiy.apps.magemediation.config.newOne.Config
 import org.apache.log4j.Logger
 import java.io.File
 import java.io.InputStream
@@ -62,7 +61,7 @@ class Configuration(private val input: InputStream) {
         val firstLine = e.message?.lines()?.get(0)
         val lines = e.message?.lines() ?: listOf()
         var lineNumber = 0
-        if (firstLine != null && firstLine.contains(regex)) {
+        return if (firstLine != null && firstLine.contains(regex)) {
             val message = firstLine.replace(regex, "")
             for (line in lines) {
                 if (line.contains(Regex("\\.kts:[0-9]*"))) {
@@ -71,15 +70,16 @@ class Configuration(private val input: InputStream) {
                     break
                 }
             }
-            return "Configuration error: line<$lineNumber>: $message"
+            "Configuration error: line<$lineNumber>: $message"
         } else {
             val error = firstLine?.toLowerCase()?.replace("error: ", "")
-            return "Configuration compilation error: ${error ?: e.message}"
+            "Configuration compilation error: ${error ?: e.message}"
         }
     }
 
     private fun createConfigExceptionMessage(e: ConfigException): Any? {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val line = findLine(e)
+        return "Configuration error: line<$line>: ${e.message}"
     }
 
     private fun findLine(e: Exception): Int {

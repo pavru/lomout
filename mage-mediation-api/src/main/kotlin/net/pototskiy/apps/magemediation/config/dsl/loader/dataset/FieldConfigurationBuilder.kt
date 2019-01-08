@@ -1,11 +1,11 @@
 package net.pototskiy.apps.magemediation.config.dsl.loader.dataset
 
+import net.pototskiy.apps.magemediation.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.config.ConfigException
-import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
 import net.pototskiy.apps.magemediation.config.dsl.type.AttributeTypeBuilder
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeType
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.type.AttributeType
 
 @ConfigDsl
 class FieldConfigurationBuilder(private val name: String) {
@@ -34,7 +34,8 @@ class FieldConfigurationBuilder(private val name: String) {
     fun FieldConfigurationBuilder.nested(): FieldConfigurationBuilder = this.apply { nested = true }
 
     @Suppress("unused")
-    fun FieldConfigurationBuilder.parent(parent: String): FieldConfigurationBuilder = this.apply { this.parent = parent }
+    fun FieldConfigurationBuilder.parent(parent: String): FieldConfigurationBuilder =
+        this.apply { this.parent = parent }
 
     @Suppress("unused")
     fun FieldConfigurationBuilder.optional(): FieldConfigurationBuilder = this.apply { optional = true }
@@ -44,7 +45,16 @@ class FieldConfigurationBuilder(private val name: String) {
         val type = this.type ?: AttributeTypeBuilder().build()
         val regex = regex?.let { Regex(it) }
         validateNestedIsNotKey()
-        return FieldConfiguration(name, column, regex, type, keyField, nested, parent, optional)
+        return FieldConfiguration(
+            name,
+            column,
+            regex,
+            type,
+            keyField,
+            nested,
+            parent,
+            optional
+        )
     }
 
     private fun validateNestedIsNotKey() {

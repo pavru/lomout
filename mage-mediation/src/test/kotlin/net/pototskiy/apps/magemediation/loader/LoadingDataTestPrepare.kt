@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.config.Configuration
-import net.pototskiy.apps.magemediation.config.newOne.Config
+import net.pototskiy.apps.magemediation.config.Config
 import net.pototskiy.apps.magemediation.database.initDatabase
 import org.apache.log4j.BasicConfigurator
 import org.apache.log4j.Level

@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.medium
 
-import net.pototskiy.apps.magemediation.config.newOne.Config
+import net.pototskiy.apps.magemediation.config.Config
 import net.pototskiy.apps.magemediation.database.mage.CategoryEntityClass
 import net.pototskiy.apps.magemediation.database.onec.GroupEntityClass
 
-class CategoryPluginImpl() : CategoryPlugin {
+class CategoryPluginImpl : CategoryPlugin {
     private lateinit var mageCategories: CategoryEntityClass
     private lateinit var onecGroups: GroupEntityClass
     private lateinit var config: Config

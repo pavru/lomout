@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.config.dsl.loader.dataset
 
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.DataSourceConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.DataSourceConfiguration
 
 @ConfigDsl
 class DataSourceConfigurationsBuilder {

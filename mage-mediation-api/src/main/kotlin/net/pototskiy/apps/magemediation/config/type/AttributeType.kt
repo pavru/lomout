@@ -1,12 +1,13 @@
-package net.pototskiy.apps.magemediation.config.newOne.type
+package net.pototskiy.apps.magemediation.config.type
 
 import java.util.*
 
+@Suppress("MemberVisibilityCanBePrivate")
 sealed class AttributeType(
-    val isList: Boolean,
+    @Suppress("unused") val isList: Boolean,
     val hasLocale: Boolean,
     val hasPattern: Boolean,
-    val isAttrList: Boolean
+    @Suppress("unused") val isAttrList: Boolean
 ) {
     open val locale: String = ""
     open val pattern: String = ""

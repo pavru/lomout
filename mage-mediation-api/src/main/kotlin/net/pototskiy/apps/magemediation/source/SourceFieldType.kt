@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.source
 
-enum class SourceFieldType(val isList: Boolean = false) {
+enum class SourceFieldType(@Suppress("unused") val isList: Boolean = false) {
     BOOL,
     INT,
     DOUBLE,

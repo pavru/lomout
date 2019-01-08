@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.config.dsl.loader.dataset
 
+import net.pototskiy.apps.magemediation.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.DataSourceConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.DatasetConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldSetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.DataSourceConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.DatasetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldSetConfiguration
 
 @ConfigDsl
 class DatasetConfigurationBuilder(
@@ -62,15 +62,25 @@ class DatasetConfigurationBuilder(
         val sources = this.sources ?: listOf()
         val fieldSets = this.fieldSets ?: listOf()
         validateFieldColumnDefinition()
-        return DatasetConfiguration(name, headersRow, rowsToSkip, maxAbsentDays, target, sources, fieldSets)
+        return DatasetConfiguration(
+            name,
+            headersRow,
+            rowsToSkip,
+            maxAbsentDays,
+            target,
+            sources,
+            fieldSets
+        )
     }
 
     private fun validateFieldColumnDefinition() {
         val fields = fieldSets!!.flatMap { it.fields }.filter { !it.nested }
         if (this.headersRow == null && fields.any { it.column == UNDEFINED_COLUMN }) {
-            throw ConfigException("Dataset has no headers row but " +
-                    "fields<${fields.filter { it.column == UNDEFINED_COLUMN }.joinToString(", ")}> " +
-                    "has no column defined")
+            throw ConfigException(
+                "Dataset has no headers row but " +
+                        "fields<${fields.filter { it.column == UNDEFINED_COLUMN }.joinToString(", ")}> " +
+                        "has no column defined"
+            )
         }
     }
 }

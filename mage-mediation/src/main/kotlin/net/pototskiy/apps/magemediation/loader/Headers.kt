@@ -1,11 +1,11 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.DEFAULT_LOCALE
-import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
-import net.pototskiy.apps.magemediation.config.dataset.FieldSetType
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.DatasetConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeStringType
+import net.pototskiy.apps.magemediation.UNDEFINED_COLUMN
+import net.pototskiy.apps.magemediation.config.FieldSetType
+import net.pototskiy.apps.magemediation.config.loader.dataset.DatasetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.type.AttributeStringType
 import net.pototskiy.apps.magemediation.source.Sheet
 
 class Headers(private val sheet: Sheet, private val dataset: DatasetConfiguration) {

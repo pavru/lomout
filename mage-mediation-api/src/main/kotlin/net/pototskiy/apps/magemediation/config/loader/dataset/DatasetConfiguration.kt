@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.newOne.loader.dataset
+package net.pototskiy.apps.magemediation.config.loader.dataset
 
 import net.pototskiy.apps.magemediation.config.DatasetTarget
 

@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.config.dsl
 
-import net.pototskiy.apps.magemediation.config.newOne.DatabaseConfig
-import net.pototskiy.apps.magemediation.config.newOne.DatabaseServerConfig
+import net.pototskiy.apps.magemediation.config.DatabaseConfig
+import net.pototskiy.apps.magemediation.config.DatabaseServerConfig
 
 @ConfigDsl
 class DatabaseConfigBuilder {

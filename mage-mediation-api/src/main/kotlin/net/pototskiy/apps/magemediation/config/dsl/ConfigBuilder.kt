@@ -1,18 +1,15 @@
 package net.pototskiy.apps.magemediation.config.dsl
 
-import net.pototskiy.apps.magemediation.LOG_NAME
+import net.pototskiy.apps.magemediation.config.Config
 import net.pototskiy.apps.magemediation.config.ConfigException
+import net.pototskiy.apps.magemediation.config.DatabaseConfig
 import net.pototskiy.apps.magemediation.config.dsl.loader.LoaderConfigurationBuilder
 import net.pototskiy.apps.magemediation.config.dsl.mediator.MediatorConfigurationBuilder
-import net.pototskiy.apps.magemediation.config.newOne.Config
-import net.pototskiy.apps.magemediation.config.newOne.DatabaseConfig
-import net.pototskiy.apps.magemediation.config.newOne.loader.LoaderConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.mediator.MediatorConfiguration
-import org.apache.log4j.Logger
+import net.pototskiy.apps.magemediation.config.loader.LoaderConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.MediatorConfiguration
 
 @ConfigDsl
 class ConfigBuilder {
-    private val logger = Logger.getLogger(LOG_NAME)
     private var database: DatabaseConfig? = null
     private var loader: LoaderConfiguration? = null
     private var mediator: MediatorConfiguration? = null

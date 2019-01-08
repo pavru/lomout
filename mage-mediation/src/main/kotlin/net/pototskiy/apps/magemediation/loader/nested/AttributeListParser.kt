@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader.nested
 
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeAttributeListType
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.type.AttributeAttributeListType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.QuoteMode

@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.newOne.loader
+package net.pototskiy.apps.magemediation.config.loader
 
 data class DataFileConfiguration (
     val id: String,

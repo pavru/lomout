@@ -4,9 +4,9 @@ import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
 import net.pototskiy.apps.magemediation.config.dsl.mediator.mage.MageMediatorConfigurationBuilder
 import net.pototskiy.apps.magemediation.config.dsl.mediator.onec.OnecMediatorConfigurationBuilder
-import net.pototskiy.apps.magemediation.config.newOne.mediator.mage.MageMediatorConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.mediator.MediatorConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.mediator.onec.OnecMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.mage.MageMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.MediatorConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.onec.OnecMediatorConfiguration
 
 @ConfigDsl
 class MediatorConfigurationBuilder {
@@ -26,7 +26,7 @@ class MediatorConfigurationBuilder {
     fun build(): MediatorConfiguration {
         return MediatorConfiguration(
             onecConf ?: throw ConfigException("Mediator section must include OneC configuration"),
-            mageConf?: throw ConfigException("Mediator section must include Magento configuration")
+            mageConf ?: throw ConfigException("Mediator section must include Magento configuration")
         )
     }
 }

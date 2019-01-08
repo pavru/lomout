@@ -4,10 +4,10 @@ import net.pototskiy.apps.magemediation.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
 import net.pototskiy.apps.magemediation.config.dsl.type.AttributeTypeBuilder
-import net.pototskiy.apps.magemediation.config.newOne.mediator.onec.OnecGroupMediatorConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeStringType
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeTextType
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeType
+import net.pototskiy.apps.magemediation.config.mediator.onec.OnecGroupMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.type.AttributeStringType
+import net.pototskiy.apps.magemediation.config.type.AttributeTextType
+import net.pototskiy.apps.magemediation.config.type.AttributeType
 
 @ConfigDsl
 class OnecGroupMediatorConfigurationBuilder {
@@ -31,7 +31,10 @@ class OnecGroupMediatorConfigurationBuilder {
     fun build(): OnecGroupMediatorConfiguration {
         return OnecGroupMediatorConfiguration(
             groupCodeAttributeName ?: throw ConfigException("OneC group code attribute name must be configured"),
-            groupCodeAttributeType ?: AttributeStringType(false, DEFAULT_LOCALE),
+            groupCodeAttributeType ?: AttributeStringType(
+                false,
+                DEFAULT_LOCALE
+            ),
             codeStructure,
             subCodeFiller,
             pathSeparator,

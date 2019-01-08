@@ -3,7 +3,7 @@ package net.pototskiy.apps.magemediation.config.dsl.type
 import net.pototskiy.apps.magemediation.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.type.*
+import net.pototskiy.apps.magemediation.config.type.*
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -252,9 +252,9 @@ class AttributeTypeBuilder(private val allowedTypes: List<KClass<out AttributeTy
         if (valueDelimiter != null) this.valueDelimiter = valueDelimiter
         typeBuilder = {
             val realQuote = this.quote
-                ?: throw ConfigException("Quote must be configuraed for attribute list")
+                ?: throw ConfigException("Quote must be configured for attribute list")
             val realDelimiter = this.delimiter
-                ?: throw ConfigException("Delimiter must be configuraed for attribute list")
+                ?: throw ConfigException("Delimiter must be configured for attribute list")
             val realValueQuote = this.valueQuote ?: "\""
             val realValueDelimiter = this.valueDelimiter ?: "="
             AttributeAttributeListType(
@@ -269,7 +269,10 @@ class AttributeTypeBuilder(private val allowedTypes: List<KClass<out AttributeTy
 
     fun build(): AttributeType {
         validateLocale()
-        val type = this.typeBuilder?.invoke() ?: AttributeStringType(false, DEFAULT_LOCALE)
+        val type = this.typeBuilder?.invoke() ?: AttributeStringType(
+            false,
+            DEFAULT_LOCALE
+        )
         if (allowedTypes.isNotEmpty() && !allowedTypes.contains(type::class)) {
             throw ConfigException("Type<${type::class.simpleName}> is not allowed in this context")
         }
@@ -295,6 +298,7 @@ class AttributeTypeBuilder(private val allowedTypes: List<KClass<out AttributeTy
         }
     }
 
+    @Suppress("unused")
     @ConfigDsl
     inner class LocalePatternBuilder {
         fun locale(locale: String): LocalePatternBuilder {
@@ -339,6 +343,7 @@ class AttributeTypeBuilder(private val allowedTypes: List<KClass<out AttributeTy
         }
     }
 
+    @Suppress("unused")
     @ConfigDsl
     inner class QuoteDelimiterLocalePatternBuilder {
         fun locale(locale: String): QuoteDelimiterLocalePatternBuilder {

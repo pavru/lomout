@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.dataset.EmptyRowAction
-import net.pototskiy.apps.magemediation.config.dataset.FieldSetType
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.DatasetConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldSetConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.*
+import net.pototskiy.apps.magemediation.config.EmptyRowAction
+import net.pototskiy.apps.magemediation.config.FieldSetType
+import net.pototskiy.apps.magemediation.config.loader.dataset.DatasetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldSetConfiguration
+import net.pototskiy.apps.magemediation.config.type.*
 import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser

@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.config.dsl.loader
 
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.loader.DataFileConfiguration
+import net.pototskiy.apps.magemediation.config.loader.DataFileConfiguration
 
 @ConfigDsl
 class DataFilesConfigurationsBuilder {
@@ -15,11 +15,21 @@ class DataFilesConfigurationsBuilder {
     @Suppress("unused")
     fun DataFilesConfigurationsBuilder.id(id: String) = FileID(id)
 
-    infix fun FilePath.linkedToID(id: String) = files.add(DataFileConfiguration(id, this.path))
+    infix fun FilePath.linkedToID(id: String) = files.add(
+        DataFileConfiguration(
+            id,
+            this.path
+        )
+    )
     @Suppress("unused")
     fun DataFilesConfigurationsBuilder.path(path: String) = FilePath(path)
 
-    infix fun FileID.assignedToPath(path: String) = files.add(DataFileConfiguration(this.id, path))
+    infix fun FileID.assignedToPath(path: String) = files.add(
+        DataFileConfiguration(
+            this.id,
+            path
+        )
+    )
 
     fun build(): List<DataFileConfiguration> {
         if (files.isEmpty()) {

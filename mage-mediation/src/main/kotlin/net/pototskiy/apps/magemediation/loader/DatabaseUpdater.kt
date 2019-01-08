@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.*
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.toSourceFieldType
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
 import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
 import net.pototskiy.apps.magemediation.database.TypedAttributeTable
@@ -161,22 +161,5 @@ class DatabaseUpdater(private val table: SourceDataEntityClass<*>) {
 
     private fun insertNewRecord(data: Map<String, Any?>): SourceDataEntity {
         return table.insertNewRecord(data)
-    }
-
-    private fun AttributeType.toSourceFieldType(): SourceFieldType = when (this) {
-        is AttributeStringType -> SourceFieldType.STRING
-        is AttributeIntType -> SourceFieldType.INT
-        is AttributeDoubleType -> SourceFieldType.DOUBLE
-        is AttributeBoolType -> SourceFieldType.BOOL
-        is AttributeTextType -> SourceFieldType.TEXT
-        is AttributeDateType -> SourceFieldType.DATE
-        is AttributeDateTimeType -> SourceFieldType.DATETIME
-        is AttributeStringListType -> SourceFieldType.STRING_LIST
-        is AttributeBoolListType -> SourceFieldType.BOOL_LIST
-        is AttributeIntListType -> SourceFieldType.INT_LIST
-        is AttributeDoubleListType -> SourceFieldType.DOUBLE_LIST
-        is AttributeDateListType -> SourceFieldType.DATE_LIST
-        is AttributeDateTimeListType -> SourceFieldType.DATETIME_LIST
-        is AttributeAttributeListType -> SourceFieldType.ATTRIBUTE_LIST
     }
 }

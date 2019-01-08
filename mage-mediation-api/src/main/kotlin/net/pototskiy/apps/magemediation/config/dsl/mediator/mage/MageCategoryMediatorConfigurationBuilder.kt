@@ -4,10 +4,10 @@ import net.pototskiy.apps.magemediation.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
 import net.pototskiy.apps.magemediation.config.dsl.type.AttributeTypeBuilder
-import net.pototskiy.apps.magemediation.config.newOne.mediator.mage.MageCategoryMediatorConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeStringType
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeTextType
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeType
+import net.pototskiy.apps.magemediation.config.mediator.mage.MageCategoryMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.type.AttributeStringType
+import net.pototskiy.apps.magemediation.config.type.AttributeTextType
+import net.pototskiy.apps.magemediation.config.type.AttributeType
 
 @ConfigDsl
 class MageCategoryMediatorConfigurationBuilder {
@@ -25,7 +25,10 @@ class MageCategoryMediatorConfigurationBuilder {
     fun build(): MageCategoryMediatorConfiguration {
         return MageCategoryMediatorConfiguration(
             pathAttribute ?: throw ConfigException("Path attribute name must be configured"),
-            pathAttributeType ?: AttributeStringType(false, DEFAULT_LOCALE),
+            pathAttributeType ?: AttributeStringType(
+                false,
+                DEFAULT_LOCALE
+            ),
             root ?: "",
             separator ?: "/"
         )

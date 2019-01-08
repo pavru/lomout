@@ -3,9 +3,9 @@ package net.pototskiy.apps.magemediation.config.dsl.loader
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
 import net.pototskiy.apps.magemediation.config.dsl.loader.dataset.DatasetConfigurationsBuilder
-import net.pototskiy.apps.magemediation.config.newOne.loader.DataFileConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.LoaderConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.DatasetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.DataFileConfiguration
+import net.pototskiy.apps.magemediation.config.loader.LoaderConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.DatasetConfiguration
 
 @ConfigDsl
 class LoaderConfigurationBuilder {
@@ -25,6 +25,7 @@ class LoaderConfigurationBuilder {
         files = DataFilesConfigurationsBuilder().apply(block).build()
     }
 
+    @Suppress("unused")
     fun LoaderConfigurationBuilder.datasets(block: DatasetConfigurationsBuilder.() -> Unit) {
         datasets = DatasetConfigurationsBuilder().apply(block).build()
     }

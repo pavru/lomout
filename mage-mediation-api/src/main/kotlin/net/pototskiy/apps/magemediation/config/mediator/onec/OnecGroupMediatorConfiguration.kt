@@ -1,6 +1,6 @@
-package net.pototskiy.apps.magemediation.config.newOne.mediator.onec
+package net.pototskiy.apps.magemediation.config.mediator.onec
 
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeType
+import net.pototskiy.apps.magemediation.config.type.AttributeType
 
 
 data class OnecGroupMediatorConfiguration (

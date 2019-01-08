@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.newOne
+package net.pototskiy.apps.magemediation.config
 
 data class DatabaseServerConfig (
     val host: String,

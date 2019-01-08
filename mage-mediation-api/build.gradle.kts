@@ -53,13 +53,6 @@ dependencies {
     implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
     // Apache commons io
     implementation("commons-io", "commons-io", "2.6")
-    // JAXB
-    implementation("javax.xml.bind", "jaxb-api", "2.3.1")
-    implementation("com.sun.xml.bind", "jaxb-core", "2.3.0.1")
-    //implementation(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
-    //implementation(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
-    // XML
-    implementation(group = "xerces", name = "xercesImpl", version = "2.12.0")
     // Kotlin script
     implementation(kotlin("script-runtime"))
     implementation(kotlin("compiler-embeddable"))

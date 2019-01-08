@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.LOG_NAME
 import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.newOne.Config
+import net.pototskiy.apps.magemediation.config.Config
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
 import java.io.File
 import java.util.logging.Logger

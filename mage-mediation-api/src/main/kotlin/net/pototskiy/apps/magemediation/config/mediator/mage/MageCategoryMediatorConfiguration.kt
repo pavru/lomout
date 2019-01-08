@@ -1,6 +1,6 @@
-package net.pototskiy.apps.magemediation.config.newOne.mediator.mage
+package net.pototskiy.apps.magemediation.config.mediator.mage
 
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeType
+import net.pototskiy.apps.magemediation.config.type.AttributeType
 
 
 data class MageCategoryMediatorConfiguration(

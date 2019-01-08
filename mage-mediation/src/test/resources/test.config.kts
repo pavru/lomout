@@ -1,5 +1,5 @@
 import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.dataset.EmptyRowAction
+import net.pototskiy.apps.magemediation.config.EmptyRowAction
 import net.pototskiy.apps.magemediation.config.dsl.config
 
 config {

@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.newOne.type.AttributeType
+import net.pototskiy.apps.magemediation.config.type.AttributeType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.QuoteMode

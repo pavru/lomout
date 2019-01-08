@@ -1,11 +1,11 @@
 package net.pototskiy.apps.magemediation.config.dsl.loader.dataset
 
+import net.pototskiy.apps.magemediation.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.config.ConfigException
-import net.pototskiy.apps.magemediation.config.dataset.Field.Companion.UNDEFINED_COLUMN
-import net.pototskiy.apps.magemediation.config.dataset.FieldSetType
+import net.pototskiy.apps.magemediation.config.FieldSetType
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldSetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldSetConfiguration
 
 @ConfigDsl
 class FieldSetConfigurationBuilder(
@@ -57,8 +57,7 @@ class FieldSetConfigurationBuilder(
         if (!names.containsAll(parentNames)) {
             val wrongParents = parentNames.minus(names)
             val wrongFields = fields.filter { it.nested && wrongParents.contains(it.parent) }
-                .map { it.name }
-                .joinToString(", ")
+                .joinToString(", ") { it.name }
             throw ConfigException("Fields<$wrongFields> have wrong parents")
         }
     }
@@ -76,7 +75,7 @@ class FieldSetConfigurationBuilder(
         val dupNames = fields.groupBy { it.name }
         if (dupNames.any { it.value.size > 1 }) {
             throw ConfigException(
-                "Field names<${dupNames.filter { it.value.size > 0 }.keys.joinToString(", ")} are duplicated>"
+                "Field names<${dupNames.filter { it.value.size > 1 }.keys.joinToString(", ")} are duplicated>"
             )
         }
     }

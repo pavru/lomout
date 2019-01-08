@@ -8,7 +8,7 @@ enum class MediumDataState {
     REMOVE, SKIP, CREATE, UPDATE
 }
 
-class MediumDataStateColumnType() : ColumnType() {
+class MediumDataStateColumnType : ColumnType() {
     override fun sqlType(): String = "VARCHAR(10)"
 
     override fun valueFromDB(value: Any): Any {

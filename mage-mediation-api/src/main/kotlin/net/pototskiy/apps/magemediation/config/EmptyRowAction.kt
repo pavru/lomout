@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.dataset
+package net.pototskiy.apps.magemediation.config
 
 import javax.xml.bind.annotation.XmlEnum
 import javax.xml.bind.annotation.XmlEnumValue

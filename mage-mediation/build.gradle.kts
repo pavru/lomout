@@ -10,7 +10,11 @@ version = "1.0-SNAPSHOT"
 
 idea {
     module {
-        sourceDirs.add(file("$projectDir/config"))
+        sourceDirs = setOf(
+            file("$projectDir/src/main/kotlin"),
+            file("$projectDir/src/main/java"),
+            file("$projectDir/config/.")
+        )
         outputDir = file("build/classes/kotlin/main")
         testOutputDir = file("build/classes/kotlin/test")
     }
@@ -21,17 +25,18 @@ kotlin {
 }
 sourceSets {
     main {
+        java.srcDir(file("$projectDir/config/."))
     }
-    create("config") {
-        java.srcDir(file("$projectDir/config"))
-        compileClasspath += sourceSets.main.get().output
-        runtimeClasspath += sourceSets.main.get().output
-    }
+//    create("config") {
+//        java.srcDir(file("$projectDir/config"))
+//        compileClasspath += sourceSets.main.get().output
+//        runtimeClasspath += sourceSets.main.get().output
+//    }
 }
 
-val configImplementation by configurations.getting {
-    extendsFrom(configurations.implementation.get())
-}
+//val configImplementation: Configuration by configurations.getting {
+////    extendsFrom(configurations.implementation.get())
+//}
 
 tasks.test {
     @Suppress("UnstableApiUsage")
@@ -66,6 +71,7 @@ repositories {
 
 
 dependencies {
+    //    configImplementation(project(":mage-mediation-api"))
     implementation(project(":mage-mediation-api"))
     implementation(project(":mage-mediation-category"))
     implementation(kotlin("stdlib-jdk8"))
@@ -86,11 +92,6 @@ dependencies {
     // Logger
     implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
     implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
-    // JAXB
-//    compile(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
     // Kotlin script
     implementation(kotlin("script-runtime"))
     implementation(kotlin("compiler-embeddable"))

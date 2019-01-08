@@ -2,8 +2,8 @@ package net.pototskiy.apps.magemediation.config.dsl.mediator.onec
 
 import net.pototskiy.apps.magemediation.config.ConfigException
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.mediator.onec.OnecGroupMediatorConfiguration
-import net.pototskiy.apps.magemediation.config.newOne.mediator.onec.OnecMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.onec.OnecGroupMediatorConfiguration
+import net.pototskiy.apps.magemediation.config.mediator.onec.OnecMediatorConfiguration
 
 @ConfigDsl
 class OnecMediatorConfigurationBuilder {

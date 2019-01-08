@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.config.newOne.mediator.mage
+package net.pototskiy.apps.magemediation.config.mediator.mage
 
 data class MageMediatorConfiguration(
     val category: MageCategoryMediatorConfiguration

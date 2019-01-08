@@ -52,11 +52,6 @@ dependencies {
     // Logger
     implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
     implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
-    // JAXB
-//    compile(group = "javax.xml.bind", name = "jaxb-api", version = "2.3.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-core", version = "2.3.0.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-impl", version = "2.3.1")
-//    compile(group = "com.sun.xml.bind", name = "jaxb-jxc", version = "2.3.1")
     // Test
     testImplementation(group = "junit", name = "junit", version = "4.12")
 }

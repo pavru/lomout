@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.config.dsl.loader.dataset
 
 import net.pototskiy.apps.magemediation.config.ConfigException
-import net.pototskiy.apps.magemediation.config.dataset.FieldSetType
+import net.pototskiy.apps.magemediation.config.FieldSetType
 import net.pototskiy.apps.magemediation.config.dsl.ConfigDsl
-import net.pototskiy.apps.magemediation.config.newOne.loader.dataset.FieldSetConfiguration
+import net.pototskiy.apps.magemediation.config.loader.dataset.FieldSetConfiguration
 
 @ConfigDsl
 class FieldSetConfigurationsBuilder {

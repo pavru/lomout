@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.config.dsl
 
-import net.pototskiy.apps.magemediation.config.newOne.DatabaseServerConfig
+import net.pototskiy.apps.magemediation.config.DatabaseServerConfig
 
 @ConfigDsl
 class DatabaseServerConfigBuilder {
@@ -21,5 +21,6 @@ class DatabaseServerConfigBuilder {
      */
     var password: String = "root"
 
-    fun build(): DatabaseServerConfig = DatabaseServerConfig(host, port, user, password)
+    fun build(): DatabaseServerConfig =
+        DatabaseServerConfig(host, port, user, password)
 }
