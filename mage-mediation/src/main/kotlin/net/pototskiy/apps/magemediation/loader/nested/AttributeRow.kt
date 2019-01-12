@@ -9,7 +9,9 @@ class AttributeRow(
     private val _row: Int,
     private val _data: Array<String>,
     private val _sheet: AttributeSheet
-): Row {
+) : Row {
+    override fun getOrEmptyCell(column: Int): Cell = get(column)
+
     override val sheet: Sheet
         get() = _sheet
     override val rowNum: Int
@@ -17,7 +19,7 @@ class AttributeRow(
 
     override fun countCell(): Int = _data.count()
 
-    override fun get(column: Int): Cell = AttributeCell(CellAddress(_row,column), _data[column],this)
+    override fun get(column: Int): Cell = AttributeCell(CellAddress(_row, column), _data[column], this)
 
     override fun iterator(): Iterator<Cell> = AttributeCellIterator(this)
 }

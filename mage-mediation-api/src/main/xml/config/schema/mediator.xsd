@@ -31,7 +31,7 @@
             <xs:element name="category" minOccurs="0" type="MageCategoryMediatorConfiguration"/>
         </xs:sequence>
     </xs:complexType>
-    <xs:complexType name="MageCategoryMediatorConfiguration">
+    <xs:complexType name="MageCategoryConfiguration">
         <xs:sequence>
             <xs:element name="path-attribute" minOccurs="0">
                 <xs:complexType>

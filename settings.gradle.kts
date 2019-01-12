@@ -19,5 +19,10 @@ pluginManagement {
     }
 }
 
-include(":mage-mediation", ":mage-mediation-api", ":mage-mediation-category")
+include(
+    ":mage-mediation",
+    ":mage-mediation-api",
+    ":mage-mediation-plugins",
+    ":mage-mediation-config-dsl"
+)
 

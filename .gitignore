@@ -4,6 +4,7 @@
 /build/
 /mage-mediation/out/
 /mage-mediation/build/
+/mage-mediation/log/
 /.gradle/
 .~lock*.xlsx#
 .~lock*.xls#

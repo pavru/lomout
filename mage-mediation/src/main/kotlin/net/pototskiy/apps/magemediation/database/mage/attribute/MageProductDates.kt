@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.database.mage.attribute
 
-import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
-import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
-import net.pototskiy.apps.magemediation.database.TypedAttributeTable
+import net.pototskiy.apps.magemediation.api.database.TypedAttributeEntity
+import net.pototskiy.apps.magemediation.api.database.TypedAttributeEntityClass
+import net.pototskiy.apps.magemediation.api.database.TypedAttributeTable
 import net.pototskiy.apps.magemediation.database.mage.MageProducts
 import org.jetbrains.exposed.dao.EntityID
 import org.joda.time.DateTime

@@ -1,10 +1,9 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.Configuration
-import net.pototskiy.apps.magemediation.config.Config
+import net.pototskiy.apps.magemediation.api.config.Config
+import net.pototskiy.apps.magemediation.api.config.Configuration
 import net.pototskiy.apps.magemediation.database.initDatabase
-import org.apache.log4j.BasicConfigurator
-import org.apache.log4j.Level
+import org.apache.logging.log4j.Level
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.io.File
 
@@ -12,7 +11,7 @@ class LoadingDataTestPrepare {
     private lateinit var config: Config
 
     init {
-        BasicConfigurator.configure()
+//        BasicConfigurator.configure()
     }
 
     fun loadConfiguration(): Config {

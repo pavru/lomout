@@ -1,5 +1,8 @@
 package net.pototskiy.apps.magemediation.database.mage
 
+import net.pototskiy.apps.magemediation.api.database.mage.StockSourceEntity
+import net.pototskiy.apps.magemediation.api.database.mage.StockSourceEntityClass
+import net.pototskiy.apps.magemediation.api.database.mage.StockSourceTable
 import org.jetbrains.exposed.dao.EntityID
 
 object MageStockSources : StockSourceTable("mage_stock_source")

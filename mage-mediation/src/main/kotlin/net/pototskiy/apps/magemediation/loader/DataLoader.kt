@@ -1,16 +1,20 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.Config
+import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
+import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
+import net.pototskiy.apps.magemediation.api.config.Config
+import net.pototskiy.apps.magemediation.api.config.DatasetTarget
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
+import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.util.logging.Logger
 
 object DataLoader {
-    private val logger = Logger.getLogger(LOG_NAME)
+    private val logger = Logger.getLogger(LOADER_LOG_NAME)
+    private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
     fun load(config: Config) {
+        statusLog.info("Data loading has started")
         val files = config.loader.files
         val datasets = config.loader.datasets
         for (dataset in datasets) {
@@ -32,6 +36,7 @@ object DataLoader {
 
             }
         }
+        statusLog.info("Data loading has finished")
     }
 
     private fun mapTargetToDestination(target: DatasetTarget): LoadDestination = when (target) {
@@ -42,5 +47,6 @@ object DataLoader {
         DatasetTarget.MAGE_PRICE -> LoadDestination.MAGE_PRICING
         DatasetTarget.MAGE_INVENTORY -> LoadDestination.MAGE_INVENTORY
         DatasetTarget.MAGE_USER_GROUP -> LoadDestination.MAGE_USER_GROUP
+        DatasetTarget.ONEC_GROUP_RELATION -> LoadDestination.ONEC_CATEGORY_RELATION
     }
 }

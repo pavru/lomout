@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldConfiguration
 import net.pototskiy.apps.magemediation.source.Cell
 import net.pototskiy.apps.magemediation.source.CellType
 import java.text.NumberFormat

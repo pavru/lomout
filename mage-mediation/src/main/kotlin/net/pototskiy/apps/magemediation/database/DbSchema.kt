@@ -4,6 +4,7 @@ import net.pototskiy.apps.magemediation.database.mage.*
 import net.pototskiy.apps.magemediation.database.mage.attribute.*
 import net.pototskiy.apps.magemediation.database.mediation.category.MediumCategories
 import net.pototskiy.apps.magemediation.database.mediation.category.attribute.*
+import net.pototskiy.apps.magemediation.database.onec.OnecGroupRelations
 import net.pototskiy.apps.magemediation.database.onec.OnecGroups
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import net.pototskiy.apps.magemediation.database.onec.attribute.*
@@ -25,7 +26,7 @@ object DbSchema {
                     MageProductDatetimes,
                     MageProductDates
                 )
-                // Magento category tables
+                // Magento medium tables
                 create(
                     MageCategories,
                     MageCatBools,
@@ -48,14 +49,14 @@ object DbSchema {
                     OnecProductDates
                 )
                 // OneC group tables
-                create(OnecGroups)
+                create(OnecGroups, OnecGroupRelations)
                 // Magento customer group tables
                 create(MageCustomerGroups)
                 // Magento advanced price
                 create(MageAdvPrices)
                 // Magento stock source tables
                 create(MageStockSources)
-                // Magento category tables
+                // Magento medium tables
                 create(
                     MediumCategories,
                     CategoryBoolTable,

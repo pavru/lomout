@@ -1,5 +1,8 @@
 package net.pototskiy.apps.magemediation.database.mage
 
+import net.pototskiy.apps.magemediation.api.database.mage.AdvPriceEntity
+import net.pototskiy.apps.magemediation.api.database.mage.AdvPriceEntityClass
+import net.pototskiy.apps.magemediation.api.database.mage.AdvPriceTable
 import org.jetbrains.exposed.dao.EntityID
 
 object MageAdvPrices : AdvPriceTable("mage_adv_price")

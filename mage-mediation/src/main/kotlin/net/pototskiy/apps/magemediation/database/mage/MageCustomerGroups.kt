@@ -1,5 +1,8 @@
 package net.pototskiy.apps.magemediation.database.mage
 
+import net.pototskiy.apps.magemediation.api.database.mage.CustomerGroupEntity
+import net.pototskiy.apps.magemediation.api.database.mage.CustomerGroupEntityClass
+import net.pototskiy.apps.magemediation.api.database.mage.CustomerGroupTable
 import org.jetbrains.exposed.dao.EntityID
 
 object MageCustomerGroups : CustomerGroupTable("mage_customer_group")

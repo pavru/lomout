@@ -1,6 +1,6 @@
-import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.EmptyRowAction
-import net.pototskiy.apps.magemediation.config.dsl.config
+import net.pototskiy.apps.magemediation.api.config.DatasetTarget
+import net.pototskiy.apps.magemediation.api.config.EmptyRowAction
+import net.pototskiy.apps.magemediation.dsl.config.config
 
 config {
     database {
@@ -259,7 +259,7 @@ config {
                     source { file("mage_group").sheet(".*").emptyRowAction(EmptyRowAction.STOP) }
                 }
                 fieldSets {
-                    main("category") {
+                    main("medium") {
                         field("entity_type_id") { type { int() }.optional() }
                         field("attribute_set_id") { type { int() } }
                         field("created_at") { type { datetime().pattern("y-M-d H:m:s") } }
@@ -331,7 +331,7 @@ config {
     mediator {
         onec {
             group {
-                groupCodeAttribute(attribute = "group_code") {
+                idAttribute(attribute = "group_code") {
                     type { string() }
                     structure("(G[0-9]{1,1})([0-9]{1,1})([0-9]{1,1})")
                     subCodeFiller("0")

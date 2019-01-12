@@ -1,13 +1,13 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.toSourceFieldType
-import net.pototskiy.apps.magemediation.database.TypedAttributeEntity
-import net.pototskiy.apps.magemediation.database.TypedAttributeEntityClass
-import net.pototskiy.apps.magemediation.database.TypedAttributeTable
-import net.pototskiy.apps.magemediation.database.source.SourceDataEntity
-import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
-import net.pototskiy.apps.magemediation.source.SourceFieldType
+import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.api.config.toSourceFieldType
+import net.pototskiy.apps.magemediation.api.database.TypedAttributeEntity
+import net.pototskiy.apps.magemediation.api.database.TypedAttributeEntityClass
+import net.pototskiy.apps.magemediation.api.database.TypedAttributeTable
+import net.pototskiy.apps.magemediation.api.database.source.SourceDataEntity
+import net.pototskiy.apps.magemediation.api.database.source.SourceDataEntityClass
+import net.pototskiy.apps.magemediation.api.source.SourceFieldType
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 

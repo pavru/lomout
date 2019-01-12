@@ -23,24 +23,25 @@ idea {
 kotlin {
 
 }
+
 sourceSets {
     main {
-        java.srcDir(file("$projectDir/config/."))
+        //        java.srcDir(file("$projectDir/config/."))
     }
-//    create("config") {
-//        java.srcDir(file("$projectDir/config"))
-//        compileClasspath += sourceSets.main.get().output
+    create("config") {
+        java.srcDir(file("$projectDir/config"))
+//        compileClasspath += configurations.getByName("configImplementation")
 //        runtimeClasspath += sourceSets.main.get().output
-//    }
+    }
 }
 
-//val configImplementation: Configuration by configurations.getting {
-////    extendsFrom(configurations.implementation.get())
-//}
+val configImplementation = configurations.getByName(sourceSets.getByName("config").implementationConfigurationName)
 
 tasks.test {
     @Suppress("UnstableApiUsage")
-    useJUnitPlatform()
+    useJUnitPlatform() {
+        includeEngines("spek2")
+    }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
@@ -68,12 +69,15 @@ repositories {
     jcenter()
 }
 
-
-
 dependencies {
-    //    configImplementation(project(":mage-mediation-api"))
+    configImplementation(project(":mage-mediation-config-dsl"))
+    configImplementation(project(":mage-mediation-plugins"))
+    configImplementation(kotlin("script-runtime"))
+//    configImplementation(kotlin("compiler-embeddable"))
+//    configImplementation(kotlin("script-util"))
+
+    runtimeOnly(project(":mage-mediation-plugins"))
     implementation(project(":mage-mediation-api"))
-    implementation(project(":mage-mediation-category"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation(group = "com.beust", name = "jcommander", version = "1.71")
@@ -90,8 +94,9 @@ dependencies {
     // MySql
     implementation(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
     // Logger
-    implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
-    implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
+    implementation("org.slf4j", "slf4j-api", "1.8.0-beta2")
+    implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", "2.11.1")
+    implementation("org.apache.logging.log4j","log4j-core","2.11.1")
     // Kotlin script
     implementation(kotlin("script-runtime"))
     implementation(kotlin("compiler-embeddable"))
@@ -106,6 +111,7 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin")
     }
     testImplementation(group = "org.amshove.kluent", name = "kluent", version = "1.45")
+    testRuntimeOnly(project(":mage-mediation-plugins"))
 }
 
 //compileKotlin {

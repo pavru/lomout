@@ -11,6 +11,7 @@ class LoaderFactory {
                 LoadDestination.MAGE_USER_GROUP -> MageCustomerGroupLoader()
                 LoadDestination.MAGE_PRICING -> MagentoAdvPriceLoader()
                 LoadDestination.MAGE_INVENTORY -> MagentoStockSourceLoader()
+                LoadDestination.ONEC_CATEGORY_RELATION -> OnecGroupRelationLoader()
             }
         }
     }

@@ -5,4 +5,5 @@ interface Row : Iterable<Cell> {
     val rowNum: Int
     fun countCell(): Int
     operator fun get(column: Int): Cell?
+    fun getOrEmptyCell(column: Int): Cell
 }

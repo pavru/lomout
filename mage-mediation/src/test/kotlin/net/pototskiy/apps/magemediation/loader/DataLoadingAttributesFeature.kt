@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.config.EmptyRowAction
+import net.pototskiy.apps.magemediation.api.config.EmptyRowAction
 import net.pototskiy.apps.magemediation.database.onec.OnecProducts
 import net.pototskiy.apps.magemediation.database.onec.attribute.*
 import net.pototskiy.apps.magemediation.source.WorkbookFactory

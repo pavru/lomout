@@ -1,6 +1,9 @@
-import net.pototskiy.apps.magemediation.config.DatasetTarget
-import net.pototskiy.apps.magemediation.config.EmptyRowAction
-import net.pototskiy.apps.magemediation.config.dsl.config
+import net.pototskiy.apps.magemediation.api.config.DatasetTarget
+import net.pototskiy.apps.magemediation.api.config.EmptyRowAction
+import net.pototskiy.apps.magemediation.dsl.config.config
+import net.pototskiy.apps.magemediation.plugins.loader.OnecGroupAddLeadingG
+import net.pototskiy.apps.magemediation.plugins.medium.CategoryPathFromRelationBuilder
+import net.pototskiy.apps.magemediation.plugins.medium.GroupPathFromCodeBuilder
 
 config {
     database {
@@ -24,7 +27,12 @@ config {
             path("E:/home/alexander/Development/Web/oooast-tools/.testdata/stock_sources.csv") linkedToID "mage-stock-source"
         }
         datasets {
-            dataset(name = "onec-group", target = DatasetTarget.ONEC_GROUP, rowsToSkip = 1, maxAbsentDays = 10) {
+            dataset(
+                name = "onec-group",
+                target = DatasetTarget.ONEC_GROUP,
+                rowsToSkip = 1,
+                maxAbsentDays = 10
+            ) {
                 sources {
                     source { file("onec-group").sheet("Group").emptyRowAction(EmptyRowAction.STOP) }
                 }
@@ -32,6 +40,28 @@ config {
                     main("group") {
                         field("group_code") { column(0).regex("^G[0-9]{3,3}$").key() }
                         field("group_name") { column(1) }
+                    }
+                }
+            }
+            dataset(
+                name = "onec-group-relation",
+                target = DatasetTarget.ONEC_GROUP_RELATION,
+                maxAbsentDays = 10
+            ) {
+                sources {
+                    source { file("onec-group").sheet("GroupSiteX").emptyRowAction(EmptyRowAction.STOP) }
+                }
+                fieldSets {
+                    main("group-relation") {
+                        field("group_code") {
+                            column(0).key()
+                            transformer(OnecGroupAddLeadingG::class)
+                        }
+                        field("group_parent_code") {
+                            column(1).optional()
+                            transformer(OnecGroupAddLeadingG::class)
+                        }
+                        field("group_name") { column(2) }
                     }
                 }
             }
@@ -145,7 +175,7 @@ config {
                 }
             }
             dataset(
-                name = "mage-category",
+                name = "mage-medium",
                 headersRow = 0,
                 maxAbsentDays = 10,
                 target = DatasetTarget.MAGE_CATEGORY
@@ -154,7 +184,7 @@ config {
                     source { file("mage-group").sheet(".*").emptyRowAction(EmptyRowAction.STOP) }
                 }
                 fieldSets {
-                    main("category") {
+                    main("medium") {
                         field("entity_type_id") { type { int() }.optional() }
                         field("attribute_set_id") { type { int() } }
                         field("created_at") { type { datetime().pattern("y-M-d H:m:s") } }
@@ -226,11 +256,14 @@ config {
     mediator {
         onec {
             group {
-                groupCodeAttribute(attribute = "group_code") {
-                    structure("(G[0-9]{1,1})([0-9]{1,1})([0-9]{1,1})")
-                    subCodeFiller("0")
-                    root("")
-                    separator("/")
+                idAttribute(attribute = "group_code") { type { string() } }
+                pathAttribute {
+                    type { string() }
+                    separator("", "/")
+                    root("/Root Catalog/Default Category/Каталог")
+                    synthetic {
+                        klass(GroupPathFromCodeBuilder::class)
+                    }
                 }
             }
         }
@@ -239,8 +272,21 @@ config {
                 pathAttribute("path") {
                     type { string() }
                     root("")
-                    separator("/")
+                    separator("/", "/")
+                    synthetic {
+                        klass(CategoryPathFromRelationBuilder::class)
+                    }
                 }
+                idAttribute("entity_id") {
+                    type { int() }
+                }
+            }
+        }
+        mapping {
+            categories {
+                mageID(101) to onecID("G9999")
+                mageID(102) to onecPath("G54321")
+                onecID("G12345") to magePath("RootCatalog/Test")
             }
         }
     }

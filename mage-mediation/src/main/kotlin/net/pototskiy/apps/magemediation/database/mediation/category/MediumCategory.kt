@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.database.mediation.category
 
-import net.pototskiy.apps.magemediation.database.mdtn.MediumDataEntityClass
-import net.pototskiy.apps.magemediation.database.mdtn.category.CategoryEntity
+import net.pototskiy.apps.magemediation.api.database.mdtn.MediumDataEntityClass
+import net.pototskiy.apps.magemediation.api.database.mdtn.category.CategoryEntity
 import net.pototskiy.apps.magemediation.database.mediation.category.attribute.*
 import org.jetbrains.exposed.dao.EntityID
 

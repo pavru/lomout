@@ -33,8 +33,8 @@ repositories {
 }
 
 dependencies {
+    runtimeOnly(project(":mage-mediation-config-dsl"))
     implementation(kotlin("stdlib-jdk8"))
-    implementation(group = "com.beust", name = "jcommander", version = "1.71")
     implementation(kotlin("reflect"))
     // Database
     implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2") {
@@ -50,7 +50,7 @@ dependencies {
     implementation(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
     // Logger
     implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
-    implementation(group = "org.slf4j", name = "slf4j-log4j12", version = "1.8.0-beta2")
+    implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", "2.11.1")
     // Apache commons io
     implementation("commons-io", "commons-io", "2.6")
     // Kotlin script

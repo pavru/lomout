@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration
+        xmlns="http://logging.apache.org/log4j/2.0/config"
+        packages="net.pototskiy.apps.magemediation.logger">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-8c{1} - %msg%n"/>
+        </Console>
+        <File name="logFile" fileName="log/magemediation.log" append="flase">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-8c{1} - %msg%n"/>
+        </File>
+    </Appenders>
+    <Loggers>
+        <Logger name="Status" level="info" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="logFile"/>
+        </Logger>
+        <Logger name="Loader" level="debug" additivity="false">
+            <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="logFile"/>
+        </Logger>
+        <Logger name="Mediator" level="debug" additivity="false">
+            <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="logFile"/>
+        </Logger>
+        <Logger name="Exposed" level="error" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="logFile"/>
+        </Logger>
+        <Root level="debug">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="logFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

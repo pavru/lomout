@@ -1,13 +1,14 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.LOG_NAME
-import net.pototskiy.apps.magemediation.config.EmptyRowAction
-import net.pototskiy.apps.magemediation.config.FieldSetType
-import net.pototskiy.apps.magemediation.config.loader.dataset.DatasetConfiguration
-import net.pototskiy.apps.magemediation.config.loader.dataset.FieldConfiguration
-import net.pototskiy.apps.magemediation.config.loader.dataset.FieldSetConfiguration
-import net.pototskiy.apps.magemediation.config.type.*
-import net.pototskiy.apps.magemediation.database.source.SourceDataEntityClass
+import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
+import net.pototskiy.apps.magemediation.api.config.EmptyRowAction
+import net.pototskiy.apps.magemediation.api.config.FieldSetType
+import net.pototskiy.apps.magemediation.api.config.loader.dataset.DatasetConfiguration
+import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldSetConfiguration
+import net.pototskiy.apps.magemediation.api.config.type.*
+import net.pototskiy.apps.magemediation.api.database.source.SourceDataEntityClass
+import net.pototskiy.apps.magemediation.api.plugable.loader.FieldTransformer
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser
 import net.pototskiy.apps.magemediation.loader.nested.AttributeWorkbook
@@ -18,11 +19,13 @@ import net.pototskiy.apps.magemediation.source.Sheet
 import net.pototskiy.apps.magemediation.source.csv.CsvWorkbook
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.joda.time.DateTime
 import org.slf4j.LoggerFactory
+import kotlin.reflect.full.createInstance
 
 abstract class AbstractLoader : LoaderInterface {
 
-    private val logger = LoggerFactory.getLogger(LOG_NAME)
+    private val logger = LoggerFactory.getLogger(LOADER_LOG_NAME)
 
     abstract val tableSet: SourceDataEntityClass<*>
 
@@ -188,7 +191,8 @@ abstract class AbstractLoader : LoaderInterface {
         val data: MutableMap<String, Cell> = mutableMapOf()
         headers.filter { !it.nested && it.type !is AttributeAttributeListType }.forEach {
             val cell = row[it.column]
-                ?: throw LoaderException("There is no requested cell<${it.column + 1}> in row")
+                ?: if (it.optional) row.getOrEmptyCell(it.column) else null
+                    ?: throw LoaderException("There is no requested cell<${it.column + 1}> in row")
             testFieldRegex(it, cell)
             data[it.name] = cell
         }
@@ -214,7 +218,7 @@ abstract class AbstractLoader : LoaderInterface {
         return cellValues
             .map { value ->
                 val field = headers.find { it.name == value.key } as FieldConfiguration
-                val newValue = try {
+                var newValue = try {
                     convertValue(value.value, field)
                 } catch (e: LoaderException) {
                     if (!field.optional || value.value.cellType != CellType.STRING || !value.value.stringValue.isBlank()) {
@@ -222,9 +226,36 @@ abstract class AbstractLoader : LoaderInterface {
                     }
                     null
                 }
+                newValue = transform(newValue, field)
                 value.key to newValue
             }
             .toMap()
+    }
+
+    private fun transform(value: Any?, field: FieldConfiguration): Any? {
+        return field.transformer?.let {
+            if (value != null) {
+                val transformer = it.createInstance()
+                when (field.type) {
+                    is AttributeStringType -> (transformer as FieldTransformer<String>).transform(value as String)
+                    is AttributeIntType -> (transformer as FieldTransformer<Long>).transform(value as Long)
+                    is AttributeDoubleType -> (transformer as FieldTransformer<Double>).transform(value as Double)
+                    is AttributeBoolType -> (transformer as FieldTransformer<Boolean>).transform(value as Boolean)
+                    is AttributeTextType -> (transformer as FieldTransformer<String>).transform(value as String)
+                    is AttributeDateType -> (transformer as FieldTransformer<DateTime>).transform(value as DateTime)
+                    is AttributeDateTimeType -> (transformer as FieldTransformer<DateTime>).transform(value as DateTime)
+                    is AttributeStringListType -> (transformer as FieldTransformer<List<String>>).transform(value as List<String>)
+                    is AttributeBoolListType -> (transformer as FieldTransformer<List<Boolean>>).transform(value as List<Boolean>)
+                    is AttributeIntListType -> (transformer as FieldTransformer<List<Long>>).transform(value as List<Long>)
+                    is AttributeDoubleListType -> (transformer as FieldTransformer<List<Double>>).transform(value as List<Double>)
+                    is AttributeDateListType -> (transformer as FieldTransformer<List<DateTime>>).transform(value as List<DateTime>)
+                    is AttributeDateTimeListType -> (transformer as FieldTransformer<List<DateTime>>).transform(value as List<DateTime>)
+                    is AttributeAttributeListType -> throw LoaderException("Field transformation is not supported for attribute list field")
+                }
+            } else {
+                null
+            }
+        } ?: value
     }
 
     private fun convertValue(value: Cell, fieldDef: FieldConfiguration): Any = when (fieldDef.type) {
