@@ -11,8 +11,8 @@ import net.pototskiy.apps.magemediation.loader.DataLoader
 import net.pototskiy.apps.magemediation.mediator.MediatorFactory
 import net.pototskiy.apps.magemediation.mediator.MediatorType
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
-import org.slf4j.LoggerFactory
 import kotlin.contracts.ExperimentalContracts
 
 lateinit var CONFIG: Configuration
@@ -20,6 +20,7 @@ lateinit var emptyPlugin: Plugable
 
 @ExperimentalContracts
 fun main(args: Array<String>) {
+    val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     val jCommander = JCommander.Builder()
         .addObject(Args)
         .build()
@@ -33,7 +34,7 @@ fun main(args: Array<String>) {
         jCommander.usage()
     }
 
-    LoggerFactory.getLogger(STATUS_LOG_NAME).info("Application has started")
+    statusLog.info("Application has started")
 
     CONFIG = Configuration(Args.configFile)
 
@@ -43,10 +44,11 @@ fun main(args: Array<String>) {
 
     setLogLevel()
 
+
     initDatabase(CONFIG.config.database)
     DataLoader.load(CONFIG.config)
     MediatorFactory.create(MediatorType.CATEGORY).merge()
-    LoggerFactory.getLogger(STATUS_LOG_NAME).info("Application has finished")
+    statusLog.info("Application has finished")
 }
 
 fun setLogLevel() {

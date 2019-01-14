@@ -1,7 +1,9 @@
 package net.pototskiy.apps.magemediation.dsl.config.mediator.mapping
 
 import net.pototskiy.apps.magemediation.api.config.mediator.mapping.CategoryMappingConfiguration
+import net.pototskiy.apps.magemediation.dsl.config.ConfigDsl
 
+@ConfigDsl
 class CategoryMappingConfigurationBuilder {
     private val mapMageIDToOnecID = mutableMapOf<Any, Any>()
     private val mapMageIDToOnecPath = mutableMapOf<Any, String>()
@@ -13,28 +15,22 @@ class CategoryMappingConfigurationBuilder {
     private val mapOnecPathToMagePath = mutableMapOf<String, String>()
 
     @Suppress("unused")
-    fun CategoryMappingConfigurationBuilder.mageID(id: String) =
-        MageID(id)
+    fun CategoryMappingConfigurationBuilder.mageID(id: String) = MageID(id)
 
     @Suppress("unused")
-    fun CategoryMappingConfigurationBuilder.mageID(id: Long) =
-        MageID(id)
+    fun CategoryMappingConfigurationBuilder.mageID(id: Long) = MageID(id)
 
     @Suppress("unused")
-    fun CategoryMappingConfigurationBuilder.onecID(id: String) =
-        OnecID(id)
+    fun CategoryMappingConfigurationBuilder.onecID(id: String) = OnecID(id)
 
     @Suppress("unused")
-    fun CategoryMappingConfigurationBuilder.onecID(id: Long) =
-        OnecID(id)
+    fun CategoryMappingConfigurationBuilder.onecID(id: Long) = OnecID(id)
 
     @Suppress("unused")
-    fun CategoryMappingConfigurationBuilder.magePath(path: String) =
-        MagePath(path)
+    fun CategoryMappingConfigurationBuilder.magePath(path: String) = MagePath(path)
 
     @Suppress("unused")
-    fun CategoryMappingConfigurationBuilder.onecPath(path: String) =
-        OnecPath(path)
+    fun CategoryMappingConfigurationBuilder.onecPath(path: String) = OnecPath(path)
 
     infix fun MageID.to(id: OnecID) = mapMageIDToOnecID.put(this.id, id.id)
 

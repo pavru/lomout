@@ -1,5 +1,7 @@
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
+import org.apache.logging.log4j.LogManager
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.InputStream
@@ -7,6 +9,7 @@ import javax.script.ScriptEngineManager
 import javax.script.ScriptException
 
 class Configuration(private val input: InputStream) {
+    val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
     constructor(file: String) : this(File(file).inputStream())
 
@@ -35,6 +38,7 @@ class Configuration(private val input: InputStream) {
     }
 
     private fun readConfig(): Config? {
+        statusLog.info("Configuration loading has started")
         var config: Config? = null
         try {
             System.setProperty("idea.io.use.fallback", "true")
@@ -51,6 +55,7 @@ class Configuration(private val input: InputStream) {
             }
             System.exit(1)
         }
+        statusLog.info("Configuration loading has finished")
         return config
     }
 

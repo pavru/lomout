@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
+import kotlinx.coroutines.*
 import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
@@ -13,10 +14,12 @@ object DataLoader {
     private val logger = Logger.getLogger(LOADER_LOG_NAME)
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
-    fun load(config: Config) {
+    fun load(config: Config) = runBlocking {
         statusLog.info("Data loading has started")
         val files = config.loader.files
         val datasets = config.loader.datasets
+        val loaderJob = Job()
+        val scope = CoroutineScope(loaderJob)
         for (dataset in datasets) {
             dataset.sources.forEach { source ->
                 val file = files.findLast { it.id == source.fileId }
@@ -29,13 +32,16 @@ object DataLoader {
                 } else {
                     workbook.forEach {
                         if (regex.matches(it.name)) {
-                            loader.load(it, dataset, source.emptyRowAction)
+                            scope.launch(newSingleThreadContext("${dataset.name}")) {
+                                loader.load(it, dataset, source.emptyRowAction)
+                            }
                         }
                     }
                 }
 
             }
         }
+        loaderJob.joinChildren()
         statusLog.info("Data loading has finished")
     }
 

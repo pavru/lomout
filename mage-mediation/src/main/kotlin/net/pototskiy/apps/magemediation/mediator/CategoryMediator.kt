@@ -32,7 +32,12 @@ class CategoryMediator : AbstractMediator {
                     if (mageID == null) {
                         throw MediationException("Magento medium has no ID or path")
                     }
-                    val group: GroupEntity = tryToFindOnecRelatedGroup(mageID, magePtah)
+                    val group: GroupEntity? = tryToFindOnecRelatedGroup(mageID, magePtah)
+                    if ( group == null) {
+                        createNewOnecGroupFromMage(mageID)
+                    } else {
+                        updateOnecGroupFromMage(mageID)
+                    }
                 } catch (e: Exception) {
                     log.error("Magento category mediation error: ${e.message}")
                 }
@@ -42,46 +47,86 @@ class CategoryMediator : AbstractMediator {
         }
     }
 
-    private fun tryToFindOnecRelatedGroup(mageID: Any, magePtah: String): GroupEntity {
+    private fun createNewOnecGroupFromMage(mageID: Any) {
+    }
+
+    private fun updateOnecGroupFromMage(mageID: Any) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun tryToFindOnecRelatedGroup(mageID: Any, magePath: String): GroupEntity? {
         val idName = mediatorConfig.onec.group.idAttribute.name
         val idType = mediatorConfig.onec.group.idAttribute.type.toSourceFieldType()
         val pathName = mediatorConfig.onec.group.pathAttribute.name
         val pathType = mediatorConfig.onec.group.pathAttribute.type.toSourceFieldType()
-        var groupByID = OnecGroup.findByAttribute(idName, idType, mageID)
-        var groupByPath: List<GroupEntity>?
-        if (!mediatorConfig.onec.group.pathAttribute.synthetic) {
-            val groups = OnecGroup.findByAttribute(pathName, pathType, magePtah)
-            groupByPath = groups.filter {
-                val path = getOnecGroupPath(it)
-                path == magePtah
+        // Try to find OneC group with the Magento category ID
+        val groupByID = listOf(mageID)
+            .plus(mapMageIDToOnecID(mageID))
+            .plus(mapMagePathToOnecID(magePath))
+            .map {
+                OnecGroup.findByAttribute(idName, idType, it)
             }
-        } else {
-            val found = mutableListOf<GroupEntity>()
-            transaction {
-                OnecGroup.all().forEach {
-                    try {
-                        val path = getOnecGroupPath(it)
-                        if (path == magePtah) {
-                            found.add(it)
-                        }
-                    } catch (e: Exception) {
-                        log.error("Magento category mediation error: ${e.message}")
+            .flatten()
+        // Try to find OneC group with the Magento category path
+        val groupByPath = listOf(magePath)
+            .plus(mapMageIDToOnecPath(magePath))
+            .plus(mapMagePathToOnecPath(magePath))
+            .map { path ->
+                if (!mediatorConfig.onec.group.pathAttribute.synthetic) {
+                    val groups = OnecGroup.findByAttribute(pathName, pathType, path)
+                    groups.filter { getOnecGroupPath(it) == magePath }
+                } else {
+                    transaction {
+                        OnecGroup.all()
+                            .filter {
+                                try {
+                                    getOnecGroupPath(it) == path
+                                } catch (e: Exception) {
+                                    log.error(e.message)
+                                    false
+                                }
+                            }
                     }
                 }
             }
-            groupByPath = found.toList()
-        }
+            .flatten()
         if (groupByID.isNotEmpty()) {
             val candidates = groupByID.intersect(groupByPath)
             if (candidates.size > 1) {
-                log.warn("Magento category<id:$mageID,path:$magePtah> fits to more than one OneC groups")
+                log.warn("Magento category<id:$mageID,path:$magePath> fits to more than one OneC groups")
             } else if (candidates.isEmpty()) {
-                log.warn("OneC groups<${groupByID.joinToString(", ") { it.groupCode }} fit by ID but not by path>")
+                log.warn("OneC groups<${groupByID.joinToString(", ") { it.groupCode }}> fitted to magento category by ID but not by path")
             } else if (candidates.size != 1 && groupByID.size > 1) {
-                log.warn("More than one OneC group found that fited to Magento category<id:$mageID,path:$magePtah>")
+                log.warn("More than one OneC group found that fitted to Magento category<id:$mageID,path:$magePath>")
             }
+            return candidates.firstOrNull() ?: groupByID.first()
+        } else if (groupByPath.isNotEmpty()) {
+            if (groupByPath.size > 1) {
+                log.warn("More than one OneC group is fitted to magento category by id")
+            }
+            return groupByPath.first()
         }
-        TODO()
+        return null
+    }
+
+    private fun mapMagePathToOnecPath(magePath: String): List<String> =
+        mediatorConfig.mapping.category.magePathToOnecPath[magePath]?.let {
+            listOf(it)
+        } ?: listOf()
+
+    private fun mapMageIDToOnecPath(magePath: String): List<String> =
+        mediatorConfig.mapping.category.mageIDtoOnecPath[magePath]?.let {
+            listOf(it)
+        } ?: listOf()
+
+    private fun mapMagePathToOnecID(path: String): List<Any> {
+        val id = mediatorConfig.mapping.category.magePathToOnecID[path]
+        return if (id == null) listOf() else listOf(id)
+    }
+
+    private fun mapMageIDToOnecID(id: Any): List<Any> {
+        val id = mediatorConfig.mapping.category.mageIDToOnecID[id]
+        return if (id == null) listOf() else listOf(id)
     }
 
     private fun getOnecGroupPath(entity: GroupEntity): String {

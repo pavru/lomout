@@ -59,13 +59,13 @@ object DbSchema {
                 // Magento medium tables
                 create(
                     MediumCategories,
-                    CategoryBoolTable,
-                    CategoryVarcharTable,
-                    CategoryTextTable,
-                    CategoryIntTable,
-                    CategoryDoubleTable,
-                    CategoryDateTimeTable,
-                    CategoryDateTable
+                    MCategoryBoolTable,
+                    MCategoryVarcharTable,
+                    MCategoryTextTable,
+                    MCategoryIntTable,
+                    MCategoryDoubleTable,
+                    MCategoryDateTimeTable,
+                    MCategoryDateTable
                 )
             }
         }

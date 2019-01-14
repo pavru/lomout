@@ -284,7 +284,10 @@ config {
         }
         mapping {
             categories {
-                mageID(101) to onecID("G9999")
+                onecID("G001") to mageID(22)
+                onecID("G002") to magePath("Root Catalog/Default Category/Каталог/Прочие запасные части/Автопокрышки")
+                mageID(22) to onecID("G001")
+                magePath("/Root Catalog/Default Category/Каталог/Прочие запасные части/Автопокрышки") to onecID("G002")
                 mageID(102) to onecPath("G54321")
                 onecID("G12345") to magePath("RootCatalog/Test")
             }
