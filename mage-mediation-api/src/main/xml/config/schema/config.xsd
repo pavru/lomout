@@ -194,7 +194,7 @@
                 </xs:documentation>
             </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="empty-row" default="ignore" type="emptyRowAction"/>
+        <xs:attribute name="empty-row" default="ignore" type="emptyRowStrategy"/>
     </xs:complexType>
 
     <xs:complexType name="field" final="#all">
@@ -398,7 +398,7 @@
         <xs:attribute name="value-quote" type="xs:string"/>
     </xs:complexType>
 
-    <xs:simpleType name="emptyRowAction">
+    <xs:simpleType name="emptyRowStrategy">
         <xs:restriction base="xs:string">
             <xs:enumeration value="stop"/>
             <xs:enumeration value="ignore"/>

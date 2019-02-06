@@ -1,51 +1,51 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.api.config.type.Attribute
 import net.pototskiy.apps.magemediation.loader.LoaderException
-import net.pototskiy.apps.magemediation.source.Cell
-import net.pototskiy.apps.magemediation.source.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.*
 
 class DateConverter(
-    private val cell: Cell,
-    private val field: FieldConfiguration
+    private val value: Any,
+    private val attrDesc: Attribute
 ) {
-    fun convert(): DateTime = when (cell.cellType) {
-        CellType.INT -> DateTime(Date(cell.intValue))
-        CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(cell.doubleValue))
-        CellType.BOOL -> throw LoaderException("Field<${field.name}, boolean can not be converted to date")
-        CellType.STRING -> stringToDate(cell.stringValue)
+    fun convert(): DateTime = when (value) {
+        is Long -> DateTime(Date(value))
+        is Double -> DateTime(HSSFDateUtil.getJavaDate(value))
+        is Boolean -> throw LoaderException("Field<${attrDesc.name}, boolean can not be converted to date")
+        is String -> stringToDate(value)
+        else -> throw LoaderException("Conversion for type<${value::class.simpleName}> is not supported")
     }
 
     fun convertList(): List<DateTime> {
-        return when (cell.cellType) {
-            CellType.INT -> listOf(DateTime(Date(cell.intValue)))
-            CellType.DOUBLE -> listOf(DateTime(HSSFDateUtil.getJavaDate(cell.doubleValue)))
-            CellType.BOOL -> throw LoaderException("Field<${field.name}, boolean can not be converted to date")
-            CellType.STRING -> ValueListParser(cell.stringValue, field.type)
+        return when (value) {
+            is Long -> listOf(DateTime(Date(value)))
+            is Double -> listOf(DateTime(HSSFDateUtil.getJavaDate(value)))
+            is Boolean -> throw LoaderException("Field<${attrDesc.name}, boolean can not be converted to date")
+            is String -> ValueListParser(value, attrDesc.type)
                 .parse()
                 .map { stringToDate(it) }
+            else -> throw LoaderException("Conversion for type<${value::class.simpleName}> is not supported")
         }
     }
 
     private fun stringToDate(value: String): DateTime {
         val errorMsg: String
-        val format = if (field.type.hasPattern) {
-            errorMsg = "pattern ${field.type.pattern}"
-            DateTimeFormat.forPattern(field.type.pattern)
+        val format = if (attrDesc.type.hasPattern) {
+            errorMsg = "pattern ${attrDesc.type.pattern}"
+            DateTimeFormat.forPattern(attrDesc.type.pattern)
         } else {
-            errorMsg = "locale ${field.type.locale}"
-            DateTimeFormat.shortDate().withLocale(field.type.getLocaleObject())
+            errorMsg = "locale ${attrDesc.type.locale}"
+            DateTimeFormat.shortDate().withLocale(attrDesc.type.getLocaleObject())
         }
         return try {
             format.parseDateTime(value)
         } catch (e: IllegalArgumentException) {
-            throw LoaderException("Field<${field.name}>, string can not be converted to date with $errorMsg.")
+            throw LoaderException("Field<${attrDesc.name}>, string can not be converted to date with $errorMsg.")
         } catch (e: UnsupportedOperationException) {
-            throw LoaderException("Field<${field.name}>, string can not be converted to date with $errorMsg")
+            throw LoaderException("Field<${attrDesc.name}>, string can not be converted to date with $errorMsg")
         }
     }
 }

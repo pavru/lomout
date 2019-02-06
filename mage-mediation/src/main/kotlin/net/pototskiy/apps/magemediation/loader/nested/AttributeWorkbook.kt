@@ -14,11 +14,10 @@ class AttributeWorkbook(
         get() = WorkbookType.ATTRIBUTE
 
     override fun get(sheet: String): Sheet = AttributeSheet(this)
-
     override fun get(sheet: Int): Sheet = AttributeSheet(this)
-
     override fun hasSheet(sheet: String): Boolean = true
-
     override fun iterator(): Iterator<Sheet> = AttributeSheetIterator(this)
-
+    override fun close() {
+        // nothing to close workbook use string
+    }
 }

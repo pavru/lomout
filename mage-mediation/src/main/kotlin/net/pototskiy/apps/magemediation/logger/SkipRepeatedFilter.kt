@@ -10,6 +10,7 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute
 import org.apache.logging.log4j.core.config.plugins.PluginFactory
 import org.apache.logging.log4j.core.filter.AbstractFilter
 
+@Suppress("unused")
 @Plugin(
     name = "SkipRepeatedFilter",
     category = Core.CATEGORY_NAME,

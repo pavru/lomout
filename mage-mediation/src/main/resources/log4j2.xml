@@ -4,32 +4,35 @@
         packages="net.pototskiy.apps.magemediation.logger">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%-12.12t] %-8c{1} - %msg%n"/>
         </Console>
-        <File name="logFile" fileName="log/magemediation.log" append="flase">
-            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"/>
+        <File name="logFile" fileName="log/magemediation.log" append="false">
+            <PatternLayout pattern="[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%-12.12t] %-8c{1} - %msg%n"/>
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="Status" level="info" additivity="false">
+        <Logger name="net.pototskiy.apps.magemediation" level="error" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="logFile"/>
         </Logger>
-        <Logger name="Loader" level="debug" additivity="false">
+        <Logger name="net.pototskiy.apps.magemediation.status" level="info" additivity="true"/>
+        <Logger name="net.pototskiy.apps.magemediation.config" additivity="true">
             <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="logFile"/>
         </Logger>
-        <Logger name="Mediator" level="debug" additivity="false">
+        <Logger name="net.pototskiy.apps.magemediation.database" additivity="true">
             <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
-            <AppenderRef ref="console"/>
-            <AppenderRef ref="logFile"/>
+        </Logger>
+        <Logger name="net.pototskiy.apps.magemediation.loader"  additivity="true">
+            <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
+        </Logger>
+        <Logger name="net.pototskiy.apps.magemediation.mediator" level="debug" additivity="true">
+            <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
         </Logger>
         <Logger name="Exposed" level="error" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="logFile"/>
         </Logger>
-        <Root level="debug">
+        <Root level="error">
             <AppenderRef ref="console"/>
             <AppenderRef ref="logFile"/>
         </Root>

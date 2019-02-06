@@ -11,3 +11,5 @@
 .~lock*.csv#
 /buildSrc/.gradle/
 /buildSrc/build/
+/log/magemediation.log
+/config/scriptLibs/

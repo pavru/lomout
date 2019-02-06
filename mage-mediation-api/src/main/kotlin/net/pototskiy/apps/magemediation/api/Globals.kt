@@ -3,9 +3,12 @@ package net.pototskiy.apps.magemediation.api
 import org.joda.time.DateTime
 import java.util.*
 
-const val LOADER_LOG_NAME = "Loader"
-const val MEDIATOR_LOG_LEVEL = "Mediator"
-const val STATUS_LOG_NAME = "Status"
+const val ROOT_LOG_NAME = "net.pototskiy.apps.magemediation"
+const val CONFIG_LOG_NAME = "net.pototskiy.apps.magemediation.config"
+const val DATABASE_LOG_NAME = "net.pototskiy.apps.magemediation.database"
+const val LOADER_LOG_NAME = "net.pototskiy.apps.magemediation.loader"
+const val MEDIATOR_LOG_LEVEL = "net.pototskiy.apps.magemediation.mediator"
+const val STATUS_LOG_NAME = "net.pototskiy.apps.magemediation.status"
 const val EXPOSED_LOG_NAME = "Exposed"
 
 const val UNDEFINED_COLUMN = -1

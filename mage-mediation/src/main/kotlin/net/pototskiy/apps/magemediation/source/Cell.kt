@@ -7,6 +7,15 @@ interface Cell {
     val intValue: Long
     val doubleValue: Double
     val stringValue: String
+    val value: Any
+    get() {
+        return when(cellType){
+            CellType.INT -> intValue
+            CellType.DOUBLE -> doubleValue
+            CellType.BOOL -> booleanValue
+            CellType.STRING -> stringValue
+        }
+    }
     val row: Row
 
     fun asString(): String

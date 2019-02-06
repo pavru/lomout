@@ -1,12 +1,19 @@
+import org.gradle.plugins.ide.idea.model.Module
+
 plugins {
     java
-    kotlin("jvm") version "1.3.11"
+    application
+    kotlin("jvm") version Versions.kotlin
     idea
     id("jacoco")
 }
 
 group = "oooast-tools"
 version = "1.0-SNAPSHOT"
+
+application {
+    mainClassName = "net.pototskiy.apps.magemediation.MainKt"
+}
 
 idea {
     module {
@@ -17,6 +24,13 @@ idea {
         )
         outputDir = file("build/classes/kotlin/main")
         testOutputDir = file("build/classes/kotlin/test")
+        iml {
+            whenMerged {
+                val iModule = this as Module
+                val existingDeps = iModule.dependencies
+                iModule.dependencies.clear()
+            }
+        }
     }
 }
 
@@ -25,22 +39,46 @@ kotlin {
 }
 
 sourceSets {
-    main {
-        //        java.srcDir(file("$projectDir/config/."))
+    test {
+        java {
+            //            exclude("**/magemediation/**")
+        }
     }
-    create("config") {
-        java.srcDir(file("$projectDir/config"))
-//        compileClasspath += configurations.getByName("configImplementation")
-//        runtimeClasspath += sourceSets.main.get().output
+    create("configScripts") {
+        java {
+            srcDir(file("$projectDir/config"))
+            exclude("*.kts")
+        }
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
+    }
+
+    create("testData") {
+        java {
+            srcDir(file("${rootProject.projectDir}/.testdata"))
+            exclude("*.*")
+        }
+        compileClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().output
     }
 }
 
-val configImplementation = configurations.getByName(sourceSets.getByName("config").implementationConfigurationName)
+val configScriptsImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
 
-tasks.test {
-    @Suppress("UnstableApiUsage")
-    useJUnitPlatform() {
-        includeEngines("spek2")
+val testDataImplementation: Configuration by configurations.getting {
+    extendsFrom(configurations.implementation.get())
+}
+
+tasks.named<Test>("test") {
+    maxHeapSize = "2G"
+    minHeapSize = "1G"
+    environment("TEST_DATA_DIR", "${rootProject.projectDir}/.testdata")
+    environment("PRODUCTION_CONFIG", "$projectDir/config/newconfig.conf.kts")
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
     }
 }
 
@@ -55,9 +93,11 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
+
+
 tasks.jar {
     manifest {
-        attributes("Main-Class" to "net.pototskiy.apps.magemediation.MainKt")
+        attributes("Main-Class" to application.mainClassName)
     }
     dependsOn(configurations.runtimeClasspath)
     from({
@@ -67,51 +107,56 @@ tasks.jar {
 
 repositories {
     jcenter()
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 dependencies {
-    configImplementation(project(":mage-mediation-config-dsl"))
-    configImplementation(project(":mage-mediation-plugins"))
-    configImplementation(kotlin("script-runtime"))
-//    configImplementation(kotlin("compiler-embeddable"))
-//    configImplementation(kotlin("script-util"))
 
-    runtimeOnly(project(":mage-mediation-plugins"))
-    implementation(project(":mage-mediation-api"))
+    configScriptsImplementation(kotlin("script-util"))
+    configScriptsImplementation(project(":mage-mediation-api", "spi"))
+    configScriptsImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.slf4j")
+    }
+    testDataImplementation(kotlin("script-util"))
+    testDataImplementation(project(":mage-mediation-api", "spi"))
+    testDataImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.slf4j")
+    }
+
+    implementation(project(":mage-mediation-api", "spi"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
-    implementation(group = "com.beust", name = "jcommander", version = "1.71")
-    // Database
-    implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2") {
-        exclude(group = "org.jetbrains.kotlin")
-        exclude(group = "org.slf4j")
+    implementation("com.beust", "jcommander", Versions.jcommander)
+// Database
+    implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.slf4j")
     }
-    // Excel
-    implementation(group = "org.apache.poi", name = "poi", version = "4.0.1")
-    implementation(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")
-    // CSV
-    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.6")
-    // MySql
-    implementation(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
-    // Logger
+// Excel
+    implementation("org.apache.poi", "poi", "4.0.1")
+    implementation("org.apache.poi", "poi-ooxml", "4.0.1")
+// CSV
+    implementation("org.apache.commons", "commons-csv", "1.6")
+// MySql
+    implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
+// Logger
     implementation("org.slf4j", "slf4j-api", "1.8.0-beta2")
     implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", "2.11.1")
-    implementation("org.apache.logging.log4j","log4j-core","2.11.1")
-    // Kotlin script
-    implementation(kotlin("script-runtime"))
-    implementation(kotlin("compiler-embeddable"))
+    implementation("org.apache.logging.log4j", "log4j-core", "2.11.1")
+// Kotlin script
+    runtimeOnly(kotlin("script-runtime"))
+//    implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("script-util"))
-    // Test
-    // testCompile(group = "junit", name = "junit", version = "4.12")
+    implementation(kotlin("scripting-jvm-host"))
+// Test
+// testCompile(group = "junit", name = "junit", version = "4.12")
+    testImplementation("org.junit.jupiter","junit-jupiter-api",Versions.junit5)
+    testImplementation("org.junit.jupiter","junit-jupiter-params",Versions.junit5)
+    testRuntimeOnly("org.junit.jupiter","junit-jupiter-engine",Versions.junit5)
     testImplementation(kotlin("test-junit5"))
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:2.0.0-rc.1") {
-        exclude("org.jetbarins.kotlin")
-    }
-    testRuntimeOnly("org.spekframework.spek2:spek-runner-junit5:2.0.0-rc.1") {
-        exclude(group = "org.jetbrains.kotlin")
-    }
-    testImplementation(group = "org.amshove.kluent", name = "kluent", version = "1.45")
-    testRuntimeOnly(project(":mage-mediation-plugins"))
+    testImplementation("org.assertj", "assertj-core", Versions.assertj)
 }
 
 //compileKotlin {

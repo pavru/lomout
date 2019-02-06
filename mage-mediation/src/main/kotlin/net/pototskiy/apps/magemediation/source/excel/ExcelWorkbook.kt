@@ -19,4 +19,5 @@ class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
     }
 
     override fun iterator(): Iterator<ExcelSheet> = ExcelSheetIterator(workbook)
+    override fun close() = workbook.close()
 }

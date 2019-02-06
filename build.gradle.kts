@@ -4,9 +4,6 @@ plugins {
 }
 
 buildscript {
-    dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
-    }
 }
 
 group = "oooast-tools"

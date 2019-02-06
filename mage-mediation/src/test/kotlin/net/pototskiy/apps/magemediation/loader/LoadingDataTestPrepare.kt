@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.api.config.Config
-import net.pototskiy.apps.magemediation.api.config.Configuration
+import net.pototskiy.apps.magemediation.api.config.ConfigurationBuilderFromDSL
 import net.pototskiy.apps.magemediation.database.initDatabase
 import org.apache.logging.log4j.Level
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -15,16 +15,14 @@ class LoadingDataTestPrepare {
     }
 
     fun loadConfiguration(): Config {
-        config = Configuration(
-            this::class.java.classLoader.getResourceAsStream("test.config.kts")
+        config = ConfigurationBuilderFromDSL(
+            File(this::class.java.classLoader.getResource("test.config.kts").toURI())
         ).config
         return config
     }
 
     fun loadConfiguration(file: String): Config {
-        config = Configuration(
-            File(file).toURI().toURL().openStream()
-        ).config
+        config = ConfigurationBuilderFromDSL(File(file)).config
         return config
     }
 

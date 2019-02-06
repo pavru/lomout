@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.plugins.loader
 
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
-import net.pototskiy.apps.magemediation.api.plugable.loader.FieldTransformer
+import net.pototskiy.apps.magemediation.api.plugable.ValueTransformPlugin
 
-class OnecGroupAddLeadingG : FieldTransformer<String> {
+class OnecGroupAddLeadingG : ValueTransformPlugin<String, String> {
     override fun transform(value: String): String {
         return if (value.isNotBlank()) {
             val intID = value.toIntOrNull()

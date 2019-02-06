@@ -1,7 +1,10 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     `java-library`
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version Versions.kotlin
     idea
+    id("org.jetbrains.dokka") version Versions.dokka
 }
 
 group = "oooast-tools"
@@ -14,7 +17,38 @@ idea {
     }
 }
 
-kotlin {
+configurations {
+    create("spi")
+}
+
+val spiImplementation: Configuration by configurations.creating() {
+    extendsFrom(configurations.implementation.get())
+}
+
+tasks.withType(DokkaTask::class) {
+    moduleName = "mage-mediation"
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/javadoc"
+}
+
+tasks.register<Jar>("dokkaJar") {
+    group = "documentation"
+    dependsOn("dokka")
+    archiveClassifier.set("javadoc")
+    from(file("$buildDir/javadoc"))
+}
+
+tasks.register<Jar>("spiJar") {
+    group = "build"
+    archiveBaseName.set("mage-mediation-api")
+    dependsOn(configurations.runtimeClasspath)
+    from(project.the<SourceSetContainer>()["main"].output)
+//    include("net/pototskiy/apps/magemediation/**")
+//    include("META_INF/**")
+}
+
+artifacts {
+    add("spi", tasks["spiJar"])
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
@@ -30,35 +64,37 @@ java {
 
 repositories {
     jcenter()
+    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 dependencies {
-    runtimeOnly(project(":mage-mediation-config-dsl"))
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
+    api(kotlin("stdlib-jdk8"))
+    api(kotlin("reflect"))
     // Database
-    implementation(group = "org.jetbrains.exposed", name = "exposed", version = "0.11.2") {
-        exclude(group = "org.jetbrains.kotlin")
-        exclude(group = "org.slf4j")
+    implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
+        exclude("org.jetbrains.kotlin")
+        exclude("org.slf4j")
     }
     // Excel
-    implementation(group = "org.apache.poi", name = "poi", version = "4.0.1")
-    implementation(group = "org.apache.poi", name = "poi-ooxml", version = "4.0.1")
+    implementation("org.apache.poi", "poi", "4.0.1")
+    implementation("org.apache.poi", "poi-ooxml", "4.0.1")
     // CSV
-    implementation(group = "org.apache.commons", name = "commons-csv", version = "1.6")
+    implementation("org.apache.commons", "commons-csv", "1.6")
     // MySql
-    implementation(group = "mysql", name = "mysql-connector-java", version = "8.0.13")
+    implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
     // Logger
-    implementation(group = "org.slf4j", name = "slf4j-api", version = "1.8.0-beta2")
+    implementation("org.slf4j", "slf4j-api", "1.8.0-beta2")
     implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", "2.11.1")
     // Apache commons io
     implementation("commons-io", "commons-io", "2.6")
     // Kotlin script
-    implementation(kotlin("script-runtime"))
-    implementation(kotlin("compiler-embeddable"))
+    runtimeOnly(kotlin("script-runtime"))
+//    implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("script-util"))
+//    implementation(kotlin("scripting-jvm-host"))
+    implementation(kotlin("scripting-jvm-host"))
     // Test
-    testImplementation(group = "junit", name = "junit", version = "4.12")
+    testImplementation("junit", "junit", "4.12")
 }
 
 //compileKotlin {

@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.loader.nested
 
-import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.api.config.data.Field
+import net.pototskiy.apps.magemediation.api.config.type.Attribute
 import net.pototskiy.apps.magemediation.api.config.type.AttributeAttributeListType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
@@ -8,7 +9,7 @@ import org.apache.commons.csv.QuoteMode
 
 class AttributeListParser(
     private val data: String,
-    private val fieldDef: FieldConfiguration
+    private val field: Map.Entry<Field,Attribute>
 ) {
     private val attrs: Map<String, String> = parse()
     operator fun get(row: Int): Array<String> =
@@ -20,7 +21,7 @@ class AttributeListParser(
 
     private fun parse(): Map<String, String> {
         val result = mutableMapOf<String, String>()
-        val type = fieldDef.type
+        val type = field.value.type
         if (type is AttributeAttributeListType) {
             val nameValueFormat = getNameValueFormat(type)
             val attrFormat = getAttrFormat(type)

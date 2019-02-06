@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
-class LoaderException: Exception {
+open class LoaderException: Exception {
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

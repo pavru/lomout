@@ -1,20 +1,19 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.api.config.loader.dataset.FieldConfiguration
+import net.pototskiy.apps.magemediation.api.config.type.Attribute
 import net.pototskiy.apps.magemediation.loader.LoaderException
-import net.pototskiy.apps.magemediation.source.Cell
-import net.pototskiy.apps.magemediation.source.CellType
 
 class BooleanConverter(
-    private val cell: Cell,
-    private val field: FieldConfiguration
+    private val value: Any,
+    private val attrDesc: Attribute
 ) {
     fun convert(): Boolean {
-        return when (cell.cellType) {
-            CellType.BOOL -> cell.booleanValue
-            CellType.STRING -> stringToBoolean(cell.stringValue)
-            CellType.INT -> cell.intValue != 0L
-            CellType.DOUBLE -> cell.doubleValue != 0.0
+        return when (value) {
+            is Boolean -> value
+            is String -> stringToBoolean(value)
+            is Long -> value != 0L
+            is Double -> value != 0.0
+            else -> throw LoaderException("Conversion for type<${value::class.simpleName}> is not supported")
         }
     }
 
@@ -23,22 +22,23 @@ class BooleanConverter(
         return if (v in stringBoolean)
             v in stringBooleanTrue
         else
-            throw LoaderException("Field<${field.name}>, string can not converted to boolean")
+            throw LoaderException("Field<${attrDesc.name}>, string can not converted to boolean")
     }
 
     fun convertList(): List<Boolean> {
-        return when (cell.cellType) {
-            CellType.INT -> listOf(cell.intValue != 0L)
-            CellType.DOUBLE -> listOf(cell.doubleValue != 0.0)
-            CellType.BOOL -> listOf(cell.booleanValue)
-            CellType.STRING -> {
+        return when (value) {
+            is Long -> listOf(value != 0L)
+            is Double -> listOf(value != 0.0)
+            is Boolean -> listOf(value)
+            is String -> {
                 ValueListParser(
-                    cell.stringValue,
-                    field.type
+                    value,
+                    attrDesc.type
                 )
                     .parse()
                     .map { stringToBoolean(it) }
             }
+            else -> throw LoaderException("Field<${attrDesc.name}>, string can not converted to boolean")
         }
     }
 

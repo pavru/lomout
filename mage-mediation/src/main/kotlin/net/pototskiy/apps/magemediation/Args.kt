@@ -4,24 +4,20 @@ import com.beust.jcommander.Parameter
 
 object Args {
     @Parameter(
-        description = "dataset file to import"
-    )
-    var files: List<String> = mutableListOf()
-    @Parameter(
         names = ["--help"],
         description = "show help",
         help = true
     )
     var help: Boolean = false
     @Parameter(
-        names = ["-c", "--net.pototskiy.apps.magemediation.config.configuration"],
-        description = "specify import net.pototskiy.apps.magemediation.config.configuration file",
+        names = ["-c", "--conf"],
+        description = "specify configuration file",
         arity = 1
     )
-    var configFile: String = "config.xml"
+    var configFile: String = "config/config.conf.kts"
     @Parameter(
         names = ["-l", "--log-level"],
-        description = "log level: fatal, error, warn, info",
+        description = "log level: fatal, error, warn, info, trace",
         arity = 1
     )
     var logLevel: String = "warn"

@@ -2,11 +2,10 @@ package net.pototskiy.apps.magemediation.api.database.source
 
 import net.pototskiy.apps.magemediation.api.TIMESTAMP
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
 
-abstract class SourceDataEntity(id: EntityID<Int>) : IntEntity(id) {
+abstract class SourceDataEntity<E: SourceDataEntity<E>>(id: EntityID<Int>) : DataEntityWithAttribute<E>(id) {
     var touchedInLoading: Boolean
         get() = (klass.table as SourceDataTable).touchedInLoading.getValue(this, ::touchedInLoading)
         set(value) = (klass.table as SourceDataTable).touchedInLoading.setValue(this, ::touchedInLoading, value)
@@ -28,11 +27,6 @@ abstract class SourceDataEntity(id: EntityID<Int>) : IntEntity(id) {
     var absentDays: Int
         get() = (klass.table as SourceDataTable).absentDays.getValue(this, ::touchedInLoading)
         set(value) = (klass.table as SourceDataTable).absentDays.setValue(this, ::touchedInLoading, value)
-
-    abstract fun isNotEqual(data: Map<String, Any?>): Boolean
-    abstract fun updateEntity(data: Map<String, Any?>)
-
-    abstract fun setEntityData(data: Map<String, Any?>)
 
     fun wasCreated() = transaction {
         touchedInLoading = true

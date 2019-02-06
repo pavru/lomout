@@ -21,5 +21,5 @@ class AttributeRow(
 
     override fun get(column: Int): Cell = AttributeCell(CellAddress(_row, column), _data[column], this)
 
-    override fun iterator(): Iterator<Cell> = AttributeCellIterator(this)
+    override fun iterator(): Iterator<Cell?> = AttributeCellIterator(this)
 }

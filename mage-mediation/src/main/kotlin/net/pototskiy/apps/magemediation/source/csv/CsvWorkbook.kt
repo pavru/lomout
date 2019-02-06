@@ -52,4 +52,9 @@ class CsvWorkbook(
         reader = sourceURL.openStream().reader()
         _parser = csvFormat.parse(reader)
     }
+
+    override fun close() {
+        _parser.close()
+        reader.close()
+    }
 }
