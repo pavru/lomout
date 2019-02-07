@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.database
 
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentMediumEntity
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentMediumEntityClass
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentMediumEntityTable
+import net.pototskiy.apps.magemediation.api.database.PersistentMediumEntity
+import net.pototskiy.apps.magemediation.api.database.PersistentMediumEntityClass
+import net.pototskiy.apps.magemediation.api.database.PersistentMediumEntityTable
 import org.jetbrains.exposed.dao.EntityID
 
 object MediumEntities: PersistentMediumEntityTable("medium")

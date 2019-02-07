@@ -1,15 +1,15 @@
 package net.pototskiy.apps.magemediation.loader.nested
 
 import net.pototskiy.apps.magemediation.api.config.data.Field
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.config.type.AttributeAttributeListType
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.AttributeAttributeListType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import org.apache.commons.csv.QuoteMode
 
 class AttributeListParser(
     private val data: String,
-    private val field: Map.Entry<Field,Attribute>
+    private val field: Map.Entry<Field, Attribute>
 ) {
     private val attrs: Map<String, String> = parse()
     operator fun get(row: Int): Array<String> =

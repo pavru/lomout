@@ -6,7 +6,7 @@ import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigurationBuilderFromDSL
-import net.pototskiy.apps.magemediation.api.database.newschema.EntityClass
+import net.pototskiy.apps.magemediation.api.database.EntityClass
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
 import org.apache.logging.log4j.Level
@@ -41,7 +41,7 @@ fun main(args: Array<String>) {
     Config.Builder.initConfigBuilder()
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
     initDatabase(CONFIG_BUILDER.config.database)
-    EntityClass.initEntityCLassRegistrator()
+    EntityClass.initEntityCLassRegistrar()
 
     // Configure plugins
     @Suppress("UNUSED_VARIABLE") val plugable = PluginConfiguration()

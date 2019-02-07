@@ -3,9 +3,9 @@ package net.pototskiy.apps.magemediation.loader
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
 import net.pototskiy.apps.magemediation.api.config.loader.Load
-import net.pototskiy.apps.magemediation.api.database.newschema.EntityClass
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntity
-import net.pototskiy.apps.magemediation.api.database.source.SourceDataStatus
+import net.pototskiy.apps.magemediation.api.database.EntityClass
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.SourceDataStatus
 import net.pototskiy.apps.magemediation.database.SourceEntities
 import net.pototskiy.apps.magemediation.database.SourceEntity
 import net.pototskiy.apps.magemediation.source.excel.ExcelWorkbook
@@ -27,13 +27,13 @@ class DataLoadingTest {
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         Config.Builder.initConfigBuilder()
-        EntityClass.initEntityCLassRegistrator()
+        EntityClass.initEntityCLassRegistrar()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         util.initDataBase()
         entityClass = EntityClass(
             "onec-product",
-            SourceEntity.Companion,
+            SourceEntity,
             emptyList(),
             true
         )
@@ -129,7 +129,7 @@ class DataLoadingTest {
 
             @Nested
             @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-            @DisplayName("Repeat first loading with one deleted wntity")
+            @DisplayName("Repeat first loading with one deleted entity")
             inner class ThirdLoadingTest {
                 @BeforeAll
                 fun initAll() {

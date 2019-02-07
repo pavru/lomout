@@ -15,7 +15,7 @@ class GradleCacheResolver : GenericRepositoryWithBridge {
             .resolve(group)
             .resolve(artifact)
             .resolve(version)
-        val jar = jarCache.listFiles()
+        return jarCache.listFiles()
             .mapNotNull { dir ->
                 if (dir.resolve("$artifact-$version.jar").exists()) {
                     dir.resolve("$artifact-$version.jar")
@@ -23,7 +23,6 @@ class GradleCacheResolver : GenericRepositoryWithBridge {
                     null
                 }
             }
-        return jar
     }
 
     private fun findGradleSharedCache(): File? {

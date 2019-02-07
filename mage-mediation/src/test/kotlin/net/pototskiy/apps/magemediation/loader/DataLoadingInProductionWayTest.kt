@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
-import net.pototskiy.apps.magemediation.api.database.newschema.EntityClass
+import net.pototskiy.apps.magemediation.api.database.EntityClass
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
@@ -28,7 +28,7 @@ class DataLoadingInProductionWayTest {
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         Config.Builder.initConfigBuilder()
-        EntityClass.initEntityCLassRegistrator()
+        EntityClass.initEntityCLassRegistrar()
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
         Configurator.setLevel(ROOT_LOG_NAME,Level.TRACE)
         val layout = PatternLayout.newBuilder()

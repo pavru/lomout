@@ -21,8 +21,7 @@ data class LoaderDataset(
         private var headersRow: Int? = null,
         private var rowsToSkip: Int = 0,
         private var maxAbsentDays: Int = 5,
-        private var entityType: EntityType,
-        private val sourceFiles: SourceFileCollection
+        private var entityType: EntityType
     ) {
         private var sources: SourceDataCollection? = null
         private var fieldSets = mutableListOf<FieldSet>()
@@ -82,6 +81,7 @@ data class LoaderDataset(
                 )
             }
 
+        @Suppress("unused")
         fun Builder.secondary(name: String, block: FieldSet.Builder.() -> Unit): Builder =
             this.apply {
                 fieldSets.add(

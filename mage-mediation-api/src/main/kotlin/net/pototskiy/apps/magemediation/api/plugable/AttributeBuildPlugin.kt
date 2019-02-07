@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.plugable
 
-import net.pototskiy.apps.magemediation.api.database.source.PersistentEntity
+import net.pototskiy.apps.magemediation.api.database.PersistentEntity
 
 
 class AttributeBuildPlugin<E : PersistentEntity<*>, R : Any?>(
@@ -10,6 +10,7 @@ class AttributeBuildPlugin<E : PersistentEntity<*>, R : Any?>(
     declaredParameters.plus(Parameter<E>(entityParamName)),
     block
 ) {
+    @Suppress("MemberVisibilityCanBePrivate")
     var entityParameter = Parameter<E>(entityParamName)
         private set
     lateinit var entity: E

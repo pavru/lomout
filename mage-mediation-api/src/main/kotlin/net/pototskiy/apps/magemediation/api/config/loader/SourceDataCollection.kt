@@ -4,7 +4,7 @@ import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 
 data class SourceDataCollection(private val sourceData: List<SourceData>) : List<SourceData> by sourceData {
     @ConfigDsl
-    class Builder() {
+    class Builder {
         private val sourceData = mutableListOf<SourceData>()
 
         @Suppress("unused")

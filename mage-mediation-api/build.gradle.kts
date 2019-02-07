@@ -1,4 +1,5 @@
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
@@ -21,10 +22,13 @@ configurations {
     create("spi")
 }
 
-val spiImplementation: Configuration by configurations.creating() {
+val spiImplementation: Configuration by configurations.creating {
     extendsFrom(configurations.implementation.get())
 }
-
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+    }
+}
 tasks.withType(DokkaTask::class) {
     moduleName = "mage-mediation"
     outputFormat = "javadoc"

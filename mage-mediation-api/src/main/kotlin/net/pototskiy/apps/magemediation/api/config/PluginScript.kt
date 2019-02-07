@@ -19,7 +19,7 @@ import kotlin.script.experimental.jvm.updateClasspath
     fileExtension = ".*\\.plugin\\.kts",
     compilationConfiguration = PluginScriptCompilationOptions::class
 )
-abstract class PluginScript(args: Array<String>)
+abstract class PluginScript(@Suppress("UNUSED_PARAMETER") args: Array<String>)
 
 object PluginScriptCompilationOptions : ScriptCompilationConfiguration({
     displayName("Magento mediation plugin script")

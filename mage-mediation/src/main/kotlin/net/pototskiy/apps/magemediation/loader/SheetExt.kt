@@ -3,8 +3,8 @@ package net.pototskiy.apps.magemediation.loader
 import net.pototskiy.apps.magemediation.api.config.data.Entity
 import net.pototskiy.apps.magemediation.api.config.data.Field
 import net.pototskiy.apps.magemediation.api.config.data.FieldCollection
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.config.type.AttributeStringType
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.AttributeStringType
 import net.pototskiy.apps.magemediation.source.Sheet
 
 fun Sheet.sourceFields(row: Int, entity: Entity): FieldCollection {

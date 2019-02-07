@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.mediator
 
 import net.pototskiy.apps.magemediation.CONFIG_BUILDER
 import net.pototskiy.apps.magemediation.api.MEDIATOR_LOG_LEVEL
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
 import org.slf4j.LoggerFactory
 
 class CategoryMediator : AbstractMediator {

@@ -4,15 +4,13 @@ import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
-import net.pototskiy.apps.magemediation.api.config.data.Field
-import net.pototskiy.apps.magemediation.api.config.data.FieldCollection
+import net.pototskiy.apps.magemediation.api.config.data.*
 import net.pototskiy.apps.magemediation.api.config.loader.FieldSet
 import net.pototskiy.apps.magemediation.api.config.loader.FieldSetCollection
 import net.pototskiy.apps.magemediation.api.config.loader.Load
-import net.pototskiy.apps.magemediation.api.config.type.*
-import net.pototskiy.apps.magemediation.api.database.newschema.EntityClass
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntity
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntityClass
+import net.pototskiy.apps.magemediation.api.database.EntityClass
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntityClass
 import net.pototskiy.apps.magemediation.database.SourceEntity
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser
@@ -138,7 +136,7 @@ class EntityLoader(
             val generatedAttributes = attributes[true] ?: emptyList()
             EntityClass(
                 loadConfig.entity.name,
-                SourceEntity.Companion,
+                SourceEntity,
                 definedAttribute,
                 loadConfig.entity.open
             ).also {
@@ -302,8 +300,8 @@ class EntityLoader(
             throw LoaderException("Field<${attrDesc.name}> attribute list can not converted to any type")
     }
 
-    private fun findRowFieldSet(row: Row): FieldSet {
-        val set = (if (fieldSets.count() > 1) {
+    private fun findRowFieldSet(row: Row): FieldSet =
+        (if (fieldSets.count() > 1) {
             var fittedSet: FieldSet? = null
             for (set in fieldSets) {
                 var fit = true
@@ -327,8 +325,6 @@ class EntityLoader(
             null
         } ?: fieldSets.find { it.mainSet }
         ?: throw LoaderException("Row field set can not be found for loading entity<${loadConfig.entity.name}>"))
-        return set
-    }
 
     inner class NestedAttrProcessor {
         fun getAttrValue(

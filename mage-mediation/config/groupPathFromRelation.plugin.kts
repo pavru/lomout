@@ -1,13 +1,13 @@
 @file:DependsOn("org.jetbrains.exposed:exposed:0.12.1")
 
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import net.pototskiy.apps.magemediation.api.plugable.attributeBuilderPlugin
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.kotlin.script.util.DependsOn
 import java.lang.ref.WeakReference
 
-private val ARG_SEPARATOR = "separator"
-private val ARG_ROOT = "root"
+private val argSeparator = "separator"
+private val argRoot = "root"
 private val cachedPath = mutableMapOf<EntityID<Int>, WeakReference<String>>()
 
 val groupPathFromRelationPlugin = attributeBuilderPlugin<PersistentSourceEntity, String?> {
@@ -24,8 +24,8 @@ val groupPathFromRelationPlugin = attributeBuilderPlugin<PersistentSourceEntity,
 //    private lateinit var relations: GroupRelationEntityClass
 //
 //    override fun build(entity: GroupEntity, args: Map<String, Any>): String {
-//        val separator = args[ARG_SEPARATOR] as? String ?: "/"
-//        val root = args[ARG_ROOT] as? String ?: "/"
+//        val separator = args[argSeparator] as? String ?: "/"
+//        val root = args[argRoot] as? String ?: "/"
 //
 //        val pathFromCache = cachedPath[entity.id]?.get()
 //        if (pathFromCache != null) return pathFromCache
@@ -53,8 +53,8 @@ val groupPathFromRelationPlugin = attributeBuilderPlugin<PersistentSourceEntity,
 //    }
 //
 //    companion object {
-//        private const val ARG_SEPARATOR = "separator"
-//        private const val ARG_ROOT = "root"
+//        private const val argSeparator = "separator"
+//        private const val argRoot = "root"
 //
 //        private val cachedPath = mutableMapOf<EntityID<Int>, WeakReference<String>>()
 //        private val codeAttr = AttributeDescription(

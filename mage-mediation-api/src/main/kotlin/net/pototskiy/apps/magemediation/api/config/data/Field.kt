@@ -3,8 +3,6 @@ package net.pototskiy.apps.magemediation.api.config.data
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.config.type.AttributeAttributeListType
 import net.pototskiy.apps.magemediation.api.plugable.ValueTransformFunction
 import net.pototskiy.apps.magemediation.api.plugable.ValueTransformPlugin
 

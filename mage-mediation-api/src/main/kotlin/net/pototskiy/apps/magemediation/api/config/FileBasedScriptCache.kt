@@ -11,7 +11,9 @@ import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
 import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 
-class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
+// TODO: 07.02.2019 remove suppress after bug with serialization will be resolved
+@Suppress("unused")
+class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache {
 
     private fun uniqueHash(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): String {
         val digestWrapper = MessageDigest.getInstance("MD5")

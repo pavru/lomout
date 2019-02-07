@@ -39,8 +39,8 @@ class ConfigHost(private val configFile: File) {
 
     fun evaluate(): Config {
         val result = runBlocking {
-            compiledScript?.let {
-                scriptHost.evaluator(it, ScriptEvaluationConfiguration {
+            compiledScript?.let { script ->
+                scriptHost.evaluator(script, ScriptEvaluationConfiguration {
                     constructorArgs(emptyArray<String>())
                     enableScriptsInstancesSharing()
                 }).onFailure { result ->

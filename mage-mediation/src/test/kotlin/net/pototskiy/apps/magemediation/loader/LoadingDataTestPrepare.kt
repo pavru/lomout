@@ -14,6 +14,7 @@ class LoadingDataTestPrepare {
 //        BasicConfigurator.configure()
     }
 
+    @Suppress("unused")
     fun loadConfiguration(): Config {
         config = ConfigurationBuilderFromDSL(
             File(this::class.java.classLoader.getResource("test.config.kts").toURI())
@@ -26,6 +27,7 @@ class LoadingDataTestPrepare {
         return config
     }
 
+    @Suppress("unused")
     fun openHSSWorkbookFromResources(name: String): HSSFWorkbook {
         val testData = this::class.java.classLoader.getResourceAsStream(name)
         return HSSFWorkbook(testData)

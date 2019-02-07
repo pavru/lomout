@@ -4,7 +4,7 @@ import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.data.Transformer
 import net.pototskiy.apps.magemediation.api.config.data.TransformerFunction
 import net.pototskiy.apps.magemediation.api.config.data.TransformerPlugin
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
 import net.pototskiy.apps.magemediation.api.plugable.ValueTransformFunction
 import net.pototskiy.apps.magemediation.api.plugable.ValueTransformPlugin
 import kotlin.reflect.KClass

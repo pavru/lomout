@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.database.newschema.EntityClass
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntity
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntityClass
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
+import net.pototskiy.apps.magemediation.api.database.EntityClass
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntityClass
 
 class EntityUpdater(private val entityClass: EntityClass<PersistentSourceEntity>) {
 

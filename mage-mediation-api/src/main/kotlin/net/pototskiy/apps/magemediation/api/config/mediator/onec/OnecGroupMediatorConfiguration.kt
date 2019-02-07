@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.config.mediator.onec
 
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.config.type.AttributeLongType
-import net.pototskiy.apps.magemediation.api.config.type.AttributeStringType
-import net.pototskiy.apps.magemediation.api.config.type.AttributeTextType
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.AttributeLongType
+import net.pototskiy.apps.magemediation.api.config.data.AttributeStringType
+import net.pototskiy.apps.magemediation.api.config.data.AttributeTextType
 
 
 data class OnecGroupMediatorConfiguration(

@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.loader.converter
 
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
 import net.pototskiy.apps.magemediation.loader.LoaderException
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime

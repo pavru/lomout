@@ -27,7 +27,7 @@ class ConfigKtsConfigurator : RefineScriptCompilationConfigurationHandler {
     override operator fun invoke(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
         val diagnostics = arrayListOf<ScriptDiagnostic>()
         debug("stack") {
-            Thread.currentThread().getStackTrace().forEach {
+            Thread.currentThread().stackTrace.forEach {
                 println("${it.methodName}:${it.className}:${it.fileName}:${it.lineNumber}")
             }
         }

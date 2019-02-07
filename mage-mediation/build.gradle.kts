@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.gradle.plugins.ide.idea.model.Module
 
 plugins {

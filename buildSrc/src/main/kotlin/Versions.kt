@@ -1,3 +1,4 @@
+@Suppress("unused")
 object Versions {
     const val kotlin = "1.3.20"
     const val dokka = "0.9.17"

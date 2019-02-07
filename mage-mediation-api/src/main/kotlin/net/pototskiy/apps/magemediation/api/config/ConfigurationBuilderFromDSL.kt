@@ -4,7 +4,6 @@ import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import org.apache.logging.log4j.LogManager
 import java.io.File
 import javax.script.ScriptException
-import kotlin.script.experimental.annotations.KotlinScript
 
 class ConfigurationBuilderFromDSL(private val configFile: File) {
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)!!
@@ -83,6 +82,3 @@ class ConfigurationBuilderFromDSL(private val configFile: File) {
         return e.stackTrace.find { it.fileName?.endsWith(".kts") == true }?.lineNumber ?: 0
     }
 }
-
-@KotlinScript
-abstract class SimpleScript

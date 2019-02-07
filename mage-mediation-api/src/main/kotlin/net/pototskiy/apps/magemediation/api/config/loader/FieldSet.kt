@@ -6,8 +6,8 @@ import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.data.AttributeCollection
 import net.pototskiy.apps.magemediation.api.config.data.Field
 import net.pototskiy.apps.magemediation.api.config.data.FieldCollection
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.config.type.AttributeStringType
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.AttributeStringType
 
 data class FieldSet(
     val name: String,
@@ -31,7 +31,14 @@ data class FieldSet(
         fun Builder.field(name: String, block: Field.Builder.() -> Unit = {}): Field {
             this.lastFieldName = name
             val attr = attributes.find { it.name == name }
-                ?:Attribute(name, AttributeStringType(false), false, false, true, null)
+                ?: Attribute(
+                    name,
+                    AttributeStringType(false),
+                    false,
+                    false,
+                    true,
+                    null
+                )
             return Field.Builder(name, fields).apply(block).build().also {
                 fields[it] = attr
             }

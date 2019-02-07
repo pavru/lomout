@@ -11,6 +11,7 @@ object DataLoader {
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
+    @ObsoleteCoroutinesApi
     fun load(config: Config) = runBlocking {
         statusLog.info("Data loading has started")
         val jobs = mutableListOf<Job>()

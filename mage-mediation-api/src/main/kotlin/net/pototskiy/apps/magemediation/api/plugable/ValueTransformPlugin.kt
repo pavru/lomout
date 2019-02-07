@@ -7,6 +7,7 @@ class ValueTransformPlugin<T : Any, R : Any?>(
     declaredParameters.plus(Parameter<T>(valueParamName)),
     block
 ) {
+    @Suppress("MemberVisibilityCanBePrivate")
     val valueParameter = Parameter<T>(valueParamName)
     var value: T? = null
 

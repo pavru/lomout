@@ -3,7 +3,6 @@ package net.pototskiy.apps.magemediation.api.config.data
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
 
 data class Entity(
     override val name: String,

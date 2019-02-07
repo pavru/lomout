@@ -11,7 +11,7 @@ data class SourceData(
     val emptyRowStrategy: EmptyRowStrategy
 ) {
     @ConfigDsl
-    class Builder() {
+    class Builder {
         private var file: SourceFileDefinition? = null
         private var sheet: SourceSheetDefinition = SourceSheetDefinition(null, Regex(".*"))
         private var emptyRowStrategy: EmptyRowStrategy = EmptyRowStrategy.IGNORE

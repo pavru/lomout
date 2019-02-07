@@ -1,9 +1,9 @@
 @file:DependsOn("org.jetbrains.exposed:exposed:0.12.1")
 
-import net.pototskiy.apps.magemediation.api.config.type.Attribute
-import net.pototskiy.apps.magemediation.api.config.type.AttributeLongType
-import net.pototskiy.apps.magemediation.api.config.type.AttributeStringType
-import net.pototskiy.apps.magemediation.api.database.newschema.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.config.data.Attribute
+import net.pototskiy.apps.magemediation.api.config.data.AttributeLongType
+import net.pototskiy.apps.magemediation.api.config.data.AttributeStringType
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import net.pototskiy.apps.magemediation.api.plugable.Parameter
 import net.pototskiy.apps.magemediation.api.plugable.attributeBuilderPlugin
 import org.jetbrains.exposed.dao.EntityID
@@ -13,9 +13,30 @@ import java.lang.ref.WeakReference
 val separatorParameter = Parameter<String>("separator")
 val rootParameter = Parameter<String>("root")
 
-val entityIDAttr = Attribute("entity_id", AttributeLongType(false), false, false, false, null)
-val nameAttr = Attribute("name", AttributeStringType(false), false, false, false, null)
-val parentAttr = Attribute("parent_id", AttributeLongType(false), false, false, false, null)
+val entityIDAttr = Attribute(
+    "entity_id",
+    AttributeLongType(false),
+    false,
+    false,
+    false,
+    null
+)
+val nameAttr = Attribute(
+    "name",
+    AttributeStringType(false),
+    false,
+    false,
+    false,
+    null
+)
+val parentAttr = Attribute(
+    "parent_id",
+    AttributeLongType(false),
+    false,
+    false,
+    false,
+    null
+)
 
 val cachedPaths = mutableMapOf<EntityID<Int>, WeakReference<String>>()
 

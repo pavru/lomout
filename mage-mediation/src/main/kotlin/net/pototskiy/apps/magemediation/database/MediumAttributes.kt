@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.database
 
-import net.pototskiy.apps.magemediation.api.database.newschema.AttributeEntity
-import net.pototskiy.apps.magemediation.api.database.newschema.AttributeEntityClass
-import net.pototskiy.apps.magemediation.api.database.newschema.AttributeTable
+import net.pototskiy.apps.magemediation.api.database.AttributeEntity
+import net.pototskiy.apps.magemediation.api.database.AttributeEntityClass
+import net.pototskiy.apps.magemediation.api.database.AttributeTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
 import org.joda.time.DateTime
