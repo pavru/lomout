@@ -2,6 +2,7 @@ package net.pototskiy.apps.magemediation
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
@@ -9,6 +10,7 @@ import net.pototskiy.apps.magemediation.api.config.ConfigurationBuilderFromDSL
 import net.pototskiy.apps.magemediation.api.database.EntityClass
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
+import net.pototskiy.apps.magemediation.mediator.DataMediator
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
@@ -18,6 +20,7 @@ import kotlin.contracts.ExperimentalContracts
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 
+@ObsoleteCoroutinesApi
 @ExperimentalContracts
 fun main(args: Array<String>) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
@@ -47,11 +50,12 @@ fun main(args: Array<String>) {
     @Suppress("UNUSED_VARIABLE") val plugable = PluginConfiguration()
 
     DataLoader.load(CONFIG_BUILDER.config)
+    DataMediator.mediate(CONFIG_BUILDER.config)
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     statusLog.info("Application has finished")
 }
 
 fun setLogLevel() {
-    Configurator.setLevel(ROOT_LOG_NAME,Level.toLevel(Args.logLevel))
+    Configurator.setLevel(ROOT_LOG_NAME, Level.toLevel(Args.logLevel))
 }
 

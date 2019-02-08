@@ -50,9 +50,7 @@ class EntityLoader(
         store.resetTouchFlag(entityClass)
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
         loop@ for (row in sheet) {
-            if (row.rowNum == loadConfig.headersRow || row.rowNum < loadConfig.rowsToSkip) {
-                continue
-            }
+            if (row.rowNum == loadConfig.headersRow || row.rowNum < loadConfig.rowsToSkip) continue
             when (checkEmptyRow(row, emptyRowStrategy)) {
                 EmptyRowTestResult.STOP -> break@loop
                 EmptyRowTestResult.SKIP -> continue@loop

@@ -9,7 +9,7 @@ object Versions {
     const val ivy = "2.4.0"
     const val guava = "27.0.1-jre"
     const val jcommander = "1.71"
-    const val junit5 = "5.3.2"
+    const val junit5 = "5.4.0"
     const val assertj = "3.11.1"
 }
 

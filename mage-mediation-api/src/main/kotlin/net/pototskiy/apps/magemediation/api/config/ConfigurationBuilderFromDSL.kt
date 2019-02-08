@@ -73,8 +73,6 @@ class ConfigurationBuilderFromDSL(private val configFile: File) {
     }
 
     private fun createConfigExceptionMessage(e: ConfigException): String {
-        val line = findLine(e)
-        // TODO: 27.01.2019 add filename and line to message
         return "${e.message}"
     }
 
