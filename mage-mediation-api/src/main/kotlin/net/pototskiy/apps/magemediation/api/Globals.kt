@@ -14,3 +14,5 @@ const val EXPOSED_LOG_NAME = "Exposed"
 const val UNDEFINED_COLUMN = -1
 val DEFAULT_LOCALE: String = "${Locale.getDefault().isO3Language}_${Locale.getDefault().isO3Country}"
 val TIMESTAMP = DateTime()
+
+const val ENTITY_TYPE_NAME_LENGTH = 100

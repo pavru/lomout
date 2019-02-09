@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.data
 
+import net.pototskiy.apps.magemediation.api.ENTITY_TYPE_NAME_LENGTH
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
@@ -44,6 +45,9 @@ data class Entity(
         }
 
         fun build(): Entity {
+            if (name.length > ENTITY_TYPE_NAME_LENGTH) {
+                throw ConfigException("Entity name length must be less or equal $ENTITY_TYPE_NAME_LENGTH")
+            }
             val entity  = Entity(
                 name,
                 EntityCollection(parents),

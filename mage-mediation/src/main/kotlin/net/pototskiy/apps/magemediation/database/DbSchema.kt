@@ -27,6 +27,7 @@ object DbSchema {
                     MediumDateTimes,
                     MediumTexts
                 )
+                create(MediumTmpMatches)
             }
         }
     }
