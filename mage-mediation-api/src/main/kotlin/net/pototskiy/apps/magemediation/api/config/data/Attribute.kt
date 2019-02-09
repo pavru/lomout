@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.data
 
+import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.database.PersistentEntity
 import net.pototskiy.apps.magemediation.api.plugable.AttributeBuildFunction
 import net.pototskiy.apps.magemediation.api.plugable.AttributeBuildPlugin
@@ -16,6 +17,7 @@ data class Attribute(
 ) {
     val isSynthetic: Boolean = builder != null
 
+    @ConfigDsl
     class Builder(
         private var name: String,
         private val typeRestriction: List<KClass<out AttributeType>> = listOf()

@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 object DataMediator {
 
-    const val PAGE_SIZE = 100
+    private const val PAGE_SIZE = 100
 
     fun mediate(config: Config) {
         Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
