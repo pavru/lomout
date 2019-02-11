@@ -2,6 +2,15 @@
 @file:Import("groupPathFromRelation.plugin.kts")
 @file:Import("groupAddLeadingG.plugin.kts")
 @file:Import("categoryPathFromRelation.plugin.kts")
+@file:Import("matcher/CategoryMatcher.plugin.kts")
+@file:Import("processor/MatchedCategoryProcessor.plugin.kts")
+@file:Import("processor/UnMatchedCategoryProcessor.plugin.kts")
+@file:Import("processor/UnMatchedGroupProcessor.plugin.kts")
+
+import matcher.CategoryMatcher_plugin.CategoryMatcher
+import processor.MatchedCategoryProcessor_plugin.MatchedCategoryProcessor
+import processor.UnMatchedCategoryProcessor_plugin.UnMatchedCategoryProcessor
+import processor.UnMatchedGroupProcessor_plugin.UnMatchedGroupProcessor
 
 val copyLong = { value: Long -> value }
 val copyString = { value: String -> value }
@@ -260,7 +269,37 @@ config {
             }
         }
     }
+
     mediator {
+        productionLine {
+            fromEntities {
+                sourceEntity("onec-group") {
+                    (attribute("group_code") to attribute("entity_id"))
+                        .withTransform<Long?, Long?> {
+                            if (it == null) {
+                                null
+                            } else {
+                                mapOf<Long, Long>(
+                                    1L to 22L,
+                                    999L to 34L
+                                )[it]
+                            }
+                        }
+                }
+                sourceEntity("mage-category")
+            }
+            toEntity("import-category") {
+                inheritFrom("mage-category")
+            }
+            matcher<CategoryMatcher>()
+
+            processors {
+                matched<MatchedCategoryProcessor>()
+                unmatched<UnMatchedGroupProcessor>("onec-group")
+                unmatched<UnMatchedCategoryProcessor>("mage-category")
+            }
+        }
+
         entities {
             entity("category", true) {
                 inheritFrom("mage-category") {

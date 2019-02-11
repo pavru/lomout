@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.data.EntityCollection
 import net.pototskiy.apps.magemediation.api.config.mediator.mage.MageMediatorConfiguration
@@ -10,16 +11,19 @@ data class MediatorConfiguration(
     val entities: EntityCollection,
     val onec: OnecMediatorConfiguration,
     val magento: MageMediatorConfiguration,
-    val mapping: MappingConfiguration
+    val mapping: MappingConfiguration,
+    val lines: ProductionLineCollection
 ) {
+    @ConfigDsl
     class Builder {
         private var onecConf: OnecMediatorConfiguration? = null
         private var mageConf: MageMediatorConfiguration? = null
         private var mapping: MappingConfiguration? = null
         private var entities: EntityCollection? = null
+        private var lines = mutableListOf<ProductionLine>()
 
         @Suppress("unused")
-        fun Builder.entities(block: EntityCollection.Builder.()->Unit) {
+        fun Builder.entities(block: EntityCollection.Builder.() -> Unit) {
             entities = EntityCollection.Builder().apply(block).build()
         }
 
@@ -38,6 +42,11 @@ data class MediatorConfiguration(
             mapping = MappingConfiguration.Builder().apply(block).build()
         }
 
+        @Suppress("unused")
+        fun Builder.productionLine(block: ProductionLine.Builder.()->Unit) {
+            lines.add(ProductionLine.Builder().apply(block).build())
+        }
+
         fun build(): MediatorConfiguration {
             return MediatorConfiguration(
                 entities
@@ -46,7 +55,9 @@ data class MediatorConfiguration(
                     ?: throw ConfigException("Mediator section must include OneC configuration"),
                 mageConf
                     ?: throw ConfigException("Mediator section must include Magento configuration"),
-                mapping ?: MappingConfiguration.Builder().build()
+                mapping
+                    ?: MappingConfiguration.Builder().build(),
+                ProductionLineCollection(lines)
             )
         }
     }

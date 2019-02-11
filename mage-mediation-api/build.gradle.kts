@@ -88,7 +88,7 @@ dependencies {
     implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
     // Logger
     implementation("org.slf4j", "slf4j-api", "1.8.0-beta2")
-    implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", "2.11.1")
+    implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", Versions.log4j)
     // Apache commons io
     implementation("commons-io", "commons-io", "2.6")
     // Kotlin script

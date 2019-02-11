@@ -30,16 +30,18 @@ class DataLoadingInProductionWayTest {
         Config.Builder.initConfigBuilder()
         EntityClass.initEntityCLassRegistrar()
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
-        Configurator.setLevel(ROOT_LOG_NAME,Level.TRACE)
+        Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val layout = PatternLayout.newBuilder()
             .withPattern("%level,")
             .build()
-        appender = WriterAppender.Builder()
-            .setName("test-catcher")
-            .setLayout(layout)
-            .setFilter(LevelRangeFilter.createFilter(Level.OFF, Level.ERROR,Filter.Result.NEUTRAL, Filter.Result.DENY))
-            .setTarget(logOut.writer())
-            .build()
+        appender = WriterAppender.createAppender(
+            layout,
+            LevelRangeFilter.createFilter(Level.OFF, Level.ERROR, Filter.Result.NEUTRAL, Filter.Result.DENY),
+            logOut.writer(),
+            "test-catcher",
+            false,
+            true
+        )
         appender.start()
         logger.addAppender(appender)
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
