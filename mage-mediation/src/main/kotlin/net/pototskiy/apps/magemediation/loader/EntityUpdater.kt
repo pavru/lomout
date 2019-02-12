@@ -19,7 +19,6 @@ class EntityUpdater(private val entityClass: EntityClass<PersistentSourceEntity>
     }
 
     private fun testAndUpdateTypedAttributes(entity: PersistentSourceEntity, data: Map<Attribute, Any?>) {
-        @Suppress("UNCHECKED_CAST")
         val storeData = entityClass.readAttributes(entity)
         data.keys.plus(storeData.keys.minus(data.keys)).filter { !it.key }.forEach { attr ->
             if (data[attr] != null && storeData[attr] == null) {

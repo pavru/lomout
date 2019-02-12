@@ -3,11 +3,15 @@ package net.pototskiy.apps.magemediation.api.config.data
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
+import org.jetbrains.exposed.sql.*
+import org.joda.time.DateTime
 import java.util.*
 import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
 sealed class AttributeType(
+    val kotlinType: KClass<out Any>?,
+    val sqlType: KClass<out IColumnType>?,
     @Suppress("unused") val isList: Boolean,
     val hasLocale: Boolean,
     val hasPattern: Boolean,
@@ -184,7 +188,7 @@ sealed class AttributeType(
                 val realDelimiter = this.delimiter
                     ?: throw ConfigException("Delimiter must be configured for list of int")
                 val realLocale = this.locale ?: DEFAULT_LOCALE
-                AttributeIntListType(
+                AttributeLongListType(
                     realQuote,
                     realDelimiter,
                     this.locale != null,
@@ -436,63 +440,63 @@ sealed class AttributeType(
 class AttributeStringType(
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(false, hasLocale, false, false)
+) : AttributeType(String::class, VarCharColumnType::class, false, hasLocale, false, false)
 
 class AttributeLongType(
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(false, hasLocale, false, false)
+) : AttributeType(Long::class, LongColumnType::class, false, hasLocale, false, false)
 
 class AttributeDoubleType(
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(false, hasLocale, false, false)
+) : AttributeType(Double::class, DoubleColumnType::class, false, hasLocale, false, false)
 
 class AttributeBoolType
-    : AttributeType(false, false, false, false)
+    : AttributeType(Boolean::class, BooleanColumnType::class, false, false, false, false)
 
 class AttributeTextType(
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(false, hasLocale, false, false)
+) : AttributeType(String::class, TextColumnType::class, false, hasLocale, false, false)
 
 class AttributeDateType(
     hasPattern: Boolean,
     override val pattern: String,
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(false, hasLocale, hasPattern, false)
+) : AttributeType(DateTime::class, DateColumnType::class, false, hasLocale, hasPattern, false)
 
 class AttributeDateTimeType(
     hasPattern: Boolean,
     override val pattern: String,
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(false, hasLocale, hasPattern, false)
+) : AttributeType(DateTime::class, DateColumnType::class, false, hasLocale, hasPattern, false)
 
 class AttributeStringListType(
     override val quote: String,
     override val delimiter: String
-) : AttributeType(true, false, false, false)
+) : AttributeType(String::class, VarCharColumnType::class, true, false, false, false)
 
 class AttributeBoolListType(
     override val quote: String,
     override val delimiter: String
-) : AttributeType(true, false, false, false)
+) : AttributeType(Boolean::class, BooleanColumnType::class, true, false, false, false)
 
-class AttributeIntListType(
+class AttributeLongListType(
     override val quote: String,
     override val delimiter: String,
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(true, hasLocale, false, false)
+) : AttributeType(Long::class, LongColumnType::class, true, hasLocale, false, false)
 
 class AttributeDoubleListType(
     override val quote: String,
     override val delimiter: String,
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(true, hasLocale, false, false)
+) : AttributeType(Double::class, DoubleColumnType::class, true, hasLocale, false, false)
 
 class AttributeDateListType(
     override val quote: String,
@@ -501,7 +505,7 @@ class AttributeDateListType(
     override val pattern: String,
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(true, hasLocale, hasPattern, false)
+) : AttributeType(DateTime::class, DateColumnType::class, true, hasLocale, hasPattern, false)
 
 class AttributeDateTimeListType(
     override val quote: String,
@@ -510,11 +514,11 @@ class AttributeDateTimeListType(
     override val pattern: String,
     hasLocale: Boolean,
     override val locale: String = DEFAULT_LOCALE
-) : AttributeType(true, hasLocale, hasPattern, false)
+) : AttributeType(DateTime::class, DateColumnType::class, true, hasLocale, hasPattern, false)
 
 class AttributeAttributeListType(
     override val quote: String,
     override val delimiter: String,
     override val valueDelimiter: String,
     override val valueQuote: String
-) : AttributeType(false, false, false, true)
+) : AttributeType(null, null, false, false, false, true)

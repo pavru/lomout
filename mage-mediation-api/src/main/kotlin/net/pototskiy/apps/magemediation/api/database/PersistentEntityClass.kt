@@ -44,7 +44,7 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
             is AttributeStringType,
             is AttributeStringListType -> findNonDateAttrEntityClass(VarCharColumnType::class)
             is AttributeLongType,
-            is AttributeIntListType -> findNonDateAttrEntityClass(LongColumnType::class)
+            is AttributeLongListType -> findNonDateAttrEntityClass(LongColumnType::class)
             is AttributeDoubleType,
             is AttributeDoubleListType -> findNonDateAttrEntityClass(DoubleColumnType::class)
             is AttributeBoolType,
@@ -128,17 +128,22 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
 
     fun readAttributes(entity: PersistentEntity<*>): Map<Attribute, Any?> {
 //        Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
-        val dbValues = attributeEntityClasses.map { attrClass ->
-            val table = attrClass.table as AttributeTable<*>
-            val v = transaction { attrClass.find { table.owner eq entity.id }.toList() }
-                .groupBy { it.code }
-                .map { it.key to it.value }
-            v
+        val entityClassDef = entity.getEntityClass()
+        val types = entityClassDef.attributes.groupBy { it.type.sqlType }.keys.filterNotNull()
+        @Suppress("UNCHECKED_CAST")
+        val dbValues = attributeEntityClasses.filter {
+            (it.table as AttributeTable<*>).value.columnType::class in types
         }
+            .map { attrClass ->
+                val table = attrClass.table as AttributeTable<*>
+                val v = transaction { attrClass.find { table.owner eq entity.id }.toList() }
+                    .groupBy { it.code }
+                    .map { it.key to it.value }
+                v
+            }
             .flatten()
             .toMap()
 //        Configurator.setLevel(EXPOSED_LOG_NAME, Level.ERROR)
-        val entityClassDef = entity.getEntityClass()
         val v = entityClassDef.attributes.map { attr ->
             attr to dbValues[attr.name]?.let { valueList ->
                 val value = valueList.map { it.index to it.value }.toMap()

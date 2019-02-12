@@ -289,7 +289,7 @@ class EntityLoader(
         is AttributeDateType -> DateConverter(value, attrDesc).convert()
         is AttributeDateTimeType -> DatetimeConverter(value, attrDesc).convert()
         is AttributeBoolListType -> BooleanConverter(value, attrDesc).convertList()
-        is AttributeIntListType -> IntegerConverter(value, attrDesc).convertList()
+        is AttributeLongListType -> IntegerConverter(value, attrDesc).convertList()
         is AttributeDoubleListType -> DoubleConverter(value, attrDesc).convertList()
         is AttributeStringListType -> StringConverter(value, attrDesc).convertList()
         is AttributeDateListType -> DateConverter(value, attrDesc).convertList()
