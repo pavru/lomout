@@ -129,9 +129,8 @@ class EntityLoader(
             }
             klass
         } else {
-            val attributes = fieldSets.map { it.fields.values }.flatten().groupBy { it.auto }
-            val definedAttribute = attributes[false] ?: emptyList()
-            val generatedAttributes = attributes[true] ?: emptyList()
+            val definedAttribute = loadConfig.entity.attributes
+            val generatedAttributes = fieldSets.map { it.fields.values }.flatten().filter { it.auto }
             EntityClass(
                 loadConfig.entity.name,
                 SourceEntity,
