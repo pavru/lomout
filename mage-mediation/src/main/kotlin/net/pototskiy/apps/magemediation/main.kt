@@ -17,7 +17,6 @@ import org.apache.logging.log4j.core.config.Configurator
 import java.io.File
 import kotlin.contracts.ExperimentalContracts
 
-
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 
 @ObsoleteCoroutinesApi

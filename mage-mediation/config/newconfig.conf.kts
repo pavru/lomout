@@ -40,7 +40,7 @@ config {
             entity("onec-group", true) {
                 attribute("group_code") { type { long() }.key() }
                 attribute("group_name") { type { string() } }
-                attribute("path") {
+                attribute("__path") {
                     type { string() }.withBuilder(groupPathFromRelationPlugin) {
                         parameter<String>("separator") to "/"
                         parameter<String>("root") to "/Root Catalog/Default Category/Каталог"
@@ -172,7 +172,6 @@ config {
                         withTransform(onecGroupToLongPlugin)
                     }
                     field("group_name") { column(1) }
-                    field("path")
                 }
             }
         }
