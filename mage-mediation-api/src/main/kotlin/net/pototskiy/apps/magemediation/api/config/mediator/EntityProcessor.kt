@@ -30,9 +30,7 @@ class MatchedEntityProcessorWithFunction(
     val function: MatchedEntityProcessorFunction
 ) : MatchedEntityProcessor()
 
-sealed class UnMatchedEntityProcessor(
-    val entityType: Entity
-) : EntityProcessor() {
+sealed class UnMatchedEntityProcessor(val entityType: Entity) : EntityProcessor() {
     fun process(entity: PersistentSourceEntity): Map<Attribute, Any?> {
         return when (this) {
             is UnMatchedEntityProcessorWithPlugin -> pluginClass.createInstance().let {

@@ -24,7 +24,7 @@ abstract class PersistentEntity<E : PersistentEntity<E>>(id: EntityID<Int>) : In
     fun readAttribute(attribute: Attribute): Any? =
         (klass as PersistentEntityClass<*>).readAttribute(this, attribute)
 
-    fun readsAttributes(): Map<Attribute, Any?> =
+    fun readAttributes(): Map<Attribute, Any?> =
         (klass as PersistentEntityClass<*>).readAttributes(this)
 
     fun getPersistentEntityClass(): E? {

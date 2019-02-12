@@ -127,6 +127,9 @@ dependencies {
         exclude("org.slf4j")
     }
 
+    implementation(fileTree("lib") {
+        include("*.jar")
+    })
     implementation(project(":mage-mediation-api", "spi"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
@@ -154,9 +157,9 @@ dependencies {
     implementation(kotlin("scripting-jvm-host"))
 // Test
 // testCompile(group = "junit", name = "junit", version = "4.12")
-    testImplementation("org.junit.jupiter","junit-jupiter-api",Versions.junit5)
-    testImplementation("org.junit.jupiter","junit-jupiter-params",Versions.junit5)
-    testRuntimeOnly("org.junit.jupiter","junit-jupiter-engine",Versions.junit5)
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
 }

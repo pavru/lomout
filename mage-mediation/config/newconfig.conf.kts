@@ -274,7 +274,8 @@ config {
         productionLine {
             fromEntities {
                 sourceEntity("onec-group") {
-                    (attribute("group_code") to attribute("entity_id"))
+                    (attribute("group_code") to
+                            attribute("entity_id") { type { long() } })
                         .withTransform<Long?, Long?> {
                             if (it == null) {
                                 null

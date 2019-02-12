@@ -12,6 +12,8 @@ object Versions {
     const val junit5 = "5.4.0"
     const val assertj = "3.11.1"
     const val log4j = "2.11.2"
+    const val progressBar = "0.7.2"
+    const val jline = "3.9.0"
 }
 
 data class MysqlVersions(
