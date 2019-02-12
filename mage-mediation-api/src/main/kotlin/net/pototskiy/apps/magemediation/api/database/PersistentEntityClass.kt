@@ -156,6 +156,8 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
         }.toMap()
         entity.data.clear()
         entity.data.putAll(v)
+        entityClassDef.attributes.filter { it.isSynthetic }
+            .forEach { entity.data[it] = readAttribute(entity, it) }
         return entity.data
     }
 
