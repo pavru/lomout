@@ -108,7 +108,9 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
         val attrClass = getAttrEntityClassFor(attribute.type)
         val attrTable = attrClass.table as AttributeTable<*>
         return transaction {
-            val value = (table innerJoin attrTable)
+            //            Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
+//            val value = (table innerJoin attrTable)
+            val value = attrTable
                 .slice(attrTable.index, attrTable.value)
                 .select { (attrTable.owner eq entity.id) and (attrTable.code eq attribute.name) }
                 .map { it[attrTable.index] to it[attrTable.value] }
@@ -119,20 +121,49 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
                 else -> value[-1]
             }
             entity.data[entityClass.mapAttribute(attribute)] = v
+//            Configurator.setLevel(EXPOSED_LOG_NAME, Level.ERROR)
             v
         }
     }
 
     fun readAttributes(entity: PersistentEntity<*>): Map<Attribute, Any?> {
-        val entityClass = entity.getEntityClass()
+//        Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
+        val dbValues = attributeEntityClasses.map { attrClass ->
+            val table = attrClass.table as AttributeTable<*>
+            val v = transaction { attrClass.find { table.owner eq entity.id }.toList() }
+                .groupBy { it.code }
+                .map { it.key to it.value }
+            v
+        }
+            .flatten()
+            .toMap()
+//        Configurator.setLevel(EXPOSED_LOG_NAME, Level.ERROR)
+        val entityClassDef = entity.getEntityClass()
+        val v = entityClassDef.attributes.map { attr ->
+            attr to dbValues[attr.name]?.let { valueList ->
+                val value = valueList.map { it.index to it.value }.toMap()
+                when {
+                    value.isEmpty() -> null as Any?
+                    value.size > 1 || !value.containsKey(-1) -> value.values.toList()
+                    else -> value[-1]
+                }
+            }
+        }.toMap()
         entity.data.clear()
-        entity.data.putAll(
-            entityClass.attributes.filterNot { it.type is AttributeAttributeListType }.map {
-                it to readAttribute(entity, it)
-            }.toMap().mapAttributeDescription(entityClass)
-        )
+        entity.data.putAll(v)
         return entity.data
     }
+
+//    fun readAttributes(entity: PersistentEntity<*>): Map<Attribute, Any?> {
+//        val entityClass = entity.getEntityClass()
+//        entity.data.clear()
+//        entity.data.putAll(
+//            entityClass.attributes.filterNot { it.type is AttributeAttributeListType }.map {
+//                it to readAttribute(entity, it)
+//            }.toMap().mapAttributeDescription(entityClass)
+//        )
+//        return entity.data
+//    }
 
     fun addAttribute(entity: PersistentEntity<*>, attribute: Attribute, value: Any) {
         val entityClass = entity.getEntityClass()
