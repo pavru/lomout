@@ -7,15 +7,7 @@ class ValueTransformPlugin<T : Any, R : Any?>(
     declaredParameters.plus(Parameter<T>(valueParamName)),
     block
 ) {
-    @Suppress("MemberVisibilityCanBePrivate")
-    val valueParameter = Parameter<T>(valueParamName)
     var value: T? = null
-
-    fun transform(value: T?): R {
-        if (value != null) setArgument(valueParameter, value)
-        this.value = value
-        return execute()
-    }
 
     class Builder<T : Any, R : Any?> : Plugin.Builder<ValueTransformPlugin<T, R>, R>() {
         override fun build(): ValueTransformPlugin<T, R> {
@@ -30,8 +22,6 @@ class ValueTransformPlugin<T : Any, R : Any?>(
         const val valueParamName = "value"
     }
 }
-
-typealias ValueTransformFunction<T, R> = (T) -> R
 
 @Suppress("unused")
 fun <T : Any, R : Any?> valueTransformPlugin(block: ValueTransformPlugin.Builder<T, R>.() -> Unit): ValueTransformPlugin<T, R> {

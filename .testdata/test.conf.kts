@@ -1,6 +1,3 @@
-val copyLong = { value: Long -> value }
-val copyString = { value: String -> value }
-
 config {
     database {
         name("test_magemediation")
@@ -115,58 +112,17 @@ config {
         }
     }
     mediator {
-        entities {
-            entity("category", true) {
-                attribute("group_code") { type { long() }.key() }
-                attribute("group_name") { type { string() } }
-                attribute("__path") {
-                    type { string() }
-                }
+        productionLine {
+            fromEntities {
+                sourceEntity("onec-product")
             }
-        }
-
-        onec {
-            group {
-                idAttribute("group_code") { type { string() } }
-                pathAttribute("__path") {
-                    type { string() }
-
-                }
+            toEntity("import-product") {
+                inheritFrom("onec-product")
             }
-        }
-        magento {
-            category {
-                pathAttribute("__path") {
-                    type { string() }
-
-                }
-                idAttribute("entity_id") {
-                    type { long() }
-                }
-            }
-        }
-        mapping {
-            categories {
-                onecID("G001") to mageID(22)
-                onecID("G002") to magePath("/Root Catalog/Default Category/Каталог/Прочие запасные части/Автопокрышки")
-                mageID(22) to onecID("G001")
-                magePath("/Root Catalog/Default Category/Каталог/Прочие запасные части/Автопокрышки") to onecID("G002")
-                mageID(102) to onecPath("G54321")
-                onecID("G12345") to magePath("/RootCatalog/Test")
-                // attribute mapping mage->onec
-                mageAttribute("entity_id").transformTo(
-                    onecAttribute("group_code") { type { long() } },
-                    copyLong
-                )
-                mageAttribute("parent").transformTo(
-                    onecAttribute("group_parent_code") { type { long() } },
-                    copyLong
-                )
-                mageAttribute("name").transformTo(
-                    onecAttribute("group_name") { type { string() } },
-                    copyString
-                )
-                // attribute mapping onec->mage
+            matcher { false }
+            processors {
+                matched { emptyMap() }
+                unmatched("onec-product") { emptyMap() }
             }
         }
     }

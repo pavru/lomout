@@ -17,16 +17,6 @@ object DbSchema {
                     SourceDateTimes,
                     SourceTexts
                 )
-                create(MediumEntities)
-                create(
-                    MediumVarchars,
-                    MediumLongs,
-                    MediumBooleans,
-                    MediumDoubles,
-                    MediumDates,
-                    MediumDateTimes,
-                    MediumTexts
-                )
                 create(MediumTmpMatches)
             }
         }

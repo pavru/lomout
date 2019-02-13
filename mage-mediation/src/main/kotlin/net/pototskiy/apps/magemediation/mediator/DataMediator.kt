@@ -10,7 +10,7 @@ object DataMediator {
     fun mediate(config: Config) {
         transaction { MediumTmpMatches.deleteAll() }
         val orderedLines = config.mediator.lines.groupBy { it.outputEntity.name }
-        orderedLines.forEach{(entityType, lines) ->
+        orderedLines.forEach{(_, lines) ->
             lines.forEach { ProductionLineExecutor().executeLine(it) }
         }
     }

@@ -1,13 +1,16 @@
 package net.pototskiy.apps.magemediation.mediator
 
+import net.pototskiy.apps.magemediation.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.mediator.MatcherEntityData
 import net.pototskiy.apps.magemediation.api.config.mediator.ProductionLine
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.SourceDataStatus
 import net.pototskiy.apps.magemediation.database.MediumTmpMatch
 import net.pototskiy.apps.magemediation.database.MediumTmpMatches
 import net.pototskiy.apps.magemediation.database.SourceEntities
 import net.pototskiy.apps.magemediation.database.SourceEntity
 import org.apache.commons.collections4.map.LRUMap
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -15,14 +18,18 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class ProductionLineExecutor {
 
     private val entityCache = LRUMap<Int, PersistentSourceEntity>(1000)
+    private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
 
     fun executeLine(line: ProductionLine) {
         transaction {
-            // TODO: 11.02.2019 May it's necessary to add config control flag to clean up target entity
+            // TODO: 11.02.2019 May be it's necessary to add config control flag to clean up target entity
             SourceEntities.deleteWhere { SourceEntities.entityType eq line.outputEntity.name }
         }
         var from: ColumnSet = SourceEntities
-        var where = Op.build { SourceEntities.entityType eq line.inputEntities.first().entity.name }
+        var where = Op.build {
+            (SourceEntities.entityType eq line.inputEntities.first().entity.name) and
+                    (SourceEntities.currentStatus neq SourceDataStatus.REMOVED)
+        }
         val columns = mutableListOf(SourceEntities.id)
         line.inputEntities.drop(1).map { it.entity.name }.forEachIndexed { i, entity ->
             val alias = SourceEntities.alias("source_entity_$i")
@@ -30,26 +37,35 @@ class ProductionLineExecutor {
             where = where.and(Op.build { alias[SourceEntities.entityType] eq entity })
             columns.add(alias[SourceEntities.id])
         }
-        pagedProcess(from, columns, where) { row ->
-            val entities = mutableMapOf<String, MatcherEntityData>()
-            columns.forEach {
-                val id = row[it]
-                var entity = entityCache[id.value]
-                if (entity == null) {
-                    entity = transaction { SourceEntity.findById(id) }
-                        ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
-                    entity.readAttributes()
-                    entityCache[entity.id.value] = entity
+        try {
+            pagedProcess(from, columns, where) { row ->
+                val entities = mutableMapOf<String, MatcherEntityData>()
+                columns.forEach {
+                    val id = row[it]
+                    var entity = entityCache[id.value]
+                    if (entity == null) {
+                        entity = transaction { SourceEntity.findById(id) }
+                            ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
+                        entity.readAttributes()
+                        entityCache[entity.id.value] = entity
+                    }
+                    val mappedData = line.inputEntities.mapEntityData(entity)
+                    entities[entity.entityType] = MatcherEntityData(entity, entity.data, mappedData)
                 }
-                val mappedData = line.inputEntities.mapEntityData(entity)
-                entities[entity.entityType] = MatcherEntityData(entity, entity.data, mappedData)
+                if (line.matcher.matches(entities)) {
+                    columns.forEach { insertMatch(line.outputEntity.name, row[it]) }
+                    line.processors.getMatchedProcessor()?.process(entities)
+                }
             }
-            if (line.matcher.matches(entities)) {
-                columns.forEach { insertMatch(line.outputEntity.name, row[it]) }
-                line.processors.getMatchedProcessor()?.process(entities)
-            }
+            processUnMatched(line)
+        } catch (e: Exception) {
+            processException(e)
         }
-        processUnMatched(line)
+    }
+
+    private fun processException(e: Exception) {
+        logger.error("{}", e.message)
+        logger.trace("Caused by:", e)
     }
 
     private fun processUnMatched(line: ProductionLine) {
@@ -61,6 +77,7 @@ class ProductionLineExecutor {
         ) { MediumTmpMatches.target eq line.outputEntity.name }
         val where = Op.build {
             (SourceEntities.entityType inList line.inputEntities.map { it.entity.name }) and
+                    (SourceEntities.currentStatus neq SourceDataStatus.REMOVED) and
                     (MediumTmpMatches.id.isNull())
         }
         pagedProcess(from, listOf(SourceEntities.id), where) { row ->

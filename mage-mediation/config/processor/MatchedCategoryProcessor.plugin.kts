@@ -8,5 +8,4 @@ class MatchedCategoryProcessor : MatchedEntityProcessorPlugin() {
         val v = entities.size == 5
         return emptyMap()
     }
-
 }

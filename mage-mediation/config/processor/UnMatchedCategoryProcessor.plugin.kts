@@ -8,5 +8,4 @@ class UnMatchedCategoryProcessor : UnMatchedEntityProcessorPlugin() {
         val v = entity.data.size
         return emptyMap()
     }
-
 }

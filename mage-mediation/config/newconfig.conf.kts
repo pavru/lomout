@@ -1,19 +1,22 @@
-@file:Import("onecGroupToLong.plugin.kts")
-@file:Import("groupPathFromRelation.plugin.kts")
-@file:Import("groupAddLeadingG.plugin.kts")
-@file:Import("categoryPathFromRelation.plugin.kts")
+@file:Import("transformer/OnecGroupToLong.plugin.kts")
+@file:Import("builder/GroupPathFromRelation.plugin.kts")
+@file:Import("builder/CategoryPathFromRelation.plugin.kts")
+@file:Import("transformer/GroupAddLeadingG.plugin.kts")
 @file:Import("matcher/CategoryMatcher.plugin.kts")
 @file:Import("processor/MatchedCategoryProcessor.plugin.kts")
 @file:Import("processor/UnMatchedCategoryProcessor.plugin.kts")
 @file:Import("processor/UnMatchedGroupProcessor.plugin.kts")
+@file:Import("transformer/GroupToCategoryPath.plugin.kts")
 
+import builder.CategoryPathFromRelation_plugin.CategoryPathFromRelation
+import builder.GroupPathFromRelation_plugin.GroupPathFromRelation
 import matcher.CategoryMatcher_plugin.CategoryMatcher
+import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import processor.MatchedCategoryProcessor_plugin.MatchedCategoryProcessor
 import processor.UnMatchedCategoryProcessor_plugin.UnMatchedCategoryProcessor
 import processor.UnMatchedGroupProcessor_plugin.UnMatchedGroupProcessor
-
-val copyLong = { value: Long -> value }
-val copyString = { value: String -> value }
+import transformer.OnecGroupToLong_plugin.OnecGroupToLong
+import transformer.GroupToCategoryPath_plugin.*
 
 config {
     database {
@@ -27,8 +30,7 @@ config {
     }
     loader {
         files {
-            file("onec-product") { path("E:/home/alexander/Development/Web/oooast-tools/.testdata/test-products.xls") }
-            file("onec-group") { path("E:/home/alexander/Development/Web/oooast-tools/.testdata/test-products.xlsx") }
+            file("onec-data") { path("E:/home/alexander/Development/Web/oooast-tools/.testdata/test-products.xls") }
             file("mage-product") { path("E:/home/alexander/Development/Web/oooast-tools/.testdata/catalog_product.csv") }
             file("mage-user-group") { path("E:/home/alexander/Development/Web/oooast-tools/.testdata/customer_group.csv") }
             file("mage-category") { path("E:/home/alexander/Development/Web/oooast-tools/.testdata/catalog_category.csv") }
@@ -41,9 +43,13 @@ config {
                 attribute("group_code") { type { long() }.key() }
                 attribute("group_name") { type { string() } }
                 attribute("__path") {
-                    type { string() }.withBuilder(groupPathFromRelationPlugin) {
-                        parameter<String>("separator") to "/"
-                        parameter<String>("root") to "/Root Catalog/Default Category/Каталог"
+                    type { string() }.withBuilder<
+                            GroupPathFromRelation,
+                            GroupPathFromRelation.Options,
+                            PersistentSourceEntity,
+                            String?> {
+                        separator = "/"
+                        root = "/Root Catalog/Default Category/Каталог/"
                     }
                 }
             }
@@ -137,6 +143,17 @@ config {
                 attribute("use_name_in_product_search") { type { bool() } }
                 attribute("gen_store_id") { type { long() } }
                 attribute("gen_products") { type { longList().quote("").delimiter("|") }.nullable() }
+                attribute("__path") {
+                    type { string() }
+                        .withBuilder<
+                                CategoryPathFromRelation,
+                                CategoryPathFromRelation.Options,
+                                PersistentSourceEntity,
+                                String?> {
+                            separator = "/"
+                            root = "/"
+                        }
+                }
             }
             entity("mage-customer-group", true) {
                 attribute("customer_group_id") { type { long() }.key() }
@@ -159,7 +176,7 @@ config {
 
         loadEntity("onec-group") {
             fromSources {
-                source { file("onec-group").sheet("Group").stopOnEmptyRow() }
+                source { file("onec-data").sheet("Group").stopOnEmptyRow() }
             }
             rowsToSkip(1)
             keepAbsentForDays(10)
@@ -169,7 +186,7 @@ config {
                     field("group_code") {
                         column(0)
                         pattern("^G[0-9]{3,3}$")
-                        withTransform(onecGroupToLongPlugin)
+                        withTransform<OnecGroupToLong, String, Long?>()
                     }
                     field("group_name") { column(1) }
                 }
@@ -177,7 +194,7 @@ config {
         }
         loadEntity("onec-group-relation") {
             keepAbsentForDays(10)
-            fromSources { source { file("onec-group").sheet("GroupSiteX").stopOnEmptyRow() } }
+            fromSources { source { file("onec-data").sheet("GroupSiteX").stopOnEmptyRow() } }
             sourceFields {
                 main("group-relation") {
                     field("group_code") { column(0) } to attribute("group_code")
@@ -189,7 +206,7 @@ config {
         loadEntity("onec-product") {
             rowsToSkip(4)
             keepAbsentForDays(10)
-            fromSources { source { file("onec-product").sheet("stock").stopOnEmptyRow() } }
+            fromSources { source { file("onec-data").sheet("stock").stopOnEmptyRow() } }
             sourceFields {
                 main("product") {
                     field("sku") { column(0).pattern("^[0-9]{4,10}$") } to attribute("sku")
@@ -208,7 +225,7 @@ config {
                     field("group_code") {
                         column(0)
                         pattern("^G[0-9]{3,3}$")
-                        withTransform(onecGroupToLongPlugin)
+                        withTransform<OnecGroupToLong, String, Long?>()
                     }
                     field("group_name") { column(1) }
                 }
@@ -273,18 +290,9 @@ config {
         productionLine {
             fromEntities {
                 sourceEntity("onec-group") {
-                    (attribute("group_code") to
-                            attribute("entity_id") { type { long() } })
-                        .withTransform<Long?, Long?> {
-                            if (it == null) {
-                                null
-                            } else {
-                                mapOf<Long, Long>(
-                                    1L to 22L,
-                                    999L to 34L
-                                )[it]
-                            }
-                        }
+                    (attribute("__path") to
+                            attribute("__path") { type { long() } })
+                        .withTransform<GroupToCategoryPath,String,String>()
                 }
                 sourceEntity("mage-category")
             }
@@ -297,73 +305,6 @@ config {
                 matched<MatchedCategoryProcessor>()
                 unmatched<UnMatchedGroupProcessor>("onec-group")
                 unmatched<UnMatchedCategoryProcessor>("mage-category")
-            }
-        }
-
-        entities {
-            entity("category", true) {
-                inheritFrom("mage-category") {
-                    exclude("gen_store_id")
-                }
-                attribute("group_code") { type { long() }.key() }
-                attribute("group_name") { type { string() } }
-                attribute("__path") {
-                    type { string() }.withBuilder(groupPathFromRelationPlugin) {
-                        parameter<String>("separator") to "/"
-                        parameter<String>("root") to "/Root Catalog/Default Category/Каталог"
-                    }
-                }
-            }
-        }
-
-        onec {
-            group {
-                idAttribute("group_code") { type { string() } }
-                pathAttribute("__path") {
-                    type { string() }
-                    withBuilder(groupPathFromRelationPlugin) {
-                        parameter<String>("separator") to "/"
-                        parameter<String>("root") to "/Root Catalog/Default Category/Каталог"
-                    }
-                }
-            }
-        }
-        magento {
-            category {
-                pathAttribute("__path") {
-                    type { string() }
-                    withBuilder(categoryPathFromRelationPlugin) {
-                        parameter<String>("separator") to "/"
-                        parameter<String>("root") to "/"
-                    }
-                }
-                idAttribute("entity_id") {
-                    type { long() }
-                }
-            }
-        }
-        mapping {
-            categories {
-                onecID("G001") to mageID(22)
-                onecID("G002") to magePath("/Root Catalog/Default Category/Каталог/Прочие запасные части/Автопокрышки")
-                mageID(22) to onecID("G001")
-                magePath("/Root Catalog/Default Category/Каталог/Прочие запасные части/Автопокрышки") to onecID("G002")
-                mageID(102) to onecPath("G54321")
-                onecID("G12345") to magePath("/RootCatalog/Test")
-                // attribute mapping mage->onec
-                mageAttribute("entity_id").transformTo(
-                    onecAttribute("group_code") { type { long() } },
-                    copyLong
-                )
-                mageAttribute("parent").transformTo(
-                    onecAttribute("group_parent_code") { type { long() } },
-                    copyLong
-                )
-                mageAttribute("name").transformTo(
-                    onecAttribute("group_name") { type { string() } },
-                    copyString
-                )
-                // attribute mapping onec->mage
             }
         }
     }

@@ -144,15 +144,17 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
             .flatten()
             .toMap()
 //        Configurator.setLevel(EXPOSED_LOG_NAME, Level.ERROR)
+        @Suppress("IMPLICIT_CAST_TO_ANY")
         val v = entityClassDef.attributes.map { attr ->
-            attr to dbValues[attr.name]?.let { valueList ->
-                val value = valueList.map { it.index to it.value }.toMap()
-                when {
-                    value.isEmpty() -> null as Any?
-                    value.size > 1 || !value.containsKey(-1) -> value.values.toList()
-                    else -> value[-1]
-                }
-            }
+            attr to
+                    dbValues[attr.name]?.let { valueList ->
+                        val value = valueList.map { it.index to it.value }.toMap()
+                        when {
+                            value.isEmpty() -> null
+                            value.size > 1 || !value.containsKey(-1) -> value.values.toList()
+                            else -> value[-1]
+                        }
+                    }
         }.toMap()
         entity.data.clear()
         entity.data.putAll(v)
@@ -160,17 +162,6 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
             .forEach { entity.data[it] = readAttribute(entity, it) }
         return entity.data
     }
-
-//    fun readAttributes(entity: PersistentEntity<*>): Map<Attribute, Any?> {
-//        val entityClass = entity.getEntityClass()
-//        entity.data.clear()
-//        entity.data.putAll(
-//            entityClass.attributes.filterNot { it.type is AttributeAttributeListType }.map {
-//                it to readAttribute(entity, it)
-//            }.toMap().mapAttributeDescription(entityClass)
-//        )
-//        return entity.data
-//    }
 
     fun addAttribute(entity: PersistentEntity<*>, attribute: Attribute, value: Any) {
         val entityClass = entity.getEntityClass()

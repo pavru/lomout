@@ -23,10 +23,10 @@
         <Logger name="net.pototskiy.apps.magemediation.database" additivity="true">
             <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
         </Logger>
-        <Logger name="net.pototskiy.apps.magemediation.loader"  additivity="true">
+        <Logger name="net.pototskiy.apps.magemediation.loader" additivity="true">
             <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
         </Logger>
-        <Logger name="net.pototskiy.apps.magemediation.mediator" level="debug" additivity="true">
+        <Logger name="net.pototskiy.apps.magemediation.mediator" additivity="true">
             <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
         </Logger>
         <Logger name="Exposed" level="error" additivity="false">

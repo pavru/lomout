@@ -1,4 +1,4 @@
-@file:Import("onecGroupToLong.plugin.kts")
+@file:Import("transformer/onecGroupToLong.plugin.kts")
 
 config {
     database {

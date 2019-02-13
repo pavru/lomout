@@ -3,8 +3,10 @@ package net.pototskiy.apps.magemediation.api.config.data
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.plugable.ValueTransformFunction
-import net.pototskiy.apps.magemediation.api.plugable.ValueTransformPlugin
+import net.pototskiy.apps.magemediation.api.plugable.NewPlugin
+import net.pototskiy.apps.magemediation.api.plugable.NewValueTransformFunction
+import net.pototskiy.apps.magemediation.api.plugable.NewValueTransformPlugin
+import kotlin.reflect.full.createInstance
 
 
 data class Field(
@@ -12,7 +14,7 @@ data class Field(
     val column: Int,
     val regex: Regex?,
     val parent: Field?,
-    val transformer: Transformer<Any?, Any?>?
+    val transformer: NewTransformer<Any?, Any?>?
 ) {
     fun isMatchToPattern(value: Any): Boolean = regex?.matches(value.toString()) ?: true
     fun transform(value: Any?): Any? = transformer?.transform(value) ?: value
@@ -38,7 +40,8 @@ data class Field(
         private var column: Int? = null
         private var regex: Regex? = null
         private var parent: Field? = null
-        private var transformer: Transformer<Any?, Any?>? = null
+        @Suppress("PropertyName")
+        var __transformer: NewTransformer<Any?, Any?>? = null
 
         @Suppress("unused")
         fun Builder.column(column: Int): Builder = this.apply { this.column = column }
@@ -55,17 +58,33 @@ data class Field(
         }
 
         @Suppress("unused")
-        fun <T : Any, R : Any?> Builder.withTransform(plugin: ValueTransformPlugin<T, R>): Builder =
+        @JvmName("with_transform__plugin")
+        inline fun <reified P : NewValueTransformPlugin<T, R>, T : Any?, R : Any?> Builder.withTransform(): Builder =
             this.apply {
                 @Suppress("UNCHECKED_CAST")
-                this.transformer = TransformerPlugin(plugin) as Transformer<Any?, Any?>
+                __transformer = NewTransformerWithPlugin(P::class) as NewTransformer<Any?, Any?>
             }
 
         @Suppress("unused")
-        fun <T : Any?, R : Any?> Builder.withTransform(block: ValueTransformFunction<T, R>): Builder =
+        @JvmName("with_transform__plugin__options")
+        inline fun <reified P : NewValueTransformPlugin<T, R>,
+                O : NewPlugin.Options,
+                T : Any?,
+                R : Any?> Builder.withTransform(
+            block: O.() -> Unit
+        ): Builder = this.apply {
+            val plugin = P::class.createInstance()
+            @Suppress("UNCHECKED_CAST") val options = (plugin.optionSetter() as O).apply(block)
+            @Suppress("UNCHECKED_CAST")
+            __transformer = NewTransformerWithPlugin(P::class, options) as NewTransformer<Any?, Any?>
+        }
+
+        @Suppress("unused")
+        @JvmName("with_transform__function")
+        fun <T : Any?, R : Any?> Builder.withTransform(block: NewValueTransformFunction<T, R>): Builder =
             this.apply {
                 @Suppress("UNCHECKED_CAST")
-                this.transformer = TransformerFunction(block) as Transformer<Any?, Any?>
+                __transformer = NewTransformerWithFunction(block) as NewTransformer<Any?, Any?>
             }
 
         fun build(): Field {
@@ -74,7 +93,7 @@ data class Field(
                 column ?: UNDEFINED_COLUMN,
                 regex,
                 parent,
-                transformer
+                __transformer
             )
         }
     }

@@ -39,27 +39,6 @@ object PluginScriptCompilationOptions : ScriptCompilationConfiguration({
     refineConfiguration {
         onAnnotations(DependsOn::class, handler = ConfigKtsConfigurator())
     }
-//    refineConfiguration {
-//        beforeCompiling { ctx ->
-//            val prevDeps = (ctx.compilationConfiguration[ScriptCompilationConfiguration.dependencies]
-//                ?: emptyList())
-//                .mapNotNull { it as? JvmDependency }
-//                .map { it.classpath }
-//                .flatten()
-//            val scriptLibs = ((ctx.script as? FileScriptSource)?.file?.let { file ->
-//                File(file.parentFile, "scriptLibs")
-//                    .listFiles(FileFilter { it.extension == "jar" }).toList()
-//                    .filter { candidate -> !prevDeps.any { it.isFile && it.name == candidate.name } }
-//            } ?: emptyList())
-//            if (scriptLibs.isNotEmpty()) {
-//                ScriptCompilationConfiguration(ctx.compilationConfiguration) {
-//                    updateClasspath(scriptLibs)
-//                }.asSuccess()
-//            } else {
-//                ctx.compilationConfiguration.asSuccess()
-//            }
-//        }
-//    }
 })
 
 private fun debug(suffix: String, block: PrintStream.() -> Unit) {

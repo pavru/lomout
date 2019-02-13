@@ -2,10 +2,11 @@ package net.pototskiy.apps.magemediation.api.config.data
 
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.database.PersistentEntity
-import net.pototskiy.apps.magemediation.api.plugable.AttributeBuildFunction
-import net.pototskiy.apps.magemediation.api.plugable.AttributeBuildPlugin
-import net.pototskiy.apps.magemediation.api.plugable.PluginArgsBuilder
+import net.pototskiy.apps.magemediation.api.plugable.AttributeBuilderFunction
+import net.pototskiy.apps.magemediation.api.plugable.AttributeBuilderPlugin
+import net.pototskiy.apps.magemediation.api.plugable.NewPlugin
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 data class Attribute(
     val name: String,
@@ -26,7 +27,8 @@ data class Attribute(
         private var type: AttributeType? = null
         private var key: Boolean = false
         private var nullable: Boolean = false
-        private var builder: AttributeBuilder<PersistentEntity<*>, Any?>? = null
+        @Suppress("PropertyName")
+        var __builder: AttributeBuilder<PersistentEntity<*>, Any?>? = null
 
         @Suppress("unused")
         fun Builder.type(block: AttributeType.Builder.() -> Unit): Builder =
@@ -42,23 +44,35 @@ data class Attribute(
         }
 
         @Suppress("unused")
-        fun <E : PersistentEntity<*>, R : Any?> Builder.withBuilder(
-            builder: AttributeBuildPlugin<E, R>,
-            block: PluginArgsBuilder.() -> Unit = {}
-        ): Builder {
-            val args = PluginArgsBuilder().apply(block).build()
+        @JvmName("with_builder__plugin")
+        inline fun <reified P : AttributeBuilderPlugin<E, R>,
+                E : PersistentEntity<*>,
+                R : Any?> Builder.withBuilder(): Builder {
             @Suppress("UNCHECKED_CAST")
-            this.builder = AttributeBuilderPlugin(
-                builder,
-                args
-            ) as AttributeBuilder<PersistentEntity<*>, Any?>
+            __builder = AttributeBuilderWithPlugin(P::class) as AttributeBuilder<PersistentEntity<*>, Any?>
             return this
         }
 
         @Suppress("unused")
-        fun <T : PersistentEntity<*>, R : Any?> Builder.withBuilder(builder: AttributeBuildFunction<T,R>): Builder {
+        @JvmName("with_builder__plugin__options")
+        inline fun <reified P : AttributeBuilderPlugin<E, R>,
+                O : NewPlugin.Options,
+                E : PersistentEntity<*>,
+                R : Any?> Builder.withBuilder(
+            block: O.() -> Unit
+        ): Builder {
+            val plugin = P::class.createInstance()
+            @Suppress("UNCHECKED_CAST") val options = (plugin.optionSetter() as O).apply(block)
             @Suppress("UNCHECKED_CAST")
-            this.builder = AttributeBuilderFunction(builder) as AttributeBuilder<PersistentEntity<*>, Any?>
+            __builder = AttributeBuilderWithPlugin(P::class, options) as AttributeBuilder<PersistentEntity<*>, Any?>
+            return this
+        }
+
+        @Suppress("unused")
+        @JvmName("with_builder__function")
+        fun <E : PersistentEntity<*>, R : Any?> Builder.withBuilder(block: AttributeBuilderFunction<E, R>): Builder {
+            @Suppress("UNCHECKED_CAST")
+            __builder = AttributeBuilderWithFunction(block) as AttributeBuilder<PersistentEntity<*>, Any?>
             return this
         }
 
@@ -69,7 +83,7 @@ data class Attribute(
                 key,
                 nullable,
                 false,
-                builder
+                __builder
             )
         }
 

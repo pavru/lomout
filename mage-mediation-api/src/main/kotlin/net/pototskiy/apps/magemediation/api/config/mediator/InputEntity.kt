@@ -44,6 +44,7 @@ data class InputEntity(
             __attrTransformers[this] = NewTransformerWithPlugin(P::class) as NewTransformer<Any?, Any?>
         }
 
+        @Suppress("unused")
         @JvmName("with_transform__plugin__options")
         inline fun <reified P : NewValueTransformPlugin<T, R>, O : NewPlugin.Options, T : Any?, R : Any?> Pair<Attribute, Attribute>.withTransform(
             block: O.() -> Unit
@@ -55,6 +56,7 @@ data class InputEntity(
             __attrTransformers[this] = NewTransformerWithPlugin(P::class, options) as NewTransformer<Any?, Any?>
         }
 
+        @Suppress("unused")
         @JvmName("with_transform__function")
         fun <T : Any?, R : Any?> Pair<Attribute, Attribute>.withTransform(block: NewValueTransformFunction<T, R>) {
             @Suppress("UNCHECKED_CAST")

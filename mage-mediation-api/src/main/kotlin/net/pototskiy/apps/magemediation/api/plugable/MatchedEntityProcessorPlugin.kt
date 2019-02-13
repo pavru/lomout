@@ -11,6 +11,8 @@ abstract class MatchedEntityProcessorPlugin : NewPlugin<Map<Attribute, Any?>>() 
         this.entities = entities
         return execute()
     }
+
+    open class Options: NewPlugin.Options()
 }
 
 typealias MatchedEntityProcessorFunction = (entities: Map<String, MatcherEntityData>) -> Map<Attribute, Any?>

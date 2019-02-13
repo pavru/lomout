@@ -10,7 +10,7 @@ import kotlin.reflect.KClass
 
 @Suppress("MemberVisibilityCanBePrivate")
 sealed class AttributeType(
-    val kotlinType: KClass<out Any>?,
+    @Suppress("unused") val kotlinType: KClass<out Any>?,
     val sqlType: KClass<out IColumnType>?,
     @Suppress("unused") val isList: Boolean,
     val hasLocale: Boolean,

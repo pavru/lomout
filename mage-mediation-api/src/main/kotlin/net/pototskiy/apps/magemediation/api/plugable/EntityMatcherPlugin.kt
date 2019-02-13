@@ -10,6 +10,8 @@ abstract class EntityMatcherPlugin : NewPlugin<Boolean>() {
         this.entities = entities
         return execute()
     }
+
+    open class Options: NewPlugin.Options()
 }
 
 typealias EntityMatcherFunction = (entities: Map<String, MatcherEntityData>) -> Boolean

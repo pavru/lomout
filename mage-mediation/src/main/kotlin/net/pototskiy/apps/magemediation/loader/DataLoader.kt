@@ -6,14 +6,20 @@ import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
 import org.apache.logging.log4j.LogManager
+import org.joda.time.DateTime
+import org.joda.time.Duration
+import java.util.concurrent.atomic.AtomicLong
 
 object DataLoader {
+    private var startTime = DateTime()
+    private val processedRows = AtomicLong(0)
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
     @ObsoleteCoroutinesApi
     fun load(config: Config) = runBlocking {
         statusLog.info("Data loading has started")
+        startTime = DateTime()
         val jobs = mutableListOf<Job>()
         val orderedLoads = config.loader.loads.map { load ->
             load.sources.map { it.file to load }
@@ -28,7 +34,10 @@ object DataLoader {
                     WorkbookFactory.create(file.file.toURI().toURL()).use {workbook ->
                         workbook.filter { source.sheet.isMatch(it.name) }.forEach {
                             log.debug("Start loading sheet<{}> from file<{}>", it.name, file.id)
-                            EntityLoader(load,source.emptyRowStrategy,it).load()
+                            EntityLoader(load,source.emptyRowStrategy,it).apply {
+                                load()
+                                this@DataLoader.processedRows.addAndGet(processedRows)
+                            }
                             log.debug("Finish loading sheet<{}> from file<{}>", it.name, file.id)
                         }
                     }
@@ -37,6 +46,7 @@ object DataLoader {
             }.also { jobs.add(it) }
         }
         joinAll(*jobs.toTypedArray())
-        statusLog.info("Data loading has finished")
+        val duration = Duration(startTime,DateTime()).millis.toDouble() / 1000.0
+        statusLog.info("Data loading has finished, duration: ${duration}s, rows: ${processedRows.get()}")
     }
 }

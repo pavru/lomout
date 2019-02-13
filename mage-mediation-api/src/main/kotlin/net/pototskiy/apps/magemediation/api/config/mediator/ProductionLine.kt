@@ -18,6 +18,7 @@ data class ProductionLine(
     class Builder {
         private var inputs: InputEntityCollection? = null
         private var output: Entity? = null
+        @Suppress("PropertyName")
         var __matcher: EntityMatcher? = null
         private var processors: ProcessorCollection? = null
 

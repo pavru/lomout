@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.database
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.TIMESTAMP
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -44,6 +45,7 @@ open class PersistentSourceEntity(id: EntityID<Int>): PersistentEntity<Persisten
         absentDays = 0
     }
 
+    @PublicApi
     fun wasRemoved() = transaction {
         previousStatus = currentStatus
         currentStatus = SourceDataStatus.REMOVED

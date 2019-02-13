@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
@@ -19,6 +20,7 @@ data class ProcessorCollection(private val processors: List<EntityProcessor>) :
         } as? UnMatchedEntityProcessor
     }
 
+    @PublicApi
     fun getUnMatchedProcessor(entity: Entity): UnMatchedEntityProcessor? {
         return find {
             it is UnMatchedEntityProcessor && it.entityType.name == entity.name

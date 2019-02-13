@@ -64,7 +64,6 @@ class ConfigKtsConfigurator : RefineScriptCompilationConfigurationHandler {
                 override val text: CharSequence? = null
             }
             resolver.resolve(scriptContents, emptyMap(), ::report, null).get()?.classpath?.toList()
-            // TODO: add diagnostics
         } catch (e: Throwable) {
             return ResultWithDiagnostics.Failure(
                 *diagnostics.toTypedArray(),

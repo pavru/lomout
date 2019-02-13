@@ -10,6 +10,8 @@ abstract class UnMatchedEntityProcessorPlugin : NewPlugin<Map<Attribute, Any?>>(
         this.entity = entity
         return execute()
     }
+
+    open class Options : NewPlugin.Options()
 }
 
 typealias UnMatchedEntityProcessorFunction = (PersistentSourceEntity) -> Map<Attribute, Any?>

@@ -29,6 +29,7 @@ class EntityLoader(
 ) {
 
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
+    var processedRows = 0L
 
     private lateinit var updater: EntityUpdater
     private val extraData = mutableMapOf<String, Map<Field, Any>>()
@@ -49,7 +50,15 @@ class EntityLoader(
         updater = EntityUpdater(entityClass)
         store.resetTouchFlag(entityClass)
         sheet.workbook.let { if (it is CsvWorkbook) it.reset() }
+        processRows()
+        store.markEntitiesAsRemove(entityClass)
+        store.updateAbsentAge(entityClass)
+        store.removeOldEntities(entityClass, loadConfig.maxAbsentDays)
+    }
+
+    private fun processRows() {
         loop@ for (row in sheet) {
+            processedRows++
             if (row.rowNum == loadConfig.headersRow || row.rowNum < loadConfig.rowsToSkip) continue
             when (checkEmptyRow(row, emptyRowStrategy)) {
                 EmptyRowTestResult.STOP -> break@loop
@@ -67,9 +76,6 @@ class EntityLoader(
                 continue
             }
         }
-        store.markEntitiesAsRemove(entityClass)
-        store.updateAbsentAge(entityClass)
-        store.removeOldEntities(entityClass, loadConfig.maxAbsentDays)
     }
 
     private fun sheetException(e: Exception) {

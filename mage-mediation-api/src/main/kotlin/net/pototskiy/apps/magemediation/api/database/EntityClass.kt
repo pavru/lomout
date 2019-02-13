@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.database
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.data.Attribute
 import org.jetbrains.exposed.sql.*
@@ -65,6 +66,7 @@ class EntityClass<out E : PersistentEntity<*>>(
     fun getEntityByKeys(keys: Map<Attribute, Any?>): E? =
         backend.getEntityByKeys(this, keys)
 
+    @PublicApi
     fun getEntitiesByAttributes(data: Map<Attribute, Any?>): List<E> =
         backend.getEntitiesByAttributes(this, data)
 

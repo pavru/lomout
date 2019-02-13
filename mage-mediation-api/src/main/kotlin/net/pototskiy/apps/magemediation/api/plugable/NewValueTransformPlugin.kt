@@ -8,6 +8,8 @@ abstract class NewValueTransformPlugin<T, R> : NewPlugin<R>() {
         this.value = value
         return execute()
     }
+
+    open class Options: NewPlugin.Options()
 }
 
 typealias NewValueTransformFunction<T, R> = (T) -> R
