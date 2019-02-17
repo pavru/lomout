@@ -2,7 +2,6 @@
 @file:Import("builder/GroupPathFromRelation.plugin.kts")
 @file:Import("builder/CategoryPathFromRelation.plugin.kts")
 @file:Import("transformer/GroupAddLeadingG.plugin.kts")
-@file:Import("matcher/CategoryMatcher.plugin.kts")
 @file:Import("processor/MatchedCategoryProcessor.plugin.kts")
 @file:Import("processor/UnMatchedCategoryProcessor.plugin.kts")
 @file:Import("processor/UnMatchedGroupProcessor.plugin.kts")
@@ -15,7 +14,6 @@
 
 import builder.CategoryPathFromRelation_plugin.CategoryPathFromRelation
 import builder.GroupPathFromRelation_plugin.GroupPathFromRelation
-import matcher.CategoryMatcher_plugin.CategoryMatcher
 import net.pototskiy.apps.magemediation.api.config.mediator.Pipeline
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import net.pototskiy.apps.magemediation.api.database.SourceDataStatus
@@ -346,13 +344,6 @@ config {
                         assembler<MarkCategoryToRemove>()
                     }
                 }
-            }
-            matcher<CategoryMatcher>()
-
-            processors {
-                matched<MatchedCategoryProcessor>()
-                unmatched<UnMatchedGroupProcessor>("onec-group")
-                unmatched<UnMatchedCategoryProcessor>("mage-category")
             }
         }
     }

@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.database.EntityClass
@@ -50,6 +51,7 @@ class DataLoadingInProductionWayTest {
         util.initDataBase()
     }
 
+    @ObsoleteCoroutinesApi
     @Test
     @DisplayName("Load data according production config")
     fun loadDataTest() {

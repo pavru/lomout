@@ -22,6 +22,7 @@ object PipelineSets : IntIdTable("pipeline_set") {
     }
 }
 
+@Suppress("unused")
 class PipelineSet(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<PipelineSet>(PipelineSets)
 

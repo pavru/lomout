@@ -119,11 +119,6 @@ config {
             output("import-product") {
                 inheritFrom("onec-product")
             }
-            matcher { false }
-            processors {
-                matched { emptyMap() }
-                unmatched("onec-product") { emptyMap() }
-            }
         }
     }
 }

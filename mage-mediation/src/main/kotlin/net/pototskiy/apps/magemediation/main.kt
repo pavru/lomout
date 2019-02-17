@@ -2,6 +2,7 @@ package net.pototskiy.apps.magemediation
 
 import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
@@ -20,6 +21,7 @@ import kotlin.contracts.ExperimentalContracts
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 
+@ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
 @ExperimentalContracts
 fun main(args: Array<String>) {

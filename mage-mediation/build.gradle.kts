@@ -22,7 +22,8 @@ idea {
         sourceDirs = setOf(
             file("$projectDir/src/main/kotlin"),
             file("$projectDir/src/main/java"),
-            file("$projectDir/config/.")
+            file("$projectDir/config/."),
+            file("$rootProject/.testdata/.")
         )
         outputDir = file("build/classes/kotlin/main")
         testOutputDir = file("build/classes/kotlin/test")
@@ -57,8 +58,8 @@ sourceSets {
 
     create("testData") {
         java {
-            srcDir(file("${rootProject.projectDir}/.testdata"))
-            exclude("*.*")
+            srcDir(file("$rootProject/.testdata"))
+            exclude("*.kts")
         }
         compileClasspath += sourceSets.main.get().output
         runtimeClasspath += sourceSets.main.get().output
@@ -76,7 +77,7 @@ val testDataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    environment("TEST_DATA_DIR", "${rootProject.projectDir}/.testdata")
+    environment("TEST_DATA_DIR", "$rootProject/.testdata")
     environment("PRODUCTION_CONFIG", "$projectDir/config/newconfig.conf.kts")
     useJUnitPlatform()
     testLogging {

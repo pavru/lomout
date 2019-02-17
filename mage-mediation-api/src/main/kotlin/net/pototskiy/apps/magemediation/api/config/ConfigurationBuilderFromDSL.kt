@@ -75,8 +75,4 @@ class ConfigurationBuilderFromDSL(private val configFile: File) {
     private fun createConfigExceptionMessage(e: ConfigException): String {
         return "${e.message}"
     }
-
-    private fun findLine(e: Exception): Int {
-        return e.stackTrace.find { it.fileName?.endsWith(".kts") == true }?.lineNumber ?: 0
-    }
 }
