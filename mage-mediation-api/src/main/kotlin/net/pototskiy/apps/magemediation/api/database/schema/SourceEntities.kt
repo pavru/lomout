@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.database
+package net.pototskiy.apps.magemediation.api.database.schema
 
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntityClass

@@ -3,13 +3,19 @@ package net.pototskiy.apps.magemediation.api.config.mediator
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.data.*
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
 import net.pototskiy.apps.magemediation.api.plugable.NewPlugin
 import net.pototskiy.apps.magemediation.api.plugable.NewValueTransformFunction
 import net.pototskiy.apps.magemediation.api.plugable.NewValueTransformPlugin
+import net.pototskiy.apps.magemediation.api.plugable.SqlFilterPlugin
+import org.jetbrains.exposed.sql.Alias
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import kotlin.reflect.full.createInstance
 
 data class InputEntity(
     val entity: Entity,
+    val filter: SqlFilter?,
     val attrMaps: AttrMapCollection
 ) {
     fun mapAttributes(entity: PersistentSourceEntity): Map<Attribute, Any?> {
@@ -27,6 +33,28 @@ data class InputEntity(
         private val attrPairs = mutableListOf<Pair<Attribute, Attribute>>()
         @Suppress("PropertyName")
         val __attrTransformers = mutableMapOf<Pair<Attribute, Attribute>, NewTransformer<Any?, Any?>>()
+        @Suppress("PropertyName")
+        var __sqlFilter: SqlFilter? = null
+
+        @Suppress("unused")
+        @JvmName("filter__function")
+        fun Builder.filter(block: SqlExpressionBuilder.(alias: Alias<SourceEntities>) -> Op<Boolean>) {
+            __sqlFilter = SqlFilterWithFunction { alias: Alias<SourceEntities> -> Op.build { block(alias) } }
+        }
+
+        @Suppress("unused")
+        @JvmName("filter__plugin")
+        inline fun <reified P : SqlFilterPlugin> filter() {
+            __sqlFilter = SqlFilterWithPlugin(P::class)
+        }
+
+        @Suppress("unused")
+        @JvmName("filter__plugin__options")
+        inline fun <reified P : SqlFilterPlugin, O : NewPlugin.Options> Builder.filter(block: O.() -> Unit) {
+            @Suppress("UNCHECKED_CAST")
+            val options = (P::class.createInstance().optionSetter() as O).apply(block)
+            __sqlFilter = SqlFilterWithPlugin(P::class, options)
+        }
 
         @Suppress("unused")
         fun Builder.attribute(name: String, block: Attribute.Builder.() -> Unit = {}): Attribute {
@@ -69,7 +97,7 @@ data class InputEntity(
                 val valueTransformer = __attrTransformers[it]
                 attrMaps[it.first] = AttrMap(it.second, valueTransformer)
             }
-            return InputEntity(entity, AttrMapCollection(attrMaps))
+            return InputEntity(entity, __sqlFilter, AttrMapCollection(attrMaps))
         }
     }
 }

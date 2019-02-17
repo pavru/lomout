@@ -112,11 +112,11 @@ config {
         }
     }
     mediator {
-        productionLine {
-            fromEntities {
-                sourceEntity("onec-product")
+        crossProductionLine {
+            input {
+                entity("onec-product")
             }
-            toEntity("import-product") {
+            output("import-product") {
                 inheritFrom("onec-product")
             }
             matcher { false }

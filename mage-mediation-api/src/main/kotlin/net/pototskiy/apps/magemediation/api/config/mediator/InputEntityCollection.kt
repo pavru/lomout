@@ -18,7 +18,7 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
         private val entities = mutableListOf<InputEntity>()
 
         @Suppress("unused")
-        fun Builder.sourceEntity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
+        fun Builder.entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
             val entity = Config.Builder.definedEntities.findRegistered(name, true)
                 ?: throw ConfigException("Entity<$name> has not been defined yet")
             entities.add(InputEntity.Builder(entity).apply(block).build())

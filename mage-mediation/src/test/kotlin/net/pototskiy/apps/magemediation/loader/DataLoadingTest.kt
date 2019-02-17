@@ -6,8 +6,8 @@ import net.pototskiy.apps.magemediation.api.config.loader.Load
 import net.pototskiy.apps.magemediation.api.database.EntityClass
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import net.pototskiy.apps.magemediation.api.database.SourceDataStatus
-import net.pototskiy.apps.magemediation.database.SourceEntities
-import net.pototskiy.apps.magemediation.database.SourceEntity
+import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
+import net.pototskiy.apps.magemediation.api.database.schema.SourceEntity
 import net.pototskiy.apps.magemediation.source.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet

@@ -7,16 +7,29 @@
 @file:Import("processor/UnMatchedCategoryProcessor.plugin.kts")
 @file:Import("processor/UnMatchedGroupProcessor.plugin.kts")
 @file:Import("transformer/GroupToCategoryPath.plugin.kts")
+@file:Import("pipeline/classifier/CategoryClassifier.plugin.kts")
+@file:Import("pipeline/assembler/MatchedCategoryAssembler.plugin.kts")
+@file:Import("pipeline/classifier/EntityTypeClassifier.plugin.kts")
+@file:Import("pipeline/assembler/CategoryFromGroupAssembler.plugin.kts")
+@file:Import("pipeline/assembler/MarkCategoryToRemove.plugin.kts")
 
 import builder.CategoryPathFromRelation_plugin.CategoryPathFromRelation
 import builder.GroupPathFromRelation_plugin.GroupPathFromRelation
 import matcher.CategoryMatcher_plugin.CategoryMatcher
+import net.pototskiy.apps.magemediation.api.config.mediator.Pipeline
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
+import net.pototskiy.apps.magemediation.api.database.SourceDataStatus
+import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
+import pipeline.assembler.CategoryFromGroupAssembler_plugin.CategoryFromGroupAssembler
+import pipeline.assembler.MatchedCategoryAssembler_plugin.MatchedCategoryAssembler
+import pipeline.classifier.CategoryClassifier_plugin.CategoryClassifier
+import pipeline.classifier.EntityTypeClassifier_plugin.EntityTypeClassifier
 import processor.MatchedCategoryProcessor_plugin.MatchedCategoryProcessor
 import processor.UnMatchedCategoryProcessor_plugin.UnMatchedCategoryProcessor
 import processor.UnMatchedGroupProcessor_plugin.UnMatchedGroupProcessor
+import transformer.GroupToCategoryPath_plugin.GroupToCategoryPath
 import transformer.OnecGroupToLong_plugin.OnecGroupToLong
-import transformer.GroupToCategoryPath_plugin.*
+import pipeline.assembler.MarkCategoryToRemove_plugin.MarkCategoryToRemove
 
 config {
     database {
@@ -287,17 +300,52 @@ config {
     }
 
     mediator {
-        productionLine {
-            fromEntities {
-                sourceEntity("onec-group") {
+        crossProductionLine {
+            input {
+                entity("onec-group") {
+                    filter {
+                        with(SourceEntities) {
+                            it[currentStatus] neq SourceDataStatus.REMOVED
+                        }
+                    }
                     (attribute("__path") to
-                            attribute("__path") { type { long() } })
-                        .withTransform<GroupToCategoryPath,String,String>()
+                            attribute("__path") { type { string() } })
+                        .withTransform<GroupToCategoryPath, String, String>()
+                    attribute("group_code") to attribute("entity_id") { type { long() }.key() }
                 }
-                sourceEntity("mage-category")
+                entity("mage-category") {
+                    filter {
+                        with(SourceEntities) {
+                            it[currentStatus] neq SourceDataStatus.REMOVED
+                        }
+                    }
+                }
             }
-            toEntity("import-category") {
-                inheritFrom("mage-category")
+            output("import-category") {
+                inheritFrom("mage-category") {
+                    exclude("__path")
+                }
+                attribute("remove_flag") {type { bool() }}
+            }
+            pipeline {
+                classifier<CategoryClassifier>()
+                pipeline(Pipeline.CLASS.MATCHED) {
+                    assembler<MatchedCategoryAssembler>()
+                }
+                pipeline(Pipeline.CLASS.UNMATCHED) {
+                    classifier<EntityTypeClassifier, EntityTypeClassifier.Options> {
+                        typeList = listOf("onec-group")
+                    }
+                    pipeline(Pipeline.CLASS.MATCHED) {
+                        assembler<CategoryFromGroupAssembler>()
+                    }
+                    pipeline(Pipeline.CLASS.UNMATCHED) {
+                        classifier<EntityTypeClassifier, EntityTypeClassifier.Options> {
+                            typeList = listOf("mage-category")
+                        }
+                        assembler<MarkCategoryToRemove>()
+                    }
+                }
             }
             matcher<CategoryMatcher>()
 

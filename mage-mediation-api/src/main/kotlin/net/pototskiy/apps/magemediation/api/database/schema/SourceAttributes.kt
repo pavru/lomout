@@ -1,4 +1,4 @@
-package net.pototskiy.apps.magemediation.database
+package net.pototskiy.apps.magemediation.api.database.schema
 
 import net.pototskiy.apps.magemediation.api.database.AttributeEntity
 import net.pototskiy.apps.magemediation.api.database.AttributeEntityClass
@@ -14,7 +14,9 @@ object SourceVarchars : AttributeTable<String>(
 )
 
 class SourceVarchar(id: EntityID<Int>) : AttributeEntity<String>(id) {
-    companion object : AttributeEntityClass<String, SourceVarchar>(SourceVarchars)
+    companion object : AttributeEntityClass<String, SourceVarchar>(
+        SourceVarchars
+    )
 }
 
 object SourceLongs : AttributeTable<Long>(
@@ -34,7 +36,9 @@ object SourceDoubles : AttributeTable<Double>(
 )
 
 class SourceDouble(id: EntityID<Int>) : AttributeEntity<Double>(id) {
-    companion object : AttributeEntityClass<Double, SourceDouble>(SourceDoubles)
+    companion object : AttributeEntityClass<Double, SourceDouble>(
+        SourceDoubles
+    )
 }
 
 object SourceBooleans : AttributeTable<Boolean>(
@@ -44,7 +48,9 @@ object SourceBooleans : AttributeTable<Boolean>(
 )
 
 class SourceBoolean(id: EntityID<Int>) : AttributeEntity<Boolean>(id) {
-    companion object : AttributeEntityClass<Boolean, SourceBoolean>(SourceBooleans)
+    companion object : AttributeEntityClass<Boolean, SourceBoolean>(
+        SourceBooleans
+    )
 }
 
 object SourceDates : AttributeTable<DateTime>(
@@ -54,7 +60,9 @@ object SourceDates : AttributeTable<DateTime>(
 )
 
 class SourceDate(id: EntityID<Int>) : AttributeEntity<DateTime>(id) {
-    companion object : AttributeEntityClass<DateTime, SourceDate>(SourceDates)
+    companion object : AttributeEntityClass<DateTime, SourceDate>(
+        SourceDates
+    )
 }
 
 object SourceDateTimes : AttributeTable<DateTime>(
@@ -64,7 +72,9 @@ object SourceDateTimes : AttributeTable<DateTime>(
 )
 
 class SourceDateTime(id: EntityID<Int>) : AttributeEntity<DateTime>(id) {
-    companion object : AttributeEntityClass<DateTime, SourceDateTime>(SourceDateTimes)
+    companion object : AttributeEntityClass<DateTime, SourceDateTime>(
+        SourceDateTimes
+    )
 }
 
 object SourceTexts : AttributeTable<String>(

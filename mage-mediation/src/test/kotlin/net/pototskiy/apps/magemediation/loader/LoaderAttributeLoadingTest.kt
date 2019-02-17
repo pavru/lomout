@@ -5,7 +5,7 @@ import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
 import net.pototskiy.apps.magemediation.api.config.loader.Load
 import net.pototskiy.apps.magemediation.api.config.data.Attribute
 import net.pototskiy.apps.magemediation.api.database.EntityClass
-import net.pototskiy.apps.magemediation.database.SourceEntities
+import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
 import net.pototskiy.apps.magemediation.source.WorkbookFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.exposed.sql.deleteAll

@@ -177,7 +177,14 @@ abstract class PersistentEntityClass<out E : PersistentEntity<*>>(
                             this.owner = entity.id
                             this.code = attribute.name
                             this.index = if (attribute.type.isList) position else -1
-                            this.setValueWithTypeCheck(data)
+                            try {
+                                this.setValueWithTypeCheck(data)
+                            } catch (e: DatabaseException) {
+                                throw DatabaseException(
+                                    "Value can not be assigned to attribute<${attribute.name}>, types are incompatible",
+                                    e
+                                )
+                            }
                         }
                     }
                 }

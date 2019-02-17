@@ -10,8 +10,13 @@ data class MediatorConfiguration(
         private var lines = mutableListOf<ProductionLine>()
 
         @Suppress("unused")
-        fun Builder.productionLine(block: ProductionLine.Builder.() -> Unit) {
-            lines.add(ProductionLine.Builder().apply(block).build())
+        fun Builder.unionProductionLine(block: ProductionLine.Builder.() -> Unit) {
+            lines.add(ProductionLine.Builder(ProductionLine.LineType.UNION).apply(block).build())
+        }
+
+        @Suppress("unused")
+        fun Builder.crossProductionLine(block: ProductionLine.Builder.() -> Unit) {
+            lines.add(ProductionLine.Builder(ProductionLine.LineType.CROSS).apply(block).build())
         }
 
         fun build(): MediatorConfiguration {

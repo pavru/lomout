@@ -11,7 +11,7 @@ import net.pototskiy.apps.magemediation.api.config.loader.Load
 import net.pototskiy.apps.magemediation.api.database.EntityClass
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
 import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntityClass
-import net.pototskiy.apps.magemediation.database.SourceEntity
+import net.pototskiy.apps.magemediation.api.database.schema.SourceEntity
 import net.pototskiy.apps.magemediation.loader.converter.*
 import net.pototskiy.apps.magemediation.loader.nested.AttributeListParser
 import net.pototskiy.apps.magemediation.loader.nested.AttributeWorkbook
@@ -63,7 +63,7 @@ class EntityLoader(
             when (checkEmptyRow(row, emptyRowStrategy)) {
                 EmptyRowTestResult.STOP -> break@loop
                 EmptyRowTestResult.SKIP -> continue@loop
-                EmptyRowTestResult.PROCESS -> { // process row }
+                EmptyRowTestResult.PROCESS -> { // assemble row }
                 }
             }
             try {

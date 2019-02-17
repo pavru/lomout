@@ -4,6 +4,7 @@ import net.pototskiy.apps.magemediation.api.ENTITY_TYPE_NAME_LENGTH
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
+import net.pototskiy.apps.magemediation.api.database.EntityClass
 
 data class Entity(
     override val name: String,
@@ -13,9 +14,13 @@ data class Entity(
     val ownAttributes: AttributeCollection
 ) : NamedObject {
     val attributes: AttributeCollection
-        get() = AttributeCollection(parents.map { entity ->
-            entity.attributes.filterNot { excludes[entity]?.contains(it) == true }
-        }.flatten().plus(ownAttributes))
+        get() = AttributeCollection(parents
+            .map { entity ->
+                entity to (EntityClass.getClass(entity.name)?.attributes ?: entity.attributes)
+            }.map { (entity, attributes) ->
+                attributes.filterNot { excludes[entity]?.contains(it) == true }
+            }.flatten().plus(ownAttributes)
+        )
 
     class Builder(private val name: String, private var open: Boolean = false) {
         private var attributes = mutableListOf<Attribute>()
@@ -48,7 +53,7 @@ data class Entity(
             if (name.length > ENTITY_TYPE_NAME_LENGTH) {
                 throw ConfigException("Entity name length must be less or equal $ENTITY_TYPE_NAME_LENGTH")
             }
-            val entity  = Entity(
+            val entity = Entity(
                 name,
                 EntityCollection(parents),
                 excludes,
