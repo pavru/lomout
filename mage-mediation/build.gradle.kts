@@ -50,7 +50,7 @@ sourceSets {
     create("configScripts") {
         java {
             srcDir(file("$projectDir/config"))
-            exclude("*.kts")
+            exclude("**/*.kts")
         }
         compileClasspath += sourceSets.main.get().output
         runtimeClasspath += sourceSets.main.get().output
@@ -59,7 +59,7 @@ sourceSets {
     create("testData") {
         java {
             srcDir(file("$rootProject/.testdata"))
-            exclude("*.kts")
+            exclude("**/*.kts")
         }
         compileClasspath += sourceSets.main.get().output
         runtimeClasspath += sourceSets.main.get().output
@@ -78,7 +78,7 @@ tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
     environment("TEST_DATA_DIR", "$rootProject/.testdata")
-    environment("PRODUCTION_CONFIG", "$projectDir/config/newconfig.conf.kts")
+    environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
@@ -141,8 +141,8 @@ dependencies {
         exclude("org.slf4j")
     }
 // Excel
-    implementation("org.apache.poi", "poi", "4.0.1")
-    implementation("org.apache.poi", "poi-ooxml", "4.0.1")
+    implementation("org.apache.poi", "poi", Versions.poi)
+    implementation("org.apache.poi", "poi-ooxml", Versions.poi)
 // CSV
     implementation("org.apache.commons", "commons-csv", "1.6")
 // MySql

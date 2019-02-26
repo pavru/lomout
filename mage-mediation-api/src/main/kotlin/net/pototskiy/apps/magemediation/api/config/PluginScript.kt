@@ -25,6 +25,16 @@ object PluginScriptCompilationOptions : ScriptCompilationConfiguration({
     displayName("Magento mediation plugin script")
     fileExtension("plugin.kts")
     baseClass(PluginScript::class)
+    defaultImports(
+        "org.jetbrains.kotlin.script.util.*",
+        "net.pototskiy.apps.magemediation.api.database.*",
+        "net.pototskiy.apps.magemediation.api.config.*",
+        "net.pototskiy.apps.magemediation.api.config.mediator.*",
+        "net.pototskiy.apps.magemediation.api.entity.*",
+        "net.pototskiy.apps.magemediation.api.source.*",
+        "net.pototskiy.apps.magemediation.api.plugable.*"
+    )
+    compilerOptions("-jvm-target", "1.8")
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
         updateClasspath(

@@ -12,7 +12,10 @@ config {
         files {
             val testDataDir = System.getenv("TEST_DATA_DIR")
             file("test-attributes-xls") { path("$testDataDir/test.attributes.xls") }
-            file("test-attributes-csv") { path("$testDataDir/test.attributes.csv") }
+            file("test-attributes-csv") {
+                path("$testDataDir/test.attributes.csv")
+                locale("ru_RU")
+            }
             file("onec_group") { path("$testDataDir/test-products.xlsx") }
             file("mage_product") { path("$testDataDir/catalog_product.csv") }
             file("mage_user_group") { path("$testDataDir/customer_group.csv") }
@@ -22,32 +25,50 @@ config {
             file("mage-stock-source") { path("$testDataDir/stock_sources.csv") }
         }
         entities {
-            entity("onec-product") {
-                attribute("sku") { type { string() }.key() }
-                attribute("description") { type { text() } }
-                attribute("bool_val") { type { bool() } }
-                attribute("long_val") { type { long() } }
-                attribute("double_val") { type { double().locale("ru_RU") } }
-                attribute("date_val") { type { date().pattern("d.M.yy") } }
-                attribute("datetime_val") { type { datetime().pattern("d.M.yy H:m") } }
-                attribute("string_list") { type { stringList().delimiter(",").quote("") } }
-                attribute("bool_list") { type { boolList().delimiter(",").quote("") } }
-                attribute("long_list") { type { longList().delimiter(",").quote("") } }
-                attribute("double_list") { type { doubleList().locale("ru_RU").delimiter("|").quote("") } }
-                attribute("date_list") { type { dateList().delimiter(",").quote("").pattern("d.M.yy") } }
-                attribute("datetime_list") { type { datetimeList().delimiter(",").quote("").pattern("d.M.yy H:m") } }
-                attribute("compound") {
-                    type {
-                        attributeList()
-                            .delimiter(",").quote("")
-                            .valueDelimiter("=").valueQuote("\"")
+            entity("onec-product", false) {
+                attribute<StringType>("sku") { key() }
+                attribute<TextType>("description")
+                attribute<BooleanType>("bool_val")
+                attribute<LongType>("long_val") {
+                    reader<LongAttributeReader> { locale = "ru_RU" }
+                }
+                attribute<DoubleType>("double_val") {
+                    reader<DoubleAttributeReader> { locale = "ru_RU" }
+                }
+                attribute<DateType>("date_val") {
+                    reader<DateAttributeReader> { pattern = "d.M.yy" }
+                }
+                attribute<DateTimeType>("datetime_val") {
+                    reader<DateTimeAttributeReader> { pattern = "d.M.yy H:m" }
+                }
+                attribute<StringListType>("string_list") {
+                    reader<StringListAttributeReader> { delimiter = ","; quote = "" }
+                }
+                attribute<BooleanListType>("bool_list") {
+                    reader<BooleanListAttributeReader> { delimiter = ","; quote = "" }
+                }
+                attribute<LongListType>("long_list") {
+                    reader<LongListAttributeReader> { delimiter = ","; quote = "" }
+                }
+                attribute<DoubleListType>("double_list") {
+                    reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = "|"; quote = "" }
+                }
+                attribute<DateListType>("date_list") {
+                    reader<DateListAttributeReader> { delimiter = ",";quote = "";pattern = "d.M.yy" }
+                }
+                attribute<DateTimeListType>("datetime_list") {
+                    reader<DateTimeListAttributeReader> { delimiter = ",";quote = "";pattern = "d.M.yy H:m" }
+                }
+                attribute<AttributeListType>("compound") {
+                    reader<AttributeListReader> {
+                        delimiter = ",";quote = "";valueDelimiter = "=";valueQuote = "\""
                     }
                 }
-                attribute("nested1") { type { long() } }
-                attribute("nested2") { type { long() } }
+                attribute<LongType>("nested1")
+                attribute<LongType>("nested2")
 
-                attribute("group_code") { type { string() }.nullable() }
-                attribute("group_name") { type { string() }.nullable() }
+                attribute<StringType>("group_code") { nullable() }
+                attribute<StringType>("group_name") { nullable() }
             }
 
         }
@@ -112,12 +133,15 @@ config {
         }
     }
     mediator {
-        crossProductionLine {
+        unionProductionLine {
             input {
                 entity("onec-product")
             }
             output("import-product") {
                 inheritFrom("onec-product")
+            }
+            pipeline {
+                assembler { _, _ -> emptyMap() }
             }
         }
     }

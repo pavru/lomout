@@ -80,8 +80,8 @@ dependencies {
         exclude("org.slf4j")
     }
     // Excel
-    implementation("org.apache.poi", "poi", "4.0.1")
-    implementation("org.apache.poi", "poi-ooxml", "4.0.1")
+    implementation("org.apache.poi", "poi", Versions.poi)
+    implementation("org.apache.poi", "poi-ooxml", Versions.poi)
     // CSV
     implementation("org.apache.commons", "commons-csv", "1.6")
     // MySql

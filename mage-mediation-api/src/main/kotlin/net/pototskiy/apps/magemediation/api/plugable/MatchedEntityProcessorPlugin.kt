@@ -1,18 +1,12 @@
 package net.pototskiy.apps.magemediation.api.plugable
 
-import net.pototskiy.apps.magemediation.api.config.data.Attribute
 import net.pototskiy.apps.magemediation.api.config.mediator.MatcherEntityData
+import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.magemediation.api.entity.Type
 
-abstract class MatchedEntityProcessorPlugin : NewPlugin<Map<Attribute, Any?>>() {
-    @Suppress("MemberVisibilityCanBePrivate")
-    protected lateinit var entities: Map<String, MatcherEntityData>
-
-    fun process(entities: Map<String, MatcherEntityData>): Map<Attribute, Any?> {
-        this.entities = entities
-        return execute()
-    }
-
-    open class Options: NewPlugin.Options()
+abstract class MatchedEntityProcessorPlugin : Plugin() {
+    abstract fun process(entities: Map<String, MatcherEntityData>): Map<AnyTypeAttribute, Type?>
 }
 
-typealias MatchedEntityProcessorFunction = (entities: Map<String, MatcherEntityData>) -> Map<Attribute, Any?>
+typealias MatchedEntityProcessorFunction =
+            (entities: Map<String, MatcherEntityData>) -> Map<Type, Type?>

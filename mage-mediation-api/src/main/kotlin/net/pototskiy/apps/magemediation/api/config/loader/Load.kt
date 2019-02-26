@@ -1,79 +1,89 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
+import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.config.data.Entity
+import net.pototskiy.apps.magemediation.api.entity.EType
 
 data class Load(
     val headersRow: Int,
     val rowsToSkip: Int,
     val maxAbsentDays: Int,
-    val entity: Entity,
+    val entity: EType,
     val sources: SourceDataCollection,
     val fieldSets: FieldSetCollection
 ) {
     @ConfigDsl
-    class Builder(private val entity: Entity) {
-        private var headersRow: Int? = null
+    class Builder(private val eType: EType) {
+        private var headersRow: Int = UNDEFINED_ROW
         private var rowsToSkip: Int = 0
         private var maxAbsentDays: Int = 5
         private var sources: SourceDataCollection? = null
         private var fieldSets: FieldSetCollection? = null
 
-        @Suppress("unused")
-        fun Builder.headersRow(row: Int) {
-            this.headersRow = row
+        fun headersRow(row: Int) {
+            headersRow = row
         }
 
-        @Suppress("unused")
-        fun Builder.rowsToSkip(rows: Int) {
+        fun rowsToSkip(rows: Int) {
             this.rowsToSkip = rows
         }
 
-        @Suppress("unused")
-        fun Builder.keepAbsentForDays(days: Int) {
+        fun keepAbsentForDays(days: Int) {
             this.maxAbsentDays = days
         }
 
-        @Suppress("unused")
-        fun Builder.fromSources(block: SourceDataCollection.Builder.() -> Unit) {
+        fun fromSources(block: SourceDataCollection.Builder.() -> Unit) {
             this.sources = SourceDataCollection.Builder().apply(block).build()
         }
 
-        @Suppress("unused")
-        fun Builder.sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
-            val attributes = entity.attributes
-            fieldSets = FieldSetCollection.Builder(attributes, headersRow != UNDEFINED_COLUMN).apply(block).build()
+        fun sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
+            fieldSets = FieldSetCollection.Builder(
+                eType,
+                headersRow != UNDEFINED_COLUMN,
+                sources,
+                headersRow
+            ).apply(block).build()
         }
 
 
         fun build(): Load {
-            val headersRow = this.headersRow ?: UNDEFINED_COLUMN
+            refineEntityAttributes()
+            val headersRow = this.headersRow
             val rowsToSkip = this.rowsToSkip
             val sources =
-                this.sources ?: throw ConfigException("Source files are not defined for entity<${entity.name}> loading")
+                this.sources
+                    ?: throw ConfigException("Source files are not defined for entity type<${eType.type}> loading")
             validateFieldColumnDefinition()
             return Load(
                 headersRow,
                 rowsToSkip,
                 maxAbsentDays,
-                entity,
+                eType,
                 sources,
-                fieldSets ?: throw ConfigException("Field set is not defined for entity<${entity.name}> loading")
+                fieldSets ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading")
             )
+        }
+
+        private fun refineEntityAttributes() {
+            val autoAttrs = fieldSets
+                ?.map { it.fieldToAttr.attributes }
+                ?.flatten()
+                ?.filter { it.auto } ?: emptyList()
+            autoAttrs.forEach { eType.addAttribute(it) }
         }
 
         private fun validateFieldColumnDefinition() {
             var fields =
-                (fieldSets ?: throw ConfigException("Field set is not defined for entity<${entity.name}> loading"))
-                    .map { it.fields.toList() }
+                (fieldSets ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading"))
+                    .map { it.fieldToAttr.toList() }
                     .flatten()
                     .toMap()
             fields = fields
                 .filterNot { it.key.isNested }
                 .filterNot { it.value.isSynthetic }
-            if (this.headersRow == null && fields.any { it.key.column == UNDEFINED_COLUMN }) {
+            if (this.headersRow == UNDEFINED_ROW && fields.any { it.key.column == UNDEFINED_COLUMN }) {
                 throw ConfigException(
                     "Dataset has no headers row but " +
                             "fields<${fields.filter { it.key.column == UNDEFINED_COLUMN }.map { it.value.name }

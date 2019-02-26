@@ -12,7 +12,9 @@ const val STATUS_LOG_NAME = "net.pototskiy.apps.magemediation.status"
 const val EXPOSED_LOG_NAME = "Exposed"
 
 const val UNDEFINED_COLUMN = -1
-val DEFAULT_LOCALE: String = "${Locale.getDefault().isO3Language}_${Locale.getDefault().isO3Country}"
+const val UNDEFINED_ROW = -1
+val DEFAULT_LOCALE_STR: String = "${Locale.getDefault().isO3Language}_${Locale.getDefault().isO3Country}"
+val DEFAULT_LOCALE: Locale = Locale.getDefault()
 val TIMESTAMP = DateTime()
 
 const val ENTITY_TYPE_NAME_LENGTH = 100

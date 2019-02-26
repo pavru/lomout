@@ -1,9 +1,12 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
 import net.pototskiy.apps.magemediation.api.PublicApi
-import net.pototskiy.apps.magemediation.api.plugable.*
+import net.pototskiy.apps.magemediation.api.config.ConfigDsl
+import net.pototskiy.apps.magemediation.api.plugable.PipelineAssemblerFunction
+import net.pototskiy.apps.magemediation.api.plugable.PipelineAssemblerPlugin
+import net.pototskiy.apps.magemediation.api.plugable.PipelineClassifierFunction
+import net.pototskiy.apps.magemediation.api.plugable.PipelineClassifierPlugin
 import java.util.*
-import kotlin.reflect.full.createInstance
 
 
 data class Pipeline(
@@ -13,6 +16,7 @@ data class Pipeline(
     val assembler: PipelineAssembler?
 ) {
     val pipelineID = UUID.randomUUID().toString()
+
     enum class CLASS { MATCHED, UNMATCHED }
 
     @PublicApi
@@ -20,70 +24,44 @@ data class Pipeline(
 
     class Builder(vararg klass: CLASS) {
         private val dataClass = klass.toList()
-        @Suppress("PropertyName")
-        var __classifier: PipelineClassifier? = null
-        @Suppress("PropertyName")
-        var __assembler: PipelineAssembler? = null
+        @ConfigDsl
+        var classifier: PipelineClassifier? = null
+        @ConfigDsl
+        var assembler: PipelineAssembler? = null
         private var pipelines = mutableListOf<Pipeline>()
 
-        @Suppress("unused")
-        @PublicApi
         @JvmName("classifier__function")
-        fun Builder.classifier(block: PipelineClassifierFunction) {
-            __classifier = PipelineClassifierWithFunction(block)
+        fun classifier(block: PipelineClassifierFunction) {
+            classifier = PipelineClassifierWithFunction(block)
         }
 
-        @Suppress("unused")
-        @PublicApi
         @JvmName("classifier__plugin")
-        inline fun <reified P : PipelineClassifierPlugin> Builder.classifier() {
-            __classifier = PipelineClassifierWithPlugin(P::class)
-        }
-
-        @Suppress("unused")
-        @PublicApi
-        @JvmName("classifier__plugin__options")
-        inline fun <reified P : PipelineClassifierPlugin, O : NewPlugin.Options> Builder.classifier(block: O.() -> Unit) {
+        inline fun <reified P : PipelineClassifierPlugin> classifier(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
-            val options = (P::class.createInstance().optionSetter() as O).apply(block)
-            __classifier = PipelineClassifierWithPlugin(P::class, options)
+            classifier = PipelineClassifierWithPlugin(P::class, block as (PipelineClassifierPlugin.() -> Unit))
         }
 
-        @Suppress("unused")
-        @PublicApi
         @JvmName("assembler__function")
-        fun Builder.assembler(block: PipelineAssemblerFunction) {
-            __assembler = PipelineAssemblerWithFunction(block)
+        fun assembler(block: PipelineAssemblerFunction) {
+            assembler = PipelineAssemblerWithFunction(block)
         }
 
-        @PublicApi
-        @Suppress("unused")
         @JvmName("assembler__plugin")
-        inline fun <reified P : PipelineAssemblerPlugin> Builder.assembler() {
-            __assembler = PipelineAssemblerWithPlugin(P::class)
-        }
-
-        @PublicApi
-        @Suppress("unused")
-        @JvmName("assembler__plugin__options")
-        inline fun <reified P : PipelineAssemblerPlugin, O : NewPlugin.Options> Builder.assembler(block: O.() -> Unit) {
+        inline fun <reified P : PipelineAssemblerPlugin> assembler(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
-            val options = (P::class.createInstance().optionSetter() as O).apply(block)
-            __assembler = PipelineAssemblerWithPlugin(P::class, options)
+            assembler = PipelineAssemblerWithPlugin(P::class, block as (PipelineAssemblerPlugin.() -> Unit))
         }
 
-        @PublicApi
-        @Suppress("unused")
-        fun Builder.pipeline(vararg klass: CLASS, block: Builder.() -> Unit) {
+        fun pipeline(vararg klass: CLASS, block: Builder.() -> Unit) {
             pipelines.add(Builder(*klass).apply(block).build())
         }
 
         fun build(): Pipeline {
             return Pipeline(
                 dataClass,
-                __classifier ?: PipelineClassifierWithFunction { CLASS.MATCHED },
+                classifier ?: PipelineClassifierWithFunction { CLASS.MATCHED },
                 pipelines,
-                __assembler
+                assembler
             )
         }
     }

@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.database
 
+import net.pototskiy.apps.magemediation.api.entity.Type
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import kotlin.reflect.KClass
@@ -28,12 +29,12 @@ abstract class AttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity
         return value.compareTo(other as V)
     }
 
-    fun setValueWithTypeCheck(value: Any) {
+    fun setValueWithTypeCheck(value: Type) {
         val klass = this::class.supertypes[0].arguments[0].type?.classifier
-        if (klass !is KClass<*> || !klass.isInstance(value)) {
+        if (!value.isSingle() || (klass is KClass<*> && !klass.isInstance(value.value))) {
             throw DatabaseException("Value can not be assigned to attribute, types are incompatible")
         }
         @Suppress("UNCHECKED_CAST")
-        this.value = value as V
+        this.value = value.value as V
     }
 }

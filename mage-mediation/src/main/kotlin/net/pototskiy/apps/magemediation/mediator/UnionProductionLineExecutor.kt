@@ -7,10 +7,8 @@ import net.pototskiy.apps.magemediation.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineData
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollection
 import net.pototskiy.apps.magemediation.api.config.mediator.ProductionLine
-import net.pototskiy.apps.magemediation.api.database.EntityClass
-import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
-import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
-import net.pototskiy.apps.magemediation.api.database.schema.SourceEntity
+import net.pototskiy.apps.magemediation.api.database.DbEntity
+import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.database.BooleanConst
 import net.pototskiy.apps.magemediation.database.PipelineSets
 import net.pototskiy.apps.magemediation.database.StringConst
@@ -23,7 +21,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnionProductionLineExecutor {
 
-    private val entityCache = LRUMap<Int, PersistentSourceEntity>(1000, 300)
+    private val pipelineDataCache = LRUMap<Int, PipelineData>(1000, 300)
     private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private val jobs = mutableListOf<Job>()
 
@@ -33,16 +31,18 @@ class UnionProductionLineExecutor {
         try {
             runBlocking {
                 @Suppress("UNCHECKED_CAST")
-                val targetEntityClass = EntityClass.getOrRegisterClass(
-                    EntityClass(
-                        line.outputEntity.name,
-                        SourceEntity,
-                        line.outputEntity.attributes,
-                        line.outputEntity.open
-                    )
-                ) as EntityClass<PersistentSourceEntity>
+                val targetEntityClass = line.outputEntity
+                // TODO: 23.02.2019 remove
+//                    EntityClass.getOrRegisterClass(
+//                    EntityClass(
+//                        line.outputEntity.name,
+//                        SourceEntity,
+//                        line.outputEntity.attributes,
+//                        line.outputEntity.open
+//                    )
+//                ) as EntityClass<PersistentSourceEntity>
                 val entityUpdater = EntityUpdater(targetEntityClass)
-                val pipeline = PipelineExecutor(line.pipeline, line.inputEntities, line.outputEntity, entityCache)
+                val pipeline = PipelineExecutor(line.pipeline, line.inputEntities, line.outputEntity, pipelineDataCache)
                 createTopPipelineSet(line)
                 val (from, where, columns) = mainQuery(line)
                 val inputChannel: Channel<PipelineDataCollection> = Channel()
@@ -69,33 +69,34 @@ class UnionProductionLineExecutor {
     ): List<PipelineData> {
         return columns.map { column ->
             val id = row[column]
-            var entity = entityCache[id.value]
-            if (entity == null) {
-                entity = transaction { SourceEntity.findById(id) }
+            val pipelineData = pipelineDataCache[id.value]
+            if (pipelineData == null) {
+                val entity = transaction { DbEntity.findById(id) }
                     ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
                 entity.readAttributes()
-                entityCache[entity.id.value] = entity
+                PipelineData(
+                    entity,
+                    line.inputEntities.find {
+                        it.entity.name == entity.eType.type
+                    }!!
+                ).also { pipelineDataCache[id.value] = it }
+            } else {
+                pipelineData
             }
 
-            PipelineData(
-                entity,
-                line.inputEntities.find {
-                    it.entity.name == entity.getEntityClass().type
-                }!!
-            )
         }
     }
 
     private fun createTopPipelineSet(line: ProductionLine) = transaction {
         line.inputEntities.forEach {
-            val alias = SourceEntities.alias("entity_${it.entity.name}")
-            var where = Op.build { alias[SourceEntities.entityType] eq it.entity.name }
+            val alias = DbEntityTable.alias("entity_${it.entity.name}")
+            var where = Op.build { alias[DbEntityTable.entityType] eq it.entity.name }
             it.filter?.let { filter -> where = where.and(filter.where(alias)) }
             PipelineSets.insert(
                 alias
                     .slice(
                         StringConst(line.pipeline.pipelineID),
-                        alias[SourceEntities.id],
+                        alias[DbEntityTable.id],
                         BooleanConst(false)
                     ).select(where)
             )

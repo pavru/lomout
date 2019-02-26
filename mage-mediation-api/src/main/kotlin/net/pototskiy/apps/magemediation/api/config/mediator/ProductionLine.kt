@@ -2,42 +2,44 @@ package net.pototskiy.apps.magemediation.api.config.mediator
 
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.config.data.Entity
+import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class ProductionLine(
     val lineType: LineType,
     val inputEntities: InputEntityCollection,
-    val outputEntity: Entity,
+    val outputEntity: EType,
     val pipeline: Pipeline
 ) {
     enum class LineType { CROSS, UNION }
     @ConfigDsl
     class Builder(private val lineType: LineType) {
         private var inputs: InputEntityCollection? = null
-        private var output: Entity? = null
+        private var output: EType? = null
         private var pipeline: Pipeline? = null
 
-        @Suppress("unused")
-        fun Builder.input(block: InputEntityCollection.Builder.() -> Unit) {
+        fun input(block: InputEntityCollection.Builder.() -> Unit) {
             inputs = InputEntityCollection.Builder().apply(block).build()
         }
 
-        @Suppress("unused")
-        fun Builder.pipeline(
+        fun pipeline(
             vararg klass: Pipeline.CLASS = arrayOf(Pipeline.CLASS.MATCHED, Pipeline.CLASS.UNMATCHED),
             block: Pipeline.Builder.() -> Unit
         ) {
             pipeline = Pipeline.Builder(*klass).apply(block).build()
         }
 
-        @Suppress("unused")
-        fun Builder.output(name: String, block: Entity.Builder.() -> Unit) {
-            output = Entity.Builder(name, false).apply(block).build()
+        fun output(name: String, block: EType.Builder.() -> Unit) {
+            output = EType.Builder(name, false).apply(block).build()
+        }
+
+        fun output(name: String) {
+            output = EntityTypeManager.getEntityType(name)
         }
 
         fun build(): ProductionLine {
             validatePipeline(pipeline
-                ?: throw ConfigException("Production line must have pipeline"))
+                ?: throw ConfigException("Production line must have plugins.pipeline"))
             return ProductionLine(
                 lineType,
                 inputs ?: throw ConfigException("At least one input entity must be defined"),

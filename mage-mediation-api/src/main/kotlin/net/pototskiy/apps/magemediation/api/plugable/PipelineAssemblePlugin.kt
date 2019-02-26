@@ -1,17 +1,13 @@
 package net.pototskiy.apps.magemediation.api.plugable
 
-import net.pototskiy.apps.magemediation.api.PublicApi
-import net.pototskiy.apps.magemediation.api.config.data.Attribute
-import net.pototskiy.apps.magemediation.api.config.data.Entity
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollection
+import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.Type
 
-@PublicApi
-abstract class PipelineAssemblerPlugin : NewPlugin<Map<Attribute, Any?>>() {
-    abstract fun assemble(target: Entity, entities: PipelineDataCollection): Map<Attribute, Any?>
-
-    open class Options: NewPlugin.Options()
+abstract class PipelineAssemblerPlugin : Plugin() {
+    abstract fun assemble(target: EType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?>
 }
 
-@PublicApi
-typealias PipelineAssemblerFunction = (target: Entity, entities: PipelineDataCollection) -> Map<Attribute, Any?>
+typealias PipelineAssemblerFunction = (target: EType, entities: PipelineDataCollection) -> Map<AnyTypeAttribute, Type?>
 

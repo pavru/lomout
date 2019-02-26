@@ -1,18 +1,12 @@
 package net.pototskiy.apps.magemediation.api.plugable
 
-import net.pototskiy.apps.magemediation.api.database.PersistentEntity
+import net.pototskiy.apps.magemediation.api.database.DbEntity
+import net.pototskiy.apps.magemediation.api.entity.Type
 
 
-abstract class AttributeBuilderPlugin<E : PersistentEntity<*>, R : Any?> : NewPlugin<R>() {
-    protected lateinit var entity: E
-
-    fun build(entity: E): R {
-        this.entity = entity
-        return execute()
-    }
-
-    open class Options: NewPlugin.Options()
+abstract class AttributeBuilderPlugin<R : Type> : Plugin() {
+    abstract fun build(entity: DbEntity): R?
 }
 
-typealias AttributeBuilderFunction<E, R> = (E) -> R
+typealias AttributeBuilderFunction<R> = (DbEntity) -> R?
 

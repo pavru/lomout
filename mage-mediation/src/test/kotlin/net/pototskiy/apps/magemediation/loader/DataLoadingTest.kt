@@ -3,12 +3,11 @@ package net.pototskiy.apps.magemediation.loader
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
 import net.pototskiy.apps.magemediation.api.config.loader.Load
-import net.pototskiy.apps.magemediation.api.database.EntityClass
-import net.pototskiy.apps.magemediation.api.database.PersistentSourceEntity
-import net.pototskiy.apps.magemediation.api.database.SourceDataStatus
-import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
-import net.pototskiy.apps.magemediation.api.database.schema.SourceEntity
-import net.pototskiy.apps.magemediation.source.excel.ExcelWorkbook
+import net.pototskiy.apps.magemediation.api.database.DbEntity
+import net.pototskiy.apps.magemediation.api.database.DbEntityTable
+import net.pototskiy.apps.magemediation.api.database.EntityStatus
+import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
 import org.assertj.core.api.Assertions.assertThat
@@ -21,29 +20,26 @@ import org.junit.jupiter.api.*
 @DisplayName("Loading entity from source file")
 class DataLoadingTest {
     private lateinit var config: Config
-    private lateinit var entityClass: EntityClass<PersistentSourceEntity>
+    private lateinit var eType: EType
 
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
+        EntityTypeManager.cleanEntityTypeConfiguration()
         Config.Builder.initConfigBuilder()
-        EntityClass.initEntityCLassRegistrar()
+        // TODO: 23.02.2019 remove after test
+        //EntityClass.initEntityCLassRegistrar()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         util.initDataBase()
-        entityClass = EntityClass(
-            "onec-product",
-            SourceEntity,
-            emptyList(),
-            true
-        )
-        transaction { SourceEntities.deleteAll() }
+        eType = EntityTypeManager.getEntityType("onec-product")!!
+        transaction { DbEntityTable.deleteAll() }
     }
 
     @Test
     @DisplayName("There is no any loaded entity")
     fun thereIsNoAnyLoadedEntity() {
-        assertThat(entityClass.getEntities().count()).isZero()
+        assertThat(DbEntity.getEntities(eType).count()).isZero()
     }
 
     @Nested
@@ -64,15 +60,15 @@ class DataLoadingTest {
         @Test
         @DisplayName("Six entities should be loaded")
         fun numberOfEntitiesTest() {
-            assertThat(entityClass.getEntities().count()).isEqualTo(6)
+            assertThat(DbEntity.getEntities(eType).count()).isEqualTo(6)
         }
 
         @Test
         @DisplayName("All entities should be in state CREATED/CREATED")
         fun createdCreatedStateTest() {
-            entityClass.getEntities().forEach {
-                assertThat(it.previousStatus).isEqualTo(SourceDataStatus.CREATED)
-                assertThat(it.currentStatus).isEqualTo(SourceDataStatus.CREATED)
+            DbEntity.getEntities(eType).forEach {
+                assertThat(it.previousStatus).isEqualTo(EntityStatus.CREATED)
+                assertThat(it.currentStatus).isEqualTo(EntityStatus.CREATED)
             }
         }
 
@@ -97,33 +93,33 @@ class DataLoadingTest {
             @Test
             @DisplayName("Six entities should be loaded")
             fun numberOfEntitiesTes() {
-                assertThat(entityClass.getEntities().count()).isEqualTo(6)
+                assertThat(DbEntity.getEntities(eType).count()).isEqualTo(6)
             }
 
             @Test
-            @DisplayName("Five entities should be in state CREATED/UNCHANGED")
+            @DisplayName("Four entities should be in state CREATED/UNCHANGED")
             fun createdCreatedStateTest() {
-                assertThat(entityClass.getEntities().filter {
-                    it.previousStatus == SourceDataStatus.CREATED
-                            && it.currentStatus == SourceDataStatus.UNCHANGED
+                assertThat(DbEntity.getEntities(eType).filter {
+                    it.previousStatus == EntityStatus.CREATED
+                            && it.currentStatus == EntityStatus.UNCHANGED
                 }.count()).isEqualTo(4)
             }
 
             @Test
             @DisplayName("One entities should be in state CREATED/UPDATED")
             fun createdUpdatedStateTest() {
-                assertThat(entityClass.getEntities().filter {
-                    it.previousStatus == SourceDataStatus.UNCHANGED
-                            && it.currentStatus == SourceDataStatus.UPDATED
+                assertThat(DbEntity.getEntities(eType).filter {
+                    it.previousStatus == EntityStatus.CREATED
+                            && it.currentStatus == EntityStatus.UPDATED
                 }.count()).isEqualTo(1)
             }
 
             @Test
             @DisplayName("One entity should be in state CREATED/REMOVED")
             fun createdRemovedStateTest() {
-                assertThat(entityClass.getEntities().filter {
-                    it.previousStatus == SourceDataStatus.CREATED
-                            && it.currentStatus == SourceDataStatus.REMOVED
+                assertThat(DbEntity.getEntities(eType).filter {
+                    it.previousStatus == EntityStatus.CREATED
+                            && it.currentStatus == EntityStatus.REMOVED
                 }.count()).isEqualTo(1)
             }
 
@@ -141,16 +137,16 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = entityClass.attributes.findLast { it.name == "sku" }!!
-                    val entity = entityClass.getEntityByKeys(mapOf(skuAttr to "2")) as PersistentSourceEntity
-                    transaction { entity.removedInMedium = DateTime().minusDays(11) }
+                    val skuAttr = EntityAttributeManager.getAttribute(AttributeName( eType.type, "sku"))!!
+                    val entity = DbEntity.getEntityByKeys(eType,mapOf(skuAttr to StringValue("2")))!!
+                    transaction { entity.removed = DateTime().minusDays(11) }
                     loadEntities(load, workbook)
                 }
 
                 @Test
                 @DisplayName("Five entities should be loaded")
                 fun numberOfEntitiesTest() {
-                    assertThat(entityClass.getEntities().count()).isEqualTo(5)
+                    assertThat(DbEntity.getEntities(eType).count()).isEqualTo(5)
                 }
             }
         }
@@ -159,11 +155,16 @@ class DataLoadingTest {
     private fun loadEntities(load: Load, hssfWorkbook: HSSFWorkbook? = null) {
         val sheetDef = load.sources.first().sheet
         val excelWorkbook = hssfWorkbook ?: getHSSFWorkbook(load)
-        val excelSheet = excelWorkbook.sheetIterator().asSequence().find { sheetDef.isMatch(it.sheetName) }!!
-        val loader = EntityLoader(load, EmptyRowStrategy.STOP, ExcelWorkbook(excelWorkbook)[excelSheet.sheetName])
-        loader.load()
-        @Suppress("UNCHECKED_CAST")
-        entityClass = EntityClass.getClass("onec-product") as EntityClass<PersistentSourceEntity>
+        excelWorkbook.use { workbook ->
+            val excelSheet = workbook.sheetIterator().asSequence().find { sheetDef.isMatch(it.sheetName) }!!
+            val loader = EntityLoader(
+                load, EmptyRowStrategy.STOP, ExcelWorkbook(
+                    excelWorkbook
+                )[excelSheet.sheetName]
+            )
+            loader.load()
+        }
+        eType = EntityTypeManager.getEntityType("onec-product")!!
     }
 
     private fun getHSSFWorkbook(load: Load): HSSFWorkbook {

@@ -1,5 +1,7 @@
 package net.pototskiy.apps.magemediation.loader
 
+import net.pototskiy.apps.magemediation.api.config.loader.LoaderException
+
 @Suppress("unused")
 class LoaderStopException: LoaderException {
     constructor() : super()

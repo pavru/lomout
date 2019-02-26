@@ -2,19 +2,18 @@ package net.pototskiy.apps.magemediation.api.config.loader
 
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.config.data.EntityCollection
+import net.pototskiy.apps.magemediation.api.entity.ETypeCollection
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class LoaderConfiguration(
     val files: SourceFileCollection,
-    val datasets: List<LoaderDataset>,
-    val entities: EntityCollection,
+    val entities: ETypeCollection,
     val loads: LoadCollection
 ) {
     @ConfigDsl
     class Builder {
         private var files: SourceFileCollection? = null
-        private var datasets = mutableListOf<LoaderDataset>()
-        private var entities: EntityCollection? = null
+        private var entities: ETypeCollection? = null
         private var loads = mutableListOf<Load>()
 
         @Suppress("unused")
@@ -23,23 +22,21 @@ data class LoaderConfiguration(
         }
 
         @Suppress("unused")
-        fun Builder.entities(block: EntityCollection.Builder.() -> Unit) {
-            this.entities = EntityCollection.Builder().apply(block).build()
+        fun Builder.entities(block: ETypeCollection.Builder.() -> Unit) {
+            this.entities = ETypeCollection.Builder().apply(block).build()
         }
 
         @Suppress("unused")
-        fun Builder.loadEntity(name: String, block: Load.Builder.() -> Unit) {
-            val entity = entities?.find { it.name == name }
-                ?: throw ConfigException("Define entity<$name> before load configuration")
+        fun Builder.loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
+            val entity = EntityTypeManager.getEntityType(entityType)
+                ?: throw ConfigException("Define entity<$entityType> before load configuration")
             loads.add(Load.Builder(entity).apply(block).build())
         }
 
         fun build(): LoaderConfiguration {
             val files = this.files ?: throw ConfigException("Files is not defined in loader section")
-            val datasets = this.datasets
             return LoaderConfiguration(
                 files,
-                datasets,
                 entities ?: throw ConfigException("At least one entity must be defined"),
                 LoadCollection(loads)
             )

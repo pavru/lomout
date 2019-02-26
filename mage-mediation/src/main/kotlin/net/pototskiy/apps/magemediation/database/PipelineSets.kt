@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.database
 
-import net.pototskiy.apps.magemediation.api.database.schema.SourceEntities
+import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
@@ -14,7 +14,7 @@ private const val UUID_LENGTH = 50
 object PipelineSets : IntIdTable("pipeline_set") {
 
     val setID = varchar("set_id", UUID_LENGTH)
-    val entityID = reference("entity_id",SourceEntities, ReferenceOption.CASCADE)
+    val entityID = reference("entity_id", DbEntityTable, ReferenceOption.CASCADE)
     val isMatched = bool("is_matched").default(false).index()
 
     init {

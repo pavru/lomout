@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
-import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class InputEntityCollection(private val entities: List<InputEntity>) : List<InputEntity> by entities {
 
@@ -12,7 +12,7 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
 
         @Suppress("unused")
         fun Builder.entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
-            val entity = Config.Builder.definedEntities.findRegistered(name, true)
+            val entity = EntityTypeManager.getEntityType(name)
                 ?: throw ConfigException("Entity<$name> has not been defined yet")
             entities.add(InputEntity.Builder(entity).apply(block).build())
         }
