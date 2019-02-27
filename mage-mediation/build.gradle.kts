@@ -77,10 +77,13 @@ val testDataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    val checkEnv =System.getenv("TEST_DAT_DIR")
-    if (checkEnv == null || checkEnv.isBlank()) {
+    val travisBuildBir =System.getenv("TEST_DAT_DIR")
+    if (travisBuildBir == null || travisBuildBir.isBlank()) {
         environment("TEST_DATA_DIR", "$projectDir/.testdata")
         environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    } else {
+        environment("TEST_DATA_DIR", "$travisBuildBir/mage-mediation/.testdata")
+        environment("PRODUCTION_CONFIG", "$travisBuildBir/mage-mediation/config/config.conf.kts")
     }
     useJUnitPlatform()
     testLogging {
