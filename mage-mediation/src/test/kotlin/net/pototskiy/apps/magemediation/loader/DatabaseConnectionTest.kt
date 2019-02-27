@@ -13,7 +13,11 @@ class DatabaseConnectionTest {
     internal fun connectAndCreateTest() {
         val url: String = "jdbc:mysql://localhost:3306/magemediation?useLegacyDatetimeCode=false&serverTimezone=UTC"
         val user: String = "root"
-        val password: String = "root"
+        val password: String = if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            ""
+        } else {
+            "root"
+        }
         DriverManager.getConnection(url, user, password).use { connection ->
             connection.createStatement().use { stmt ->
                 stmt.execute("CREATE TABLE test ( id INT(11));")

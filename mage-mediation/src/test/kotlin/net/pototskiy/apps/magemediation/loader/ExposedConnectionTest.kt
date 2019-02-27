@@ -31,7 +31,11 @@ class ExposedConnectionTest {
         val datasource = MysqlDataSource()
         datasource.setURL("jdbc:mysql://localhost:3306/magemediation")
         datasource.user = "root"
-        datasource.password = "root"
+        datasource.password = if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+            ""
+        } else {
+            "root"
+        }
         datasource.serverTimezone = TimeZone.getDefault().id
         Database.connect(datasource)
         transaction { SchemaUtils.create(TestTable) }
