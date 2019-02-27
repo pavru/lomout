@@ -1,5 +1,5 @@
 # default attribute data type is varchar(1000)
-#category:
+#medium:
 product:
   fields:
     -

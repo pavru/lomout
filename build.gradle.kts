@@ -1,12 +1,9 @@
 plugins {
     id("com.github.ben-manes.versions") version "0.20.0"
-    id("org.sonarqube") version "2.6.2"
+    id("org.sonarqube") version "2.7"
 }
 
 buildscript {
-    dependencies {
-        classpath("org.junit.platform:junit-platform-gradle-plugin:1.2.0")
-    }
 }
 
 group = "oooast-tools"

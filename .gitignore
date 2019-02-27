@@ -1,12 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 /.idea/
-/build/
-/mage-mediation/out/
-/mage-mediation/build/
-/.gradle/
-.~lock*.xlsx#
-.~lock*.xls#
-.~lock*.csv#
-/buildSrc/.gradle/
-/buildSrc/build/
+/mage-mediation/log/
+/log/magemediation.log
+/mage-mediation/tmp/
+/mage-mediation/.testdata/.~lock.test-products.xls#
