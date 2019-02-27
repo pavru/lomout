@@ -51,11 +51,11 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
         updateClasspath(checkAndGetExternalDeps())
-        updateClasspath(
-            listOf(
-                File("E:/home/alexander/Development/Web/oooast-tools/mage-mediation-api/build/classes/kotlin/main")
-            )
-        )
+//        updateClasspath(
+//            listOf(
+//                File("E:/home/alexander/Development/Web/oooast-tools/mage-mediation-api/build/classes/kotlin/main")
+//            )
+//        )
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
