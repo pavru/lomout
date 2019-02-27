@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.database
 
 import net.pototskiy.apps.magemediation.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
-import net.pototskiy.apps.magemediation.api.database.DbEntityTable
+import net.pototskiy.apps.magemediation.api.database.*
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
@@ -17,14 +17,14 @@ object DbSchema {
                 statusLog.info("schema: start")
                 SchemaUtils.create(DbEntityTable)
                 statusLog.info("schema: 1 finished")
-//                create(
-//                    EntityVarchars,
-//                    EntityLongs,
-//                    EntityBooleans,
-//                    EntityDoubles,
-//                    EntityDateTimes,
-//                    EntityTexts
-//                )
+                SchemaUtils.create(
+                    EntityVarchars,
+                    EntityLongs,
+                    EntityBooleans,
+                    EntityDoubles,
+                    EntityDateTimes,
+                    EntityTexts
+                )
                 statusLog.info("schema: 2 finished")
                 SchemaUtils.create(PipelineSets)
                 statusLog.info("schema: 3 finished")
