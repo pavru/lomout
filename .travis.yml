@@ -1,11 +1,13 @@
 language: java
 jdk:
   - oraclejdk8
+services:
+  - mysql
 before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
   - sudo mysql -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;"
-  - sudo mysql_upgrade -u root -pnew_password
+  - sudo mysql_upgrade -u root -proot
   - sudo service mysql restart
   - sudo mysql_upgrade -u root -proot
   - sudo service mysql restart
