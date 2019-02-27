@@ -8,6 +8,7 @@ before_install:
   - sudo service mysql restart
   - sudo netstat -npa | grep mysql
   - mysql -u root -proot magemediation -e "CREATE TABLE testtab ( id INT(11));"
+  - mysql -u root -proot magemediation -e "show tables;"
 env:
   - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db
 before_cache:
