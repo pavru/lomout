@@ -77,7 +77,7 @@ val testDataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    val travisBuildBir =System.getenv("TEST_DAT_DIR")
+    val travisBuildBir = System.getenv("TEST_DAT_DIR")
     if (travisBuildBir == null || travisBuildBir.isBlank()) {
         environment("TEST_DATA_DIR", "$projectDir/testdata")
         environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
@@ -88,7 +88,8 @@ tasks.named<Test>("test") {
     }
     useJUnitPlatform()
     testLogging {
-        events("passed", "skipped", "failed")
+//        events("passed", "skipped", "failed")
+        events("passed", "skipped", "failed", "standardOut", "standardError")
     }
 }
 
