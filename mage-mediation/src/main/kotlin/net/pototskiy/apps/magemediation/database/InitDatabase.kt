@@ -13,7 +13,6 @@ import java.util.*
 fun initDatabase(config: DatabaseConfig, logLevel: Level = Level.ERROR) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     Configurator.setLevel(EXPOSED_LOG_NAME, logLevel)
-    Configurator.setLevel(EXPOSED_LOG_NAME, Level.DEBUG)
     statusLog.info("Database has stated to check and init")
     val datasource = MysqlDataSource()
     datasource.setURL("jdbc:mysql://${config.server.host}:${config.server.port}/${config.name}")

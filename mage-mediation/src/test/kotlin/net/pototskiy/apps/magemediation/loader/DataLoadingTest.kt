@@ -1,7 +1,5 @@
 package net.pototskiy.apps.magemediation.loader
 
-import net.pototskiy.apps.magemediation.api.EXPOSED_LOG_NAME
-import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
 import net.pototskiy.apps.magemediation.api.config.loader.Load
@@ -10,8 +8,6 @@ import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.database.EntityStatus
 import net.pototskiy.apps.magemediation.api.entity.*
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
-import org.apache.logging.log4j.Level
-import org.apache.logging.log4j.core.config.Configurator
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
 import org.assertj.core.api.Assertions.assertThat
@@ -30,8 +26,6 @@ class DataLoadingTest {
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         EntityTypeManager.cleanEntityTypeConfiguration()
-        Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
-        Configurator.setLevel(EXPOSED_LOG_NAME, Level.DEBUG)
         Config.Builder.initConfigBuilder()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
