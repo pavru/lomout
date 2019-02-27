@@ -6,7 +6,6 @@ before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
   - sudo service mysql restart
-  - mysql -u root -proot magemediation -e "CREATE TABLE IF NOT EXISTS entity (id INT AUTO_INCREMENT PRIMARY KEY, entity_type VARCHAR(100) NOT NULL, touched_in_loading BOOLEAN NOT NULL, previous_status VARCHAR(10) NULL, current_status VARCHAR(10) NOT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL, removed DATETIME NULL, absent_days INT NOT NULL);"
 env:
   - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db
 before_cache:
