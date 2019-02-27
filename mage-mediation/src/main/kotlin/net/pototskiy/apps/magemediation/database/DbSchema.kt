@@ -10,9 +10,8 @@ object DbSchema {
     fun createSchema() {
         val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
         transaction {
-            SchemaUtils.run {
                 statusLog.info("schema: start")
-                create(DbEntityTable)
+                SchemaUtils.create(DbEntityTable)
                 statusLog.info("schema: 1 finished")
 //                create(
 //                    EntityVarchars,
@@ -23,9 +22,8 @@ object DbSchema {
 //                    EntityTexts
 //                )
                 statusLog.info("schema: 2 finished")
-                create(PipelineSets)
+                SchemaUtils.create(PipelineSets)
                 statusLog.info("schema: 3 finished")
-            }
         }
     }
 }
