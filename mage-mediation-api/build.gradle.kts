@@ -52,7 +52,7 @@ tasks.jar {
 }
 
 artifacts {
-    add("spi", tasks["spiJar"])
+    add("spi", tasks["jar"])
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
