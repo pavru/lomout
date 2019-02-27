@@ -88,7 +88,7 @@ tasks.named<Test>("test") {
     }
     useJUnitPlatform()
     testLogging {
-//        events("passed", "skipped", "failed")
+        //        events("passed", "skipped", "failed")
         events("passed", "skipped", "failed", "standardOut", "standardError")
     }
 }
@@ -140,6 +140,7 @@ dependencies {
         include("*.jar")
     })
     implementation(project(":mage-mediation-api"))
+    runtimeOnly(project(":mage-mediation-api", "spi"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)

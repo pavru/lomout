@@ -6,14 +6,10 @@ import org.jetbrains.kotlin.script.util.KotlinAnnotatedScriptDependenciesResolve
 import org.jetbrains.kotlin.script.util.Repository
 import org.jetbrains.kotlin.script.util.resolvers.DirectResolver
 import java.io.File
-import java.io.FileOutputStream
-import java.io.PrintStream
-import java.util.*
 import kotlin.script.dependencies.ScriptContents
 import kotlin.script.dependencies.ScriptDependenciesResolver
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.FileScriptSource
-import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.compat.mapLegacyDiagnosticSeverity
 import kotlin.script.experimental.jvm.compat.mapLegacyScriptPosition
 import kotlin.script.experimental.jvm.updateClasspath
@@ -26,11 +22,6 @@ class ConfigKtsConfigurator : RefineScriptCompilationConfigurationHandler {
 
     override operator fun invoke(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
         val diagnostics = arrayListOf<ScriptDiagnostic>()
-        debug("stack") {
-            Thread.currentThread().stackTrace.forEach {
-                println("${it.methodName}:${it.className}:${it.fileName}:${it.lineNumber}")
-            }
-        }
         fun report(
             severity: ScriptDependenciesResolver.ReportSeverity,
             message: String,
@@ -82,46 +73,7 @@ class ConfigKtsConfigurator : RefineScriptCompilationConfigurationHandler {
                     }
                 defaultImports.append(v)
             }
-        }.also { printConfiguration(it) }.asSuccess(diagnostics)
+        }.asSuccess(diagnostics)
     }
 }
-
-private fun debug(suffix: String, block: PrintStream.() -> Unit) {
-    val stream = PrintStream(FileOutputStream("c:/temp/${ConfigKtsConfigurator::class.simpleName}-$suffix.log", true))
-    stream.use {
-        it.println(Date().toString())
-        it.apply(block)
-    }
-}
-
-private fun printConfiguration(config: ScriptCompilationConfiguration) {
-    debug("new-api") {
-        println("displayName: ${config[ScriptCompilationConfiguration.displayName]}")
-        println("fileExtension: ${config[ScriptCompilationConfiguration.fileExtension]}")
-        println("baseClass: ${config[ScriptCompilationConfiguration.baseClass]}")
-        println("implicitReceivers: ${config[ScriptCompilationConfiguration.implicitReceivers]?.joinToString(",\n\t") { it.typeName }
-            ?: ""}")
-        println(
-            "providedProperties: ${config[ScriptCompilationConfiguration.providedProperties]?.entries?.joinToString(
-                ",\n"
-            ) { "${it.key}:${it.value.typeName}" }
-                ?: ""}")
-        println("defaultImports: ${config[ScriptCompilationConfiguration.defaultImports]?.joinToString(",\n\t") ?: ""}")
-        println("importScripts: ${config[ScriptCompilationConfiguration.importScripts]?.joinToString(",\n\t") {
-            (it as FileScriptSource).file.absolutePath ?: ""
-        }
-            ?: ""}")
-        println("dependencies: ${config[ScriptCompilationConfiguration.dependencies]
-            ?.joinToString(",\n\t") { dep ->
-                (dep as? JvmDependency)?.classpath?.joinToString(
-                    ",\n\t"
-                ) { it.absolutePath ?: "" } ?: ""
-            } ?: ""}")
-        println(
-            "compilerOptions: ${config[ScriptCompilationConfiguration.compilerOptions]?.joinToString(",\n\t") ?: ""}"
-        )
-        println("sourceFragments: ${config[ScriptCompilationConfiguration.sourceFragments]?.joinToString(",\n\t")}")
-    }
-}
-
 
