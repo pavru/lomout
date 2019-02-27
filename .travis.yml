@@ -7,4 +7,4 @@ before_install:
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
   - sudo service mysql restart
 env:
-  - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db TEST_DATA_DIR=$TRAVIS_BUILD_DIR/mage-mediation/.testdata PRODUCTION_CONFIG=$TRAVIS_BUILD_DIR/mage-mediation/config/config.conf.kts
+  - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db TEST_DATA_DIR="$TRAVIS_BUILD_DIR"/mage-mediation/.testdata PRODUCTION_CONFIG="$TRAVIS_BUILD_DIR"/mage-mediation/config/config.conf.kts
