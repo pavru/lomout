@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.loader
 
+import net.pototskiy.apps.magemediation.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
@@ -30,6 +31,7 @@ class DataLoadingTest {
         System.setSecurityManager(NoExitSecurityManager())
         EntityTypeManager.cleanEntityTypeConfiguration()
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
+        Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
         Config.Builder.initConfigBuilder()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
@@ -139,8 +141,8 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName( eType.type, "sku"))!!
-                    val entity = DbEntity.getEntityByKeys(eType,mapOf(skuAttr to StringValue("2")))!!
+                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, "sku"))!!
+                    val entity = DbEntity.getEntityByKeys(eType, mapOf(skuAttr to StringValue("2")))!!
                     transaction { entity.removed = DateTime().minusDays(11) }
                     loadEntities(load, workbook)
                 }

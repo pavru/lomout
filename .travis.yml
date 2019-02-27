@@ -8,3 +8,10 @@ before_install:
   - sudo service mysql restart
 env:
   - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
