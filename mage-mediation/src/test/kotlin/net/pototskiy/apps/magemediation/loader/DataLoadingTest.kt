@@ -28,6 +28,7 @@ class DataLoadingTest {
 
     @BeforeAll
     fun initAll() {
+        println("os name: ${System.getProperty("os.name")}")
         System.setSecurityManager(NoExitSecurityManager())
         EntityTypeManager.cleanEntityTypeConfiguration()
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
