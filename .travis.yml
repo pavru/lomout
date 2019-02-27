@@ -3,7 +3,7 @@ jdk:
   - oraclejdk8
 before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
-  - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+  - mysql -e "CREATE DATABASE IF NOT EXISTS test_magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
 env:
   - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db
 before_cache:
