@@ -1,3 +1,8 @@
 language: java
 jdk:
   - oraclejdk8
+addons:
+  mariadb: 10.3
+before_install:
+  - mysql -e "CREATE DATABASE magemediation"
+  - mysql -e "CREATE DATABASE test_magemediation"
