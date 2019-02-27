@@ -79,11 +79,11 @@ tasks.named<Test>("test") {
     minHeapSize = "1G"
     val travisBuildBir =System.getenv("TEST_DAT_DIR")
     if (travisBuildBir == null || travisBuildBir.isBlank()) {
-        environment("TEST_DATA_DIR", "$projectDir/.testdata")
+        environment("TEST_DATA_DIR", "$projectDir/testdata")
         environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
     } else {
         println("$travisBuildBir/mage-mediation/.testdata")
-        environment("TEST_DATA_DIR", "$travisBuildBir/mage-mediation/.testdata")
+        environment("TEST_DATA_DIR", "$travisBuildBir/mage-mediation/testdata")
         environment("PRODUCTION_CONFIG", "$travisBuildBir/mage-mediation/config/config.conf.kts")
     }
     useJUnitPlatform()
