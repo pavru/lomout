@@ -18,7 +18,8 @@ fun initDatabase(config: DatabaseConfig, logLevel: Level = Level.ERROR) {
     datasource.serverTimezone = TimeZone.getDefault().id
 
     try {
-        Database.connect(datasource)
+        val db = Database.connect(datasource)
+        statusLog.info("DB dialect: ${db.dialect.name}")
         DbSchema.createSchema()
     } catch (e: Exception) {
         statusLog.error("Can not init DB", e)
