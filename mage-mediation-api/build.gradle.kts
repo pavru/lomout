@@ -42,7 +42,7 @@ tasks.register<Jar>("dokkaJar") {
     from(file("$buildDir/javadoc"))
 }
 
-tasks.register<Jar>("spiJar") {
+tasks.jar {
     group = "build"
     archiveBaseName.set("mage-mediation-api")
     dependsOn(configurations.runtimeClasspath)
