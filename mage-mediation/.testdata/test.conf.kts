@@ -16,7 +16,7 @@ config {
                 path("$testDataDir/test.attributes.csv")
                 locale("ru_RU")
             }
-            file("onec_group") { path("$testDataDir/test-products.xlsx") }
+            file("onec_group") { path("$testDataDir/test-products.xls") }
             file("mage_product") { path("$testDataDir/catalog_product.csv") }
             file("mage_user_group") { path("$testDataDir/customer_group.csv") }
             file("mage_group") { path("$testDataDir/catalog_category.csv") }
