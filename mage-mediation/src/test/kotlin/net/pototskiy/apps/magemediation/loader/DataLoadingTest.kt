@@ -30,6 +30,7 @@ class DataLoadingTest {
         // TODO: 23.02.2019 remove after test
         //EntityClass.initEntityCLassRegistrar()
         val util = LoadingDataTestPrepare()
+        println("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         util.initDataBase()
         eType = EntityTypeManager.getEntityType("onec-product")!!
