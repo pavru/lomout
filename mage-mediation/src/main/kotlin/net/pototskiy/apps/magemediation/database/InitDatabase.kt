@@ -21,6 +21,7 @@ fun initDatabase(config: DatabaseConfig, logLevel: Level = Level.ERROR) {
     datasource.serverTimezone = TimeZone.getDefault().id
 
     Database.connect(datasource)
+    statusLog.info("Database connected")
     DbSchema.createSchema()
     statusLog.info("Database has finished to check and init")
 }
