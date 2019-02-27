@@ -31,7 +31,7 @@ class DataLoadingTest {
         System.setSecurityManager(NoExitSecurityManager())
         EntityTypeManager.cleanEntityTypeConfiguration()
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
-        Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
+        Configurator.setLevel(EXPOSED_LOG_NAME, Level.DEBUG)
         Config.Builder.initConfigBuilder()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
