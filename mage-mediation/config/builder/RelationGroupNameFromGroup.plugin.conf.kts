@@ -19,15 +19,15 @@ class RelationGroupNameFromGroup : AttributeBuilderPlugin<StringType>() {
                 ?: throw PluginException("Entity type<$groupEntityType> is not defined")
         }
         private val relationGroupCodeAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName(relationEntityType, "group_code"))
+            EntityAttributeManager.getAttributeOrNull(AttributeName(relationEntityType, "group_code"))
                 ?: throw PluginException("Attribute<$relationEntityType:group_code> is not defined")
         }
         private val groupCodeAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName(groupEntityType, "group_code"))
+            EntityAttributeManager.getAttributeOrNull(AttributeName(groupEntityType, "group_code"))
                 ?: throw PluginException("Attribute<$groupEntityType:group_code> is not defeined")
         }
         private val groupNameAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName(groupEntityType, "group_name"))
+            EntityAttributeManager.getAttributeOrNull(AttributeName(groupEntityType, "group_name"))
                 ?: throw PluginException("Attribute<$groupEntityType:group_name> is not defined")
         }
     }

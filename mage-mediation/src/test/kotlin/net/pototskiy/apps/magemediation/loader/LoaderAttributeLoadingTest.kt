@@ -45,13 +45,13 @@ class LoaderAttributeLoadingTest {
         util.initDataBase()
         @Suppress("UNCHECKED_CAST")
         skuAttr = EntityAttributeManager
-            .getAttribute(AttributeName(entityTypeName, "sku")) as Attribute<StringType>
+            .getAttributeOrNull(AttributeName(entityTypeName, "sku")) as Attribute<StringType>
         @Suppress("UNCHECKED_CAST")
         codeAttr = EntityAttributeManager
-            .getAttribute(AttributeName(entityTypeName, "group_code")) as Attribute<LongType>
+            .getAttributeOrNull(AttributeName(entityTypeName, "group_code")) as Attribute<LongType>
         @Suppress("UNCHECKED_CAST")
         nameAttr = EntityAttributeManager
-            .getAttribute(AttributeName(entityTypeName, "group_name")) as Attribute<StringType>
+            .getAttributeOrNull(AttributeName(entityTypeName, "group_name")) as Attribute<StringType>
         loads[xlsLoad] = config.loader.loads.find {
             it.entity.name == entityTypeName
                     && it.sources.first().file.file.name == "test.attributes.xls"
@@ -265,7 +265,7 @@ class LoaderAttributeLoadingTest {
     }
 
     private fun attr(attrName: String) =
-        EntityAttributeManager.getAttribute(AttributeName(eType.type, attrName))!!
+        EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, attrName))!!
 
     private fun loadEntities(loadID: String) {
         val load = loads[loadID]!!

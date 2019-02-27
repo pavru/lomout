@@ -13,7 +13,7 @@ interface EntityAttributeManagerInterface {
     fun removeAttribute(name: AttributeName)
     fun removeAttribute(attribute: Attribute<*>)
 
-    fun getAttribute(name: AttributeName): Attribute<*>?
+    fun getAttributeOrNull(name: AttributeName): Attribute<*>?
 
     abstract class Builder<T: Type>(
         protected val name: AttributeName,

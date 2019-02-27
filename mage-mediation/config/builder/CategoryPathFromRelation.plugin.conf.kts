@@ -1,7 +1,6 @@
 @file:DependsOn("org.jetbrains.exposed:exposed:0.12.1")
 
 import org.apache.commons.collections4.map.LRUMap
-import java.io.File.separator
 import java.lang.ref.WeakReference
 import java.util.Collections.synchronizedMap
 
@@ -32,8 +31,8 @@ class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
     companion object {
         private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
         private const val eTypeName = "mage-category"
-        private val nameAttr by lazy { EntityAttributeManager.getAttribute(AttributeName(eTypeName, "name"))!! }
-        private val idAttr by lazy { EntityAttributeManager.getAttribute(AttributeName(eTypeName, "entity_id"))!! }
-        private val parentAttr by lazy { EntityAttributeManager.getAttribute(AttributeName(eTypeName, "parent_id"))!! }
+        private val nameAttr by lazy { EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "name"))!! }
+        private val idAttr by lazy { EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "entity_id"))!! }
+        private val parentAttr by lazy { EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "parent_id"))!! }
     }
 }

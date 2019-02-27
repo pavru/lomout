@@ -48,7 +48,7 @@ data class InputEntity(
             block: Attribute.Builder<T>.() -> Unit = {}
         ) {
             val destAttr = Attribute.Builder<T>(extendedName(eType.type), name, T::class).apply(block).build()
-            val origData = EntityAttributeManager.getAttribute(AttributeName(eType.type, from))
+            val origData = EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, from))
                 ?: throw ConfigException("Attribute<${AttributeName(eType.type, from)} is not defined>")
             attrPairs[destAttr] = origData
         }

@@ -137,7 +137,7 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = EntityAttributeManager.getAttribute(AttributeName( eType.type, "sku"))!!
+                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName( eType.type, "sku"))!!
                     val entity = DbEntity.getEntityByKeys(eType,mapOf(skuAttr to StringValue("2")))!!
                     transaction { entity.removed = DateTime().minusDays(11) }
                     loadEntities(load, workbook)

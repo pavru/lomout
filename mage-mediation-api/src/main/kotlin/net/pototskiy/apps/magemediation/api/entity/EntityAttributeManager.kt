@@ -1,12 +1,13 @@
 package net.pototskiy.apps.magemediation.api.entity
 
 import net.pototskiy.apps.magemediation.api.config.ConfigException
+import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.reader.defaultReaders
 import net.pototskiy.apps.magemediation.api.entity.writer.defaultWriters
 import kotlin.reflect.KClass
 
 object EntityAttributeManager : EntityAttributeManagerInterface {
-    override fun getAttribute(name: AttributeName): Attribute<*>? {
+    override fun getAttributeOrNull(name: AttributeName): Attribute<*>? {
         val attr = attributeRegistry[name]
         if (attr != null) {
             return attr
@@ -122,6 +123,9 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
     }
 }
 
-fun EType.findAttribute(name: String): Attribute<*>? =
-    EntityAttributeManager.getAttribute(AttributeName(this.type, name))
+operator fun EType.get(attribute: String): Attribute<*> =
+    EntityAttributeManager.getAttributeOrNull(AttributeName(this.type, attribute))
+        ?: throw DatabaseException("Attribute<$attribute> is not defined in entity<${this.type}>")
 
+fun EType.getAttributeOrNull(name: String): Attribute<*>? =
+    EntityAttributeManager.getAttributeOrNull(AttributeName(this.type, name))

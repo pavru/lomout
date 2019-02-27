@@ -44,7 +44,7 @@ data class FieldSet(
 
         private fun addFiled(lastField: Field, lastAttribute: Attribute<*>?) {
             fields[lastField] = lastAttribute
-                ?: EntityAttributeManager.getAttribute(AttributeName(entityType.type, lastField.name))
+                ?: EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.type, lastField.name))
                         ?: EntityAttributeManager.createAttribute(
                     AttributeName(entityType.type, lastField.name),
                     StringType::class
@@ -72,7 +72,7 @@ data class FieldSet(
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
 
         infix fun Field.to(attribute: AttributeName) {
-            val attr = EntityAttributeManager.getAttribute(attribute)
+            val attr = EntityAttributeManager.getAttributeOrNull(attribute)
                 ?: throw ConfigException("Attribute<$attribute> is not defined")
             addFiled(this, attr)
         }
@@ -111,7 +111,7 @@ data class FieldSet(
                         attr
                     )
                 } else {
-                    val attr = EntityAttributeManager.getAttribute(AttributeName(entityType.type, field.name))
+                    val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.type, field.name))
                         ?: EntityAttributeManager.createAttribute(
                             AttributeName(entityType.type, field.name), StringType::class
                         ) {

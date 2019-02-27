@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity
 
 import net.pototskiy.apps.magemediation.api.config.ConfigException
+import net.pototskiy.apps.magemediation.api.database.DatabaseException
 
 object EntityTypeManager : EntityTypeManagerInterface {
     private val entityTypeRegistry = mutableMapOf<String, EType>()
@@ -51,4 +52,7 @@ object EntityTypeManager : EntityTypeManagerInterface {
     }
 }
 
-operator fun EType.Companion.get(type: String): EType? = EntityTypeManager.getEntityType(type)
+operator fun EType.Companion.get(type: String): EType = EntityTypeManager.getEntityType(type)
+    ?: throw DatabaseException("Entity<$type> is not defined")
+
+fun EType.Companion.getETypeOrNull(type: String) = EntityTypeManager.getEntityType(type)

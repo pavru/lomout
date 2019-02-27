@@ -14,11 +14,11 @@ class PipelineData(
     val extData by lazy { inputEntity.extendedAttributes(entity) }
 
     operator fun get(attribute: String): Type? {
-        val attr = EntityAttributeManager.getAttribute(AttributeName(entity.eType.type, attribute))
+        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entity.eType.type, attribute))
         if (attr != null) {
             return data[attr]
         } else if (inputEntity.entityExtension != null) {
-            val extAttr = EntityAttributeManager.getAttribute(
+            val extAttr = EntityAttributeManager.getAttributeOrNull(
                 AttributeName(inputEntity.entityExtension.type, attribute)
             ) ?: return null
             return extData[extAttr]
@@ -27,11 +27,11 @@ class PipelineData(
     }
 
     fun findAttribute(name: String): Attribute<*>? {
-        val attr = EntityAttributeManager.getAttribute(AttributeName(entity.eType.type, name))
+        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entity.eType.type, name))
         if (attr != null) {
             return attr
         } else if (inputEntity.entityExtension != null) {
-            return EntityAttributeManager.getAttribute(
+            return EntityAttributeManager.getAttributeOrNull(
                 AttributeName(inputEntity.entityExtension.type, name)
             ) ?: return null
         }

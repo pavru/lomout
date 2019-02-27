@@ -1,6 +1,5 @@
 @file:DependsOn("org.jetbrains.exposed:exposed:0.12.1")
 
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.*
 import net.pototskiy.apps.magemediation.api.plugable.*
@@ -41,16 +40,16 @@ public class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
         private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
         private const val eTypeName = "onec-group-relation"
         private val codeAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName(eTypeName, "group_code"))!!
+            EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "group_code"))!!
         }
         private val groupCodeAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName("onec-group", "group_code"))!!
+            EntityAttributeManager.getAttributeOrNull(AttributeName("onec-group", "group_code"))!!
         }
         private val nameAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName(eTypeName, "group_name"))!!
+            EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "group_name"))!!
         }
         private val parentAttr by lazy {
-            EntityAttributeManager.getAttribute(AttributeName(eTypeName,"group_parent_code"))!!
+            EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName,"group_parent_code"))!!
         }
     }
 }

@@ -26,7 +26,7 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
 
     var data: MutableMap<AnyTypeAttribute, Type?> = mutableMapOf()
 
-    operator fun get(attribute: String): Type? = data[eType.findAttribute(attribute)]
+    operator fun get(attribute: String): Type? = data[eType.getAttributeOrNull(attribute)]
 
     fun wasCreated() = transaction {
         touchedInLoading = true

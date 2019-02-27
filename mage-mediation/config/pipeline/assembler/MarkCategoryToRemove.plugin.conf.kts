@@ -4,7 +4,7 @@ class MarkCategoryToRemove : PipelineAssemblerPlugin() {
             ?: throw PluginException("Can not find entity<mage-category>")
         val idAttr = category.findAttribute("entity_id")
             ?: throw PluginException("Can not find attribute<entity_id>")
-        val removeAttr = target.findAttribute("remove_flag")
+        val removeAttr = target.getAttributeOrNull("remove_flag")
             ?: throw PluginException("Can not find attribute<remove_flag>")
         return mapOf(
             idAttr to category["entity_id"],

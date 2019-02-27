@@ -16,7 +16,7 @@ class ETypeInheritance (
         fun include(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.includes.add(EntityAttributeManager.getAttribute(AttributeName(parent.type,it))!!)
+                this.includes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type,it))!!)
             }
         }
 
@@ -24,7 +24,7 @@ class ETypeInheritance (
         fun exclude(vararg name: String) {
             checkThatParentHasAttributes(parent,name.toList())
             name.toList().forEach {
-                this.excludes.add(EntityAttributeManager.getAttribute(AttributeName(parent.type,it))!!)
+                this.excludes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type,it))!!)
             }
         }
 

@@ -1,6 +1,4 @@
-import net.pototskiy.apps.magemediation.api.plugable.*
-import net.pototskiy.apps.magemediation.api.entity.*
-import net.pototskiy.apps.magemediation.api.config.mediator.*
+import kotlin.collections.set
 
 class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
     override fun assemble(
@@ -8,11 +6,19 @@ class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
         entities: PipelineDataCollection
     ): Map<AnyTypeAttribute, Type?> {
         val data = mutableMapOf<AnyTypeAttribute, Type?>()
-        entities.find { it.entity.eType.type == "mage-category" }
-            ?.extData?.forEach { (key, value) -> data[key] = value }
-        entities.find { it.entity.eType.type == "onec-group" }
-            ?.extData?.forEach { (key, value) ->
-            if (data.containsKey(key)) data[key] = value
+        try {
+            val mageCategory = entities["mage-category"]
+            val onecGroup = entities["onec-group"]
+            target.attributes.forEach { targetAttr ->
+                if (mageCategory[targetAttr.name.attributeName] != null) {
+                    data[targetAttr] = mageCategory[targetAttr.name.attributeName]
+                } else if (onecGroup[targetAttr.name.attributeName] != null) {
+                    data[targetAttr] = onecGroup[targetAttr.name.attributeName]
+                }
+            }
+            data[target.getAttribute("remove_flag")] = BooleanValue(false)
+        } catch (e: Exception) {
+            throw PluginException(e.message, e)
         }
         return data
     }

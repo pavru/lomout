@@ -35,9 +35,13 @@ abstract class EType(
         }
         refinedAttributes.add(attribute)
     }
-    fun findAttribute(name: String): Attribute<*>? {
-        return EntityAttributeManager.getAttribute(AttributeName(type, name))
-    }
+
+    fun getAttributeOrNull(name: String): Attribute<*>? =
+        EntityAttributeManager.getAttributeOrNull(AttributeName(type, name))
+
+    fun getAttribute(name: String): Attribute<*> =
+        EntityAttributeManager.getAttributeOrNull(AttributeName(type, name))
+            ?: throw DatabaseException("Attribute<$name> is not defined in entity<$type>")
 
     fun checkAttributeDefined(attribute: Attribute<*>) {
         if (!isAttributeDefined(attribute)) {
