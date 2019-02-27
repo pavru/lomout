@@ -139,7 +139,7 @@ dependencies {
     implementation(fileTree("lib") {
         include("*.jar")
     })
-    implementation(project(":mage-mediation-api", "spi"))
+    implementation(project(":mage-mediation-api"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)
