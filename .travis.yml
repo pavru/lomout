@@ -4,5 +4,7 @@ jdk:
 addons:
   mariadb: 10.3
 before_install:
-  - mysql -e "CREATE DATABASE magemediation"
-  - mysql -e "CREATE DATABASE test_magemediation"
+  - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+  - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+  - sudo mysql_upgrade -u root -proot
+  - sudo service mysql restart
