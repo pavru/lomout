@@ -19,5 +19,5 @@ addons:
     organization: "pavru-github"
     token:
       secure: a6bd7cae688529f47f0ff298cd6f9825836413db
-script:
+after_success:
   - sonar-scanner
