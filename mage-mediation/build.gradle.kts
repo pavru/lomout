@@ -77,8 +77,11 @@ val testDataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    environment("TEST_DATA_DIR", "$projectDir/.testdata")
-    environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    val checkEnv =System.getenv("TEST_DAT_DIR")
+    if (checkEnv == null || checkEnv.isBlank()) {
+        environment("TEST_DATA_DIR", "$projectDir/.testdata")
+        environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    }
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
