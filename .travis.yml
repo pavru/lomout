@@ -13,3 +13,11 @@ cache:
   directories:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
+
+addons:
+  sonarcloud:
+    organization: "pavru-github"
+    token:
+      secure: a6bd7cae688529f47f0ff298cd6f9825836413db
+script:
+  - sonar-scanner
