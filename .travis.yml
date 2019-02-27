@@ -1,11 +1,15 @@
 language: java
 jdk:
   - oraclejdk8
+addons:
+  mariadb: 10.3
 before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
   - sudo service mysql restart
+  - sudo netstat -npa | grep mysql
+  - sudo netstat -npa | grep maria
 env:
   - SONAR_TOKEN=a6bd7cae688529f47f0ff298cd6f9825836413db
 before_cache:
