@@ -7,5 +7,5 @@ before_install:
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
   - sudo service mysql restart
 env:
-  TEST_DATA_DIR=mage-mediation/.testdata
-  PRODUCTION_CONFIG=mage-mediation/config/config.conf.kts
+  - TEST_DATA_DIR=mage-mediation/.testdata
+  - PRODUCTION_CONFIG=mage-mediation/config/config.conf.kts
