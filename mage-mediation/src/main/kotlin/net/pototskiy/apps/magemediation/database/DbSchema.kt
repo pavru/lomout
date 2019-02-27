@@ -12,17 +12,9 @@ object DbSchema {
         transaction {
             SchemaUtils.run {
                 statusLog.info("schema: start")
-                create(DbEntityTable)
+//                create(DbEntityTable)
                 statusLog.info("schema: 1 finished")
-                create(
-                    EntityVarchars,
-                    EntityLongs,
-                    EntityBooleans,
-                    EntityDoubles,
-                    EntityDateTimes,
-                    EntityTexts
-                )
-                statusLog.info("schema: 2 finished")
+/                statusLog.info("schema: 2 finished")
                 create(PipelineSets)
                 statusLog.info("schema: 3 finished")
             }
