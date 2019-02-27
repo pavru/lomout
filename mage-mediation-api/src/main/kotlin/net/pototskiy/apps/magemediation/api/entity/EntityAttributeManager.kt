@@ -126,6 +126,3 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
 operator fun EType.get(attribute: String): Attribute<*> =
     EntityAttributeManager.getAttributeOrNull(AttributeName(this.type, attribute))
         ?: throw DatabaseException("Attribute<$attribute> is not defined in entity<${this.type}>")
-
-fun EType.getAttributeOrNull(name: String): Attribute<*>? =
-    EntityAttributeManager.getAttributeOrNull(AttributeName(this.type, name))
