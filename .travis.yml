@@ -5,7 +5,7 @@ before_install:
   - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
   - mysql -e "CREATE DATABASE IF NOT EXISTS test_magemediation CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
 env:
-  - SONAR_TOKEN=61d5bcd2ef44675e54febed327273671861e4c5e
+  - SONAR_TOKEN=5c3469fb9d814033e8aaa5a0983d59e5c51f94bb
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -18,6 +18,6 @@ addons:
   sonarcloud:
     organization: "pavru-github"
     token:
-      secure: 61d5bcd2ef44675e54febed327273671861e4c5e
+      secure: 5c3469fb9d814033e8aaa5a0983d59e5c51f94bb
 after_success:
   - ./gradlew sonarqube
