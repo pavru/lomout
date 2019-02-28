@@ -82,8 +82,8 @@ tasks.named<Test>("test") {
     environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
     useJUnitPlatform()
     testLogging {
-        events("passed", "skipped", "failed", "standardError")
-//        events("passed", "skipped", "failed", "standardOut", "standardError")
+//        events("passed", "skipped", "failed")
+        events("passed", "skipped", "failed", "standardOut", "standardError")
     }
 }
 
