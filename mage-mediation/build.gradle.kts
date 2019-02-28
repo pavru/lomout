@@ -134,7 +134,7 @@ dependencies {
         include("*.jar")
     })
     implementation(project(":mage-mediation-api"))
-//    runtimeOnly(project(":mage-mediation-api", "spi"))
+    runtimeOnly(project(":mage-mediation-api", "spi"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)
@@ -164,6 +164,7 @@ dependencies {
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
+    testRuntimeOnly(project(":mage-mediation-api", "spi"))
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
 }
