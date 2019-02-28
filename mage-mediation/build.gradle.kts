@@ -134,7 +134,7 @@ dependencies {
         include("*.jar")
     })
     implementation(project(":mage-mediation-api"))
-    runtimeOnly(project(":mage-mediation-api", "spi"))
+//    runtimeOnly(project(":mage-mediation-api", "spi"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)
