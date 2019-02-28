@@ -63,6 +63,7 @@ class ConfigKtsConfigurator : RefineScriptCompilationConfigurationHandler {
         }
 
         return ScriptCompilationConfiguration(context.compilationConfiguration) {
+            println("resolved classpath: $resolvedClassPath")
             if (resolvedClassPath != null) updateClasspath(resolvedClassPath)
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
