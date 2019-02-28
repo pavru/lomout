@@ -74,6 +74,8 @@ repositories {
 dependencies {
     api(kotlin("stdlib-jdk8"))
     api(kotlin("reflect"))
+
+    implementation("org.apache.ivy:ivy:2.4.0")
     // Database
     implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")

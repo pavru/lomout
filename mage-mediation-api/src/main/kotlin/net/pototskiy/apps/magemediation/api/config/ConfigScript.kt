@@ -74,7 +74,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
                 }
             }.asSuccess()
         }
-        onAnnotations(DependsOn::class, Import::class, handler = ConfigKtsConfigurator())
+        onAnnotations(DependsOn::class, Import::class, handler = KtsConfigurator())
     }
 })
 
