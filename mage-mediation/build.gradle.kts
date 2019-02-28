@@ -88,7 +88,7 @@ tasks.named<Test>("test") {
     }
     useJUnitPlatform()
     testLogging {
-        events("passed", "skipped", "failed")
+        events("passed", "skipped", "failed","standardError")
 //        events("passed", "skipped", "failed", "standardOut", "standardError")
     }
 }
