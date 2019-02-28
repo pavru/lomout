@@ -6,3 +6,7 @@ plugins{
 repositories {
     jcenter()
 }
+
+tasks.jar {
+
+}

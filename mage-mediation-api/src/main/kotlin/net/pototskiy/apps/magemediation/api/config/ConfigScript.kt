@@ -12,6 +12,7 @@ import java.util.*
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.FileScriptSource
+import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
@@ -51,12 +52,19 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
         updateClasspath(checkAndGetExternalDeps())
-        // TODO: 28.02.2019 find the universal way to configure class path for script
-        updateClasspath(
-            listOf(
-                File("E:/home/alexander/Development/Web/oooast-tools/mage-mediation-api/build/classes/kotlin/main")
+        val containsApiModule = this[ScriptCompilationConfiguration.dependencies]?.any {
+            it is JvmDependency &&
+                    it.classpath.any { classpath ->
+                        classpath.absolutePath.toLowerCase().contains("mage-mediation-api")
+                    }
+        } ?: false
+        if (!containsApiModule) {
+            updateClasspath(
+                listOf(
+                    File("E:/home/alexander/Development/Web/oooast-tools/mage-mediation-api/build/classes/kotlin/main")
+                )
             )
-        )
+        }
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
