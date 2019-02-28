@@ -14,7 +14,7 @@ sonarqube {
 //        property("sonar.host.url", "https://sonarcloud.io")
 //        property("sonar.login", "e06a94fe1c8c6c7f15ab33907bd5906e76050ef3")
 //        property("sonar.organizationKey", "pavru-github")
-        property("sonar.projectKey", "pavru_oooast-tools")
+        property("sonar.projectKey", "my:pavru_oooast-tools")
         property("sonar.projectName", "oooast-tools")
         property("sonar.projectVersion", "1.0-SNAPSHOT")
     }
