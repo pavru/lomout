@@ -63,14 +63,15 @@ class ConfigKtsConfigurator : RefineScriptCompilationConfigurationHandler {
         }
 
         return ScriptCompilationConfiguration(context.compilationConfiguration) {
-            println("resolved classpath: $resolvedClassPath")
+            println("resolved classpath: (${resolvedClassPath?.size ?: 0}) $resolvedClassPath")
             if (resolvedClassPath != null) updateClasspath(resolvedClassPath)
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
                 val v = importedSources
                     .map { it.file.name }
-                    .map {it.replace(".plugin.conf", "_plugin_conf")
-                            .replace(".kts",".*")
+                    .map {
+                        it.replace(".plugin.conf", "_plugin_conf")
+                            .replace(".kts", ".*")
                     }
                 defaultImports.append(v)
             }
