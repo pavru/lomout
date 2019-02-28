@@ -11,11 +11,12 @@ version = "1.0-SNAPSHOT"
 
 sonarqube {
     properties {
-        property("sonar.host.url", "https://sonar.local")
-        property("sonar.login", "alex")
-        property("sonar.password", "xxsystem")
-        property("sonar.projectKey", "oooast-tools")
-        property("sonar.projectVersion", "1.0")
+//        property("sonar.host.url", "https://sonarcloud.io")
+//        property("sonar.login", "e06a94fe1c8c6c7f15ab33907bd5906e76050ef3")
+//        property("sonar.organizationKey", "pavru-github")
+        property("sonar.projectKey", "pavru_oooast-tools")
+        property("sonar.projectName", "oooast-tools")
+        property("sonar.projectVersion", "1.0-SNAPSHOT")
     }
 }
 
