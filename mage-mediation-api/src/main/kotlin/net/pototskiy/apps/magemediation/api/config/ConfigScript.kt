@@ -4,6 +4,7 @@ package net.pototskiy.apps.magemediation.api.config
 
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
+import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
@@ -74,7 +75,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
                 }
             }.asSuccess()
         }
-        onAnnotations(DependsOn::class, Import::class, handler = KtsConfigurator())
+        onAnnotations(DependsOn::class, Repository::class, Import::class, handler = KtsConfigurator())
     }
 })
 
