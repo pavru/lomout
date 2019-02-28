@@ -85,9 +85,6 @@ tasks.named<Test>("test") {
 //        events("passed", "skipped", "failed")
         events("passed", "skipped", "failed", "standardOut", "standardError")
     }
-    filter {
-        includeTestsMatching("*DataLoadingInProductionWayTest*")
-    }
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
