@@ -3,13 +3,14 @@ package net.pototskiy.apps.magemediation.api.database
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.VarCharColumnType
 
 enum class EntityStatus {
     CREATED, UPDATED, REMOVED, UNCHANGED
 }
 
 class EntityStatusColumnType : ColumnType() {
-    override fun sqlType(): String = "VARCHAR(10)"
+    override fun sqlType(): String = VarCharColumnType(10).sqlType()
 
     override fun valueFromDB(value: Any): Any {
         return when (value) {

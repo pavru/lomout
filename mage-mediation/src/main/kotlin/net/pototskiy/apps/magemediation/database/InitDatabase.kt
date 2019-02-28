@@ -12,15 +12,21 @@ import java.util.*
 
 fun initDatabase(config: DatabaseConfig, logLevel: Level = Level.ERROR) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
-    statusLog.info("Database has stated to check and init")
     Configurator.setLevel(EXPOSED_LOG_NAME, logLevel)
+    statusLog.info("Database has stated to check and init")
     val datasource = MysqlDataSource()
     datasource.setURL("jdbc:mysql://${config.server.host}:${config.server.port}/${config.name}")
     datasource.user = config.server.user
     datasource.password = config.server.password
     datasource.serverTimezone = TimeZone.getDefault().id
 
-    Database.connect(datasource)
-    DbSchema.createSchema()
+    try {
+        val db = Database.connect(datasource)
+        statusLog.info("DB dialect: ${db.dialect.name}")
+        DbSchema.createSchema()
+    } catch (e: Exception) {
+        statusLog.error("Can not init DB", e)
+        System.exit(1)
+    }
     statusLog.info("Database has finished to check and init")
 }

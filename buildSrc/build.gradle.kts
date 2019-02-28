@@ -1,8 +1,11 @@
 plugins{
     `kotlin-dsl`
-    `java-gradle-plugin`
 }
 
 repositories {
     jcenter()
+}
+
+kotlinDslPluginOptions {
+    experimentalWarning.set(false)
 }

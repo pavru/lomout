@@ -7,9 +7,8 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DbSchema {
     fun createSchema() {
         transaction {
-            SchemaUtils.run {
-                create(DbEntityTable)
-                create(
+                SchemaUtils.create(DbEntityTable)
+                SchemaUtils.create(
                     EntityVarchars,
                     EntityLongs,
                     EntityBooleans,
@@ -17,8 +16,7 @@ object DbSchema {
                     EntityDateTimes,
                     EntityTexts
                 )
-                create(PipelineSets)
-            }
+                SchemaUtils.create(PipelineSets)
         }
     }
 }

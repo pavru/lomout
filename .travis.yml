@@ -1,0 +1,25 @@
+dist: xenial
+services: mysql
+language: java
+before_install:
+- mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE
+  = 'utf8_general_ci';"
+- mysql -e "CREATE DATABASE IF NOT EXISTS test_magemediation CHARACTER SET = 'utf8'
+  COLLATE = 'utf8_general_ci';"
+env:
+  global:
+    secure: XtI2db/TNFZJT9g9Q1T1D0qbT942hdbhMC3kB0Ib3YEJOTfEFBReqyweWrQXEOXn48Uw5j6c+xeAPW1Fyfy9AljeFbAuQG+z6fcfSKkFiUDJg8IEZAh08Dw0NPsvjwOHfBsN/8oxbtQxFr0iLFPqVyZly0HMN4FAzDoxeyoyWyFOSbb2pNZOvScS63nMZlogw5d/cHZRzfnztgJmhkhihMXmcW14FVaJL4Kgm4UvfuhFNo2n0BCsdhUgbm++llrAtHCc9/zng8G3Y814M4itQqN3PwmRl5cWG8Hg+LGSpBivKGZcbirdtbkynR0WNS/6OlfSnSuMkDku7yG9R+VZYvvEYxtfWWJZVCw5UPI+SxoYtFhVdX26r2XnUDjI2YoBQYYts0gnhBJ3HgxA2TOEjVDXNOJLocD6paEFTGQJ1e6A10ylM8a2KXP6b4nCnoo7lX2dvlIDxxY35PxVxB8R7XP/yQ8Qb1Fq9OO+xHzyMfcGMDF1y+VKmD0hD9frH2DqXSm+vNx93/EJ+tnmokGHgykxSpxLgm51GPsltUp+WGqqWzIt9z/Ca5vmW/c9OFIKCTz2Cje+UrCbFKCdY0Tu9mK5vbYYCi6Ynb+tCld44NxvtrNc3BgK2BrQ34FZcNlbvCRyMjxEdJeJgHFFc69xWbIPXIvh2Y15IMgCWyFwSEU=
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+addons:
+  sonarcloud:
+    organization: pavru-github
+    token:
+      secure: "CNlVAYt/tTGCqPWHw5RPNlySQUnJXbPp05vlZpdqx2EozpAHEBAczLjN+O3ghJrav1M/AsaAfE7/pp9BAYBmFiNKuJB5BnCVUBuncHOu1Alf7PAr5uyNiZHU2PlfleyMJHWzJCALQKL73qkBLrKG4TPjXYLw4HnX/rBoXJxIz4WuoLxw1Ty+oAMPLfpKcEndQYaK+kO9AsCQHIM3huuce4tePd20RRa5bSPFQ/Htx2kqzJ6PANA7OgKBInwgNtqprgqUKpJqCW93kJYOHlDLmBJ8Ms2cjwQPLbdOdfK/E+AchxlN1r4UX6zBAGJQBG1a1PUooH1RyRHrwAwy22mck5HQSWOCJO2JdL7obmr3TqZUrLdBMcX+wl6U+X8rxMavE22I2PUjFuPFzeP0MpeiaKxNwNAX4Bhwjs5RBhqjn8kGOuu2kov5IClPebFrVd1ByUz7UfeUzfjTUzoiUFoNaYaN3nqmt6TE65MaUY31KKS0j/ZF+IoOdWKSaXhor7VPmuquMa807OngrwpEtCpINiBcyWRYBXTnNhZr8Qol77zHUw5XMoTSvfcdX6VnF4pzuG9mq0RlYqzk0+3ZhUEFrZhXMHG+3hF6l+Iy+b35bhvh8E3p7ebP4TJNShUAM+Fzr0c2DlPFIVqx/R4nlLCYpL/tHchn6leG1TvoVdolR24="
+after_success:
+  - sonar-scanner

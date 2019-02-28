@@ -4,7 +4,6 @@ package net.pototskiy.apps.magemediation.api.config
 
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
-import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintStream
@@ -23,13 +22,13 @@ import kotlin.streams.toList
 @KotlinScript(
     displayName = "Magento mediation config script",
     fileExtension = ".*\\.conf\\.kts",
-    compilationConfiguration = ConfigScriptCompilationConfiguration::class
+    compilationConfiguration = ConfigScriptCompilationConfigurationIDE::class
 )
-abstract class ConfigScript(val args: Array<String>) {
+abstract class ConfigScriptIDE(val args: Array<String>) {
     var evaluatedConfig: Config? = null
 }
 
-object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
+object ConfigScriptCompilationConfigurationIDE : ScriptCompilationConfiguration({
     displayName("Magento mediation config script")
     fileExtension("conf.kts")
     baseClass(ConfigScript::class)
@@ -52,6 +51,11 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
         updateClasspath(checkAndGetExternalDeps())
+        updateClasspath(
+            listOf(
+                File("E:/home/alexander/Development/Web/oooast-tools/mage-mediation-api/build/classes/kotlin/main")
+            )
+        )
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
@@ -75,7 +79,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
                 }
             }.asSuccess()
         }
-        onAnnotations(DependsOn::class, Repository::class, Import::class, handler = KtsConfigurator())
+        onAnnotations(DependsOn::class, Import::class, handler = ConfigKtsConfigurator())
     }
 })
 

@@ -1,4 +1,5 @@
-@file:DependsOn("org.jetbrains.exposed:exposed:0.12.1")
+//@file:Repository("","jcenter","https://jcenter.bintray.com/")
+//@file:DependsOn("org.jetbrains.exposed:exposed:0.12.2")
 
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.*

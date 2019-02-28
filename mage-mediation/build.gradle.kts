@@ -77,11 +77,13 @@ val testDataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    environment("TEST_DATA_DIR", "$rootProject/.testdata")
+    val travisBuildBir = System.getenv("TEST_DAT_DIR")
+    environment("TEST_DATA_DIR", "$projectDir/testdata")
     environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
+//        events("passed", "skipped", "failed", "standardOut", "standardError")
     }
 }
 
@@ -131,7 +133,8 @@ dependencies {
     implementation(fileTree("lib") {
         include("*.jar")
     })
-    implementation(project(":mage-mediation-api", "spi"))
+    implementation(project(":mage-mediation-api"))
+//    runtimeOnly(project(":mage-mediation-api", "spi"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)

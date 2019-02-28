@@ -42,7 +42,7 @@ tasks.register<Jar>("dokkaJar") {
     from(file("$buildDir/javadoc"))
 }
 
-tasks.register<Jar>("spiJar") {
+tasks.jar {
     group = "build"
     archiveBaseName.set("mage-mediation-api")
     dependsOn(configurations.runtimeClasspath)
@@ -52,7 +52,7 @@ tasks.register<Jar>("spiJar") {
 }
 
 artifacts {
-    add("spi", tasks["spiJar"])
+    add("spi", tasks["jar"])
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
@@ -74,6 +74,8 @@ repositories {
 dependencies {
     api(kotlin("stdlib-jdk8"))
     api(kotlin("reflect"))
+
+    implementation("org.apache.ivy:ivy:2.4.0")
     // Database
     implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")

@@ -26,7 +26,12 @@ class ConfigHost(private val configFile: File) {
             scriptHost.compiler(configFile.toScriptSource(), compilationConfiguration)
         }.onFailure { result ->
             result.reports.forEach {
-                logMessage(it.severity, it.message, File(it.sourcePath).name, it.location?.start?.line ?: 0)
+                logMessage(
+                    it.severity,
+                    it.message,
+                    it.sourcePath?.let { path -> File(path).name } ?: configFile.name,
+                    it.location?.start?.line ?: 0
+                )
                 logger.trace("Exception:", it.exception)
                 logger.trace("Caused:", it.exception?.cause)
             }

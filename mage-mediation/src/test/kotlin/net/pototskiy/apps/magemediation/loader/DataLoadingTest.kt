@@ -27,8 +27,6 @@ class DataLoadingTest {
         System.setSecurityManager(NoExitSecurityManager())
         EntityTypeManager.cleanEntityTypeConfiguration()
         Config.Builder.initConfigBuilder()
-        // TODO: 23.02.2019 remove after test
-        //EntityClass.initEntityCLassRegistrar()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         util.initDataBase()
@@ -137,8 +135,8 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName( eType.type, "sku"))!!
-                    val entity = DbEntity.getEntityByKeys(eType,mapOf(skuAttr to StringValue("2")))!!
+                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, "sku"))!!
+                    val entity = DbEntity.getEntityByKeys(eType, mapOf(skuAttr to StringValue("2")))!!
                     transaction { entity.removed = DateTime().minusDays(11) }
                     loadEntities(load, workbook)
                 }
