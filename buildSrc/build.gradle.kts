@@ -8,5 +8,5 @@ repositories {
 }
 
 tasks.jar {
-
+    enabled = false
 }

@@ -22,13 +22,13 @@ import kotlin.streams.toList
 @KotlinScript(
     displayName = "Magento mediation config script",
     fileExtension = ".*\\.conf\\.kts",
-    compilationConfiguration = ConfigScriptCompilationConfiguration::class
+    compilationConfiguration = ConfigScriptCompilationConfigurationIDE::class
 )
-abstract class ConfigScript(val args: Array<String>) {
+abstract class ConfigScriptIDE(val args: Array<String>) {
     var evaluatedConfig: Config? = null
 }
 
-object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
+object ConfigScriptCompilationConfigurationIDE : ScriptCompilationConfiguration({
     displayName("Magento mediation config script")
     fileExtension("conf.kts")
     baseClass(ConfigScript::class)
@@ -51,6 +51,11 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
         updateClasspath(checkAndGetExternalDeps())
+        updateClasspath(
+            listOf(
+                File("E:/home/alexander/Development/Web/oooast-tools/mage-mediation-api/build/classes/kotlin/main")
+            )
+        )
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
