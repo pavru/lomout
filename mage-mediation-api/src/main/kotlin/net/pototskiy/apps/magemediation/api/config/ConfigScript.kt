@@ -56,7 +56,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
             it is JvmDependency &&
                     it.classpath.any { classpath ->
                         classpath.absolutePath.toLowerCase().contains("mage-mediation-api")
-                                || classpath.absolutePath.toLowerCase().contains(Regex("mage-mediation.*\\.jar"))
+                                || classpath.absolutePath.toLowerCase().contains(Regex("mage-mediation-api.*\\.jar"))
                     }
         } ?: false
         if (!containsApiModule) {
