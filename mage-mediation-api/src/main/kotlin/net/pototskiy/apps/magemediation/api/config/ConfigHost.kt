@@ -29,7 +29,7 @@ class ConfigHost(private val configFile: File) {
                 logMessage(
                     it.severity,
                     it.message,
-                    it.sourcePath?.let { path -> File(path).name } ?: "${configFile.name}(maybe)",
+                    it.sourcePath?.let { path -> File(path).name } ?: configFile.name,
                     it.location?.start?.line ?: 0
                 )
                 logger.trace("Exception:", it.exception)
