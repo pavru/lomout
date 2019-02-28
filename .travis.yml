@@ -1,7 +1,6 @@
 dist: xenial
 services: mysql
 language: java
-jdk: oraclejdk9
 before_install:
 - mysql -e "CREATE DATABASE IF NOT EXISTS magemediation CHARACTER SET = 'utf8' COLLATE
   = 'utf8_general_ci';"
