@@ -94,6 +94,12 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all 
     }
 }
 
+tasks.withType(JacocoReport::class.java).all {
+    reports {
+        xml.isEnabled = true
+    }
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
