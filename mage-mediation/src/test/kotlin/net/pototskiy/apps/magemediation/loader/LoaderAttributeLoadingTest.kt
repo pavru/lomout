@@ -6,7 +6,23 @@ import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
 import net.pototskiy.apps.magemediation.api.config.loader.Load
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
-import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.entity.Attribute
+import net.pototskiy.apps.magemediation.api.entity.AttributeName
+import net.pototskiy.apps.magemediation.api.entity.BooleanType
+import net.pototskiy.apps.magemediation.api.entity.BooleanValue
+import net.pototskiy.apps.magemediation.api.entity.DateTimeType
+import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
+import net.pototskiy.apps.magemediation.api.entity.DateType
+import net.pototskiy.apps.magemediation.api.entity.DateValue
+import net.pototskiy.apps.magemediation.api.entity.DoubleType
+import net.pototskiy.apps.magemediation.api.entity.DoubleValue
+import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.LongType
+import net.pototskiy.apps.magemediation.api.entity.LongValue
+import net.pototskiy.apps.magemediation.api.entity.StringType
+import net.pototskiy.apps.magemediation.api.entity.StringValue
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
@@ -21,6 +37,9 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import kotlin.collections.set
+import kotlin.contracts.ExperimentalContracts
+
 
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

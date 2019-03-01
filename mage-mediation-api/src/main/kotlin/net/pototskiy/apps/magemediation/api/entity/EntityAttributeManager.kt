@@ -16,14 +16,13 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
                 ?: return null
             return findInheritedAttribute(eType, name)
         }
-
     }
 
     private fun findInheritedAttribute(eType: EType, name: AttributeName): Attribute<*>? {
         eType.inheritances.forEach { inheritance ->
             val attr = AttributeName(inheritance.parent.type, name.attributeName)
-            if (inheritance.include?.let { list -> attr in list.map { it.name } } != false
-                && inheritance.exclude?.let { list -> attr !in list.map { it.name } } != false) {
+            if (inheritance.include?.let { list -> attr in list.map { it.name } } != false &&
+                inheritance.exclude?.let { list -> attr !in list.map { it.name } } != false) {
                 attributeRegistry[attr]?.let {
                     return it
                 }

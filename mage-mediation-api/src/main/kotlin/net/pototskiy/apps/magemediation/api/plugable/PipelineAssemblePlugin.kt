@@ -10,4 +10,3 @@ abstract class PipelineAssemblerPlugin : Plugin() {
 }
 
 typealias PipelineAssemblerFunction = (target: EType, entities: PipelineDataCollection) -> Map<AnyTypeAttribute, Type?>
-

@@ -31,6 +31,5 @@ data class DatabaseConfig(
             val actualServer = server ?: DatabaseServerConfig.Builder().build()
             return DatabaseConfig(actualServer, name)
         }
-
     }
 }

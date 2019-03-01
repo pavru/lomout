@@ -5,5 +5,5 @@ data class AttributeName(
     val attributeName: String
 ) {
     val fullName: String by lazy { "$entityType:$attributeName" }
-    override fun toString(): String  = fullName
+    override fun toString(): String = fullName
 }

@@ -42,4 +42,3 @@ open class LongListAttributeReader : AttributeReaderPlugin<LongListType>() {
                 "attribute<${attribute.name}:${attribute.valueType.simpleName}>")
     }
 }
-

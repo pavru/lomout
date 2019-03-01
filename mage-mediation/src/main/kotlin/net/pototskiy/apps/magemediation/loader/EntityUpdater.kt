@@ -6,7 +6,6 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.EType
 import net.pototskiy.apps.magemediation.api.entity.Type
 
-
 class EntityUpdater(private val eType: EType) {
 
     fun update(data: Map<AnyTypeAttribute, Type?>) {
@@ -42,5 +41,4 @@ class EntityUpdater(private val eType: EType) {
             }
         }
     }
-
 }

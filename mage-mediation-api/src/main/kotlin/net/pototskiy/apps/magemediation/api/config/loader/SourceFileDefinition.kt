@@ -8,7 +8,7 @@ data class SourceFileDefinition(
     val id: String,
     val file: File,
     val locale: Locale
-): NamedObject {
+) : NamedObject {
     override val name: String
         get() = id
 }

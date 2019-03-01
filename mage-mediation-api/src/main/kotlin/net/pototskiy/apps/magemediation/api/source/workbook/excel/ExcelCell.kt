@@ -40,35 +40,35 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
         get() = ExcelRow(cell.row)
 
     override fun setCellValue(value: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Double) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun asString(): String {
         val format = NumberFormat.getInstance().apply {
             isGroupingUsed = false
         }
-        return when(cell.cellType){
+        return when (cell.cellType) {
             org.apache.poi.ss.usermodel.CellType.NUMERIC -> format.format(cell.numericCellValue)
             org.apache.poi.ss.usermodel.CellType.STRING -> cell.stringCellValue
             org.apache.poi.ss.usermodel.CellType.BLANK -> ""
             org.apache.poi.ss.usermodel.CellType.BOOLEAN -> cell.booleanCellValue.toString()
-            org.apache.poi.ss.usermodel.CellType.FORMULA -> when(cell.cachedFormulaResultType){
+            org.apache.poi.ss.usermodel.CellType.FORMULA -> when (cell.cachedFormulaResultType) {
                 org.apache.poi.ss.usermodel.CellType.NUMERIC -> format.format(cell.numericCellValue)
                 org.apache.poi.ss.usermodel.CellType.STRING -> cell.stringCellValue
                 org.apache.poi.ss.usermodel.CellType.BLANK -> ""

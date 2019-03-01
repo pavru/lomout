@@ -3,7 +3,7 @@ package net.pototskiy.apps.magemediation.api.entity
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 
-class ETypeInheritance (
+class ETypeInheritance(
     val parent: EType,
     val include: AttributeCollection? = null,
     val exclude: AttributeCollection? = null
@@ -16,15 +16,14 @@ class ETypeInheritance (
         fun include(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.includes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type,it))!!)
+                this.includes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type, it))!!)
             }
         }
 
-
         fun exclude(vararg name: String) {
-            checkThatParentHasAttributes(parent,name.toList())
+            checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.excludes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type,it))!!)
+                this.excludes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type, it))!!)
             }
         }
 

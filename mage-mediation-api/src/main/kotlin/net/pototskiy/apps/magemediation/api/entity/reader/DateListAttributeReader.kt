@@ -36,5 +36,4 @@ open class DateListAttributeReader : AttributeReaderPlugin<DateListType>() {
                     "attribute<${attribute.name}:${attribute.valueType.simpleName}>")
         }
     }
-
 }

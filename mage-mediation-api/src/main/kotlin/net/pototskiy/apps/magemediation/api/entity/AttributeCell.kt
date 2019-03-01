@@ -12,7 +12,7 @@ class AttributeCell<T : Type>(
     override val cellType: CellType
         get() {
             if (aValue == null) return CellType.BLANK
-            return when  {
+            return when {
                 attribute.valueType.isTypeOf<BooleanType>() -> CellType.BOOL
                 attribute.valueType.isTypeOf<LongType>() -> CellType.LONG
                 attribute.valueType.isTypeOf<DoubleType>() -> CellType.DOUBLE
@@ -20,11 +20,11 @@ class AttributeCell<T : Type>(
                 attribute.valueType.isTypeOf<DateType>() -> CellType.DOUBLE
                 attribute.valueType.isTypeOf<DateTimeType>() -> CellType.DOUBLE
                 attribute.valueType.isTypeOf<TextType>() -> CellType.STRING
-                attribute.valueType.isTypeOf<BooleanListType>()
-                        || attribute.valueType.isTypeOf<LongListType>()
-                        || attribute.valueType.isTypeOf<DoubleListType>()
-                        || attribute.valueType.isTypeOf<StringListType>()
-                        || attribute.valueType.isTypeOf<DateListType>()
+                attribute.valueType.isTypeOf<BooleanListType>() ||
+                        attribute.valueType.isTypeOf<LongListType>() ||
+                        attribute.valueType.isTypeOf<DoubleListType>() ||
+                        attribute.valueType.isTypeOf<StringListType>() ||
+                        attribute.valueType.isTypeOf<DateListType>()
                         || attribute.valueType.isTypeOf<DateTimeListType>() -> CellType.STRING
                 attribute.valueType.isTypeOf<AttributeListType>() -> CellType.BLANK
                 else -> CellType.BLANK
@@ -32,12 +32,12 @@ class AttributeCell<T : Type>(
         }
 
     override val booleanValue: Boolean
-        get() = when  {
+        get() = when {
             attribute.valueType.isTypeOf<BooleanType>() -> (aValue as BooleanValue).value
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val longValue: Long
-        get() = when  {
+        get() = when {
             attribute.valueType.isTypeOf<LongType>() -> (aValue as LongValue).value
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
@@ -49,7 +49,7 @@ class AttributeCell<T : Type>(
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val stringValue: String
-        get() = when  {
+        get() = when {
             attribute.valueType.isTypeOf<BooleanType>() -> if ((aValue as BooleanValue).value) "1" else "0"
             attribute.valueType.isTypeOf<LongType>() -> (aValue as LongValue).value.toString()
             attribute.valueType.isTypeOf<DoubleType>() -> (aValue as DoubleValue).value.toString()
@@ -79,23 +79,23 @@ class AttributeCell<T : Type>(
     }
 
     override fun setCellValue(value: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Double) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

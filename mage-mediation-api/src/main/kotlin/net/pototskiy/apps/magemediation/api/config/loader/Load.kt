@@ -47,7 +47,6 @@ data class Load(
             ).apply(block).build()
         }
 
-
         fun build(): Load {
             refineEntityAttributes()
             val headersRow = this.headersRow

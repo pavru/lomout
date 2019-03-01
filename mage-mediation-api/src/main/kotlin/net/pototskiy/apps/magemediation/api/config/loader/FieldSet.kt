@@ -4,11 +4,19 @@ import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.entity.Attribute
+import net.pototskiy.apps.magemediation.api.entity.AttributeName
+import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.StringType
+import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.Field
 import net.pototskiy.apps.magemediation.api.source.FieldAttributeMap
 import net.pototskiy.apps.magemediation.api.source.FieldCollection
 import net.pototskiy.apps.magemediation.api.source.readFieldNamesFromSource
+import kotlin.collections.set
+import kotlin.contracts.contract
 
 data class FieldSet(
     val name: String,
@@ -17,6 +25,7 @@ data class FieldSet(
 ) {
     val fields: FieldCollection = fieldToAttr.fields
 
+    @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder(
         @property:ConfigDsl val entityType: EType,
@@ -90,15 +99,11 @@ data class FieldSet(
         }
 
         private fun collectFieldsFromSources() {
-            if (sources == null) {
-                throw ConfigException("Sources must be defined before source field sets")
-            }
-            if (headerRow == null && headerRow != UNDEFINED_ROW) {
-                throw ConfigException("Header row must be defined before source field sets")
-            }
+            checkSourcesNotNull(sources)
+            checkHeaderRowDefined(headerRow)
             val collectedFields = try {
                 readFieldNamesFromSource(sources, headerRow)
-            } catch (e: Exception) {
+            } catch (e: ConfigException) {
                 throw ConfigException("Can not collect headers (fields) from sources", e)
             }
             collectedFields.map { field ->
@@ -138,7 +143,6 @@ data class FieldSet(
                     }
                     visited.add(v)
                 } while (v.isNested)
-
             }
         }
 
@@ -176,7 +180,23 @@ data class FieldSet(
                 throw ConfigException("At least one field must be defined for field set")
             }
         }
-
     }
+}
 
+private fun checkSourcesNotNull(sources: SourceDataCollection?) {
+    contract {
+        returns() implies (sources != null)
+    }
+    if (sources == null) {
+        throw ConfigException("Sources must be defined before source field sets")
+    }
+}
+
+private fun checkHeaderRowDefined(headerRow: Int?) {
+    contract {
+        returns() implies (headerRow != null)
+    }
+    if (headerRow == null && headerRow != UNDEFINED_ROW) {
+        throw ConfigException("Header row must be defined before source field sets")
+    }
 }

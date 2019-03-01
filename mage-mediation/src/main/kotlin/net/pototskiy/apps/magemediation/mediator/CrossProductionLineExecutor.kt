@@ -115,6 +115,4 @@ class CrossProductionLineExecutor {
         logger.error("{}", e.message)
         logger.trace("Caused by:", e)
     }
-
 }
-

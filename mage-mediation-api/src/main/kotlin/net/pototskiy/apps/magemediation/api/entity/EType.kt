@@ -11,7 +11,7 @@ abstract class EType(
     val inheritances: List<ETypeInheritance> = mutableListOf(),
     private val declaredAttributes: List<Attribute<*>>,
     val open: Boolean
-): NamedObject {
+) : NamedObject {
     override val name: String = type
 
     private val refinedAttributes = mutableListOf<Attribute<*>>()

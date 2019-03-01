@@ -16,7 +16,7 @@ abstract class DbEntityClass(
     vararg attributeClasses: AttributeEntityClass<*, *>
 ) : IntEntityClass<DbEntity>(DbEntityTable, DbEntity::class.java) {
 
-    val myTable by lazy { super.table as DbEntityTable }
+    private val myTable by lazy { super.table as DbEntityTable }
     private val logger = LogManager.getLogger(DATABASE_LOG_NAME)
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -39,7 +39,6 @@ abstract class DbEntityClass(
             type.sqlType().isInstance((it.table as AttributeTable<*>).value.columnType)
         }
             ?: throw DatabaseException("Value of type<${type::class.simpleName}> does not support sql column type or it is transient")
-
 
     fun getByAttribute(eType: EType, attribute: AnyTypeAttribute, value: Type): List<DbEntity> =
         getEntitiesByAttributes(eType, mapOf(attribute to value))
@@ -279,4 +278,3 @@ abstract class DbEntityClass(
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T> aliasColumn(alias: Alias<AttributeTable<*>>, column: Column<*>) = (alias[column] as Column<T>)
-

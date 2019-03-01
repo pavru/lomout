@@ -89,7 +89,6 @@ fun KClass<out Type>.sqlType(): KClass<out IColumnType> = when (this) {
     else -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
 }
 
-
 sealed class ListType<T>(override val value: List<T>, override val isTransient: Boolean = false) :
     Type(), List<T> by value {
     override fun toString(): String = value.toString()
@@ -163,4 +162,3 @@ abstract class DateTimeListType(value: List<DateTimeType>, isTransient: Boolean 
 
 abstract class AttributeListType(value: Map<String, Cell>, isTransient: Boolean = true) :
     MapType<String, Cell>(value, isTransient)
-

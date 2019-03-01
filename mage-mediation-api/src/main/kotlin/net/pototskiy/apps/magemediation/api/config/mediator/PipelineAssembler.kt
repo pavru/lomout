@@ -22,7 +22,7 @@ sealed class PipelineAssembler {
 
 class PipelineAssemblerWithPlugin(
     val pluginClass: KClass<out PipelineAssemblerPlugin>,
-    val options: PipelineAssemblerPlugin.()->Unit = {}
+    val options: PipelineAssemblerPlugin.() -> Unit = {}
 ) : PipelineAssembler()
 
 class PipelineAssemblerWithFunction(

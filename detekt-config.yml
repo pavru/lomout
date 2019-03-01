@@ -1,7 +1,7 @@
 autoCorrect: true
 
 test-pattern: # Configure exclusions for test sources
-  active: true
+  active: false
   patterns: # Test file regexes
     - '.*/test/.*'
     - '.*/androidTest/.*'
@@ -24,9 +24,9 @@ test-pattern: # Configure exclusions for test sources
     - 'TooGenericExceptionCaught'
     - 'InstanceOfCheckForException'
 
-build:
-  maxIssues: 10
-  weights:
+#build:
+#  maxIssues: 20
+#  weights:
     # complexity: 2
     # LongParameterList: 1
     # style: 1
@@ -114,8 +114,8 @@ complexity:
     thresholdInInterfaces: 11
     thresholdInObjects: 11
     thresholdInEnums: 11
-    ignoreDeprecated: false
-    ignorePrivate: false
+    ignoreDeprecated: true
+    ignorePrivate: true
     ignoreOverridden: false
 
 empty-blocks:

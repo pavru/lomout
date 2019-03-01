@@ -8,4 +8,3 @@ class PipelineDataCollection(private val data: List<PipelineData>) : List<Pipeli
 
     fun getEntityOrNull(type: String): PipelineData? = this.find { it.entity.eType.type == type }
 }
-

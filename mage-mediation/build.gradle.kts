@@ -2,6 +2,7 @@
 
 import io.gitlab.arturbosch.detekt.detekt
 import org.gradle.plugins.ide.idea.model.Module
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
@@ -40,8 +41,7 @@ idea {
 }
 
 kotlin {
-
-}
+ }
 
 sourceSets {
     create("config") {
@@ -84,10 +84,14 @@ tasks.named<Test>("test") {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
         noReflect = false
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+            "-Xuse-experimental=kotlin.Experimental"
+        )
     }
 }
 
@@ -169,7 +173,7 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
     // Addon
-    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:$Versions.detekt")
+    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
 //compileKotlin {
@@ -209,4 +213,5 @@ sonarqube {
 
 detekt {
     config = files("${rootProject.projectDir}/detekt-config.yml")
+    failFast = false
 }

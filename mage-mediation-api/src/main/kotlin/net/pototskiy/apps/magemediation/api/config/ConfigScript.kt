@@ -7,11 +7,19 @@ import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript
-import kotlin.script.experimental.api.*
+import kotlin.script.experimental.api.ScriptAcceptedLocation
+import kotlin.script.experimental.api.ScriptCompilationConfiguration
+import kotlin.script.experimental.api.acceptedLocations
+import kotlin.script.experimental.api.baseClass
+import kotlin.script.experimental.api.compilerOptions
+import kotlin.script.experimental.api.defaultImports
+import kotlin.script.experimental.api.displayName
+import kotlin.script.experimental.api.fileExtension
+import kotlin.script.experimental.api.ide
+import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
-
 
 @Suppress("DEPRECATION")
 @KotlinScript(
@@ -29,23 +37,28 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     baseClass(ConfigScript::class)
     defaultImports(DependsOn::class, Repository::class, Import::class)
     defaultImports(
-        "org.jetbrains.kotlin.script.util.*"
-        , "net.pototskiy.apps.magemediation.api.*"
-        , "net.pototskiy.apps.magemediation.api.database.*"
-        , "net.pototskiy.apps.magemediation.api.config.*"
-        , "net.pototskiy.apps.magemediation.api.config.mediator.*"
-        , "net.pototskiy.apps.magemediation.api.plugable.*"
-        , "net.pototskiy.apps.magemediation.api.entity.*"
-        , "net.pototskiy.apps.magemediation.api.entity.values.*"
-        , "net.pototskiy.apps.magemediation.api.entity.reader.*"
-        , "net.pototskiy.apps.magemediation.api.entity.writer.*"
-        , "net.pototskiy.apps.magemediation.api.source.*"
-        , "net.pototskiy.apps.magemediation.api.source.workbook.*"
+        "org.jetbrains.kotlin.script.util.*",
+        "net.pototskiy.apps.magemediation.api.*",
+        "net.pototskiy.apps.magemediation.api.database.*",
+        "net.pototskiy.apps.magemediation.api.config.*",
+        "net.pototskiy.apps.magemediation.api.config.mediator.*",
+        "net.pototskiy.apps.magemediation.api.plugable.*",
+        "net.pototskiy.apps.magemediation.api.entity.*",
+        "net.pototskiy.apps.magemediation.api.entity.values.*",
+        "net.pototskiy.apps.magemediation.api.entity.reader.*",
+        "net.pototskiy.apps.magemediation.api.entity.writer.*",
+        "net.pototskiy.apps.magemediation.api.source.*",
+        "net.pototskiy.apps.magemediation.api.source.workbook.*"
     )
-    compilerOptions("-jvm-target", "1.8")
+    compilerOptions(
+        "-jvm-target", "1.8",
+        "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+        "-Xuse-experimental=kotlin.Experimental"
+    )
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
-        checkAndGetExternalDeps(ConfigScriptCompilationConfiguration::class.java.classLoader).takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
+        checkAndGetExternalDeps(ConfigScriptCompilationConfiguration::class.java.classLoader)
+            .takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)

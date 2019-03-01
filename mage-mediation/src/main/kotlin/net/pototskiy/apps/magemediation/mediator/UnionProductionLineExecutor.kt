@@ -83,7 +83,6 @@ class UnionProductionLineExecutor {
             } else {
                 pipelineData
             }
-
         }
     }
 
@@ -114,6 +113,4 @@ class UnionProductionLineExecutor {
         logger.error("{}", e.message)
         logger.trace("Caused by:", e)
     }
-
 }
-

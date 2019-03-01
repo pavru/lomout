@@ -10,7 +10,6 @@ import org.jetbrains.exposed.sql.Function
 
 private const val UUID_LENGTH = 50
 
-
 object PipelineSets : IntIdTable("pipeline_set") {
 
     val setID = varchar("set_id", UUID_LENGTH)
@@ -38,4 +37,3 @@ class StringConst(private val value: String) : Function<String>(VarCharColumnTyp
 class BooleanConst(private val value: Boolean) : Function<Boolean>(BooleanColumnType()) {
     override fun toSQL(queryBuilder: QueryBuilder): String = "${if (value) 1 else 0}"
 }
-

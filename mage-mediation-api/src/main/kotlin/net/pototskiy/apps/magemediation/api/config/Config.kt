@@ -63,4 +63,3 @@ fun Any.config(block: Config.Builder.() -> Unit) {
     } else
         throw ConfigException("Wrong config script object type")
 }
-

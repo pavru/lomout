@@ -10,7 +10,6 @@ private data class WorkbookFile(
 
 private val files = mutableListOf<WorkbookFile>()
 
-
 fun Workbook.setFileName(name: String) {
     cleanFiles()
     files.removeIf { it.workbook.get() == this }

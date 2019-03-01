@@ -13,4 +13,3 @@ fun List<String>.checkAndRemoveQuote(quote: String?): List<String> {
         }
     } ?: this
 }
-

@@ -21,7 +21,7 @@ class EntityStatusColumnType : ColumnType() {
     }
 
     override fun valueToDB(value: Any?): Any? {
-        return when(value) {
+        return when (value) {
             null -> if (nullable) null else throw DatabaseException("Null in non-nullable column")
             is EntityStatus -> value.name
             is String -> value

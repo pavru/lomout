@@ -6,7 +6,11 @@ import net.pototskiy.apps.magemediation.api.config.loader.Load
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.database.EntityStatus
-import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.entity.AttributeName
+import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.StringValue
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
@@ -14,7 +18,12 @@ import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import kotlin.contracts.ExperimentalContracts
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")

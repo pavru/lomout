@@ -22,7 +22,6 @@ object DataMediator {
                     CROSS -> CrossProductionLineExecutor().executeLine(it)
                     UNION -> UnionProductionLineExecutor().executeLine(it)
                 }
-
             }
         }
     }

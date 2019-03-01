@@ -24,7 +24,7 @@ class IvyResolver : GenericRepositoryWithBridge {
 
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
-    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = with (artifactCoordinates) {
+    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = with(artifactCoordinates) {
         val artifactId =
             if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
                 listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
@@ -80,7 +80,7 @@ class IvyResolver : GenericRepositoryWithBridge {
         )
         moduleDescriptor.addDependency(depsDescriptor)
 
-        //creates an ivy configuration file
+        // creates an ivy configuration file
         XmlModuleDescriptorWriter.write(moduleDescriptor, ivyFile)
 
         val resolveOptions = ResolveOptions().apply {
@@ -89,7 +89,7 @@ class IvyResolver : GenericRepositoryWithBridge {
             isOutputReport = false
         }
 
-        //init resolve report
+        // init resolve report
         val report = ivy.resolve(ivyFile.toURI().toURL(), resolveOptions)
 
         return report.allArtifactsReports.map { it.localFile }

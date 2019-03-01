@@ -40,7 +40,5 @@ data class DatabaseServerConfig(
 
         fun build(): DatabaseServerConfig =
             DatabaseServerConfig(host, port, user, password)
-
-
     }
 }

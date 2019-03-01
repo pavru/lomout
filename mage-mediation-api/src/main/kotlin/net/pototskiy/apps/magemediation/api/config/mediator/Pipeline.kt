@@ -8,7 +8,6 @@ import net.pototskiy.apps.magemediation.api.plugable.PipelineClassifierFunction
 import net.pototskiy.apps.magemediation.api.plugable.PipelineClassifierPlugin
 import java.util.*
 
-
 data class Pipeline(
     val dataClass: List<CLASS>,
     val classifier: PipelineClassifier,
@@ -67,5 +66,4 @@ data class Pipeline(
             )
         }
     }
-
 }

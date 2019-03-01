@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.source
 
 @Suppress("unused")
-class SourceException: Exception {
+class SourceException : Exception {
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

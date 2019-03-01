@@ -37,7 +37,6 @@ fun Cell.readeDateTime(
     CellType.BLANK -> null
 }
 
-
 fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.LONG -> this.longValue != 0L
     CellType.DOUBLE -> this.doubleValue != 0.0
@@ -62,7 +61,7 @@ fun Cell.readLong(locale: Locale): Long? = when (this.cellType) {
     CellType.BLANK -> null
 }
 
-fun Cell.readString(locale: Locale): String? = when(this.cellType){
+fun Cell.readString(locale: Locale): String? = when (this.cellType) {
     CellType.LONG -> this.longValue.longToString(locale)
     CellType.DOUBLE -> this.doubleValue.doubleToString(locale)
     CellType.BOOL -> if (this.booleanValue) "1" else "0"

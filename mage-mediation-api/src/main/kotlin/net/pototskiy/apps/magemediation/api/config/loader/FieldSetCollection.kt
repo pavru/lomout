@@ -2,7 +2,6 @@ package net.pototskiy.apps.magemediation.api.config.loader
 
 import net.pototskiy.apps.magemediation.api.entity.EType
 
-
 data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet> by sets {
     class Builder(
         private val entityType: EType,
