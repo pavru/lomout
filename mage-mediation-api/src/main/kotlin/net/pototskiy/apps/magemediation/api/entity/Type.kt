@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.Type.Companion.TYPE_NOT_SUPPORT_SQL
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -58,8 +59,11 @@ sealed class Type {
     }
 }
 
+@PublicApi
 fun KClass<out Type>.isList(): Boolean = this.isSubclassOf(ListType::class)
+@PublicApi
 fun KClass<out Type>.isMap(): Boolean = this.isSubclassOf(MapType::class)
+@PublicApi
 fun KClass<out Type>.isSingle(): Boolean = !(this.isSubclassOf(ListType::class) || this.isSubclassOf(MapType::class))
 
 inline fun <reified T : Type> KClass<out Type>.isTypeOf(): Boolean {

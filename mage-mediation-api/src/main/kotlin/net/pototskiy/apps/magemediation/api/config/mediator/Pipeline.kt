@@ -31,6 +31,7 @@ data class Pipeline(
         private var pipelines = mutableListOf<Pipeline>()
 
         @JvmName("classifier__function")
+        @PublicApi
         fun classifier(block: PipelineClassifierFunction) {
             classifier = PipelineClassifierWithFunction(block)
         }
@@ -42,6 +43,7 @@ data class Pipeline(
         }
 
         @JvmName("assembler__function")
+        @PublicApi
         fun assembler(block: PipelineAssemblerFunction) {
             assembler = PipelineAssemblerWithFunction(block)
         }

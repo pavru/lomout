@@ -49,7 +49,7 @@ class DataLoadingInProductionWayTest {
         logger.addAppender(appender)
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val util = LoadingDataTestPrepare()
-        println("congig file: ${System.getenv("PRODUCTION_CONFIG")}")
+        println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         config = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
         util.initDataBase()
     }

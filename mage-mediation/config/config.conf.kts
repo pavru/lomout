@@ -2,10 +2,6 @@
 @file:Import("builder/GroupPathFromRelation.plugin.conf.kts")
 @file:Import("builder/CategoryPathFromRelation.plugin.conf.kts")
 @file:Import("builder/RelationGroupNameFromGroup.plugin.conf.kts")
-@file:Import("transformer/GroupAddLeadingG.plugin.conf.kts")
-@file:Import("processor/MatchedCategoryProcessor.plugin.conf.kts")
-@file:Import("processor/UnMatchedCategoryProcessor.plugin.conf.kts")
-@file:Import("processor/UnMatchedGroupProcessor.plugin.conf.kts")
 @file:Import("reader/GroupToCategoryPath.plugin.conf.kts")
 @file:Import("pipeline/classifier/CategoryClassifier.plugin.conf.kts")
 @file:Import("pipeline/assembler/MatchedCategoryAssembler.plugin.conf.kts")
@@ -17,10 +13,6 @@ import OnecGroupToLong_plugin_conf.*
 import GroupPathFromRelation_plugin_conf.*
 import CategoryPathFromRelation_plugin_conf.*
 import RelationGroupNameFromGroup_plugin_conf.*
-import GroupAddLeadingG_plugin_conf.*
-import MatchedCategoryProcessor_plugin_conf.*
-import UnMatchedCategoryProcessor_plugin_conf.*
-import UnMatchedGroupProcessor_plugin_conf.*
 import GroupToCategoryPath_plugin_conf.*
 import CategoryClassifier_plugin_conf.*
 import MatchedCategoryAssembler_plugin_conf.*

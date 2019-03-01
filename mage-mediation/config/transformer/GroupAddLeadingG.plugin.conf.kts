@@ -1,7 +1,4 @@
-import net.pototskiy.apps.magemediation.api.plugable.ValueTransformPlugin
-import net.pototskiy.apps.magemediation.api.plugable.PluginException
-
-public class GroupAddLeadingG : ValueTransformPlugin<String?, String>() {
+class GroupAddLeadingG : ValueTransformPlugin<String?, String>() {
 
     override fun transform(value: String?): String {
         return value?.let {

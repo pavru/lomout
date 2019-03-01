@@ -28,6 +28,6 @@ private val stringBooleanMap = mapOf(
 )
 
 private val defaultMap = stringBooleanMap[Locale.getDefault()]
-    ?: stringBooleanMap[Locale("en", "US")]!!
+    ?: stringBooleanMap.getValue(Locale("en", "US"))
 
 private class BooleanStrings(val booleanString: List<String>, val booleanTrueString: List<String>)

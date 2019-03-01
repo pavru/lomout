@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -7,6 +8,7 @@ plugins {
     idea
     id("org.jetbrains.dokka") version Versions.dokka
     `maven-publish`
+    id("io.gitlab.arturbosch.detekt") version Versions.detekt
 }
 
 group = "oooast-tools"
@@ -87,8 +89,6 @@ tasks.named<Test>("test") {
 
 repositories {
     jcenter()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
-    maven("https://dl.bintray.com/kotlin/kotlin-dev/")
 }
 
 dependencies {
@@ -126,6 +126,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
+    // Addon
+    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:$Versions.detekt")
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -144,4 +146,8 @@ publishing {
     repositories {
         mavenLocal()
     }
+}
+
+detekt {
+    config = files("${rootProject.projectDir}/detekt-config.yml")
 }

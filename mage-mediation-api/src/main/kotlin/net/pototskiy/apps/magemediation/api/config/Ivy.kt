@@ -66,8 +66,8 @@ class IvyResolver : GenericRepositoryWithBridge {
 
         val ivy = Ivy.newInstance(ivySettings)
 
-        val ivyfile = File.createTempFile("ivy", ".xml")
-        ivyfile.deleteOnExit()
+        val ivyFile = File.createTempFile("ivy", ".xml")
+        ivyFile.deleteOnExit()
 
         val moduleDescriptor = DefaultModuleDescriptor.newDefaultInstance(
             ModuleRevisionId.newInstance(artifactId[0], artifactId[1] + "-caller", "working")
@@ -81,7 +81,7 @@ class IvyResolver : GenericRepositoryWithBridge {
         moduleDescriptor.addDependency(depsDescriptor)
 
         //creates an ivy configuration file
-        XmlModuleDescriptorWriter.write(moduleDescriptor, ivyfile)
+        XmlModuleDescriptorWriter.write(moduleDescriptor, ivyFile)
 
         val resolveOptions = ResolveOptions().apply {
             confs = arrayOf("default")
@@ -90,7 +90,7 @@ class IvyResolver : GenericRepositoryWithBridge {
         }
 
         //init resolve report
-        val report = ivy.resolve(ivyfile.toURI().toURL(), resolveOptions)
+        val report = ivy.resolve(ivyFile.toURI().toURL(), resolveOptions)
 
         return report.allArtifactsReports.map { it.localFile }
     }

@@ -15,10 +15,10 @@ import java.util.*
  */
 fun String.stringToDouble(locale: Locale): Double {
     val format = NumberFormat.getNumberInstance(locale)
-    val potision  = ParsePosition(0)
-    val value = format.parse(this.trim(), potision).toDouble()
-    if (potision.index != this.trim().length) {
-        throw ParseException("String contains extra characters", potision.index)
+    val position  = ParsePosition(0)
+    val value = format.parse(this.trim(), position).toDouble()
+    if (position.index != this.trim().length) {
+        throw ParseException("String contains extra characters", position.index)
     }
     return value
 }

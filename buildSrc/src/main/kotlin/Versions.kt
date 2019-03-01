@@ -1,6 +1,6 @@
 @Suppress("unused")
 object Versions {
-    const val kotlin = "1.3.30-eap-11"
+    const val kotlin = "1.3.21"
     const val dokka = "0.9.17"
     const val exposed = "0.12.2"
     val mysql = MysqlVersions(
@@ -15,6 +15,7 @@ object Versions {
     const val progressBar = "0.7.2"
     const val jline = "3.9.0"
     const val poi = "4.0.1"
+    const val detekt = "1.0.0-RC14"
 }
 
 data class MysqlVersions(

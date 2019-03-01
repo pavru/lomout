@@ -21,7 +21,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class CrossProductionLineExecutor {
 
-    private val piplineDataCache = LRUMap<Int, PipelineData>(1000, 300)
+    private val pipelineDataCache = LRUMap<Int, PipelineData>(1000, 300)
     private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private val jobs = mutableListOf<Job>()
 
@@ -33,7 +33,7 @@ class CrossProductionLineExecutor {
                 @Suppress("UNCHECKED_CAST")
                 val targetEntityType = line.outputEntity
                 val entityUpdater = EntityUpdater(targetEntityType)
-                val pipeline = PipelineExecutor(line.pipeline, line.inputEntities, line.outputEntity, piplineDataCache)
+                val pipeline = PipelineExecutor(line.pipeline, line.inputEntities, line.outputEntity, pipelineDataCache)
                 createTopPipelineSet(line)
                 val (from, where, columns) = mainQuery(line)
                 val inputChannel: Channel<PipelineDataCollection> = Channel()
@@ -60,7 +60,7 @@ class CrossProductionLineExecutor {
     ): List<PipelineData> {
         return columns.map { column ->
             val id = row[column]
-            val pipelineData = piplineDataCache[id.value]
+            val pipelineData = pipelineDataCache[id.value]
             if (pipelineData == null) {
                 val entity = transaction { DbEntity.findById(id) }
                     ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
@@ -70,7 +70,7 @@ class CrossProductionLineExecutor {
                     line.inputEntities.find {
                         it.entity.name == entity.eType.type
                     }!!
-                ).also { piplineDataCache[id.value] = it }
+                ).also { pipelineDataCache[id.value] = it }
             } else {
                 pipelineData
             }

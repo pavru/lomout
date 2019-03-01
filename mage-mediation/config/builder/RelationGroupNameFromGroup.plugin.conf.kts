@@ -1,7 +1,3 @@
-import net.pototskiy.apps.magemediation.api.database.*
-import net.pototskiy.apps.magemediation.api.entity.*
-import net.pototskiy.apps.magemediation.api.plugable.*
-
 class RelationGroupNameFromGroup : AttributeBuilderPlugin<StringType>() {
     override fun build(entity: DbEntity): StringType? {
         return entity.readAttribute(relationGroupCodeAttr)?.let { code ->
@@ -12,8 +8,8 @@ class RelationGroupNameFromGroup : AttributeBuilderPlugin<StringType>() {
     }
 
     companion object {
-        private val relationEntityType = "onec-group-relation"
-        private val groupEntityType = "onec-group"
+        private const val relationEntityType = "onec-group-relation"
+        private const val groupEntityType = "onec-group"
         private val groupEType by lazy {
             EntityTypeManager.getEntityType(groupEntityType)
                 ?: throw PluginException("Entity type<$groupEntityType> is not defined")
@@ -24,7 +20,7 @@ class RelationGroupNameFromGroup : AttributeBuilderPlugin<StringType>() {
         }
         private val groupCodeAttr by lazy {
             EntityAttributeManager.getAttributeOrNull(AttributeName(groupEntityType, "group_code"))
-                ?: throw PluginException("Attribute<$groupEntityType:group_code> is not defeined")
+                ?: throw PluginException("Attribute<$groupEntityType:group_code> is not defined")
         }
         private val groupNameAttr by lazy {
             EntityAttributeManager.getAttributeOrNull(AttributeName(groupEntityType, "group_name"))

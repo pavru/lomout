@@ -45,7 +45,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     compilerOptions("-jvm-target", "1.8")
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
-        checkAndGetExternalDeps().takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
+        checkAndGetExternalDeps(ConfigScriptCompilationConfiguration::class.java.classLoader).takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
@@ -55,23 +55,23 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     }
 })
 
-private fun isClassInPath(name: String): Boolean {
+private fun isClassInPath(name: String, classLoader: ClassLoader): Boolean {
     return try {
-        Class.forName(name, false, ConfigScriptCompilationConfiguration::class.java.classLoader)
+        Class.forName(name, false, classLoader)
         true
     } catch (e: ClassNotFoundException) {
         false
     }
 }
 
-private fun checkAndGetExternalDeps(): List<File> {
+private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
     val resolver = IvyResolver()
     val deps = mutableListOf<File>()
-    if (!isClassInPath("org.jetbrains.kotlin.script.util.Import")) {
+    if (!isClassInPath("org.jetbrains.kotlin.script.util.Import", classLoader)) {
         resolver.tryAddRepository(mavenCentral())
         deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21") ?: emptyList())
     }
-    if (!isClassInPath("net.pototskiy.apps.magemediation.api.config.Config")) {
+    if (!isClassInPath("net.pototskiy.apps.magemediation.api.config.Config", classLoader)) {
         resolver.tryAddRepository(localMaven())
         deps.addAll(resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration") ?: emptyList())
     }

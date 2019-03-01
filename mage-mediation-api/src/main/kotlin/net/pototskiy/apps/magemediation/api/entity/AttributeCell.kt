@@ -12,63 +12,63 @@ class AttributeCell<T : Type>(
     override val cellType: CellType
         get() {
             if (aValue == null) return CellType.BLANK
-            return when (attribute.valueType) {
-                BooleanType::class -> CellType.BOOL
-                LongType::class -> CellType.LONG
-                DoubleType::class -> CellType.DOUBLE
-                StringType::class -> CellType.STRING
-                DateType::class -> CellType.DOUBLE
-                DateTimeType::class -> CellType.DOUBLE
-                TextType::class -> CellType.STRING
-                BooleanListType::class,
-                LongListType::class,
-                DoubleListType::class,
-                StringListType::class,
-                DateListType::class,
-                DateTimeListType::class -> CellType.STRING
-                AttributeListType::class -> CellType.BLANK
+            return when  {
+                attribute.valueType.isTypeOf<BooleanType>() -> CellType.BOOL
+                attribute.valueType.isTypeOf<LongType>() -> CellType.LONG
+                attribute.valueType.isTypeOf<DoubleType>() -> CellType.DOUBLE
+                attribute.valueType.isTypeOf<StringType>() -> CellType.STRING
+                attribute.valueType.isTypeOf<DateType>() -> CellType.DOUBLE
+                attribute.valueType.isTypeOf<DateTimeType>() -> CellType.DOUBLE
+                attribute.valueType.isTypeOf<TextType>() -> CellType.STRING
+                attribute.valueType.isTypeOf<BooleanListType>()
+                        || attribute.valueType.isTypeOf<LongListType>()
+                        || attribute.valueType.isTypeOf<DoubleListType>()
+                        || attribute.valueType.isTypeOf<StringListType>()
+                        || attribute.valueType.isTypeOf<DateListType>()
+                        || attribute.valueType.isTypeOf<DateTimeListType>() -> CellType.STRING
+                attribute.valueType.isTypeOf<AttributeListType>() -> CellType.BLANK
                 else -> CellType.BLANK
             }
         }
 
     override val booleanValue: Boolean
-        get() = when (attribute.valueType) {
-            BooleanType::class -> (aValue as BooleanValue).value
+        get() = when  {
+            attribute.valueType.isTypeOf<BooleanType>() -> (aValue as BooleanValue).value
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val longValue: Long
-        get() = when (attribute.valueType) {
-            LongType::class -> (aValue as LongValue).value
+        get() = when  {
+            attribute.valueType.isTypeOf<LongType>() -> (aValue as LongValue).value
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val doubleValue: Double
-        get() = when (attribute.valueType) {
-            DoubleType::class -> (aValue as DoubleValue).value
-            DateType::class -> HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
-            DateTimeType::class -> HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
+        get() = when {
+            attribute.valueType.isTypeOf<DoubleType>() -> (aValue as DoubleValue).value
+            attribute.valueType.isTypeOf<DateType>() -> HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
+            attribute.valueType.isTypeOf<DateTimeType>() -> HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val stringValue: String
-        get() = when (attribute.valueType) {
-            BooleanType::class -> if ((aValue as BooleanValue).value) "1" else "0"
-            LongType::class -> (aValue as LongValue).value.toString()
-            DoubleType::class -> (aValue as DoubleValue).value.toString()
-            StringType::class -> (aValue as StringValue).value
-            DateType::class -> (aValue as DateValue).value.toString()
-            DateTimeType::class -> (aValue as DateTimeValue).value.toString()
-            TextType::class -> (aValue as TextValue).value
-            BooleanListType::class ->
+        get() = when  {
+            attribute.valueType.isTypeOf<BooleanType>() -> if ((aValue as BooleanValue).value) "1" else "0"
+            attribute.valueType.isTypeOf<LongType>() -> (aValue as LongValue).value.toString()
+            attribute.valueType.isTypeOf<DoubleType>() -> (aValue as DoubleValue).value.toString()
+            attribute.valueType.isTypeOf<StringType>() -> (aValue as StringValue).value
+            attribute.valueType.isTypeOf<DateType>() -> (aValue as DateValue).value.toString()
+            attribute.valueType.isTypeOf<DateTimeType>() -> (aValue as DateTimeValue).value.toString()
+            attribute.valueType.isTypeOf<TextType>() -> (aValue as TextValue).value
+            attribute.valueType.isTypeOf<BooleanListType>() ->
                 (aValue as BooleanListValue).value.joinToString(",") { it.toString() }
-            LongListType::class ->
+            attribute.valueType.isTypeOf<LongListType>() ->
                 (aValue as LongListValue).value.joinToString(",") { it.toString() }
-            DoubleListType::class ->
+            attribute.valueType.isTypeOf<DoubleListType>() ->
                 (aValue as DoubleListValue).value.joinToString(",") { it.toString() }
-            StringListType::class ->
+            attribute.valueType.isTypeOf<StringListType>() ->
                 (value as StringListValue).value.joinToString(",")
-            DateListType::class -> (aValue as DateListValue).value.joinToString(",") { it.toString() }
-            DateTimeListType::class ->
+            attribute.valueType.isTypeOf<DateListType>() -> (aValue as DateListValue).value.joinToString(",") { it.toString() }
+            attribute.valueType.isTypeOf<DateTimeListType>() ->
                 (aValue as DateTimeListValue).value.joinToString(",") { it.toString() }
-            AttributeListType::class -> ""
+            attribute.valueType.isTypeOf<AttributeListType>() -> ""
             else -> ""
         }
     override val row: Row
