@@ -6,17 +6,11 @@ import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
-import java.io.FileOutputStream
-import java.io.PrintStream
-import java.nio.file.Files
-import java.util.*
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.*
-import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
-import kotlin.streams.toList
 
 
 @Suppress("DEPRECATION")
@@ -33,7 +27,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     displayName("Magento mediation config script")
     fileExtension("conf.kts")
     baseClass(ConfigScript::class)
-//    defaultImports(DependsOn::class, Repository::class, Import::class)
+    defaultImports(DependsOn::class, Repository::class, Import::class)
     defaultImports(
         "org.jetbrains.kotlin.script.util.*"
         , "net.pototskiy.apps.magemediation.api.*"
@@ -51,30 +45,12 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     compilerOptions("-jvm-target", "1.8")
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
-        updateClasspath(checkAndGetExternalDeps())
+        checkAndGetExternalDeps().takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
     }
     refineConfiguration {
-        beforeParsing { context ->
-            val scriptBaseDir = (context.script as? FileScriptSource)?.file?.absoluteFile?.parentFile
-            val files = Files.walk(scriptBaseDir?.toPath())
-                .map { it.toFile() }
-                .toList()
-                .filter { it.isFile && it.name.endsWith(".plugin.conf.kts") }
-
-            ScriptCompilationConfiguration(context.compilationConfiguration) {
-                if (files.isNotEmpty()) {
-                    defaultImports.append(files
-                        .map { it.name }
-                        .map {
-                            it.replace(".plugin.conf", "_plugin_conf")
-                                .replace(".kts", ".*")
-                        })
-                }
-            }.asSuccess()
-        }
         onAnnotations(DependsOn::class, Repository::class, Import::class, handler = KtsConfigurator())
     }
 })
@@ -89,20 +65,15 @@ private fun isClassInPath(name: String): Boolean {
 }
 
 private fun checkAndGetExternalDeps(): List<File> {
-    val resolver = GradleCacheResolver()
+    val resolver = IvyResolver()
     val deps = mutableListOf<File>()
     if (!isClassInPath("org.jetbrains.kotlin.script.util.Import")) {
-        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.20") ?: emptyList())
+        resolver.tryAddRepository(mavenCentral())
+        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21") ?: emptyList())
+    }
+    if (!isClassInPath("net.pototskiy.apps.magemediation.api.config.Config")) {
+        resolver.tryAddRepository(localMaven())
+        deps.addAll(resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration") ?: emptyList())
     }
     return deps
 }
-
-private fun debug(suffix: String, block: PrintStream.() -> Unit) {
-    val stream = PrintStream(FileOutputStream("c:/temp/config-script-$suffix.log", true))
-    stream.use {
-        it.println(Date().toString())
-        it.apply(block)
-    }
-}
-
-

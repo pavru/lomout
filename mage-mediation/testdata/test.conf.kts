@@ -1,4 +1,3 @@
-@file:Import("../config/builder/GroupPathFromRelation.plugin.conf.kts")
 config {
     database {
         name("test_magemediation")

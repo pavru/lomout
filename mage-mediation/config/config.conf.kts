@@ -13,6 +13,21 @@
 @file:Import("pipeline/assembler/CategoryFromGroupAssembler.plugin.conf.kts")
 @file:Import("pipeline/assembler/MarkCategoryToRemove.plugin.conf.kts")
 
+import OnecGroupToLong_plugin_conf.*
+import GroupPathFromRelation_plugin_conf.*
+import CategoryPathFromRelation_plugin_conf.*
+import RelationGroupNameFromGroup_plugin_conf.*
+import GroupAddLeadingG_plugin_conf.*
+import MatchedCategoryProcessor_plugin_conf.*
+import UnMatchedCategoryProcessor_plugin_conf.*
+import UnMatchedGroupProcessor_plugin_conf.*
+import GroupToCategoryPath_plugin_conf.*
+import CategoryClassifier_plugin_conf.*
+import MatchedCategoryAssembler_plugin_conf.*
+import EntityTypeClassifier_plugin_conf.*
+import CategoryFromGroupAssembler_plugin_conf.*
+import MarkCategoryToRemove_plugin_conf.*
+
 config {
     database {
         name("magemediation")
@@ -20,8 +35,7 @@ config {
             host("localhost")
             port(3306)
             user("root")
-            if (System.getProperty("os.name").toLowerCase().contains("linux"))
-            {
+            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
                 password("")
             } else {
                 password("root")

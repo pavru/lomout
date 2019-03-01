@@ -85,7 +85,7 @@ class IvyResolver : GenericRepositoryWithBridge {
 
         val resolveOptions = ResolveOptions().apply {
             confs = arrayOf("default")
-            log = LogOptions.LOG_QUIET
+            log = LogOptions.LOG_DEFAULT
             isOutputReport = false
         }
 
@@ -124,3 +124,5 @@ class FilesAndIvyResolver :
         emptyList(),
         arrayListOf(DirectResolver(), IvyResolver()).asIterable()
     )
+
+fun mavenCentral() = "https://repo.maven.apache.org/maven2/"
