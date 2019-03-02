@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.Type.Companion.TYPE_NOT_SUPPORT_SQL
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -58,8 +59,11 @@ sealed class Type {
     }
 }
 
+@PublicApi
 fun KClass<out Type>.isList(): Boolean = this.isSubclassOf(ListType::class)
+@PublicApi
 fun KClass<out Type>.isMap(): Boolean = this.isSubclassOf(MapType::class)
+@PublicApi
 fun KClass<out Type>.isSingle(): Boolean = !(this.isSubclassOf(ListType::class) || this.isSubclassOf(MapType::class))
 
 inline fun <reified T : Type> KClass<out Type>.isTypeOf(): Boolean {
@@ -84,7 +88,6 @@ fun KClass<out Type>.sqlType(): KClass<out IColumnType> = when (this) {
     TextListType::class -> TextColumnType::class
     else -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
 }
-
 
 sealed class ListType<T>(override val value: List<T>, override val isTransient: Boolean = false) :
     Type(), List<T> by value {
@@ -159,4 +162,3 @@ abstract class DateTimeListType(value: List<DateTimeType>, isTransient: Boolean 
 
 abstract class AttributeListType(value: Map<String, Cell>, isTransient: Boolean = true) :
     MapType<String, Cell>(value, isTransient)
-

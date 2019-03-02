@@ -3,7 +3,6 @@ package net.pototskiy.apps.magemediation.api.entity.values
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
 import java.util.*
 
-
 fun String.stringToBoolean(locale: Locale): Boolean {
     val v = this.toLowerCase().trim()
     val booleanString = stringBooleanMap[locale]?.booleanString
@@ -28,6 +27,6 @@ private val stringBooleanMap = mapOf(
 )
 
 private val defaultMap = stringBooleanMap[Locale.getDefault()]
-    ?: stringBooleanMap[Locale("en", "US")]!!
+    ?: stringBooleanMap.getValue(Locale("en", "US"))
 
 private class BooleanStrings(val booleanString: List<String>, val booleanTrueString: List<String>)

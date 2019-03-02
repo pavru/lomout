@@ -6,5 +6,4 @@ class AttributeSheetIterator(private val workbook: AttributeWorkbook) : Iterator
     override fun hasNext(): Boolean = index < 1
 
     override fun next(): AttributeSheet = workbook[index++] as AttributeSheet
-
 }

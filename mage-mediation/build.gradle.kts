@@ -1,6 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 
+import io.gitlab.arturbosch.detekt.detekt
 import org.gradle.plugins.ide.idea.model.Module
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
@@ -8,6 +10,7 @@ plugins {
     kotlin("jvm") version Versions.kotlin
     idea
     id("jacoco")
+    id("io.gitlab.arturbosch.detekt") version Versions.detekt
 }
 
 group = "oooast-tools"
@@ -38,16 +41,10 @@ idea {
 }
 
 kotlin {
-
-}
+ }
 
 sourceSets {
-    test {
-        java {
-            //            exclude("**/magemediation/**")
-        }
-    }
-    create("configScripts") {
+    create("config") {
         java {
             srcDir(file("$projectDir/config"))
             exclude("**/*.kts")
@@ -56,7 +53,7 @@ sourceSets {
         runtimeClasspath += sourceSets.main.get().output
     }
 
-    create("testData") {
+    create("testdata") {
         java {
             srcDir(file("$rootProject/.testdata"))
             exclude("**/*.kts")
@@ -66,11 +63,11 @@ sourceSets {
     }
 }
 
-val configScriptsImplementation: Configuration by configurations.getting {
+val configImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
-val testDataImplementation: Configuration by configurations.getting {
+val testdataImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
@@ -87,10 +84,14 @@ tasks.named<Test>("test") {
     }
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
         noReflect = false
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+            "-Xuse-experimental=kotlin.Experimental"
+        )
     }
 }
 
@@ -118,20 +119,19 @@ tasks.jar {
 
 repositories {
     jcenter()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 dependencies {
 
-    configScriptsImplementation(kotlin("script-util"))
-    configScriptsImplementation(project(":mage-mediation-api", "spi"))
-    configScriptsImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
+    configImplementation(kotlin("script-util"))
+    configImplementation("oooast-tools", "mage-mediation-api")
+    configImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
     }
-    testDataImplementation(kotlin("script-util"))
-    testDataImplementation(project(":mage-mediation-api", "spi"))
-    testDataImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
+    testdataImplementation(kotlin("script-util"))
+    testdataImplementation("oooast-tools", "mage-mediation-api")
+    testdataImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
     }
@@ -172,6 +172,8 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
+    // Addon
+    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
 //compileKotlin {
@@ -207,4 +209,9 @@ sonarqube {
 //        property("sonar.java.test.binaries", testBinaries.joinToString(","))
 //        property("sonar.jacoco.reportPaths", coverageFiles.joinToString(","))
     }
+}
+
+detekt {
+    config = files("${rootProject.projectDir}/detekt-config.yml")
+    failFast = false
 }

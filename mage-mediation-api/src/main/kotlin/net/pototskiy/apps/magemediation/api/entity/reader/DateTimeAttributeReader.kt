@@ -15,5 +15,4 @@ open class DateTimeAttributeReader : AttributeReaderPlugin<DateTimeType>() {
     override fun read(attribute: Attribute<out DateTimeType>, input: Cell): DateTimeType? =
         (pattern?.let { input.readeDateTime(attribute, it) }
             ?: input.readeDateTime(attribute, locale.createLocale()))?.let { DateTimeValue(it) }
-
 }

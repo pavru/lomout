@@ -13,7 +13,11 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.filter.LevelRangeFilter
 import org.apache.logging.log4j.core.layout.PatternLayout
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.*
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.io.ByteArrayOutputStream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -49,7 +53,7 @@ class DataLoadingInProductionWayTest {
         logger.addAppender(appender)
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val util = LoadingDataTestPrepare()
-        println("congig file: ${System.getenv("PRODUCTION_CONFIG")}")
+        println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         config = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
         util.initDataBase()
     }

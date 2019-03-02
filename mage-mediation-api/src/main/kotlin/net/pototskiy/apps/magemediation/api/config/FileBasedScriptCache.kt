@@ -57,4 +57,3 @@ class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache 
         }
     }
 }
-

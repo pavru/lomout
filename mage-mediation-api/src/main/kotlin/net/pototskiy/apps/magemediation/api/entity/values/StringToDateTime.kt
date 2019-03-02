@@ -16,7 +16,6 @@ fun String.stringToDate(locale: Locale): DateTime {
     }
 }
 
-
 fun String.stringToDateTime(pattern: String): DateTime {
     val format = DateTimeFormat.forPattern(pattern)
     return try {

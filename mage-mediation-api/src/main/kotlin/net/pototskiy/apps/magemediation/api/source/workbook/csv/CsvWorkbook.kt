@@ -10,18 +10,17 @@ import java.io.File
 import java.net.URL
 import java.util.*
 
-
 class CsvWorkbook(
     private val sourceURL: URL,
     private val csvFormat: CSVFormat,
     val workbookLocale: Locale = DEFAULT_LOCALE
 ) : Workbook {
 
-    private var reader = sourceURL.openStream().reader()//file.plugins.reader()
+    private var reader = sourceURL.openStream().reader() // file.plugins.reader()
     private var _parser: CSVParser = csvFormat.parse(reader)
 
     override val name: String
-        get() = File(sourceURL.file).name //_fileName
+        get() = File(sourceURL.file).name // _fileName
     override val type: WorkbookType
         get() = WorkbookType.CSV
 

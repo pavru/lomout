@@ -24,7 +24,7 @@ class IvyResolver : GenericRepositoryWithBridge {
 
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
-    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = with (artifactCoordinates) {
+    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = with(artifactCoordinates) {
         val artifactId =
             if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
                 listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
@@ -66,8 +66,8 @@ class IvyResolver : GenericRepositoryWithBridge {
 
         val ivy = Ivy.newInstance(ivySettings)
 
-        val ivyfile = File.createTempFile("ivy", ".xml")
-        ivyfile.deleteOnExit()
+        val ivyFile = File.createTempFile("ivy", ".xml")
+        ivyFile.deleteOnExit()
 
         val moduleDescriptor = DefaultModuleDescriptor.newDefaultInstance(
             ModuleRevisionId.newInstance(artifactId[0], artifactId[1] + "-caller", "working")
@@ -80,17 +80,17 @@ class IvyResolver : GenericRepositoryWithBridge {
         )
         moduleDescriptor.addDependency(depsDescriptor)
 
-        //creates an ivy configuration file
-        XmlModuleDescriptorWriter.write(moduleDescriptor, ivyfile)
+        // creates an ivy configuration file
+        XmlModuleDescriptorWriter.write(moduleDescriptor, ivyFile)
 
         val resolveOptions = ResolveOptions().apply {
             confs = arrayOf("default")
-            log = LogOptions.LOG_QUIET
+            log = LogOptions.LOG_DEFAULT
             isOutputReport = false
         }
 
-        //init resolve report
-        val report = ivy.resolve(ivyfile.toURI().toURL(), resolveOptions)
+        // init resolve report
+        val report = ivy.resolve(ivyFile.toURI().toURL(), resolveOptions)
 
         return report.allArtifactsReports.map { it.localFile }
     }
@@ -124,3 +124,5 @@ class FilesAndIvyResolver :
         emptyList(),
         arrayListOf(DirectResolver(), IvyResolver()).asIterable()
     )
+
+fun mavenCentral() = "https://repo.maven.apache.org/maven2/"

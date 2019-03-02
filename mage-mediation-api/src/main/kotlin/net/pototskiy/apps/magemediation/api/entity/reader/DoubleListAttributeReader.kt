@@ -25,7 +25,7 @@ open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
                 input.stringValue
                     .split(delimiter)
                     .checkAndRemoveQuote(quote)
-                    .mapNotNull { stringValue ->
+                    .map { stringValue ->
                         try {
                             DoubleValue(stringValue.stringToDouble(locale.createLocale()))
                         } catch (e: ParseException) {

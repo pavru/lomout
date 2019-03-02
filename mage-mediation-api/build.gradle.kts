@@ -1,3 +1,4 @@
+import io.gitlab.arturbosch.detekt.detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -6,10 +7,12 @@ plugins {
     kotlin("jvm") version Versions.kotlin
     idea
     id("org.jetbrains.dokka") version Versions.dokka
+    `maven-publish`
+    id("io.gitlab.arturbosch.detekt") version Versions.detekt
 }
 
 group = "oooast-tools"
-version = "1.0-SNAPSHOT"
+version = "1.0.001"
 
 idea {
     module {
@@ -30,7 +33,7 @@ tasks.withType<KotlinCompile> {
     }
 }
 tasks.withType(DokkaTask::class) {
-    moduleName = "mage-mediation"
+    moduleName = "mage-mediation-api"
     outputFormat = "javadoc"
     outputDirectory = "$buildDir/javadoc"
 }
@@ -49,16 +52,24 @@ tasks.jar {
     from(project.the<SourceSetContainer>()["main"].output)
 //    include("net/pototskiy/apps/magemediation/**")
 //    include("META_INF/**")
-}
+    from({
+        configurations.runtimeClasspath.get()
+            .filter { it.name.endsWith("jar") && it.name.contains("ivy")}
+            .map { zipTree(it) }
+    })}
 
 artifacts {
     add("spi", tasks["jar"])
 }
 
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).all {
+tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
         noReflect = false
+        freeCompilerArgs = freeCompilerArgs + listOf(
+            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+            "-Xuse-experimental=kotlin.Experimental"
+        )
     }
 }
 
@@ -66,16 +77,29 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
+tasks.named<Test>("test") {
+    maxHeapSize = "2G"
+    minHeapSize = "1G"
+    val travisBuildBir = System.getenv("TEST_DAT_DIR")
+    environment("TEST_DATA_DIR", "$projectDir/testdata")
+    environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    @Suppress("UnstableApiUsage")
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+//        events("passed", "skipped", "failed", "standardOut", "standardError")
+    }
+}
+
 repositories {
     jcenter()
-    maven("https://dl.bintray.com/kotlin/kotlin-eap")
 }
 
 dependencies {
     api(kotlin("stdlib-jdk8"))
     api(kotlin("reflect"))
 
-    implementation("org.apache.ivy:ivy:2.4.0")
+    implementation("org.apache.ivy", "ivy", Versions.ivy)
     // Database
     implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")
@@ -101,12 +125,34 @@ dependencies {
 //    implementation(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-jvm-host"))
     // Test
-    testImplementation("junit", "junit", "4.12")
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
+    testImplementation(kotlin("test-junit5"))
+    testImplementation("org.assertj", "assertj-core", Versions.assertj)
+    // Addon
+    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
-//compileKotlin {
-//    kotlinOptions.jvmTarget = "1.8"
-//}
-//compileTestKotlin {
-//    kotlinOptions.jvmTarget = "1.8"
-//}
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allJava)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifact(tasks["dokkaJar"])
+            artifact(tasks["sourcesJar"])
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
+}
+
+detekt {
+    config = files("${rootProject.projectDir}/detekt-config.yml")
+    failFast = false
+}

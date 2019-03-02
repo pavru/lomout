@@ -6,7 +6,6 @@ import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 
-
 data class Field(
     val name: String,
     val column: Int,

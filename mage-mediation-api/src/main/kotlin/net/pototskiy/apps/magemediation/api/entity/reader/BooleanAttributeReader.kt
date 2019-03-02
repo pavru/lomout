@@ -13,5 +13,4 @@ open class BooleanAttributeReader : AttributeReaderPlugin<BooleanType>() {
 
     override fun read(attribute: Attribute<out BooleanType>, input: Cell): BooleanType? =
         input.readBoolean(locale.createLocale())?.let { BooleanValue(it) }
-
 }

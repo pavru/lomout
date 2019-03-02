@@ -10,4 +10,3 @@ abstract class PipelineClassifierPlugin : Plugin() {
 }
 
 typealias PipelineClassifierFunction = (entities: PipelineDataCollection) -> Pipeline.CLASS
-

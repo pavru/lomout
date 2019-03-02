@@ -18,10 +18,10 @@ data class InputEntity(
     val extAttrMaps: AttrMapCollection
 ) {
     fun extendedAttributes(entity: DbEntity): Map<AnyTypeAttribute, Type?> {
-        return extAttrMaps.keys.map { attr->
+        return extAttrMaps.keys.map { attr ->
             @Suppress("UNCHECKED_CAST")
             attr to (attr.reader as AttributeReader<Type>)
-                .read(attr,AttributeCell(extAttrMaps[attr] as Attribute<Type>,entity.data[extAttrMaps[attr]]))
+                .read(attr, AttributeCell(extAttrMaps[attr] as Attribute<Type>, entity.data[extAttrMaps[attr]]))
         }.toMap()
     }
 

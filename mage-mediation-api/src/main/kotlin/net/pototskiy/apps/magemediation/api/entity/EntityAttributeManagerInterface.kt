@@ -4,7 +4,7 @@ import kotlin.reflect.KClass
 
 // TODO: 18.02.2019 define parameters
 interface EntityAttributeManagerInterface {
-    fun <T: Type>createAttribute(
+    fun <T : Type> createAttribute(
         name: AttributeName,
         typeClass: KClass<out T>,
         block: Builder<T>.() -> Unit
@@ -15,7 +15,7 @@ interface EntityAttributeManagerInterface {
 
     fun getAttributeOrNull(name: AttributeName): Attribute<*>?
 
-    abstract class Builder<T: Type>(
+    abstract class Builder<T : Type>(
         protected val name: AttributeName,
         protected val typeClass: KClass<out T>
     ) {

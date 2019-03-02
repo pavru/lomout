@@ -19,10 +19,9 @@ sealed class ValueTransformer<T : Any?, R : Any?> {
 
 class ValueTransformerWithPlugin<T : Any?, R : Any?>(
     val pluginClass: KClass<out ValueTransformPlugin<T, R>>,
-    val options: ValueTransformPlugin<T, R>.()->Unit
+    val options: ValueTransformPlugin<T, R>.() -> Unit
 ) : ValueTransformer<T, R>()
 
 class ValueTransformerWithFunction<T : Any?, R : Any?>(
     val function: ValueTransformFunction<T, R>
 ) : ValueTransformer<T, R>()
-

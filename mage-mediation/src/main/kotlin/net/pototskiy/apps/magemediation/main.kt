@@ -16,13 +16,11 @@ import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
 import java.io.File
-import kotlin.contracts.ExperimentalContracts
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
-@ExperimentalContracts
 fun main(args: Array<String>) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     val jCommander = JCommander.Builder()
@@ -46,7 +44,7 @@ fun main(args: Array<String>) {
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
     initDatabase(CONFIG_BUILDER.config.database)
     // TODO: 23.02.2019 remove
-    //EntityClass.initEntityCLassRegistrar()
+    // EntityClass.initEntityCLassRegistrar()
     setupPluginContext()
     DataLoader.load(CONFIG_BUILDER.config)
     DataMediator.mediate(CONFIG_BUILDER.config)

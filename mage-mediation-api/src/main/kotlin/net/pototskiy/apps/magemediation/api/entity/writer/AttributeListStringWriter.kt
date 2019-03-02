@@ -12,6 +12,6 @@ open class AttributeListStringWriter : AttributeWriterPlugin<AttributeListType>(
     var valueDelimiter: String = "="
 
     override fun write(attribute: Attribute<AttributeListType>, value: AttributeListType?, cell: Cell) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 }

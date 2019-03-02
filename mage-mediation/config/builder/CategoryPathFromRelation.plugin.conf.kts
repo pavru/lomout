@@ -24,7 +24,7 @@ class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
             }
             name = current?.let { it.readAttribute(nameAttr)?.value as? String }
         }
-        return StringValue("${root}${path.reversed().joinToString(separator)}").also {
+        return StringValue("$root${path.reversed().joinToString(separator)}").also {
             pathCache[entity.id.value] = WeakReference(it.value)
         }
     }

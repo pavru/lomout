@@ -22,7 +22,7 @@ sealed class SqlFilter {
 
 class SqlFilterWithPlugin(
     val pluginClass: KClass<out SqlFilterPlugin>,
-    val options: SqlFilterPlugin.()->Unit = {}
+    val options: SqlFilterPlugin.() -> Unit = {}
 ) : SqlFilter()
 
 class SqlFilterWithFunction(

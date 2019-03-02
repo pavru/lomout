@@ -26,4 +26,3 @@ open class AttributeReaderWithPlugin<T : Type>(
 open class AttributeReaderWithFunction<T : Type>(
     val function: AttributeReaderFunction<T>
 ) : AttributeReader<T>()
-

@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.plugable
 
 @Suppress("unused")
-class PluginException: Exception {
+class PluginException : Exception {
     constructor() : super()
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)

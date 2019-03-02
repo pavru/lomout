@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
@@ -10,7 +11,7 @@ abstract class EType(
     val inheritances: List<ETypeInheritance> = mutableListOf(),
     private val declaredAttributes: List<Attribute<*>>,
     val open: Boolean
-): NamedObject {
+) : NamedObject {
     override val name: String = type
 
     private val refinedAttributes = mutableListOf<Attribute<*>>()
@@ -49,6 +50,7 @@ abstract class EType(
         }
     }
 
+    @PublicApi
     fun isAttributeDefined(attribute: Attribute<*>) = attributes.any { it.name == attribute.name }
 
     @ConfigDsl

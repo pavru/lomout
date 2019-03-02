@@ -6,7 +6,7 @@ object Versions {
     val mysql = MysqlVersions(
         connector = "8.0.15"
     )
-    const val ivy = "2.4.0"
+    const val ivy = "2.5.0-rc1"
     const val guava = "27.0.1-jre"
     const val jcommander = "1.71"
     const val junit5 = "5.4.0"
@@ -15,6 +15,7 @@ object Versions {
     const val progressBar = "0.7.2"
     const val jline = "3.9.0"
     const val poi = "4.0.1"
+    const val detekt = "1.0.0-RC14"
 }
 
 data class MysqlVersions(

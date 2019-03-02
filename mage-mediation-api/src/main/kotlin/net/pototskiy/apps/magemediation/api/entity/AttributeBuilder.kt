@@ -20,7 +20,7 @@ sealed class AttributeBuilder<R : Type> {
 
 class AttributeBuilderWithPlugin<R : Type>(
     val pluginClass: KClass<out AttributeBuilderPlugin<R>>,
-    val options: AttributeBuilderPlugin<R>.()->Unit = {}
+    val options: AttributeBuilderPlugin<R>.() -> Unit = {}
 ) : AttributeBuilder<R>()
 
 class AttributeBuilderWithFunction<R : Type>(

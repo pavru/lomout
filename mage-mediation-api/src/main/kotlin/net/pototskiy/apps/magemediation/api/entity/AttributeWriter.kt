@@ -20,10 +20,9 @@ sealed class AttributeWriter<T : Type> {
 
 open class AttributeWriterWithPlugin<T : Type>(
     val pluginClass: KClass<out AttributeWriterPlugin<T>>,
-    val options: AttributeWriterPlugin<T>.()->Unit = {}
+    val options: AttributeWriterPlugin<T>.() -> Unit = {}
 ) : AttributeWriter<T>()
 
 open class AttributeWriterWithFunction<T : Type>(
     val function: AttributeWriterFunction<T>
 ) : AttributeWriter<T>()
-

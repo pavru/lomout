@@ -34,23 +34,23 @@ class CsvCell(
     }
 
     override fun setCellValue(value: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Double) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override val row: Row
@@ -67,7 +67,7 @@ class CsvCell(
             try {
                 this.stringToDouble(workbookLocale)
                 true
-            } catch (e:Exception) {
+            } catch (e: Exception) {
                 false
             } -> CellType.DOUBLE
             try {

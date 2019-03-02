@@ -4,7 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.*
 import kotlin.reflect.KClass
 
-val defaultReaders = mapOf<KClass<out Type>,AttributeReader<out Type>>(
+val defaultReaders = mapOf<KClass<out Type>, AttributeReader<out Type>>(
     AttributeListType::class to AttributeReaderWithPlugin(
         AttributeListReader::class
     ) {

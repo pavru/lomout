@@ -1,15 +1,12 @@
 //@file:Repository("","jcenter","https://jcenter.bintray.com/")
 //@file:DependsOn("org.jetbrains.exposed:exposed:0.12.2")
 
-import net.pototskiy.apps.magemediation.api.database.DbEntity
-import net.pototskiy.apps.magemediation.api.entity.*
-import net.pototskiy.apps.magemediation.api.plugable.*
 import org.apache.commons.collections4.map.LRUMap
-import org.jetbrains.kotlin.script.util.DependsOn
 import java.lang.ref.WeakReference
 import java.util.Collections.synchronizedMap
+import kotlin.collections.set
 
-public class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
+class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
     var separator: String = "/"
     var root: String = ""
 
@@ -32,7 +29,7 @@ public class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
             relationEntity = DbEntity.getByAttribute(eType, codeAttr, parent).firstOrNull() ?: break
             name = relationEntity.readAttribute(nameAttr)?.value as? String
         }
-        return StringValue("${root}${path.reversed().joinToString(separator)}").also {
+        return StringValue("$root${path.reversed().joinToString(separator)}").also {
             pathCache[entity.id.value] = WeakReference(it.value)
         }
     }

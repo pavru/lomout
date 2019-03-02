@@ -10,7 +10,7 @@ open class ConfigBuildHelper {
     fun popScope(): String = scopeStack.pop()
     fun currentScope(): String = scopeStack.peek()
 
-    val definedEntities = ConfigObjectRegistrar<EType>()
+    private val definedEntities = ConfigObjectRegistrar<EType>()
     val definedSourceFiles = ConfigObjectRegistrar<SourceFileDefinition>()
 
     fun initConfigBuilder() {

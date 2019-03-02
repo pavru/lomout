@@ -2,16 +2,23 @@
 @file:Import("builder/GroupPathFromRelation.plugin.conf.kts")
 @file:Import("builder/CategoryPathFromRelation.plugin.conf.kts")
 @file:Import("builder/RelationGroupNameFromGroup.plugin.conf.kts")
-@file:Import("transformer/GroupAddLeadingG.plugin.conf.kts")
-@file:Import("processor/MatchedCategoryProcessor.plugin.conf.kts")
-@file:Import("processor/UnMatchedCategoryProcessor.plugin.conf.kts")
-@file:Import("processor/UnMatchedGroupProcessor.plugin.conf.kts")
 @file:Import("reader/GroupToCategoryPath.plugin.conf.kts")
 @file:Import("pipeline/classifier/CategoryClassifier.plugin.conf.kts")
 @file:Import("pipeline/assembler/MatchedCategoryAssembler.plugin.conf.kts")
 @file:Import("pipeline/classifier/EntityTypeClassifier.plugin.conf.kts")
 @file:Import("pipeline/assembler/CategoryFromGroupAssembler.plugin.conf.kts")
 @file:Import("pipeline/assembler/MarkCategoryToRemove.plugin.conf.kts")
+
+import OnecGroupToLong_plugin_conf.*
+import GroupPathFromRelation_plugin_conf.*
+import CategoryPathFromRelation_plugin_conf.*
+import RelationGroupNameFromGroup_plugin_conf.*
+import GroupToCategoryPath_plugin_conf.*
+import CategoryClassifier_plugin_conf.*
+import MatchedCategoryAssembler_plugin_conf.*
+import EntityTypeClassifier_plugin_conf.*
+import CategoryFromGroupAssembler_plugin_conf.*
+import MarkCategoryToRemove_plugin_conf.*
 
 config {
     database {
@@ -20,8 +27,7 @@ config {
             host("localhost")
             port(3306)
             user("root")
-            if (System.getProperty("os.name").toLowerCase().contains("linux"))
-            {
+            if (System.getProperty("os.name").toLowerCase().contains("linux")) {
                 password("")
             } else {
                 password("root")

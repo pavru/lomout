@@ -16,22 +16,22 @@ abstract class DbEntityClass(
     vararg attributeClasses: AttributeEntityClass<*, *>
 ) : IntEntityClass<DbEntity>(DbEntityTable, DbEntity::class.java) {
 
-    val myTable by lazy { super.table as DbEntityTable }
+    private val myTable by lazy { super.table as DbEntityTable }
     private val logger = LogManager.getLogger(DATABASE_LOG_NAME)
 
     @Suppress("MemberVisibilityCanBePrivate")
     protected val attributeClasses: List<AttributeEntityClass<*, *>> =
         attributeClasses.toList()
 
-    fun getEntitiesWithAttributes(etype: EType): List<DbEntity> {
-        return getEntities(etype).map {
+    fun getEntitiesWithAttributes(eType: EType): List<DbEntity> {
+        return getEntities(eType).map {
             readAttributes(it)
             it
         }
     }
 
-    fun getEntities(etype: EType): List<DbEntity> {
-        return transaction { find { myTable.entityType eq etype.type }.toList() }
+    fun getEntities(eType: EType): List<DbEntity> {
+        return transaction { find { myTable.entityType eq eType.type }.toList() }
     }
 
     private fun getAttributeClassFor(type: KClass<out Type>): AttributeEntityClass<*, *> =
@@ -39,7 +39,6 @@ abstract class DbEntityClass(
             type.sqlType().isInstance((it.table as AttributeTable<*>).value.columnType)
         }
             ?: throw DatabaseException("Value of type<${type::class.simpleName}> does not support sql column type or it is transient")
-
 
     fun getByAttribute(eType: EType, attribute: AnyTypeAttribute, value: Type): List<DbEntity> =
         getEntitiesByAttributes(eType, mapOf(attribute to value))
@@ -71,8 +70,8 @@ abstract class DbEntityClass(
     }
 
     fun readAttributes(entity: DbEntity): Map<AnyTypeAttribute, Type?> {
-        val etype = entity.eType
-        val types = etype.attributes
+        val eType = entity.eType
+        val types = eType.attributes
             .filterNot { it.isSynthetic || it.valueType == AttributeListType::class }
             .groupBy { it.valueType.sqlType() }.keys
         val dbValues = attributeClasses.filter {
@@ -85,7 +84,7 @@ abstract class DbEntityClass(
             v
         }.flatten().toMap()
         @Suppress("IMPLICIT_CAST_TO_ANY")
-        val v = etype.attributes.map { attr ->
+        val v = eType.attributes.map { attr ->
             attr to wrapAValue(
                 attr,
                 dbValues[attr.name.attributeName]?.let { valueList ->
@@ -100,7 +99,7 @@ abstract class DbEntityClass(
         }.toMap()
         entity.data.clear()
         entity.data.putAll(v)
-        etype.attributes.filter { it.isSynthetic }
+        eType.attributes.filter { it.isSynthetic }
             .forEach { entity.data[it] = readAttribute(entity, it) }
         return entity.data
     }
@@ -207,11 +206,11 @@ abstract class DbEntityClass(
         }
     }
 
-    fun insertEntity(etype: EType, data: Map<AnyTypeAttribute, Type>): DbEntity {
+    fun insertEntity(eType: EType, data: Map<AnyTypeAttribute, Type>): DbEntity {
         return transaction {
             val entity =
                 new {
-                    entityType = etype.type
+                    entityType = eType.type
                     touchedInLoading = true
                     previousStatus = EntityStatus.CREATED
                     currentStatus = EntityStatus.CREATED
@@ -225,9 +224,9 @@ abstract class DbEntityClass(
         }
     }
 
-    fun resetTouchFlag(etype: EType) {
+    fun resetTouchFlag(eType: EType) {
         transaction {
-            table.update({ getClassWhereClause(etype) }) {
+            table.update({ getClassWhereClause(eType) }) {
                 it[myTable.touchedInLoading] = false
             }
         }
@@ -237,10 +236,10 @@ abstract class DbEntityClass(
         myTable.entityType eq eType.type
     }
 
-    fun markEntitiesAsRemove(etype: EType) {
+    fun markEntitiesAsRemove(eType: EType) {
         transaction {
             table.update({
-                getClassWhereClause(etype)
+                getClassWhereClause(eType)
                     .and(myTable.touchedInLoading eq false)
                     .and(myTable.currentStatus neq EntityStatus.REMOVED)
             }
@@ -265,10 +264,10 @@ abstract class DbEntityClass(
         }
     }
 
-    fun updateAbsentAge(etype: EType) {
+    fun updateAbsentAge(eType: EType) {
         transaction {
             find {
-                getClassWhereClause(etype).and(myTable.currentStatus eq EntityStatus.REMOVED)
+                getClassWhereClause(eType).and(myTable.currentStatus eq EntityStatus.REMOVED)
             }.toList()
         }.forEach {
             val days = Duration(it.removed, TIMESTAMP).standardDays.toInt()
@@ -279,4 +278,3 @@ abstract class DbEntityClass(
 
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T> aliasColumn(alias: Alias<AttributeTable<*>>, column: Column<*>) = (alias[column] as Column<T>)
-

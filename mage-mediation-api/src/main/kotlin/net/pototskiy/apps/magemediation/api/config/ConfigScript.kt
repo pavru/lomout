@@ -6,18 +6,20 @@ import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
-import java.io.FileOutputStream
-import java.io.PrintStream
-import java.nio.file.Files
-import java.util.*
 import kotlin.script.experimental.annotations.KotlinScript
-import kotlin.script.experimental.api.*
-import kotlin.script.experimental.host.FileScriptSource
+import kotlin.script.experimental.api.ScriptAcceptedLocation
+import kotlin.script.experimental.api.ScriptCompilationConfiguration
+import kotlin.script.experimental.api.acceptedLocations
+import kotlin.script.experimental.api.baseClass
+import kotlin.script.experimental.api.compilerOptions
+import kotlin.script.experimental.api.defaultImports
+import kotlin.script.experimental.api.displayName
+import kotlin.script.experimental.api.fileExtension
+import kotlin.script.experimental.api.ide
+import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
-import kotlin.streams.toList
-
 
 @Suppress("DEPRECATION")
 @KotlinScript(
@@ -33,76 +35,58 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     displayName("Magento mediation config script")
     fileExtension("conf.kts")
     baseClass(ConfigScript::class)
-//    defaultImports(DependsOn::class, Repository::class, Import::class)
+    defaultImports(DependsOn::class, Repository::class, Import::class)
     defaultImports(
-        "org.jetbrains.kotlin.script.util.*"
-        , "net.pototskiy.apps.magemediation.api.*"
-        , "net.pototskiy.apps.magemediation.api.database.*"
-        , "net.pototskiy.apps.magemediation.api.config.*"
-        , "net.pototskiy.apps.magemediation.api.config.mediator.*"
-        , "net.pototskiy.apps.magemediation.api.plugable.*"
-        , "net.pototskiy.apps.magemediation.api.entity.*"
-        , "net.pototskiy.apps.magemediation.api.entity.values.*"
-        , "net.pototskiy.apps.magemediation.api.entity.reader.*"
-        , "net.pototskiy.apps.magemediation.api.entity.writer.*"
-        , "net.pototskiy.apps.magemediation.api.source.*"
-        , "net.pototskiy.apps.magemediation.api.source.workbook.*"
+        "org.jetbrains.kotlin.script.util.*",
+        "net.pototskiy.apps.magemediation.api.*",
+        "net.pototskiy.apps.magemediation.api.database.*",
+        "net.pototskiy.apps.magemediation.api.config.*",
+        "net.pototskiy.apps.magemediation.api.config.mediator.*",
+        "net.pototskiy.apps.magemediation.api.plugable.*",
+        "net.pototskiy.apps.magemediation.api.entity.*",
+        "net.pototskiy.apps.magemediation.api.entity.values.*",
+        "net.pototskiy.apps.magemediation.api.entity.reader.*",
+        "net.pototskiy.apps.magemediation.api.entity.writer.*",
+        "net.pototskiy.apps.magemediation.api.source.*",
+        "net.pototskiy.apps.magemediation.api.source.workbook.*"
     )
-    compilerOptions("-jvm-target", "1.8")
+    compilerOptions(
+        "-jvm-target", "1.8",
+        "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+        "-Xuse-experimental=kotlin.Experimental"
+    )
     jvm {
         dependenciesFromClassloader(classLoader = this::class.java.classLoader, wholeClasspath = true)
-        updateClasspath(checkAndGetExternalDeps())
+        checkAndGetExternalDeps(ConfigScriptCompilationConfiguration::class.java.classLoader)
+            .takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
     }
     ide {
         acceptedLocations(ScriptAcceptedLocation.Everywhere)
     }
     refineConfiguration {
-        beforeParsing { context ->
-            val scriptBaseDir = (context.script as? FileScriptSource)?.file?.absoluteFile?.parentFile
-            val files = Files.walk(scriptBaseDir?.toPath())
-                .map { it.toFile() }
-                .toList()
-                .filter { it.isFile && it.name.endsWith(".plugin.conf.kts") }
-
-            ScriptCompilationConfiguration(context.compilationConfiguration) {
-                if (files.isNotEmpty()) {
-                    defaultImports.append(files
-                        .map { it.name }
-                        .map {
-                            it.replace(".plugin.conf", "_plugin_conf")
-                                .replace(".kts", ".*")
-                        })
-                }
-            }.asSuccess()
-        }
         onAnnotations(DependsOn::class, Repository::class, Import::class, handler = KtsConfigurator())
     }
 })
 
-private fun isClassInPath(name: String): Boolean {
+private fun isClassInPath(name: String, classLoader: ClassLoader): Boolean {
     return try {
-        Class.forName(name, false, ConfigScriptCompilationConfiguration::class.java.classLoader)
+        Class.forName(name, false, classLoader)
         true
     } catch (e: ClassNotFoundException) {
         false
     }
 }
 
-private fun checkAndGetExternalDeps(): List<File> {
-    val resolver = GradleCacheResolver()
+private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
+    val resolver = IvyResolver()
     val deps = mutableListOf<File>()
-    if (!isClassInPath("org.jetbrains.kotlin.script.util.Import")) {
-        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.20") ?: emptyList())
+    if (!isClassInPath("org.jetbrains.kotlin.script.util.Import", classLoader)) {
+        resolver.tryAddRepository(mavenCentral())
+        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21") ?: emptyList())
+    }
+    if (!isClassInPath("net.pototskiy.apps.magemediation.api.config.Config", classLoader)) {
+        resolver.tryAddRepository(localMaven())
+        deps.addAll(resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration") ?: emptyList())
     }
     return deps
 }
-
-private fun debug(suffix: String, block: PrintStream.() -> Unit) {
-    val stream = PrintStream(FileOutputStream("c:/temp/config-script-$suffix.log", true))
-    stream.use {
-        it.println(Date().toString())
-        it.apply(block)
-    }
-}
-
-

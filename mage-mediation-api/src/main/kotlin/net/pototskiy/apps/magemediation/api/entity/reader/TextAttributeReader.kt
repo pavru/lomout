@@ -13,5 +13,4 @@ open class TextAttributeReader : AttributeReaderPlugin<TextType>() {
 
     override fun read(attribute: Attribute<out TextType>, input: Cell): TextType? =
         input.readString(locale.createLocale())?.let { TextValue(it) }
-
 }

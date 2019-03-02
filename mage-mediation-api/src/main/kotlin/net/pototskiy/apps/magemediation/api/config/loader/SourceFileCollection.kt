@@ -42,5 +42,4 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
             }
         }
     }
-
 }

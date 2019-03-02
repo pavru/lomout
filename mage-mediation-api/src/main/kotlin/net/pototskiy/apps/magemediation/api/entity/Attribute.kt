@@ -88,7 +88,7 @@ abstract class Attribute<T : Type>(
             validateKeyIsNotList()
             validateKeyIsNotNullable()
             @Suppress("UNCHECKED_CAST")
-            return EntityAttributeManager.createAttribute(AttributeName(entityType, name),typeClass) {
+            return EntityAttributeManager.createAttribute(AttributeName(entityType, name), typeClass) {
                 key(key)
                 nullable(nullable)
                 auto(false)
