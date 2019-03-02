@@ -10,9 +10,6 @@ interface EntityAttributeManagerInterface {
         block: Builder<T>.() -> Unit
     ): Attribute<T>
 
-    fun removeAttribute(name: AttributeName)
-    fun removeAttribute(attribute: Attribute<*>)
-
     fun getAttributeOrNull(name: AttributeName): Attribute<*>?
 
     abstract class Builder<T : Type>(
