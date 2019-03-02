@@ -38,9 +38,9 @@ import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import kotlin.collections.set
-import kotlin.contracts.ExperimentalContracts
 
 
+@Suppress("TooManyFunctions")
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LoaderAttributeLoadingTest {
@@ -103,7 +103,7 @@ class LoaderAttributeLoadingTest {
     @DisplayName("Entities should have right group_code and group_name")
     fun groupCodeAndNameTest(loadID: String) {
         loadEntities(loadID)
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { index, entity ->
+        DbEntity.getEntities(eType, true).forEachIndexed { index, entity ->
             assertThat(entity.data[codeAttr]?.value as String).isEqualTo("G00${index / 3 + 1}")
         }
     }
@@ -114,7 +114,7 @@ class LoaderAttributeLoadingTest {
     fun entityDescriptionTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("description")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { _, entity ->
+        DbEntity.getEntities(eType, true).forEachIndexed { _, entity ->
             assertThat(entity.data[attr]?.value as String)
                 .isEqualTo("description${entity.data[skuAttr]}")
         }
@@ -126,7 +126,7 @@ class LoaderAttributeLoadingTest {
     fun entityBoolValTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("bool_val")
-        DbEntity.getEntitiesWithAttributes(eType).forEach { entity ->
+        DbEntity.getEntities(eType, true).forEach { entity ->
             val sku = (entity.data[skuAttr]?.value as? String)?.toShort()
             assertThat(sku).isNotNull()
             val expected = sku!! < 4
@@ -140,7 +140,7 @@ class LoaderAttributeLoadingTest {
     fun entityDateValTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("date_val")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType, true).forEachIndexed { i, entity ->
             assertThat(entity.data[attr]?.value as DateTime).isEqualTo(
                 DateTimeFormat
                     .forPattern("d.M.yy")
@@ -155,7 +155,7 @@ class LoaderAttributeLoadingTest {
     fun entityDateTimeValTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("datetime_val")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType, true).forEachIndexed { i, entity ->
             (entity.data[attr]?.value as DateTime).isEqual(
                 DateTimeFormat.forPattern("d.M.yy H:m")
                     .parseDateTime("${i + 7}.${i + 7}.${i + 2007} ${i + 7}:${i + 7}")
@@ -169,7 +169,7 @@ class LoaderAttributeLoadingTest {
     fun entityStringListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("string_list")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType, true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<StringValue>)
                 .containsExactlyElementsOf((i + 1..i + 3).map { StringValue("val$it") })
@@ -182,12 +182,12 @@ class LoaderAttributeLoadingTest {
     fun entityBoolListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("bool_list")
-        DbEntity.getEntitiesWithAttributes(eType).forEach { entity ->
+        DbEntity.getEntities(eType,true).forEach { entity ->
             val sku = (entity.data[skuAttr] as? StringType)?.value?.toInt()
             assertThat(sku).isNotNull()
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<BooleanType>)
-                .containsExactlyElementsOf((0..2).toList().map { BooleanValue(((sku!!-1) and (4 shr it)) != 0) })
+                .containsExactlyElementsOf((0..2).toList().map { BooleanValue(((sku!! - 1) and (4 shr it)) != 0) })
         }
     }
 
@@ -197,7 +197,7 @@ class LoaderAttributeLoadingTest {
     fun entityLongListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("long_list")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType,true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<LongType>)
                 .containsExactlyElementsOf((10..12).toList().map { LongValue((it + i + 1).toLong()) })
@@ -210,7 +210,7 @@ class LoaderAttributeLoadingTest {
     fun entityDoubleListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("double_list")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType,true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<DoubleType>)
                 .containsExactlyElementsOf(
@@ -225,7 +225,7 @@ class LoaderAttributeLoadingTest {
     fun entityDateListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("date_list")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType,true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<DateType>)
                 .containsExactlyElementsOf(
@@ -246,7 +246,7 @@ class LoaderAttributeLoadingTest {
     fun entityDateTimeListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("datetime_list")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType,true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<DateTimeType>)
                 .containsExactlyElementsOf(
@@ -267,7 +267,7 @@ class LoaderAttributeLoadingTest {
     fun entityNested1Test(loadID: String) {
         loadEntities(loadID)
         val attr = attr("nested1")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType,true).forEachIndexed { i, entity ->
             assertThat(entity.data[attr]?.value as Long).isEqualTo((i + 11).toLong())
         }
     }
@@ -278,7 +278,7 @@ class LoaderAttributeLoadingTest {
     fun entityNested2Test(loadID: String) {
         loadEntities(loadID)
         val attr = attr("nested2")
-        DbEntity.getEntitiesWithAttributes(eType).forEachIndexed { i, entity ->
+        DbEntity.getEntities(eType,true).forEachIndexed { i, entity ->
             assertThat(entity.data[attr]?.value as Long).isEqualTo((i + 12).toLong())
         }
     }

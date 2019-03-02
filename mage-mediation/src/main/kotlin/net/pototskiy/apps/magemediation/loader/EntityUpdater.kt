@@ -9,7 +9,7 @@ import net.pototskiy.apps.magemediation.api.entity.Type
 class EntityUpdater(private val eType: EType) {
 
     fun update(data: Map<AnyTypeAttribute, Type?>) {
-        var entity = DbEntity.getEntityByKeys(eType, data)
+        var entity = DbEntity.getEntitiesByAttributes(eType, data, true).firstOrNull()
         val filteredData = data.filterNot { it.key.isSynthetic || it.key.valueType is AttributeListType }
         entity?.wasUnchanged()
         if (entity == null) {
