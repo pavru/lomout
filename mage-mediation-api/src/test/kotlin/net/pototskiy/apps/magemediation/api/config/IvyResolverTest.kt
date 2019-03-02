@@ -1,5 +1,9 @@
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.config.resolver.IvyResolver
+import net.pototskiy.apps.magemediation.api.config.resolver.jCenter
+import net.pototskiy.apps.magemediation.api.config.resolver.localMaven
+import net.pototskiy.apps.magemediation.api.config.resolver.mavenCentral
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -9,9 +13,13 @@ internal class IvyResolverTest {
     fun localResolveTest() {
         if (System.getenv("TRAVIS_BUILD_DIR") == null) {
             val resolver = IvyResolver()
-            resolver.tryAddRepository(localMaven())
-            val deps = resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration")
+            assertThat(resolver.tryAddRepository(localMaven())).isTrue()
+            assertThat(resolver.tryAddRepository(jCenter())).isTrue()
+            val deps = resolver.tryResolve("oooast-tools:mage-mediation-api:1.0-SNAPSHOT")
             assertThat(deps).isNotEmpty
+            assertThat(deps?.filter {
+                it.isFile && it.name == "mage-mediation-api-1.0-SNAPSHOT.jar" }
+            ).isNotEmpty
         } else {
             assertThat(true).isTrue()
         }
@@ -20,8 +28,15 @@ internal class IvyResolverTest {
     @Test
     fun remoteResolveTest() {
         val resolver = IvyResolver()
-        resolver.tryAddRepository("https://repo.maven.apache.org/maven2/")
-        val deps = resolver.tryResolve("org.jetbrains.kotlin:kotlin-stdlib:latest.integration")
+        assertThat(resolver.tryAddRepository(mavenCentral())).isTrue()
+        var deps = resolver.tryResolve("org.jetbrains.kotlin:kotlin-stdlib:1.3.21")
+        assertThat(deps).isNotEmpty
+        deps = resolver.tryResolve("org.jetbrains.exposed:exposed:0.12.2")
+        assertThat(deps).isEmpty()
+        assertThat(
+            resolver.tryAddRepository(jCenter())
+        ).isTrue()
+        deps = resolver.tryResolve("org.jetbrains.exposed:exposed:0.12.2")
         assertThat(deps).isNotEmpty
     }
 }

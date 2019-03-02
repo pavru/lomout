@@ -2,6 +2,9 @@
 
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.config.resolver.IvyResolver
+import net.pototskiy.apps.magemediation.api.config.resolver.localMaven
+import net.pototskiy.apps.magemediation.api.config.resolver.mavenCentral
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
@@ -82,13 +85,17 @@ private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
     val deps = mutableListOf<File>()
     if (!isClassInPath("org.jetbrains.kotlin.script.util.Import", classLoader)) {
         resolver.tryAddRepository(mavenCentral())
-        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21")
-            ?: emptyList())
+        deps.addAll(
+            resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21")
+                ?: emptyList()
+        )
     }
     if (!isClassInPath("net.pototskiy.apps.magemediation.api.config.Config", classLoader)) {
         resolver.tryAddRepository(localMaven())
-        deps.addAll(resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration")
-            ?: emptyList())
+        deps.addAll(
+            resolver.tryResolve("oooast-tools:mage-mediation-api:1.0-SNAPSHOT")
+                ?: emptyList()
+        )
     }
     return deps
 }

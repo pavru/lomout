@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.config.resolver.FilesAndIvyResolver
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository

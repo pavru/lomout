@@ -1,5 +1,6 @@
-package net.pototskiy.apps.magemediation.api.config
+package net.pototskiy.apps.magemediation.api.config.resolver
 
+import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicRepositoryCoordinates
 import java.io.File
 import javax.xml.stream.XMLInputFactory
 
@@ -9,7 +10,9 @@ object LocalMavenRepository {
         val (m2Home, m2Conf) = getMavenLocalHome()
         if (!m2Conf.exists()) return null
         val settings = m2Conf.resolve("settings.xml")
-        val repoLocation = if (settings.exists()) readLocationFromSettings(settings) else null
+        val repoLocation = if (settings.exists()) readLocationFromSettings(
+            settings
+        ) else null
         return when {
             repoLocation != null && File(repoLocation).exists() -> File(repoLocation)
             m2Home.resolve("repository").exists() -> m2Home.resolve("repository")
@@ -43,4 +46,7 @@ object LocalMavenRepository {
     }
 }
 
-fun localMaven() = LocalMavenRepository.findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: ""
+fun localMaven() = BasicRepositoryCoordinates(
+    LocalMavenRepository.findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: "",
+    "maven:localMaven"
+)

@@ -11,27 +11,27 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import org.joda.time.DateTime
 
 class CsvCell(
-    private val _address: CellAddress,
-    private val _value: String,
-    private val _row: CsvRow
+    private val backingAddress: CellAddress,
+    private val backingValue: String,
+    private val backingRow: CsvRow
 ) : Cell {
     override val address: CellAddress
-        get() = _address
+        get() = backingAddress
     override val cellType: CellType
-        get() = _value.recognize()
+        get() = backingValue.recognize()
     override val booleanValue: Boolean
-        get() = _value.trim().stringToBoolean(workbookLocale)
+        get() = backingValue.trim().stringToBoolean(workbookLocale)
     override val longValue: Long
-        get() = _value.stringToLong(workbookLocale)
+        get() = backingValue.stringToLong(workbookLocale)
     override val doubleValue: Double
-        get() = _value.stringToDouble(workbookLocale)
+        get() = backingValue.stringToDouble(workbookLocale)
     override val stringValue: String
-        get() = _value
+        get() = backingValue
 
-    private val workbookLocale = (_row.sheet.workbook as CsvWorkbook).workbookLocale
+    private val workbookLocale = (backingRow.sheet.workbook as CsvWorkbook).workbookLocale
 
     override fun asString(): String {
-        return _value
+        return backingValue
     }
 
     override fun setCellValue(value: String) {
@@ -55,7 +55,7 @@ class CsvCell(
     }
 
     override val row: Row
-        get() = _row
+        get() = backingRow
 
     private fun String.recognize(): CellType {
         return when {
