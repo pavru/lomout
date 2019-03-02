@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import io.gitlab.arturbosch.detekt.detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -9,6 +11,7 @@ plugins {
     id("org.jetbrains.dokka") version Versions.dokka
     `maven-publish`
     id("io.gitlab.arturbosch.detekt") version Versions.detekt
+    id("jacoco")
 }
 
 group = "oooast-tools"
@@ -43,6 +46,12 @@ tasks.register<Jar>("dokkaJar") {
     dependsOn("dokka")
     archiveClassifier.set("javadoc")
     from(file("$buildDir/javadoc"))
+}
+
+tasks.withType(JacocoReport::class.java).all {
+    reports {
+        xml.isEnabled = true
+    }
 }
 
 tasks.jar {

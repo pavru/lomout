@@ -26,6 +26,6 @@ addons:
     token:
       secure: CNlVAYt/tTGCqPWHw5RPNlySQUnJXbPp05vlZpdqx2EozpAHEBAczLjN+O3ghJrav1M/AsaAfE7/pp9BAYBmFiNKuJB5BnCVUBuncHOu1Alf7PAr5uyNiZHU2PlfleyMJHWzJCALQKL73qkBLrKG4TPjXYLw4HnX/rBoXJxIz4WuoLxw1Ty+oAMPLfpKcEndQYaK+kO9AsCQHIM3huuce4tePd20RRa5bSPFQ/Htx2kqzJ6PANA7OgKBInwgNtqprgqUKpJqCW93kJYOHlDLmBJ8Ms2cjwQPLbdOdfK/E+AchxlN1r4UX6zBAGJQBG1a1PUooH1RyRHrwAwy22mck5HQSWOCJO2JdL7obmr3TqZUrLdBMcX+wl6U+X8rxMavE22I2PUjFuPFzeP0MpeiaKxNwNAX4Bhwjs5RBhqjn8kGOuu2kov5IClPebFrVd1ByUz7UfeUzfjTUzoiUFoNaYaN3nqmt6TE65MaUY31KKS0j/ZF+IoOdWKSaXhor7VPmuquMa807OngrwpEtCpINiBcyWRYBXTnNhZr8Qol77zHUw5XMoTSvfcdX6VnF4pzuG9mq0RlYqzk0+3ZhUEFrZhXMHG+3hF6l+Iy+b35bhvh8E3p7ebP4TJNShUAM+Fzr0c2DlPFIVqx/R4nlLCYpL/tHchn6leG1TvoVdolR24=
 after_success:
-  - "./gradlew jacocoTestReport"
+  - ./gradlew jacocoTestReport
   - sonar-scanner
   - bash <(curl -s https://codecov.io/bash)
