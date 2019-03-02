@@ -37,6 +37,7 @@ data class ProductionLine(
             output = EntityTypeManager.getEntityType(name)
         }
 
+        @Suppress("ThrowsCount")
         fun build(): ProductionLine {
             validatePipeline(pipeline
                 ?: throw ConfigException("Production line must have plugins.pipeline"))

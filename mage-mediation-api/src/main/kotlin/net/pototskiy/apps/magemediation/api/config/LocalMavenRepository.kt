@@ -3,7 +3,7 @@ package net.pototskiy.apps.magemediation.api.config
 import java.io.File
 import javax.xml.stream.XMLInputFactory
 
-class LocalMavenRepository {
+object LocalMavenRepository {
 
     fun findLocalMavenRepo(): File? {
         val (m2Home, m2Conf) = getMavenLocalHome()
@@ -20,13 +20,15 @@ class LocalMavenRepository {
     private fun readLocationFromSettings(settings: File): String? {
         return settings.reader().use {
             val xmlReader = XMLInputFactory.newFactory().createXMLEventReader(it)
+            var location: String? = null
             while (xmlReader.hasNext()) {
                 val event = xmlReader.nextEvent()
                 if (event.isStartElement && event.asStartElement().name.localPart == "localRepository") {
-                    return@use xmlReader.nextEvent().asCharacters().data
+                    location = xmlReader.nextEvent().asCharacters().data
+                    break
                 }
             }
-            return@use null
+            location
         }
     }
 
@@ -41,4 +43,4 @@ class LocalMavenRepository {
     }
 }
 
-fun localMaven() = LocalMavenRepository().findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: ""
+fun localMaven() = LocalMavenRepository.findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: ""

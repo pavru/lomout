@@ -10,9 +10,13 @@ fun String.stringToDate(locale: Locale): DateTime {
     return try {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
-        throw SourceException("String can not be converted to date with locale<${locale.displayLanguage}_${locale.displayCountry}>.")
+        throw SourceException(
+            "String can not be converted to date with locale<${locale.displayLanguage}_${locale.displayCountry}>."
+        )
     } catch (e: UnsupportedOperationException) {
-        throw SourceException("String can not be converted to date with locale<${locale.displayLanguage}_${locale.displayCountry}>.")
+        throw SourceException(
+            "String can not be converted to date with locale<${locale.displayLanguage}_${locale.displayCountry}>."
+        )
     }
 }
 
@@ -32,9 +36,13 @@ fun String.stringToDateTime(locale: Locale): DateTime {
     return try {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
-        throw SourceException("String can not be converted to date-time with locale ${locale.displayLanguage}_${locale.displayCountry}.")
+        throw SourceException(
+            "String can not be converted to date-time with locale ${locale.displayLanguage}_${locale.displayCountry}."
+        )
     } catch (e: UnsupportedOperationException) {
-        throw SourceException("String can not be converted to date-time with locale ${locale.displayLanguage}_${locale.displayCountry}.")
+        throw SourceException(
+            "String can not be converted to date-time with locale ${locale.displayLanguage}_${locale.displayCountry}."
+        )
     }
 }
 

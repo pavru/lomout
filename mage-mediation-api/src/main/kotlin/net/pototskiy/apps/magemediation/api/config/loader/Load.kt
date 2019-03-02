@@ -18,7 +18,7 @@ data class Load(
     class Builder(private val eType: EType) {
         private var headersRow: Int = UNDEFINED_ROW
         private var rowsToSkip: Int = 0
-        private var maxAbsentDays: Int = 5
+        private var maxAbsentDays: Int = defaultAbsentDays
         private var sources: SourceDataCollection? = null
         private var fieldSets: FieldSetCollection? = null
 
@@ -61,7 +61,8 @@ data class Load(
                 maxAbsentDays,
                 eType,
                 sources,
-                fieldSets ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading")
+                fieldSets
+                    ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading")
             )
         }
 
@@ -75,7 +76,8 @@ data class Load(
 
         private fun validateFieldColumnDefinition() {
             var fields =
-                (fieldSets ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading"))
+                (fieldSets
+                    ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading"))
                     .map { it.fieldToAttr.toList() }
                     .flatten()
                     .toMap()
@@ -90,6 +92,10 @@ data class Load(
                             "has no column defined"
                 )
             }
+        }
+
+        companion object {
+            const val defaultAbsentDays = 5
         }
     }
 }

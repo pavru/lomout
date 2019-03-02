@@ -1,11 +1,43 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
-import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.magemediation.api.entity.AttributeListType
+import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
+import net.pototskiy.apps.magemediation.api.entity.BooleanListType
+import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
+import net.pototskiy.apps.magemediation.api.entity.BooleanType
+import net.pototskiy.apps.magemediation.api.entity.BooleanValue
+import net.pototskiy.apps.magemediation.api.entity.DateListType
+import net.pototskiy.apps.magemediation.api.entity.DateListValue
+import net.pototskiy.apps.magemediation.api.entity.DateTimeListType
+import net.pototskiy.apps.magemediation.api.entity.DateTimeListValue
+import net.pototskiy.apps.magemediation.api.entity.DateTimeType
+import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
+import net.pototskiy.apps.magemediation.api.entity.DateType
+import net.pototskiy.apps.magemediation.api.entity.DateValue
+import net.pototskiy.apps.magemediation.api.entity.DoubleListType
+import net.pototskiy.apps.magemediation.api.entity.DoubleListValue
+import net.pototskiy.apps.magemediation.api.entity.DoubleType
+import net.pototskiy.apps.magemediation.api.entity.DoubleValue
+import net.pototskiy.apps.magemediation.api.entity.LongListType
+import net.pototskiy.apps.magemediation.api.entity.LongListValue
+import net.pototskiy.apps.magemediation.api.entity.LongType
+import net.pototskiy.apps.magemediation.api.entity.LongValue
+import net.pototskiy.apps.magemediation.api.entity.StringListType
+import net.pototskiy.apps.magemediation.api.entity.StringListValue
+import net.pototskiy.apps.magemediation.api.entity.StringType
+import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.entity.TextListType
+import net.pototskiy.apps.magemediation.api.entity.TextListValue
+import net.pototskiy.apps.magemediation.api.entity.TextType
+import net.pototskiy.apps.magemediation.api.entity.TextValue
+import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.joda.time.DateTime
 
+@Suppress("ComplexMethod")
 fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
     if (value == null) return null
     @Suppress("UNCHECKED_CAST")

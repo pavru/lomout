@@ -82,11 +82,13 @@ private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
     val deps = mutableListOf<File>()
     if (!isClassInPath("org.jetbrains.kotlin.script.util.Import", classLoader)) {
         resolver.tryAddRepository(mavenCentral())
-        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21") ?: emptyList())
+        deps.addAll(resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21")
+            ?: emptyList())
     }
     if (!isClassInPath("net.pototskiy.apps.magemediation.api.config.Config", classLoader)) {
         resolver.tryAddRepository(localMaven())
-        deps.addAll(resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration") ?: emptyList())
+        deps.addAll(resolver.tryResolve("oooast-tools:mage-mediation-api:latest.integration")
+            ?: emptyList())
     }
     return deps
 }

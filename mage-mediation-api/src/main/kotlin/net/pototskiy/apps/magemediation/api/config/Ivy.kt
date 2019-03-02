@@ -24,20 +24,21 @@ class IvyResolver : GenericRepositoryWithBridge {
 
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
-    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = with(artifactCoordinates) {
-        val artifactId =
-            if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
-                listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
-            } else {
-                val stringCoordinates = string
-                if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
-                    stringCoordinates.split(':')
+    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
+        with(artifactCoordinates) {
+            val artifactId =
+                if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
+                    listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
                 } else {
-                    error("Unknown set of arguments to maven resolver: $stringCoordinates")
+                    val stringCoordinates = string
+                    if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
+                        stringCoordinates.split(':')
+                    } else {
+                        error("Unknown set of arguments to maven resolver: $stringCoordinates")
+                    }
                 }
-            }
-        resolveArtifact(artifactId)
-    }
+            resolveArtifact(artifactId)
+        }
 
     private val ivyResolvers = arrayListOf<URLResolver>()
 
@@ -102,7 +103,9 @@ class IvyResolver : GenericRepositoryWithBridge {
                 URLResolver().apply {
                     isM2compatible = true
                     name = repositoryCoordinates.name.takeIf { it.isValidParam() } ?: url.host
-                    addArtifactPattern("${url.toString().let { if (it.endsWith('/')) it else "$it/" }}$DEFAULT_ARTIFACT_PATTERN")
+                    addArtifactPattern(
+                        "${url.toString().let { if (it.endsWith('/')) it else "$it/" }}$DEFAULT_ARTIFACT_PATTERN"
+                    )
                 }
             )
             return true

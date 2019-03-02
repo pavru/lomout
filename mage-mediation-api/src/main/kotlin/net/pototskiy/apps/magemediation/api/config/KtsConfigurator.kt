@@ -6,42 +6,36 @@ import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
 import kotlin.script.dependencies.ScriptContents
 import kotlin.script.dependencies.ScriptDependenciesResolver
-import kotlin.script.experimental.api.*
+import kotlin.script.experimental.api.RefineScriptCompilationConfigurationHandler
+import kotlin.script.experimental.api.ResultWithDiagnostics
+import kotlin.script.experimental.api.ScriptCollectedData
+import kotlin.script.experimental.api.ScriptCompilationConfiguration
+import kotlin.script.experimental.api.ScriptConfigurationRefinementContext
+import kotlin.script.experimental.api.ScriptDiagnostic
+import kotlin.script.experimental.api.asDiagnostics
+import kotlin.script.experimental.api.asSuccess
+import kotlin.script.experimental.api.foundAnnotations
+import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.compat.mapLegacyDiagnosticSeverity
 import kotlin.script.experimental.jvm.compat.mapLegacyScriptPosition
 import kotlin.script.experimental.jvm.updateClasspath
 
+@Suppress("ReturnCount", "TooGenericExceptionCaught")
 class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
     private val resolver = FilesAndIvyResolver()
 
-    override operator fun invoke(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
+    override operator fun invoke(
+        context: ScriptConfigurationRefinementContext
+    ): ResultWithDiagnostics<ScriptCompilationConfiguration> {
         val diagnostics = arrayListOf<ScriptDiagnostic>()
 
-        fun report(
-            severity: ScriptDependenciesResolver.ReportSeverity,
-            message: String,
-            position: ScriptContents.Position?
-        ) {
-            diagnostics.add(
-                ScriptDiagnostic(
-                    message,
-                    mapLegacyDiagnosticSeverity(severity),
-                    context.script.locationId,
-                    mapLegacyScriptPosition(position)
-                )
-            )
-        }
-
-        val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations)?.takeIf { it.isNotEmpty() }
+        val annotations = context.collectedData
+            ?.get(ScriptCollectedData.foundAnnotations)?.takeIf { it.isNotEmpty() }
             ?: return context.compilationConfiguration.asSuccess()
 
         val scriptBaseDir = (context.script as? FileScriptSource)?.file?.parentFile
-        val importedSources = annotations.flatMap {
-            (it as? Import)?.paths?.map { sourceName ->
-                FileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
-            } ?: emptyList()
-        }
+        val importedSources = getImportScripts(annotations, scriptBaseDir)
 
         val resolvedClassPath = try {
             val scriptContents = object : ScriptContents {
@@ -50,9 +44,16 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
                 override val file: File? = null
                 override val text: CharSequence? = null
             }
-            resolver.resolve(scriptContents, emptyMap(), ::report, null).get()?.classpath?.toList()
-            // TODO: add diagnostics
+            resolver.resolve(
+                scriptContents,
+                emptyMap(),
+                { severity, message, position ->
+                    report(context, diagnostics, severity, message, position)
+                },
+                null
+            ).get()?.classpath?.toList()
         } catch (e: Throwable) {
+            @Suppress("SpreadOperator")
             return ResultWithDiagnostics.Failure(
                 *diagnostics.toTypedArray(),
                 e.asDiagnostics(path = context.script.locationId)
@@ -63,5 +64,33 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
             if (resolvedClassPath != null) updateClasspath(resolvedClassPath)
             if (importedSources.isNotEmpty()) importScripts.append(importedSources)
         }.asSuccess(diagnostics)
+    }
+
+    private fun getImportScripts(
+        annotations: List<Annotation>,
+        scriptBaseDir: File?
+    ): List<FileScriptSource> {
+        return annotations.flatMap {
+            (it as? Import)?.paths?.map { sourceName ->
+                FileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
+            } ?: emptyList()
+        }
+    }
+
+    private fun report(
+        context: ScriptConfigurationRefinementContext,
+        diagnostics: MutableList<ScriptDiagnostic>,
+        severity: ScriptDependenciesResolver.ReportSeverity,
+        message: String,
+        position: ScriptContents.Position?
+    ) {
+        diagnostics.add(
+            ScriptDiagnostic(
+                message,
+                mapLegacyDiagnosticSeverity(severity),
+                context.script.locationId,
+                mapLegacyScriptPosition(position)
+            )
+        )
     }
 }

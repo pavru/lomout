@@ -4,12 +4,29 @@ import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
-import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.magemediation.api.entity.Attribute
+import net.pototskiy.apps.magemediation.api.entity.AttributeCell
+import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
+import net.pototskiy.apps.magemediation.api.entity.AttributeName
+import net.pototskiy.apps.magemediation.api.entity.AttributeReader
+import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.plugable.SqlFilterPlugin
 import org.jetbrains.exposed.sql.Alias
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import java.util.*
+import kotlin.collections.Map
+import kotlin.collections.emptyList
+import kotlin.collections.get
+import kotlin.collections.map
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.collections.toList
+import kotlin.collections.toMap
 
 data class InputEntity(
     val entity: EType,

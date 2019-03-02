@@ -53,6 +53,7 @@ data class Pipeline(
             assembler = PipelineAssemblerWithPlugin(P::class, block as (PipelineAssemblerPlugin.() -> Unit))
         }
 
+        @Suppress("SpreadOperator")
         fun pipeline(vararg klass: CLASS, block: Builder.() -> Unit) {
             pipelines.add(Builder(*klass).apply(block).build())
         }
