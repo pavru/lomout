@@ -4,7 +4,12 @@ import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.reader.defaultReaders
 import net.pototskiy.apps.magemediation.api.entity.writer.defaultWriters
-import net.pototskiy.apps.magemediation.api.plugable.*
+import net.pototskiy.apps.magemediation.api.plugable.AttributeBuilderFunction
+import net.pototskiy.apps.magemediation.api.plugable.AttributeBuilderPlugin
+import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderFunction
+import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
+import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterFunction
+import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import kotlin.reflect.KClass
 
 abstract class Attribute<T : Type>(
@@ -36,6 +41,7 @@ abstract class Attribute<T : Type>(
         return name.fullName
     }
 
+    @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder<T : Type>(
         private val entityType: String,

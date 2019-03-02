@@ -8,9 +8,12 @@ import org.jetbrains.exposed.sql.VarCharColumnType
 enum class EntityStatus {
     CREATED, UPDATED, REMOVED, UNCHANGED
 }
+private const val STATUS_NAME_LENGTH = 10
 
 class EntityStatusColumnType : ColumnType() {
-    override fun sqlType(): String = VarCharColumnType(10).sqlType()
+    override fun sqlType(): String {
+        return VarCharColumnType(STATUS_NAME_LENGTH).sqlType()
+    }
 
     override fun valueFromDB(value: Any): Any {
         return when (value) {
