@@ -6,15 +6,15 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import org.apache.commons.csv.CSVParser
 
 class CsvSheet(
-    private val _workbook: CsvWorkbook
+    private val backingWorkbook: CsvWorkbook
 ) : Sheet {
     override val name: String
         get() = "default"
     override val workbook: Workbook
-        get() = _workbook
+        get() = backingWorkbook
 
     override fun get(row: Int): CsvRow {
-        val iterator = _workbook.parser.iterator()
+        val iterator = backingWorkbook.parser.iterator()
         var index = 0
         for (v in iterator) {
             if (index == row) {
@@ -33,5 +33,5 @@ class CsvSheet(
         CsvRowIterator(this)
 
     val parser: CSVParser
-        get() = _workbook.parser
+        get() = backingWorkbook.parser
 }

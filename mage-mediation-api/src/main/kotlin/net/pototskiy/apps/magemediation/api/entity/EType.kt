@@ -32,7 +32,9 @@ abstract class EType(
 
     fun addAttribute(attribute: Attribute<*>) {
         if (!open) {
-            throw DatabaseException("Attribute<${attribute.name.fullName}> can not be added, entity type<$type> is final(close)")
+            throw DatabaseException(
+                "Attribute<${attribute.name.fullName}> can not be added, entity type<$type> is final(close)"
+            )
         }
         refinedAttributes.add(attribute)
     }

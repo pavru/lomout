@@ -11,21 +11,15 @@ class AttributeListParser(
     private val valueQuote: String?,
     private val valueDelimiter: String
 ) {
-// TODO remove
-//    constructor(data: String, field: Map.Entry<Field, Attribute<*>>) : this(
-//        data,
-//        field.value.type.quote,
-//        field.value.type.delimiter,
-//        field.value.type.valueQuote,
-//        field.value.type.valueDelimiter
-//    )
 
     private val attrs: Map<String, String> = parse()
     operator fun get(row: Int): Array<String> =
         when (row) {
             0 -> attrs.keys.toTypedArray()
             1 -> attrs.values.toTypedArray()
-            else -> throw IndexOutOfBoundsException("${AttributeListParser::class.simpleName} has only two rows: 0 and 1")
+            else -> throw IndexOutOfBoundsException(
+                "${AttributeListParser::class.simpleName} has only two rows: 0 and 1"
+            )
         }
 
     private fun parse(): Map<String, String> {

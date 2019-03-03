@@ -18,3 +18,6 @@ val DEFAULT_LOCALE: Locale = Locale.getDefault()
 val TIMESTAMP = DateTime()
 
 const val ENTITY_TYPE_NAME_LENGTH = 100
+
+// Standard strings
+const val NOT_IMPLEMENTED = "not implemented"

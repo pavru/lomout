@@ -7,33 +7,16 @@ import net.pototskiy.apps.magemediation.api.entity.writer.defaultWriters
 import kotlin.reflect.KClass
 
 object EntityAttributeManager : EntityAttributeManagerInterface {
-    override fun getAttributeOrNull(name: AttributeName): Attribute<*>? {
-        val attr = attributeRegistry[name]
-        if (attr != null) {
-            return attr
-        } else {
-            val eType = EntityTypeManager.getEntityType(name.entityType)
-                ?: return null
-            return findInheritedAttribute(eType, name)
-        }
-    }
+    override fun getAttributeOrNull(name: AttributeName): Attribute<*>? = attributeRegistry[name]
+        ?: EntityTypeManager.getEntityType(name.entityType)?.let { findInheritedAttribute(it, name) }
 
     private fun findInheritedAttribute(eType: EType, name: AttributeName): Attribute<*>? {
-        eType.inheritances.forEach { inheritance ->
-            val attr = AttributeName(inheritance.parent.type, name.attributeName)
-            if (inheritance.include?.let { list -> attr in list.map { it.name } } != false &&
-                inheritance.exclude?.let { list -> attr !in list.map { it.name } } != false) {
-                attributeRegistry[attr]?.let {
-                    return it
-                }
-            }
+        var attr: Attribute<*>? = null
+        for (inheritance in eType.inheritances) {
+            attr = inheritance.findAttributeRecursive(name.attributeName)
+            if (attr != null) break
         }
-        eType.inheritances.forEach { inheritance ->
-            findInheritedAttribute(inheritance.parent, name)?.let {
-                return it
-            }
-        }
-        return null
+        return attr
     }
 
     override fun <T : Type> createAttribute(
@@ -47,18 +30,6 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
             }
             attributeRegistry[it.name] = it
         }
-    }
-
-    override fun removeAttribute(name: AttributeName) {
-        // TODO: 21.02.2019 refine entity type
-        attributeRegistry.remove(name)
-            ?: ConfigException("Attribute<$name> can not be remove from registry, it's not created yet")
-    }
-
-    override fun removeAttribute(attribute: Attribute<*>) {
-        // TODO: 21.02.2019 refine entity type
-        attributeRegistry.remove(attribute.name)
-            ?: ConfigException("Attribute<${attribute.name}> can not be remove from registry, it's not created yet")
     }
 
     fun cleanEntityAttributeConfiguration() {
@@ -104,7 +75,6 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
 
         @Suppress("UNCHECKED_CAST")
         override fun build(): Attribute<T> =
-        // TODO: 20.02.2019 Create default attribute plugins.reader and writer based on type
             object : Attribute<T>(
                 name,
                 typeClass,

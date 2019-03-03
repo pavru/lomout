@@ -29,6 +29,7 @@ open class BooleanListAttributeReader : AttributeReaderPlugin<BooleanListType>()
                 )
             )
             CellType.BLANK -> null
-            else -> throw PluginException("Reading Boolean from cell type<${input.cellType}}> is not supported, attribute<${attribute.name}:${attribute.valueType.simpleName}>")
+            else -> throw PluginException("Reading Boolean from cell type<${input.cellType}}> is not supported, " +
+                    "attribute<${attribute.name}:${attribute.valueType.simpleName}>")
         }
 }

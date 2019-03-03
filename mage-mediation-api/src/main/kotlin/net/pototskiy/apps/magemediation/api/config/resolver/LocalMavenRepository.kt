@@ -1,15 +1,18 @@
-package net.pototskiy.apps.magemediation.api.config
+package net.pototskiy.apps.magemediation.api.config.resolver
 
+import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicRepositoryCoordinates
 import java.io.File
 import javax.xml.stream.XMLInputFactory
 
-class LocalMavenRepository {
+object LocalMavenRepository {
 
     fun findLocalMavenRepo(): File? {
         val (m2Home, m2Conf) = getMavenLocalHome()
         if (!m2Conf.exists()) return null
         val settings = m2Conf.resolve("settings.xml")
-        val repoLocation = if (settings.exists()) readLocationFromSettings(settings) else null
+        val repoLocation = if (settings.exists()) readLocationFromSettings(
+            settings
+        ) else null
         return when {
             repoLocation != null && File(repoLocation).exists() -> File(repoLocation)
             m2Home.resolve("repository").exists() -> m2Home.resolve("repository")
@@ -20,13 +23,15 @@ class LocalMavenRepository {
     private fun readLocationFromSettings(settings: File): String? {
         return settings.reader().use {
             val xmlReader = XMLInputFactory.newFactory().createXMLEventReader(it)
+            var location: String? = null
             while (xmlReader.hasNext()) {
                 val event = xmlReader.nextEvent()
                 if (event.isStartElement && event.asStartElement().name.localPart == "localRepository") {
-                    return@use xmlReader.nextEvent().asCharacters().data
+                    location = xmlReader.nextEvent().asCharacters().data
+                    break
                 }
             }
-            return@use null
+            location
         }
     }
 
@@ -41,4 +46,7 @@ class LocalMavenRepository {
     }
 }
 
-fun localMaven() = LocalMavenRepository().findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: ""
+fun localMaven() = BasicRepositoryCoordinates(
+    LocalMavenRepository.findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: "",
+    "maven:localMaven"
+)

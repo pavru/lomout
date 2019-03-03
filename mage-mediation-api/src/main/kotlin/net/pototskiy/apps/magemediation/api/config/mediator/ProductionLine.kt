@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EType
@@ -26,17 +27,21 @@ data class ProductionLine(
             vararg klass: Pipeline.CLASS = arrayOf(Pipeline.CLASS.MATCHED, Pipeline.CLASS.UNMATCHED),
             block: Pipeline.Builder.() -> Unit
         ) {
+            @Suppress("SpreadOperator")
             pipeline = Pipeline.Builder(*klass).apply(block).build()
         }
 
+        @PublicApi
         fun output(name: String, block: EType.Builder.() -> Unit) {
             output = EType.Builder(name, false).apply(block).build()
         }
 
+        @PublicApi
         fun output(name: String) {
             output = EntityTypeManager.getEntityType(name)
         }
 
+        @Suppress("ThrowsCount")
         fun build(): ProductionLine {
             validatePipeline(pipeline
                 ?: throw ConfigException("Production line must have plugins.pipeline"))

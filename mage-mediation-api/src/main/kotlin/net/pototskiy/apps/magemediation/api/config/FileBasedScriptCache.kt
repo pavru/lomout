@@ -47,7 +47,9 @@ class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache 
         }
     }
 
-    private fun File.readCompiledScript(scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript<*> {
+    private fun File.readCompiledScript(
+        scriptCompilationConfiguration: ScriptCompilationConfiguration
+    ): CompiledScript<*> {
         return inputStream().use { fs ->
             ObjectInputStream(fs).use { os ->
                 (os.readObject() as KJvmCompiledScript<*>).apply {

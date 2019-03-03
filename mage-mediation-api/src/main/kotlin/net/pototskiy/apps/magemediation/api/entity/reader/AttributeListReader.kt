@@ -30,9 +30,11 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                     attribute.name.attributeName
                 )
                 val names = attrs[0][0]
-                    ?: throw SourceException("Can not read attributes from value<${input.stringValue}>, attribute<${attribute.name}:${attribute.valueType.simpleName}>")
+                    ?: throw SourceException("Can not read attributes from value<${input.stringValue}>, " +
+                            "attribute<${attribute.name}:${attribute.valueType.simpleName}>")
                 val values = attrs[0][1]
-                    ?: throw SourceException("Can not read attributes from value<${input.stringValue}>, attribute<${attribute.name}:${attribute.valueType.simpleName}>")
+                    ?: throw SourceException("Can not read attributes from value<${input.stringValue}>, " +
+                            "attribute<${attribute.name}:${attribute.valueType.simpleName}>")
                 AttributeListValue(
                     AttributeListValue(
                         names.mapIndexedNotNull { c, cell ->
@@ -45,7 +47,8 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                     )
                 )
             }
-            else -> throw SourceException("Reading attribute list from cell type<${input.cellType}> is not supported, attribute<${attribute.name}:${attribute.valueType.simpleName}>")
+            else -> throw SourceException("Reading attribute list from cell type<${input.cellType}> " +
+                    "is not supported, attribute<${attribute.name}:${attribute.valueType.simpleName}>")
         }
     }
 }

@@ -3,8 +3,15 @@ package net.pototskiy.apps.magemediation.api.entity
 import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.Type.Companion.TYPE_NOT_SUPPORT_SQL
+import net.pototskiy.apps.magemediation.api.entity.Type.Companion.typeToSqlMap
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.BooleanColumnType
+import org.jetbrains.exposed.sql.DateColumnType
+import org.jetbrains.exposed.sql.DoubleColumnType
+import org.jetbrains.exposed.sql.IColumnType
+import org.jetbrains.exposed.sql.LongColumnType
+import org.jetbrains.exposed.sql.TextColumnType
+import org.jetbrains.exposed.sql.VarCharColumnType
 import org.joda.time.DateTime
 import org.joda.time.ReadableDateTime
 import kotlin.reflect.KClass
@@ -29,23 +36,9 @@ sealed class Type {
     fun sqlType(): KClass<out IColumnType> {
         if (isTransient) {
             throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
-        }
-        return when (this) {
-            is BooleanListType -> BooleanColumnType::class
-            is LongListType -> LongColumnType::class
-            is DoubleListType -> DoubleColumnType::class
-            is StringListType -> VarCharColumnType::class
-            is TextListType -> TextColumnType::class
-            is DateListType -> DateColumnType::class
-            is DateTimeListType -> DateColumnType::class
-            is AttributeListType -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
-            is BooleanType -> BooleanColumnType::class
-            is LongType -> LongColumnType::class
-            is DoubleType -> DoubleColumnType::class
-            is StringType -> VarCharColumnType::class
-            is DateType -> DateColumnType::class
-            is DateTimeType -> DateColumnType::class
-            is TextType -> TextColumnType::class
+        } else {
+            return typeToSqlMap[this::class]
+                ?: throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
         }
     }
 
@@ -56,13 +49,31 @@ sealed class Type {
 
     companion object {
         const val TYPE_NOT_SUPPORT_SQL = "Type does not support sql column type"
+        val typeToSqlMap = mapOf(
+            BooleanListType::class to BooleanColumnType::class,
+            LongListType::class to LongColumnType::class,
+            DoubleListType::class to DoubleColumnType::class,
+            StringListType::class to VarCharColumnType::class,
+            DateListType::class to DateColumnType::class,
+            DateTimeListType::class to DateColumnType::class,
+            BooleanType::class to BooleanColumnType::class,
+            LongType::class to LongColumnType::class,
+            DoubleType::class to DoubleColumnType::class,
+            StringType::class to VarCharColumnType::class,
+            DateType::class to DateColumnType::class,
+            DateTimeType::class to DateColumnType::class,
+            TextType::class to TextColumnType::class,
+            TextListType::class to TextColumnType::class
+        )
     }
 }
 
 @PublicApi
 fun KClass<out Type>.isList(): Boolean = this.isSubclassOf(ListType::class)
+
 @PublicApi
 fun KClass<out Type>.isMap(): Boolean = this.isSubclassOf(MapType::class)
+
 @PublicApi
 fun KClass<out Type>.isSingle(): Boolean = !(this.isSubclassOf(ListType::class) || this.isSubclassOf(MapType::class))
 
@@ -70,24 +81,8 @@ inline fun <reified T : Type> KClass<out Type>.isTypeOf(): Boolean {
     return this.isSubclassOf(T::class)
 }
 
-fun KClass<out Type>.sqlType(): KClass<out IColumnType> = when (this) {
-    BooleanListType::class -> BooleanColumnType::class
-    LongListType::class -> LongColumnType::class
-    DoubleListType::class -> DoubleColumnType::class
-    StringListType::class -> VarCharColumnType::class
-    DateListType::class -> DateColumnType::class
-    DateTimeListType::class -> DateColumnType::class
-    AttributeListType::class -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
-    BooleanType::class -> BooleanColumnType::class
-    LongType::class -> LongColumnType::class
-    DoubleType::class -> DoubleColumnType::class
-    StringType::class -> VarCharColumnType::class
-    DateType::class -> DateColumnType::class
-    DateTimeType::class -> DateColumnType::class
-    TextType::class -> TextColumnType::class
-    TextListType::class -> TextColumnType::class
-    else -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
-}
+fun KClass<out Type>.sqlType(): KClass<out IColumnType> = typeToSqlMap[this]
+    ?: throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
 
 sealed class ListType<T>(override val value: List<T>, override val isTransient: Boolean = false) :
     Type(), List<T> by value {

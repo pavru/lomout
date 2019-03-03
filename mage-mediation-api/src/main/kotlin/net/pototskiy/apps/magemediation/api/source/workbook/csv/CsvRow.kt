@@ -6,36 +6,36 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 
 class CsvRow(
-    private val _row: Int,
-    private val _data: Array<String>,
-    private val _sheet: CsvSheet
+    private val backingRow: Int,
+    private val backingData: Array<String>,
+    private val backingSheet: CsvSheet
 ) : Row {
     override fun getOrEmptyCell(column: Int): Cell = get(column)
         ?: CsvCell(
             CellAddress(
-                _row,
+                backingRow,
                 column
             ), "", this
         )
 
     override val sheet: Sheet
-        get() = _sheet
+        get() = backingSheet
     override val rowNum: Int
-        get() = _row
+        get() = backingRow
 
     override fun get(column: Int): CsvCell? =
-        if (column < _data.size) {
+        if (column < backingData.size) {
             CsvCell(
                 CellAddress(
-                    _row,
+                    backingRow,
                     column
-                ), _data[column], this
+                ), backingData[column], this
             )
         } else {
             null
         }
 
-    override fun countCell(): Int = _data.size
+    override fun countCell(): Int = backingData.size
 
     override fun iterator(): Iterator<CsvCell?> =
         CsvCellIterator(this)

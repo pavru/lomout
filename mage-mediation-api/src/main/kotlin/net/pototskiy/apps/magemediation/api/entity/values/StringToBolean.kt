@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
-import net.pototskiy.apps.magemediation.api.plugable.PluginException
+import java.text.ParseException
 import java.util.*
 
 fun String.stringToBoolean(locale: Locale): Boolean {
@@ -12,7 +12,7 @@ fun String.stringToBoolean(locale: Locale): Boolean {
     return if (v in booleanString)
         v in booleanTrueString
     else
-        throw PluginException("Value<$this> can not converted to boolean")
+        throw ParseException("Value<$this> can not converted to boolean", 0)
 }
 
 private val stringBooleanMap = mapOf(

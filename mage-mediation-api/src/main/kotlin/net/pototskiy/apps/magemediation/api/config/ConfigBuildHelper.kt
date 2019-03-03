@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.api.config
 
 import net.pototskiy.apps.magemediation.api.config.loader.SourceFileDefinition
 import net.pototskiy.apps.magemediation.api.entity.EType
-import java.util.*
+import java.util.Stack
 
 open class ConfigBuildHelper {
     private val scopeStack = Stack<String>().apply { push("root") }

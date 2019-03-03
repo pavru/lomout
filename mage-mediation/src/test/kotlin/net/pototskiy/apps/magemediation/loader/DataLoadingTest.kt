@@ -23,7 +23,6 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import kotlin.contracts.ExperimentalContracts
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")
@@ -137,15 +136,20 @@ class DataLoadingTest {
                 @BeforeAll
                 fun initAll() {
                     val load = config.loader.loads.find {
-                        it.entity.name == "onec-product"
-                                && it.sources.first().file.file.name.endsWith("test.attributes.xls")
-                                && it.sources.first().sheet.definition == "name:test-stock"
+                        it.entity.name == "onec-product" &&
+                                it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
+                                it.sources.first().sheet.definition == "name:test-stock"
                     }
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
                     val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, "sku"))!!
-                    val entity = DbEntity.getEntityByKeys(eType, mapOf(skuAttr to StringValue("2")))!!
+                    val entity = DbEntity.getEntitiesByAttributes(
+                        eType,
+                        mapOf(skuAttr to StringValue("2")),
+                        true
+                    ).first()
+                    @Suppress("MagicNumber")
                     transaction { entity.removed = DateTime().minusDays(11) }
                     loadEntities(load, workbook)
                 }

@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
+import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -30,22 +31,22 @@ class AttributeCell(
     override val stringValue: String = _value
 
     override fun setCellValue(value: String) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Long) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Double) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 }

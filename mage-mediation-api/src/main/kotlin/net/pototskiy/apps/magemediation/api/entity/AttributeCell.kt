@@ -1,6 +1,11 @@
 package net.pototskiy.apps.magemediation.api.entity
 
-import net.pototskiy.apps.magemediation.api.source.workbook.*
+import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
+import net.pototskiy.apps.magemediation.api.source.workbook.Cell
+import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
+import net.pototskiy.apps.magemediation.api.source.workbook.CellType
+import net.pototskiy.apps.magemediation.api.source.workbook.Row
+import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 
@@ -44,8 +49,10 @@ class AttributeCell<T : Type>(
     override val doubleValue: Double
         get() = when {
             attribute.valueType.isTypeOf<DoubleType>() -> (aValue as DoubleValue).value
-            attribute.valueType.isTypeOf<DateType>() -> HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
-            attribute.valueType.isTypeOf<DateTimeType>() -> HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
+            attribute.valueType.isTypeOf<DateType>() ->
+                HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
+            attribute.valueType.isTypeOf<DateTimeType>() ->
+                HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val stringValue: String
@@ -65,7 +72,8 @@ class AttributeCell<T : Type>(
                 (aValue as DoubleListValue).value.joinToString(",") { it.toString() }
             attribute.valueType.isTypeOf<StringListType>() ->
                 (value as StringListValue).value.joinToString(",")
-            attribute.valueType.isTypeOf<DateListType>() -> (aValue as DateListValue).value.joinToString(",") { it.toString() }
+            attribute.valueType.isTypeOf<DateListType>() ->
+                (aValue as DateListValue).value.joinToString(",") { it.toString() }
             attribute.valueType.isTypeOf<DateTimeListType>() ->
                 (aValue as DateTimeListValue).value.joinToString(",") { it.toString() }
             attribute.valueType.isTypeOf<AttributeListType>() -> ""
@@ -79,23 +87,23 @@ class AttributeCell<T : Type>(
     }
 
     override fun setCellValue(value: String) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Long) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Double) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

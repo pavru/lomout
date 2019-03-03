@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
+import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
@@ -12,6 +13,6 @@ open class AttributeListStringWriter : AttributeWriterPlugin<AttributeListType>(
     var valueDelimiter: String = "="
 
     override fun write(attribute: Attribute<AttributeListType>, value: AttributeListType?, cell: Cell) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 }

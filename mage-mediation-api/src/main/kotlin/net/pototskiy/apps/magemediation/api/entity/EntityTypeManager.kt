@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
 
@@ -52,7 +53,9 @@ object EntityTypeManager : EntityTypeManagerInterface {
     }
 }
 
+@PublicApi
 operator fun EType.Companion.get(type: String): EType = EntityTypeManager.getEntityType(type)
     ?: throw DatabaseException("Entity<$type> is not defined")
 
+@PublicApi
 fun EType.Companion.getETypeOrNull(type: String) = EntityTypeManager.getEntityType(type)

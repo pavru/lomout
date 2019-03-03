@@ -18,11 +18,12 @@ fun String.stringToLong(locale: Locale): Long {
         isParseIntegerOnly = true
     }
     val position = ParsePosition(0)
-    val value = format.parse(this.trim(), position).toLong()
+    val value = format.parse(this.trim(), position)
+        ?: throw ParseException("String can not be parsed to long", position.index)
     if (position.index != this.trim().length) {
         throw ParseException("String contains extra characters", position.index)
     }
-    return value
+    return value.toLong()
 }
 
 /**

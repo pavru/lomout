@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
 import net.pototskiy.apps.magemediation.api.entity.values.stringToBoolean
 import net.pototskiy.apps.magemediation.api.entity.values.stringToDouble
 import net.pototskiy.apps.magemediation.api.entity.values.stringToLong
@@ -8,76 +9,89 @@ import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import org.joda.time.DateTime
+import java.text.ParseException
 
 class CsvCell(
-    private val _address: CellAddress,
-    private val _value: String,
-    private val _row: CsvRow
+    private val backingAddress: CellAddress,
+    private val backingValue: String,
+    private val backingRow: CsvRow
 ) : Cell {
     override val address: CellAddress
-        get() = _address
+        get() = backingAddress
     override val cellType: CellType
-        get() = _value.recognize()
+        get() = backingValue.recognize()
     override val booleanValue: Boolean
-        get() = _value.trim().stringToBoolean(workbookLocale)
+        get() = backingValue.trim().stringToBoolean(workbookLocale)
     override val longValue: Long
-        get() = _value.stringToLong(workbookLocale)
+        get() = backingValue.stringToLong(workbookLocale)
     override val doubleValue: Double
-        get() = _value.stringToDouble(workbookLocale)
+        get() = backingValue.stringToDouble(workbookLocale)
     override val stringValue: String
-        get() = _value
+        get() = backingValue
 
-    private val workbookLocale = (_row.sheet.workbook as CsvWorkbook).workbookLocale
+    private val workbookLocale = (backingRow.sheet.workbook as CsvWorkbook).workbookLocale
 
     override fun asString(): String {
-        return _value
+        return backingValue
     }
 
     override fun setCellValue(value: String) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Long) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: Double) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
+        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
     }
 
     override val row: Row
-        get() = _row
+        get() = backingRow
 
     private fun String.recognize(): CellType {
         return when {
-            try {
-                this.stringToLong(workbookLocale)
-                true
-            } catch (e: Exception) {
-                false
-            } -> CellType.LONG
-            try {
-                this.stringToDouble(workbookLocale)
-                true
-            } catch (e: Exception) {
-                false
-            } -> CellType.DOUBLE
-            try {
-                this.toLowerCase().trim().stringToBoolean(workbookLocale)
-                true
-            } catch (e: Exception) {
-                false
-            } -> CellType.BOOL
+            tryLong() -> CellType.LONG
+            tryDouble() -> CellType.DOUBLE
+            tryBoolean() -> CellType.BOOL
             this.isNotBlank() -> CellType.STRING
             else -> CellType.BLANK
+        }
+    }
+
+    private fun String.tryBoolean(): Boolean {
+        return try {
+            this.toLowerCase().trim().stringToBoolean(workbookLocale)
+            true
+        } catch (e: ParseException) {
+            false
+        }
+    }
+
+    private fun String.tryDouble(): Boolean {
+        return try {
+            this.stringToDouble(workbookLocale)
+            true
+        } catch (e: ParseException) {
+            false
+        }
+    }
+
+    private fun String.tryLong(): Boolean {
+        return try {
+            this.stringToLong(workbookLocale)
+            true
+        } catch (e: ParseException) {
+            false
         }
     }
 }

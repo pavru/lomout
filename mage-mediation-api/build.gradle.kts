@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "oooast-tools"
-version = "1.0.001"
+version = "1.0-SNAPSHOT"
 
 idea {
     module {

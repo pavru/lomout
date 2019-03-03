@@ -15,26 +15,24 @@ class PipelineData(
 
     operator fun get(attribute: String): Type? {
         val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entity.eType.type, attribute))
-        if (attr != null) {
-            return data[attr]
-        } else if (inputEntity.entityExtension != null) {
-            val extAttr = EntityAttributeManager.getAttributeOrNull(
-                AttributeName(inputEntity.entityExtension.type, attribute)
-            ) ?: return null
-            return extData[extAttr]
+        return when {
+            attr != null -> data[attr]
+            inputEntity.entityExtension != null ->
+                EntityAttributeManager.getAttributeOrNull(
+                    AttributeName(inputEntity.entityExtension.type, attribute)
+                )?.let { extData[it] }
+            else -> null
         }
-        return null
     }
 
     fun findAttribute(name: String): Attribute<*>? {
         val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entity.eType.type, name))
-        if (attr != null) {
-            return attr
-        } else if (inputEntity.entityExtension != null) {
-            return EntityAttributeManager.getAttributeOrNull(
+        return when {
+            attr != null -> attr
+            inputEntity.entityExtension != null -> EntityAttributeManager.getAttributeOrNull(
                 AttributeName(inputEntity.entityExtension.type, name)
-            ) ?: return null
+            )
+            else -> null
         }
-        return null
     }
 }

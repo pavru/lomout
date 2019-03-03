@@ -41,7 +41,7 @@ idea {
 }
 
 kotlin {
- }
+}
 
 sourceSets {
     create("config") {
@@ -124,13 +124,13 @@ repositories {
 dependencies {
 
     configImplementation(kotlin("script-util"))
-    configImplementation("oooast-tools", "mage-mediation-api")
+    configImplementation("oooast-tools", "mage-mediation-api", "1.0-SNAPSHOT")
     configImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
     }
     testdataImplementation(kotlin("script-util"))
-    testdataImplementation("oooast-tools", "mage-mediation-api")
+    testdataImplementation("oooast-tools", "mage-mediation-api", "1.0-SNAPSHOT")
     testdataImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
@@ -173,7 +173,7 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
     // Addon
-    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
 //compileKotlin {

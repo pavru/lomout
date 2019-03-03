@@ -1,13 +1,20 @@
 package net.pototskiy.apps.magemediation.api.database
 
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.BooleanColumnType
+import org.jetbrains.exposed.sql.DateColumnType
+import org.jetbrains.exposed.sql.DoubleColumnType
+import org.jetbrains.exposed.sql.LongColumnType
+import org.jetbrains.exposed.sql.TextColumnType
+import org.jetbrains.exposed.sql.VarCharColumnType
 import org.joda.time.DateTime
+
+private const val VARCHAR_LENGTH = 1000
 
 object EntityVarchars : AttributeTable<String>(
     "entity_string",
     DbEntityTable,
-    VarCharColumnType(1000)
+    VarCharColumnType(VARCHAR_LENGTH)
 )
 
 class EntityVarchar(id: EntityID<Int>) : AttributeEntity<String>(id) {
