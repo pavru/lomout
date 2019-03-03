@@ -9,6 +9,7 @@ import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import org.joda.time.DateTime
+import java.text.ParseException
 
 class CsvCell(
     private val backingAddress: CellAddress,
@@ -59,26 +60,38 @@ class CsvCell(
 
     private fun String.recognize(): CellType {
         return when {
-            try {
-                this.stringToLong(workbookLocale)
-                true
-            } catch (e: Exception) {
-                false
-            } -> CellType.LONG
-            try {
-                this.stringToDouble(workbookLocale)
-                true
-            } catch (e: Exception) {
-                false
-            } -> CellType.DOUBLE
-            try {
-                this.toLowerCase().trim().stringToBoolean(workbookLocale)
-                true
-            } catch (e: Exception) {
-                false
-            } -> CellType.BOOL
+            tryLong() -> CellType.LONG
+            tryDouble() -> CellType.DOUBLE
+            tryBoolean() -> CellType.BOOL
             this.isNotBlank() -> CellType.STRING
             else -> CellType.BLANK
+        }
+    }
+
+    private fun String.tryBoolean(): Boolean {
+        return try {
+            this.toLowerCase().trim().stringToBoolean(workbookLocale)
+            true
+        } catch (e: ParseException) {
+            false
+        }
+    }
+
+    private fun String.tryDouble(): Boolean {
+        return try {
+            this.stringToDouble(workbookLocale)
+            true
+        } catch (e: ParseException) {
+            false
+        }
+    }
+
+    private fun String.tryLong(): Boolean {
+        return try {
+            this.stringToLong(workbookLocale)
+            true
+        } catch (e: ParseException) {
+            false
         }
     }
 }

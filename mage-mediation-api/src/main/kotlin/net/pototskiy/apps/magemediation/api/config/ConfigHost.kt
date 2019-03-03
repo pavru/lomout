@@ -4,8 +4,16 @@ import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.magemediation.api.CONFIG_LOG_NAME
 import org.apache.logging.log4j.LogManager
 import java.io.File
-import kotlin.script.experimental.api.*
+import kotlin.script.experimental.api.CompiledScript
+import kotlin.script.experimental.api.ResultValue
+import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptDiagnostic.Severity.*
+import kotlin.script.experimental.api.ScriptEvaluationConfiguration
+import kotlin.script.experimental.api.SourceCode
+import kotlin.script.experimental.api.constructorArgs
+import kotlin.script.experimental.api.enableScriptsInstancesSharing
+import kotlin.script.experimental.api.onFailure
+import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate

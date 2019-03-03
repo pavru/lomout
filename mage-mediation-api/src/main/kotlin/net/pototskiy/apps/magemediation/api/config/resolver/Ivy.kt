@@ -91,7 +91,7 @@ class IvyResolver : GenericRepositoryWithBridge {
 
         val resolveOptions = ResolveOptions().apply {
             confs = arrayOf("default")
-            log = LogOptions.LOG_DEFAULT
+            log = LogOptions.LOG_QUIET
             isOutputReport = false
         }
 

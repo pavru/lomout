@@ -32,6 +32,7 @@ class ConfigurationBuilderFromDSL(private val configFile: File) {
         return true
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun readConfig(): Config? {
         statusLog.info("Configuration loading has started from file: ${configFile.absolutePath}")
         var config: Config? = null

@@ -19,18 +19,15 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
             else
                 cell.cellType
             return when (type) {
-                org.apache.poi.ss.usermodel.CellType._NONE ->
-                    throw SourceException("Unsupported cell type, workbook: ${row.sheet.workbook.name}, sheet: ${row.sheet.name}, cell: ${address.row},${address.column}")
                 org.apache.poi.ss.usermodel.CellType.NUMERIC -> CellType.DOUBLE
                 org.apache.poi.ss.usermodel.CellType.STRING -> CellType.STRING
-                org.apache.poi.ss.usermodel.CellType.FORMULA ->
-                    throw SourceException("Unsupported cell type, workbook: ${row.sheet.workbook.name}, sheet: ${row.sheet.name}, cell: ${address.row},${address.column}")
                 org.apache.poi.ss.usermodel.CellType.BLANK -> CellType.BLANK
                 org.apache.poi.ss.usermodel.CellType.BOOLEAN -> CellType.BOOL
-                org.apache.poi.ss.usermodel.CellType.ERROR ->
-                    throw SourceException("Unsupported cell type, workbook: ${row.sheet.workbook.name}, sheet: ${row.sheet.name}, cell: ${address.row},${address.column}")
                 else ->
-                    throw SourceException("Unsupported cell type, workbook: ${row.sheet.workbook.name}, sheet: ${row.sheet.name}, cell: ${address.row},${address.column}")
+                    throw SourceException(
+                        "Unsupported cell type, " +
+                                "(${row.sheet.workbook.name}:${row.sheet.name}:${address.row}:${address.column})"
+                    )
             }
         }
     override val booleanValue: Boolean
@@ -65,21 +62,17 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
     }
 
     override fun asString(): String {
-        val format = NumberFormat.getInstance().apply {
-            isGroupingUsed = false
+        val format = NumberFormat.getInstance().apply { isGroupingUsed = false }
+        val type = if (cell.cellType == org.apache.poi.ss.usermodel.CellType.FORMULA) {
+            cell.cachedFormulaResultType
+        } else {
+            cell.cellType
         }
-        return when (cell.cellType) {
+        return when (type) {
             org.apache.poi.ss.usermodel.CellType.NUMERIC -> format.format(cell.numericCellValue)
             org.apache.poi.ss.usermodel.CellType.STRING -> cell.stringCellValue
             org.apache.poi.ss.usermodel.CellType.BLANK -> ""
             org.apache.poi.ss.usermodel.CellType.BOOLEAN -> cell.booleanCellValue.toString()
-            org.apache.poi.ss.usermodel.CellType.FORMULA -> when (cell.cachedFormulaResultType) {
-                org.apache.poi.ss.usermodel.CellType.NUMERIC -> format.format(cell.numericCellValue)
-                org.apache.poi.ss.usermodel.CellType.STRING -> cell.stringCellValue
-                org.apache.poi.ss.usermodel.CellType.BLANK -> ""
-                org.apache.poi.ss.usermodel.CellType.BOOLEAN -> cell.booleanCellValue.toString()
-                else -> throw SourceException("${cellType.name} is not supported")
-            }
             else -> throw SourceException("${cellType.name} is not supported")
         }
     }

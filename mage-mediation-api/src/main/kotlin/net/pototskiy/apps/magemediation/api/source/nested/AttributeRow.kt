@@ -6,24 +6,24 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 
 class AttributeRow(
-    private val _row: Int,
-    private val _data: Array<String>,
-    private val _sheet: AttributeSheet
+    private val backingRow: Int,
+    private val backingData: Array<String>,
+    private val backingSheet: AttributeSheet
 ) : Row {
     override fun getOrEmptyCell(column: Int): Cell = get(column)
 
     override val sheet: Sheet
-        get() = _sheet
+        get() = backingSheet
     override val rowNum: Int
-        get() = _row
+        get() = backingRow
 
-    override fun countCell(): Int = _data.count()
+    override fun countCell(): Int = backingData.count()
 
     override fun get(column: Int): Cell = AttributeCell(
         CellAddress(
-            _row,
+            backingRow,
             column
-        ), _data[column], this)
+        ), backingData[column], this)
 
     override fun iterator(): Iterator<Cell?> = AttributeCellIterator(this)
 }
