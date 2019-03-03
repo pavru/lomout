@@ -13,7 +13,7 @@ abstract class AttributeTable<V : Comparable<V>>(
 ) : IntIdTable(table) {
     val owner = reference("owner", owner, ReferenceOption.CASCADE)
     val index = integer("index")
-    val code = varchar("code", 300).index()
+    val code = varchar("code", codeNameLength).index()
     val value: Column<V> = registerColumn("value", valueColumnType)
 
     init {
@@ -22,5 +22,9 @@ abstract class AttributeTable<V : Comparable<V>>(
         }
         @Suppress("LeakingThis")
         uniqueIndex("unique_attr", this.owner, code, index)
+    }
+
+    companion object {
+        const val codeNameLength = 300
     }
 }

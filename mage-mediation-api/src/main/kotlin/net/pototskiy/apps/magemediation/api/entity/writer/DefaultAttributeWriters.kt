@@ -1,7 +1,23 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.magemediation.api.entity.*
+import net.pototskiy.apps.magemediation.api.entity.AttributeListType
+import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
+import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
+import net.pototskiy.apps.magemediation.api.entity.BooleanListType
+import net.pototskiy.apps.magemediation.api.entity.BooleanType
+import net.pototskiy.apps.magemediation.api.entity.DateListType
+import net.pototskiy.apps.magemediation.api.entity.DateTimeListType
+import net.pototskiy.apps.magemediation.api.entity.DateTimeType
+import net.pototskiy.apps.magemediation.api.entity.DateType
+import net.pototskiy.apps.magemediation.api.entity.DoubleListType
+import net.pototskiy.apps.magemediation.api.entity.DoubleType
+import net.pototskiy.apps.magemediation.api.entity.LongListType
+import net.pototskiy.apps.magemediation.api.entity.LongType
+import net.pototskiy.apps.magemediation.api.entity.StringListType
+import net.pototskiy.apps.magemediation.api.entity.StringType
+import net.pototskiy.apps.magemediation.api.entity.TextType
+import net.pototskiy.apps.magemediation.api.entity.Type
 import kotlin.reflect.KClass
 
 val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(

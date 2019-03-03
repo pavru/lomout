@@ -6,10 +6,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 
 class AttributeWorkbook(
     val parser: AttributeListParser,
-    private val _attribute_name: String
+    private val backingAttributeName: String
 ) : Workbook {
     override val name: String
-        get() = "workbook_for_$_attribute_name"
+        get() = "workbook_for_$backingAttributeName"
     override val type: WorkbookType
         get() = WorkbookType.ATTRIBUTE
 

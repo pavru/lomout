@@ -9,7 +9,7 @@ data class DatabaseServerConfig(
     @ConfigDsl
     class Builder {
         private var host: String = "localhost"
-        private var port: Int = 3306
+        private var port: Int = defaultPort
         private var user: String = "root"
         private var password: String = "root"
 
@@ -40,5 +40,9 @@ data class DatabaseServerConfig(
 
         fun build(): DatabaseServerConfig =
             DatabaseServerConfig(host, port, user, password)
+
+        companion object {
+            const val defaultPort = 3306
+        }
     }
 }

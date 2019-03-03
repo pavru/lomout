@@ -2,7 +2,14 @@ package net.pototskiy.apps.magemediation.api.entity.reader
 
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.sqlType
-import net.pototskiy.apps.magemediation.api.entity.values.*
+import net.pototskiy.apps.magemediation.api.entity.values.doubleToLong
+import net.pototskiy.apps.magemediation.api.entity.values.doubleToString
+import net.pototskiy.apps.magemediation.api.entity.values.longToString
+import net.pototskiy.apps.magemediation.api.entity.values.stringToBoolean
+import net.pototskiy.apps.magemediation.api.entity.values.stringToDate
+import net.pototskiy.apps.magemediation.api.entity.values.stringToDateTime
+import net.pototskiy.apps.magemediation.api.entity.values.stringToDouble
+import net.pototskiy.apps.magemediation.api.entity.values.stringToLong
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
