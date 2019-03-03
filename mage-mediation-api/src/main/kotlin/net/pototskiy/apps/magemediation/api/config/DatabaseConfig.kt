@@ -14,16 +14,14 @@ data class DatabaseConfig(
          *
          * @param name The database name
          */
-        @Suppress("unused")
-        fun Builder.name(name: String) {
+        fun name(name: String) {
             this.name = name
         }
 
         /**
          * Database server
          */
-        @Suppress("unused")
-        fun Builder.server(block: DatabaseServerConfig.Builder.() -> Unit) {
+        fun server(block: DatabaseServerConfig.Builder.() -> Unit) {
             server = DatabaseServerConfig.Builder().apply(block).build()
         }
 

@@ -89,9 +89,8 @@ java {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    val travisBuildBir = System.getenv("TEST_DAT_DIR")
-    environment("TEST_DATA_DIR", "$projectDir/testdata")
-    environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
+    environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
     useJUnitPlatform()
     testLogging {

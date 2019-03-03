@@ -75,7 +75,6 @@ config {
                 attribute<StringType>("group_code") { nullable() }
                 attribute<StringType>("group_name") { nullable() }
             }
-
         }
         loadEntity("onec-product") {
             fromSources { source { file("test-attributes-xls").sheet("test-stock").stopOnEmptyRow() } }
