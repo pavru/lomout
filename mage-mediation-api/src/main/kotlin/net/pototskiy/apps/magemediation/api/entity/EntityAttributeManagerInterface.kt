@@ -7,7 +7,7 @@ interface EntityAttributeManagerInterface {
     fun <T : Type> createAttribute(
         name: AttributeName,
         typeClass: KClass<out T>,
-        block: Builder<T>.() -> Unit
+        block: Builder<T>.() -> Unit = {}
     ): Attribute<T>
 
     fun getAttributeOrNull(name: AttributeName): Attribute<*>?

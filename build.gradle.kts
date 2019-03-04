@@ -36,6 +36,7 @@ repositories {
 tasks["sonarqube"].group = "verification"
 
 task<JacocoReport>("codeCoverageReport") {
+    group = "verification"
 
     // Gather execution data from all subprojects
     // (change this if you e.g. want to calculate unit test/integration test coverage separately)
