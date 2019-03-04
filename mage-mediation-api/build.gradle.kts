@@ -89,9 +89,8 @@ java {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    val travisBuildBir = System.getenv("TEST_DAT_DIR")
-    environment("TEST_DATA_DIR", "$projectDir/testdata")
-    environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
+    environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
     useJUnitPlatform()
     testLogging {
@@ -158,6 +157,26 @@ publishing {
     }
     repositories {
         mavenLocal()
+    }
+}
+
+sonarqube {
+    val coverageFiles = fileTree("$projectDir") {
+        include("build/jacoco/*.exec")
+    }
+    val javaBinaries = listOf(
+        "$projectDir/build/classes/kotlin/main"
+    )
+    val testBinaries = listOf(
+        "$projectDir/build/classes/kotlin/test"
+    )
+    properties {
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.java.source", "1.8")
+        property("sonar.java.binaries", javaBinaries.joinToString(","))
+        property("sonar.java.test.binaries", testBinaries.joinToString(","))
+//        property("sonar.jacoco.reportPaths", coverageFiles.joinToString(","))
+        property("sonar.coverage.jacoco.xmlReportPaths", "$projectDir/build/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 

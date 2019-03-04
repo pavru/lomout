@@ -25,8 +25,8 @@ idea {
         sourceDirs = setOf(
             file("$projectDir/src/main/kotlin"),
             file("$projectDir/src/main/java"),
-            file("$projectDir/config/."),
-            file("$rootProject/.testdata/.")
+            file("${rootProject.projectDir}/config/."),
+            file("${rootProject.projectDir}/testdata/.")
         )
         outputDir = file("build/classes/kotlin/main")
         testOutputDir = file("build/classes/kotlin/test")
@@ -46,7 +46,7 @@ kotlin {
 sourceSets {
     create("config") {
         java {
-            srcDir(file("$projectDir/config"))
+            srcDir(file("${rootProject.projectDir}/config"))
             exclude("**/*.kts")
         }
         compileClasspath += sourceSets.main.get().output
@@ -55,7 +55,7 @@ sourceSets {
 
     create("testdata") {
         java {
-            srcDir(file("$rootProject/.testdata"))
+            srcDir(file("${rootProject.projectDir}/testdata"))
             exclude("**/*.kts")
         }
         compileClasspath += sourceSets.main.get().output
@@ -74,9 +74,8 @@ val testdataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    val travisBuildBir = System.getenv("TEST_DAT_DIR")
-    environment("TEST_DATA_DIR", "$projectDir/testdata")
-    environment("PRODUCTION_CONFIG", "$projectDir/config/config.conf.kts")
+    environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
+    environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
@@ -195,19 +194,18 @@ sonarqube {
         include("build/jacoco/*.exec")
     }
     val javaBinaries = listOf(
-        "$projectDir/build/classes/kotlin/main",
-        "$projectDir/build/classes/java/main"
+        "$projectDir/build/classes/kotlin/main"
     )
     val testBinaries = listOf(
-        "$projectDir/build/classes/kotlin/test",
-        "$projectDir/build/classes/java/test"
+        "$projectDir/build/classes/kotlin/test"
     )
     properties {
         property("sonar.sourceEncoding", "UTF-8")
         property("sonar.java.source", "1.8")
-//        property("sonar.java.binaries", javaBinaries.joinToString(","))
-//        property("sonar.java.test.binaries", testBinaries.joinToString(","))
+        property("sonar.java.binaries", javaBinaries.joinToString(","))
+        property("sonar.java.test.binaries", testBinaries.joinToString(","))
 //        property("sonar.jacoco.reportPaths", coverageFiles.joinToString(","))
+        property("sonar.coverage.jacoco.xmlReportPaths", "$projectDir/build/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 

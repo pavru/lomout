@@ -1,0 +1,5 @@
+config {
+    database {
+        name("test)
+    }
+}
