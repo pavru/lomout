@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
+import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
@@ -49,6 +50,7 @@ fun String.stringToDateTime(locale: Locale): DateTime {
 fun DateTime.dateToString(locale: Locale): String =
     this.toString(DateTimeFormat.shortDate().withLocale(locale))
 
+@PublicApi
 fun DateTime.datetimeToString(locale: Locale): String =
     this.toString(DateTimeFormat.shortDateTime().withLocale(locale))
 

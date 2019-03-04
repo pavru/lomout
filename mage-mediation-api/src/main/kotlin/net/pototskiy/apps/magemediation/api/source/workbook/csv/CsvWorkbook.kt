@@ -50,12 +50,6 @@ class CsvWorkbook(
     val parser: CSVParser
         get() = _parser
 
-    fun reset() {
-        reader.close()
-        reader = sourceURL.openStream().reader()
-        _parser = csvFormat.parse(reader)
-    }
-
     override fun close() {
         _parser.close()
         reader.close()

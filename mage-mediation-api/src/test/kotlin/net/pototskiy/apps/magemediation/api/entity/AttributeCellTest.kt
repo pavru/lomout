@@ -76,6 +76,7 @@ internal class AttributeCellTest {
             listOf<(Cell) -> Unit>({ it.booleanValue }, { it.doubleValue })
         )
 
+        @Suppress("unused")
         @JvmStatic
         fun testDataSource(): Stream<TestData<*, *>> {
             return Stream.of(

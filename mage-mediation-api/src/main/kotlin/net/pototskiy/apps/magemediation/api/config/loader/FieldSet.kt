@@ -38,7 +38,7 @@ data class FieldSet(
         private var fields = mutableMapOf<Field, Attribute<*>>()
         @ConfigDsl
         var lastFieldName: String? = null
-        var lastField: Field? = null
+        private var lastField: Field? = null
 
         fun field(name: String, block: Field.Builder.() -> Unit = {}): Field {
             if (lastField != null) {

@@ -38,8 +38,6 @@ tasks["sonarqube"].group = "verification"
 task<JacocoReport>("codeCoverageReport") {
     group = "verification"
 
-    // Gather execution data from all subprojects
-    // (change this if you e.g. want to calculate unit test/integration test coverage separately)
     executionData.setFrom(fileTree(project.rootDir.absolutePath).apply {
         include("**/build/jacoco/*.exec")
     })
@@ -49,13 +47,9 @@ task<JacocoReport>("codeCoverageReport") {
         this@task.sourceSets(the<SourceSetContainer>()["main"])
     }
 
-//    // Add all relevant sourcesets from the subprojects
-//    subprojects.each {
-//        sourceSets it . sourceSets . main
-//    }
-//
     reports {
         xml.isEnabled = true
+        xml.destination = file("$buildDir/reports/jacoco/jacocoCoverageReport.xml")
         html.isEnabled = true
         html.destination = file("$buildDir/reports/jacoco/report.xml")
         csv.isEnabled = false
