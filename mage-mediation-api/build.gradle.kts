@@ -160,6 +160,26 @@ publishing {
     }
 }
 
+sonarqube {
+    val coverageFiles = fileTree("$projectDir") {
+        include("build/jacoco/*.exec")
+    }
+    val javaBinaries = listOf(
+        "$projectDir/build/classes/kotlin/main"
+    )
+    val testBinaries = listOf(
+        "$projectDir/build/classes/kotlin/test"
+    )
+    properties {
+        property("sonar.sourceEncoding", "UTF-8")
+        property("sonar.java.source", "1.8")
+        property("sonar.java.binaries", javaBinaries.joinToString(","))
+        property("sonar.java.test.binaries", testBinaries.joinToString(","))
+//        property("sonar.jacoco.reportPaths", coverageFiles.joinToString(","))
+        property("sonar.coverage.jacoco.xmlReportPaths", "$projectDir/build/reports/jacoco/test/jacocoTestReport.xml")
+    }
+}
+
 detekt {
     config = files("${rootProject.projectDir}/detekt-config.yml")
     failFast = false
