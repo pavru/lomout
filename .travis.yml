@@ -28,4 +28,4 @@ addons:
 after_success:
   - ./gradlew codeCoverageReport
   - sonar-scanner
-  - bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/codeCoverageReport/codeCoverageReport.xml
+  - bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/

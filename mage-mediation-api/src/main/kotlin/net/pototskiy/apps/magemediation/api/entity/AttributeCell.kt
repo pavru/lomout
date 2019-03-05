@@ -29,9 +29,9 @@ class AttributeCell<T : Type>(
                         attribute.valueType.isTypeOf<LongListType>() ||
                         attribute.valueType.isTypeOf<DoubleListType>() ||
                         attribute.valueType.isTypeOf<StringListType>() ||
-                        attribute.valueType.isTypeOf<DateListType>()
-                        || attribute.valueType.isTypeOf<DateTimeListType>() -> CellType.STRING
-                attribute.valueType.isTypeOf<AttributeListType>() -> CellType.BLANK
+                        attribute.valueType.isTypeOf<DateListType>() ||
+                        attribute.valueType.isTypeOf<DateTimeListType>() ||
+                        attribute.valueType.isTypeOf<AttributeListType>() -> CellType.STRING
                 else -> CellType.BLANK
             }
         }
@@ -50,14 +50,14 @@ class AttributeCell<T : Type>(
         get() = when {
             attribute.valueType.isTypeOf<DoubleType>() -> (aValue as DoubleValue).value
             attribute.valueType.isTypeOf<DateType>() ->
-                HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
+                HSSFDateUtil.getExcelDate((aValue as DateValue).value.toDate())
             attribute.valueType.isTypeOf<DateTimeType>() ->
                 HSSFDateUtil.getExcelDate((aValue as DateTimeValue).value.toDate())
             else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
         }
     override val stringValue: String
         get() = when {
-            attribute.valueType.isTypeOf<BooleanType>() -> if ((aValue as BooleanValue).value) "1" else "0"
+            attribute.valueType.isTypeOf<BooleanType>() -> (aValue as BooleanValue).value.toString()
             attribute.valueType.isTypeOf<LongType>() -> (aValue as LongValue).value.toString()
             attribute.valueType.isTypeOf<DoubleType>() -> (aValue as DoubleValue).value.toString()
             attribute.valueType.isTypeOf<StringType>() -> (aValue as StringValue).value
@@ -71,12 +71,15 @@ class AttributeCell<T : Type>(
             attribute.valueType.isTypeOf<DoubleListType>() ->
                 (aValue as DoubleListValue).value.joinToString(",") { it.toString() }
             attribute.valueType.isTypeOf<StringListType>() ->
-                (value as StringListValue).value.joinToString(",")
+                (aValue as StringListValue).value.joinToString(",")
             attribute.valueType.isTypeOf<DateListType>() ->
                 (aValue as DateListValue).value.joinToString(",") { it.toString() }
             attribute.valueType.isTypeOf<DateTimeListType>() ->
                 (aValue as DateTimeListValue).value.joinToString(",") { it.toString() }
-            attribute.valueType.isTypeOf<AttributeListType>() -> ""
+            attribute.valueType.isTypeOf<AttributeListType>() ->
+                (aValue as AttributeListValue).value.entries.joinToString(",") {
+                    "${it.key}=\"${it.value.asString()}\""
+                }
             else -> ""
         }
     override val row: Row

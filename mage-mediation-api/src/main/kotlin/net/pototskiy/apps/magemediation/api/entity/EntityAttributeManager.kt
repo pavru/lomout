@@ -19,6 +19,20 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
         return attr
     }
 
+    @Suppress("TooGenericExceptionCaught")
+    fun <T : Type> createAttribute(
+        name: String,
+        typeCLass: KClass<out T>,
+        block: EntityAttributeManagerInterface.Builder<T>.() -> Unit = {}
+    ): Attribute<T> {
+        val (eType, attrName) = try {
+            name.split(":")
+        } catch (e: Exception) {
+            throw ConfigException("Can not build attribute name from string")
+        }
+        return createAttribute(AttributeName(eType, attrName), typeCLass, block)
+    }
+
     override fun <T : Type> createAttribute(
         name: AttributeName,
         typeClass: KClass<out T>,

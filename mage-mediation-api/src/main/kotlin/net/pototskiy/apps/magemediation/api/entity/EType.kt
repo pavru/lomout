@@ -39,12 +39,21 @@ abstract class EType(
         refinedAttributes.add(attribute)
     }
 
-    fun getAttributeOrNull(name: String): Attribute<*>? =
-        EntityAttributeManager.getAttributeOrNull(AttributeName(type, name))
+    fun getAttributeOrNull(name: String): Attribute<*>? {
+        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(type, name))
+            ?: return null
+        return if (attr in attributes) attr else null
+    }
 
-    fun getAttribute(name: String): Attribute<*> =
-        EntityAttributeManager.getAttributeOrNull(AttributeName(type, name))
+    fun getAttribute(name: String): Attribute<*> {
+        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(type, name))
             ?: throw DatabaseException("Attribute<$name> is not defined in entity<$type>")
+        return if (attr in attributes) {
+            attr
+        } else {
+            throw DatabaseException("Attribute<$name> is not defined in entity<$type>")
+        }
+    }
 
     fun checkAttributeDefined(attribute: Attribute<*>) {
         if (!isAttributeDefined(attribute)) {
