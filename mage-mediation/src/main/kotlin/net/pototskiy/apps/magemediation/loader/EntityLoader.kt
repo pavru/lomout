@@ -231,5 +231,5 @@ class EntityLoader(
         } else {
             null
         } ?: fieldSets.find { it.mainSet }
-        ?: throw LoaderException("Row field set can not be found for loading entity type<${loadConfig.entity.type}>"))
+        ?: throw LoaderException("Row field set can not be found for loading entity type<${loadConfig.entity.name}>"))
 }

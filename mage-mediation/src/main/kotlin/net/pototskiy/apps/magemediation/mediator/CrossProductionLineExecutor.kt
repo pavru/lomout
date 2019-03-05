@@ -68,7 +68,7 @@ class CrossProductionLineExecutor {
                 PipelineData(
                     entity,
                     line.inputEntities.find {
-                        it.entity.name == entity.eType.type
+                        it.entity.name == entity.eType.name
                     }!!
                 ).also { pipelineDataCache[id.value] = it }
             } else {

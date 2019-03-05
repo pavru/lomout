@@ -2,7 +2,7 @@ import kotlin.collections.set
 
 class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
     override fun assemble(
-        target: EType,
+        target: EntityType,
         entities: PipelineDataCollection
     ): Map<AnyTypeAttribute, Type?> {
         val data = mutableMapOf<AnyTypeAttribute, Type?>()

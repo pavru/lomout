@@ -10,7 +10,7 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeName
 import net.pototskiy.apps.magemediation.api.entity.AttributeReader
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.Type
@@ -29,8 +29,8 @@ import kotlin.collections.toList
 import kotlin.collections.toMap
 
 data class InputEntity(
-    val entity: EType,
-    val entityExtension: EType?,
+    val entity: EntityType,
+    val entityExtension: EntityType?,
     val filter: SqlFilter?,
     val extAttrMaps: AttrMapCollection
 ) {
@@ -43,7 +43,7 @@ data class InputEntity(
     }
 
     @ConfigDsl
-    class Builder(@ConfigDsl val eType: EType) {
+    class Builder(@ConfigDsl val entityType: EntityType) {
         @ConfigDsl
         val attrPairs = mutableMapOf<Attribute<*>, Attribute<*>>()
         @ConfigDsl
@@ -64,9 +64,9 @@ data class InputEntity(
             from: String,
             block: Attribute.Builder<T>.() -> Unit = {}
         ) {
-            val destAttr = Attribute.Builder<T>(extendedName(eType.type), name, T::class).apply(block).build()
-            val origData = EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, from))
-                ?: throw ConfigException("Attribute<${AttributeName(eType.type, from)} is not defined>")
+            val destAttr = Attribute.Builder<T>(extendedName(entityType.name), name, T::class).apply(block).build()
+            val origData = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.name, from))
+                ?: throw ConfigException("Attribute<${AttributeName(entityType.name, from)} is not defined>")
             attrPairs[destAttr] = origData
         }
 
@@ -77,13 +77,13 @@ data class InputEntity(
                 null
             } else {
                 EntityTypeManager.createEntityType(
-                    extendedName(eType.type),
+                    extendedName(entityType.name),
                     emptyList(),
                     AttributeCollection(attrPairs.keys.toList()),
                     false
                 )
             }
-            return InputEntity(eType, extEntity, sqlFilter, AttrMapCollection(attrPairs))
+            return InputEntity(entityType, extEntity, sqlFilter, AttrMapCollection(attrPairs))
         }
     }
 }

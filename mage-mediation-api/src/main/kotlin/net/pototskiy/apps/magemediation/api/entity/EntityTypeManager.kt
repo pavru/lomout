@@ -4,18 +4,18 @@ import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
 
-object EntityTypeManager : EntityTypeManagerInterface {
-    private val entityTypeRegistry = mutableMapOf<String, EType>()
+object EntityTypeManager : EntityTypeManagerInterface, EntityAttributeManagerInterface by EntityAttributeManager {
+    private val entityTypeRegistry = mutableMapOf<String, EntityType>()
 
-    override fun getEntityType(type: String): EType? = entityTypeRegistry[type]
+    override fun getEntityType(name: String): EntityType? = entityTypeRegistry[name]
 
     override fun createEntityType(
         name: String,
-        inheritances: List<ETypeInheritance>,
+        inheritances: List<EntityTypeInheritance>,
         attributes: AttributeCollection,
         open: Boolean
-    ): EType {
-        return object : EType(name, inheritances, attributes, open) {}.also {
+    ): EntityType {
+        return object : EntityType(name, inheritances, attributes, open) {}.also {
             if (entityTypeRegistry.containsKey(name)) {
                 throw ConfigException("Entity type<$name> is already defined")
             }
@@ -23,28 +23,28 @@ object EntityTypeManager : EntityTypeManagerInterface {
         }
     }
 
-    override fun refineEntityAttributes(eType: String, attributes: AttributeCollection) {
-        entityTypeRegistry[eType]?.let { refineEntityAttributes(it, attributes) }
+    override fun refineEntityAttributes(name: String, attributes: AttributeCollection) {
+        entityTypeRegistry[name]?.let { refineEntityAttributes(it, attributes) }
     }
 
-    override fun refineEntityAttributes(eType: EType, attributes: AttributeCollection) =
-        attributes.forEach { eType.addAttribute(it) }
+    override fun refineEntityAttributes(entityType: EntityType, attributes: AttributeCollection) =
+        attributes.forEach { entityType.addAttribute(it) }
 
-    override fun refineEntityAttributes(eType: String, attribute: Attribute<*>) {
-        entityTypeRegistry[eType]?.addAttribute(attribute)
+    override fun refineEntityAttributes(name: String, attribute: Attribute<*>) {
+        entityTypeRegistry[name]?.addAttribute(attribute)
     }
 
-    override fun refineEntityAttributes(eType: EType, attribute: Attribute<*>) =
-        eType.addAttribute(attribute)
+    override fun refineEntityAttributes(entityType: EntityType, attribute: Attribute<*>) =
+        entityType.addAttribute(attribute)
 
-    override fun removeEntityType(eType: String) {
-        entityTypeRegistry.remove(eType)
-            ?: throw ConfigException("Entity eType<$eType> does not defined and can not be removed")
+    override fun removeEntityType(name: String) {
+        entityTypeRegistry.remove(name)
+            ?: throw ConfigException("Entity entityType<$name> does not defined and can not be removed")
     }
 
-    override fun removeEntityType(eType: EType) {
-        entityTypeRegistry.remove(eType.type)
-            ?: throw ConfigException("Entity type<${eType.type} does not defined and can not be removed")
+    override fun removeEntityType(entityType: EntityType) {
+        entityTypeRegistry.remove(entityType.name)
+            ?: throw ConfigException("Entity type<${entityType.name} does not defined and can not be removed")
     }
 
     fun cleanEntityTypeConfiguration() {
@@ -54,8 +54,8 @@ object EntityTypeManager : EntityTypeManagerInterface {
 }
 
 @PublicApi
-operator fun EType.Companion.get(type: String): EType = EntityTypeManager.getEntityType(type)
+operator fun EntityType.Companion.get(type: String): EntityType = EntityTypeManager.getEntityType(type)
     ?: throw DatabaseException("Entity<$type> is not defined")
 
 @PublicApi
-fun EType.Companion.getETypeOrNull(type: String) = EntityTypeManager.getEntityType(type)
+fun EntityType.Companion.getETypeOrNull(type: String) = EntityTypeManager.getEntityType(type)

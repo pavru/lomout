@@ -4,13 +4,13 @@ import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 
-class ETypeInheritance(
-    val parent: EType,
+class EntityTypeInheritance(
+    val parent: EntityType,
     val include: AttributeCollection? = null,
     val exclude: AttributeCollection? = null
 ) {
     private fun findAttribute(name: String): Attribute<*>? {
-        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type, name))
+        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(parent.name, name))
         return if (attr != null) {
             when {
                 include?.contains(attr) == true -> attr
@@ -28,7 +28,7 @@ class ETypeInheritance(
             attr
         } else {
             var iAttr: Attribute<*>? = null
-            for (inheritance in parent.inheritances) {
+            for (inheritance in parent.supers) {
                 iAttr = inheritance.findAttributeRecursive(name)
                 if (iAttr != null) break
             }
@@ -38,7 +38,7 @@ class ETypeInheritance(
 
     @Suppress("TooManyFunctions")
     @ConfigDsl
-    class Builder(private val parent: EType) {
+    class Builder(private val parent: EntityType) {
         private val includes = mutableListOf<Attribute<*>>()
         private val excludes = mutableListOf<Attribute<*>>()
 
@@ -46,7 +46,7 @@ class ETypeInheritance(
         fun include(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.includes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type, it))!!)
+                this.includes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.name, it))!!)
             }
         }
 
@@ -54,20 +54,20 @@ class ETypeInheritance(
         fun exclude(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.excludes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.type, it))!!)
+                this.excludes.add(EntityAttributeManager.getAttributeOrNull(AttributeName(parent.name, it))!!)
             }
         }
 
-        fun build(): ETypeInheritance = ETypeInheritance(
+        fun build(): EntityTypeInheritance = EntityTypeInheritance(
             parent,
             if (this.includes.isEmpty()) null else AttributeCollection(this.includes),
             if (this.excludes.isEmpty()) null else AttributeCollection(this.excludes)
         )
 
-        private fun checkThatParentHasAttributes(parent: EType, names: List<String>) {
+        private fun checkThatParentHasAttributes(parent: EntityType, names: List<String>) {
             val notFound = names.minus(parent.attributes.map { it.name.attributeName })
             if (notFound.isNotEmpty()) {
-                throw ConfigException("Entity type<${parent.type}> has no attribute<${notFound.joinToString(",")}>")
+                throw ConfigException("Entity type<${parent.name}> has no attribute<${notFound.joinToString(",")}>")
             }
         }
     }

@@ -4,18 +4,18 @@ import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 
 data class Load(
     val headersRow: Int,
     val rowsToSkip: Int,
     val maxAbsentDays: Int,
-    val entity: EType,
+    val entity: EntityType,
     val sources: SourceDataCollection,
     val fieldSets: FieldSetCollection
 ) {
     @ConfigDsl
-    class Builder(private val eType: EType) {
+    class Builder(private val entityType: EntityType) {
         private var headersRow: Int = UNDEFINED_ROW
         private var rowsToSkip: Int = 0
         private var maxAbsentDays: Int = defaultAbsentDays
@@ -40,7 +40,7 @@ data class Load(
 
         fun sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
             fieldSets = FieldSetCollection.Builder(
-                eType,
+                entityType,
                 headersRow != UNDEFINED_COLUMN,
                 sources,
                 headersRow
@@ -53,16 +53,16 @@ data class Load(
             val rowsToSkip = this.rowsToSkip
             val sources =
                 this.sources
-                    ?: throw ConfigException("Source files are not defined for entity type<${eType.type}> loading")
+                    ?: throw ConfigException("Source files are not defined for entity type<${entityType.name}> loading")
             validateFieldColumnDefinition()
             return Load(
                 headersRow,
                 rowsToSkip,
                 maxAbsentDays,
-                eType,
+                entityType,
                 sources,
                 fieldSets
-                    ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading")
+                    ?: throw ConfigException("Field set is not defined for entity type<${entityType.name}> loading")
             )
         }
 
@@ -71,13 +71,13 @@ data class Load(
                 ?.map { it.fieldToAttr.attributes }
                 ?.flatten()
                 ?.filter { it.auto } ?: emptyList()
-            autoAttrs.forEach { eType.addAttribute(it) }
+            autoAttrs.forEach { entityType.addAttribute(it) }
         }
 
         private fun validateFieldColumnDefinition() {
             var fields =
                 (fieldSets
-                    ?: throw ConfigException("Field set is not defined for entity type<${eType.type}> loading"))
+                    ?: throw ConfigException("Field set is not defined for entity type<${entityType.name}> loading"))
                     .map { it.fieldToAttr.toList() }
                     .flatten()
                     .toMap()

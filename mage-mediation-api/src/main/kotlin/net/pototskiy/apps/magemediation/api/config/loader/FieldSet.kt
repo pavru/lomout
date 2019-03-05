@@ -6,7 +6,7 @@ import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeName
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringType
@@ -28,7 +28,7 @@ data class FieldSet(
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder(
-        @property:ConfigDsl val entityType: EType,
+        @property:ConfigDsl val entityType: EntityType,
         private val name: String,
         private val mainSet: Boolean = false,
         private val withSourceHeaders: Boolean,
@@ -52,9 +52,9 @@ data class FieldSet(
 
         private fun addFiled(lastField: Field, lastAttribute: Attribute<*>?) {
             fields[lastField] = lastAttribute
-                ?: EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.type, lastField.name))
+                ?: EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.name, lastField.name))
                         ?: EntityAttributeManager.createAttribute(
-                    AttributeName(entityType.type, lastField.name),
+                    AttributeName(entityType.name, lastField.name),
                     StringType::class
                 ) {
                     key(false)
@@ -69,12 +69,12 @@ data class FieldSet(
             block: Attribute.Builder<T>.() -> Unit
         ): Attribute<*> =
             Attribute.Builder<T>(
-                entityType.type,
+                entityType.name,
                 name ?: throw ConfigException("Attribute name should be defined"),
                 T::class
             ).apply(block).build()
 
-        fun attribute(name: String) = AttributeName(entityType.type, name)
+        fun attribute(name: String) = AttributeName(entityType.name, name)
         fun attribute(entityType: String, name: String) = AttributeName(entityType, name)
 
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
@@ -115,9 +115,9 @@ data class FieldSet(
                         attr
                     )
                 } else {
-                    val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.type, field.name))
+                    val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.name, field.name))
                         ?: EntityAttributeManager.createAttribute(
-                            AttributeName(entityType.type, field.name), StringType::class
+                            AttributeName(entityType.name, field.name), StringType::class
                         ) {
                             key(false)
                             nullable(true)

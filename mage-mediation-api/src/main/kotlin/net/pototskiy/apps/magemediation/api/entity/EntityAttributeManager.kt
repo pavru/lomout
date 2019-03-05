@@ -10,9 +10,9 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
     override fun getAttributeOrNull(name: AttributeName): Attribute<*>? = attributeRegistry[name]
         ?: EntityTypeManager.getEntityType(name.entityType)?.let { findInheritedAttribute(it, name) }
 
-    private fun findInheritedAttribute(eType: EType, name: AttributeName): Attribute<*>? {
+    private fun findInheritedAttribute(entityType: EntityType, name: AttributeName): Attribute<*>? {
         var attr: Attribute<*>? = null
-        for (inheritance in eType.inheritances) {
+        for (inheritance in entityType.supers) {
             attr = inheritance.findAttributeRecursive(name.attributeName)
             if (attr != null) break
         }
@@ -106,6 +106,6 @@ object EntityAttributeManager : EntityAttributeManagerInterface {
     }
 }
 
-operator fun EType.get(attribute: String): Attribute<*> =
-    EntityAttributeManager.getAttributeOrNull(AttributeName(this.type, attribute))
-        ?: throw DatabaseException("Attribute<$attribute> is not defined in entity<${this.type}>")
+operator fun EntityType.get(attribute: String): Attribute<*> =
+    EntityAttributeManager.getAttributeOrNull(AttributeName(this.name, attribute))
+        ?: throw DatabaseException("Attribute<$attribute> is not defined in entity<${this.name}>")

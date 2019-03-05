@@ -1,19 +1,19 @@
 package net.pototskiy.apps.magemediation.api.entity
 
 // TODO: 18.02.2019 define parameters
-interface EntityTypeManagerInterface {
-    fun getEntityType(type: String): EType?
+interface EntityTypeManagerInterface : EntityAttributeManagerInterface {
+    fun getEntityType(name: String): EntityType?
     fun createEntityType(
         name: String,
-        inheritances: List<ETypeInheritance>,
+        inheritances: List<EntityTypeInheritance>,
         attributes: AttributeCollection,
         open: Boolean
-    ): EType
+    ): EntityType
 
-    fun refineEntityAttributes(eType: String, attributes: AttributeCollection)
-    fun refineEntityAttributes(eType: EType, attributes: AttributeCollection)
-    fun refineEntityAttributes(eType: String, attribute: Attribute<*>)
-    fun refineEntityAttributes(eType: EType, attribute: Attribute<*>)
-    fun removeEntityType(eType: String)
-    fun removeEntityType(eType: EType)
+    fun refineEntityAttributes(name: String, attributes: AttributeCollection)
+    fun refineEntityAttributes(entityType: EntityType, attributes: AttributeCollection)
+    fun refineEntityAttributes(name: String, attribute: Attribute<*>)
+    fun refineEntityAttributes(entityType: EntityType, attribute: Attribute<*>)
+    fun removeEntityType(name: String)
+    fun removeEntityType(entityType: EntityType)
 }

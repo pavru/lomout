@@ -7,7 +7,7 @@ import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.database.EntityStatus
 import net.pototskiy.apps.magemediation.api.entity.AttributeName
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringValue
@@ -28,7 +28,7 @@ import org.junit.jupiter.api.TestInstance
 @DisplayName("Loading entity from source file")
 class DataLoadingTest {
     private lateinit var config: Config
-    private lateinit var eType: EType
+    private lateinit var entityType: EntityType
 
     @BeforeAll
     fun initAll() {
@@ -38,14 +38,14 @@ class DataLoadingTest {
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         util.initDataBase()
-        eType = EntityTypeManager.getEntityType("onec-product")!!
+        entityType = EntityTypeManager.getEntityType("onec-product")!!
         transaction { DbEntityTable.deleteAll() }
     }
 
     @Test
     @DisplayName("There is no any loaded entity")
     fun thereIsNoAnyLoadedEntity() {
-        assertThat(DbEntity.getEntities(eType).count()).isZero()
+        assertThat(DbEntity.getEntities(entityType).count()).isZero()
     }
 
     @Nested
@@ -66,13 +66,13 @@ class DataLoadingTest {
         @Test
         @DisplayName("Six entities should be loaded")
         fun numberOfEntitiesTest() {
-            assertThat(DbEntity.getEntities(eType).count()).isEqualTo(6)
+            assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
         }
 
         @Test
         @DisplayName("All entities should be in state CREATED/CREATED")
         fun createdCreatedStateTest() {
-            DbEntity.getEntities(eType).forEach {
+            DbEntity.getEntities(entityType).forEach {
                 assertThat(it.previousStatus).isEqualTo(EntityStatus.CREATED)
                 assertThat(it.currentStatus).isEqualTo(EntityStatus.CREATED)
             }
@@ -99,13 +99,13 @@ class DataLoadingTest {
             @Test
             @DisplayName("Six entities should be loaded")
             fun numberOfEntitiesTes() {
-                assertThat(DbEntity.getEntities(eType).count()).isEqualTo(6)
+                assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
             }
 
             @Test
             @DisplayName("Four entities should be in state CREATED/UNCHANGED")
             fun createdCreatedStateTest() {
-                assertThat(DbEntity.getEntities(eType).filter {
+                assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.UNCHANGED
                 }.count()).isEqualTo(4)
@@ -114,7 +114,7 @@ class DataLoadingTest {
             @Test
             @DisplayName("One entities should be in state CREATED/UPDATED")
             fun createdUpdatedStateTest() {
-                assertThat(DbEntity.getEntities(eType).filter {
+                assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.UPDATED
                 }.count()).isEqualTo(1)
@@ -123,7 +123,7 @@ class DataLoadingTest {
             @Test
             @DisplayName("One entity should be in state CREATED/REMOVED")
             fun createdRemovedStateTest() {
-                assertThat(DbEntity.getEntities(eType).filter {
+                assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.REMOVED
                 }.count()).isEqualTo(1)
@@ -143,9 +143,9 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName(eType.type, "sku"))!!
+                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.name, "sku"))!!
                     val entity = DbEntity.getEntitiesByAttributes(
-                        eType,
+                        entityType,
                         mapOf(skuAttr to StringValue("2")),
                         true
                     ).first()
@@ -157,7 +157,7 @@ class DataLoadingTest {
                 @Test
                 @DisplayName("Five entities should be loaded")
                 fun numberOfEntitiesTest() {
-                    assertThat(DbEntity.getEntities(eType).count()).isEqualTo(5)
+                    assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(5)
                 }
             }
         }
@@ -175,7 +175,7 @@ class DataLoadingTest {
             )
             loader.load()
         }
-        eType = EntityTypeManager.getEntityType("onec-product")!!
+        entityType = EntityTypeManager.getEntityType("onec-product")!!
     }
 
     private fun getHSSFWorkbook(load: Load): HSSFWorkbook {

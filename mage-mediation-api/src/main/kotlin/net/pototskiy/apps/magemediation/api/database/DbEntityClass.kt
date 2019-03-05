@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.api.database
 
 import net.pototskiy.apps.magemediation.api.TIMESTAMP
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.Type
 import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.Column
@@ -29,21 +29,21 @@ abstract class DbEntityClass(
 
     private val myTable by lazy { super.table as DbEntityTable }
 
-    fun getEntities(eType: EType, withAttributes: Boolean = false): List<DbEntity> =
-        transaction { find { myTable.entityType eq eType.type }.toList() }.also { list ->
+    fun getEntities(entityType: EntityType, withAttributes: Boolean = false): List<DbEntity> =
+        transaction { find { myTable.entityType eq entityType.name }.toList() }.also { list ->
             if (withAttributes) list.forEach { it.readAttributes() }
         }
 
-    fun getByAttribute(eType: EType, attribute: AnyTypeAttribute, value: Type): List<DbEntity> =
-        getEntitiesByAttributes(eType, mapOf(attribute to value))
+    fun getByAttribute(entityType: EntityType, attribute: AnyTypeAttribute, value: Type): List<DbEntity> =
+        getEntitiesByAttributes(entityType, mapOf(attribute to value))
 
     fun getEntitiesByAttributes(
-        eType: EType,
+        entityType: EntityType,
         data: Map<AnyTypeAttribute, Type?>,
         onlyKeys: Boolean = false
     ): List<DbEntity> = transaction {
         var from: ColumnSet = myTable
-        var where = Op.build { myTable.entityType eq eType.type }
+        var where = Op.build { myTable.entityType eq entityType.name }
         val dataToUse = if (onlyKeys) data.filter { it.key.key } else data
         dataToUse.filterNot { it.value == null }.forEach { attr, value ->
             value as Type
@@ -61,11 +61,11 @@ abstract class DbEntityClass(
             .toList()
     }
 
-    fun insertEntity(eType: EType, data: Map<AnyTypeAttribute, Type>): DbEntity {
+    fun insertEntity(entityType: EntityType, data: Map<AnyTypeAttribute, Type>): DbEntity {
         return transaction {
             val entity =
                 new {
-                    entityType = eType.type
+                    this.entityType = entityType.name
                     touchedInLoading = true
                     previousStatus = EntityStatus.CREATED
                     currentStatus = EntityStatus.CREATED
@@ -79,22 +79,22 @@ abstract class DbEntityClass(
         }
     }
 
-    fun resetTouchFlag(eType: EType) {
+    fun resetTouchFlag(entityType: EntityType) {
         transaction {
-            table.update({ getClassWhereClause(eType) }) {
+            table.update({ getClassWhereClause(entityType) }) {
                 it[myTable.touchedInLoading] = false
             }
         }
     }
 
-    private fun getClassWhereClause(eType: EType): Op<Boolean> = Op.build {
-        myTable.entityType eq eType.type
+    private fun getClassWhereClause(entityType: EntityType): Op<Boolean> = Op.build {
+        myTable.entityType eq entityType.name
     }
 
-    fun markEntitiesAsRemove(eType: EType) {
+    fun markEntitiesAsRemove(entityType: EntityType) {
         transaction {
             table.update({
-                getClassWhereClause(eType)
+                getClassWhereClause(entityType)
                     .and(myTable.touchedInLoading eq false)
                     .and(myTable.currentStatus neq EntityStatus.REMOVED)
             }
@@ -106,10 +106,10 @@ abstract class DbEntityClass(
         }
     }
 
-    fun removeOldEntities(eType: EType, maxAge: Int) {
+    fun removeOldEntities(entityType: EntityType, maxAge: Int) {
         transaction {
             find {
-                getClassWhereClause(eType).and(
+                getClassWhereClause(entityType).and(
                     (myTable.absentDays greaterEq maxAge)
                             and (myTable.currentStatus eq EntityStatus.REMOVED)
                 )
@@ -119,10 +119,10 @@ abstract class DbEntityClass(
         }
     }
 
-    fun updateAbsentAge(eType: EType) {
+    fun updateAbsentAge(entityType: EntityType) {
         transaction {
             find {
-                getClassWhereClause(eType).and(myTable.currentStatus eq EntityStatus.REMOVED)
+                getClassWhereClause(entityType).and(myTable.currentStatus eq EntityStatus.REMOVED)
             }.toList()
         }.forEach {
             val days = Duration(it.removed, TIMESTAMP).standardDays.toInt()

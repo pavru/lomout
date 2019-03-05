@@ -8,8 +8,8 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 @Suppress("MagicNumber", "TooGenericExceptionCaught")
-@DisplayName("EType base functionality test")
-internal class ETypeBaseTest {
+@DisplayName("EntityType base functionality test")
+internal class EntityTypeBaseTest {
 
     private lateinit var attr1: Attribute<*>
     private lateinit var attr2: Attribute<*>
@@ -46,7 +46,7 @@ internal class ETypeBaseTest {
         assertThat(eType.open).isFalse()
         assertThatThrownBy { eType.addAttribute(attr3) }.isInstanceOf(DatabaseException::class.java)
         assertThat(eType["attr2"]).isEqualTo(attr2)
-        assertThat(EType["test1"]).isEqualTo(eType)
+        assertThat(EntityType["test1"]).isEqualTo(eType)
         try {
             eType.checkAttributeDefined(attr1)
             assertThat(true).isTrue()
@@ -90,7 +90,7 @@ internal class ETypeBaseTest {
         )
         val test2 = EntityTypeManager.createEntityType(
             "test2",
-            listOf(ETypeInheritance(test1)),
+            listOf(EntityTypeInheritance(test1)),
             AttributeCollection(listOf(attr4)),
             false
         )
@@ -98,7 +98,7 @@ internal class ETypeBaseTest {
             .hasSize(3)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2, attr4))
         assertThat(test2["attr2"]).isEqualTo(attr2)
-        assertThat(EType["test2"]).isEqualTo(test2)
+        assertThat(EntityType["test2"]).isEqualTo(test2)
         try {
             test2.checkAttributeDefined(attr1)
             assertThat(true).isTrue()
@@ -127,15 +127,15 @@ internal class ETypeBaseTest {
         )
         val test2 = EntityTypeManager.createEntityType(
             "test2",
-            listOf(ETypeInheritance(test1, AttributeCollection(listOf(attr1, attr3)))),
+            listOf(EntityTypeInheritance(test1, AttributeCollection(listOf(attr1, attr3)))),
             AttributeCollection(listOf(attr4)),
             false
         )
         val test3 = EntityTypeManager.createEntityType(
             "test3",
             listOf(
-                ETypeInheritance(test2, AttributeCollection(listOf(attr4, attr3))),
-                ETypeInheritance(test1, AttributeCollection(listOf(attr2)))
+                EntityTypeInheritance(test2, AttributeCollection(listOf(attr4, attr3))),
+                EntityTypeInheritance(test1, AttributeCollection(listOf(attr2)))
             ),
             AttributeCollection(listOf(attr5, attr6)),
             false
@@ -158,15 +158,15 @@ internal class ETypeBaseTest {
         )
         val test2 = EntityTypeManager.createEntityType(
             "test2",
-            listOf(ETypeInheritance(test1, null, AttributeCollection(listOf(attr2)))),
+            listOf(EntityTypeInheritance(test1, null, AttributeCollection(listOf(attr2)))),
             AttributeCollection(listOf(attr4)),
             false
         )
         val test3 = EntityTypeManager.createEntityType(
             "test3",
             listOf(
-                ETypeInheritance(test2, null, AttributeCollection(listOf(attr1, attr2))),
-                ETypeInheritance(test1, null, AttributeCollection(listOf(attr1, attr3)))
+                EntityTypeInheritance(test2, null, AttributeCollection(listOf(attr1, attr2))),
+                EntityTypeInheritance(test1, null, AttributeCollection(listOf(attr1, attr3)))
             ),
             AttributeCollection(listOf(attr5, attr6)),
             false
