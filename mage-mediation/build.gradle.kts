@@ -77,6 +77,7 @@ tasks.named<Test>("test") {
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     useJUnitPlatform()
+//    maxParallelForks = 8
     testLogging {
         events("passed", "skipped", "failed")
 //        events("passed", "skipped", "failed", "standardOut", "standardError")

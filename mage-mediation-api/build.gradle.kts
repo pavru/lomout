@@ -93,6 +93,7 @@ tasks.named<Test>("test") {
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
     useJUnitPlatform()
+//    maxParallelForks = 8
     testLogging {
         events("passed", "skipped", "failed")
 //        events("passed", "skipped", "failed", "standardOut", "standardError")

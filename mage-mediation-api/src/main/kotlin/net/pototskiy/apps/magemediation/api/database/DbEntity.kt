@@ -48,16 +48,6 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
         absentDays = 0
     }
 
-    fun wasRemoved(onlyCurrent: Boolean = false) = transaction {
-        previousStatus = if (onlyCurrent) {
-            previousStatus
-        } else {
-            currentStatus
-        }
-        currentStatus = EntityStatus.REMOVED
-        removed = TIMESTAMP
-    }
-
     fun wasUnchanged(onlyCurrent: Boolean = false) = transaction {
         touchedInLoading = true
         previousStatus = if (onlyCurrent) {
