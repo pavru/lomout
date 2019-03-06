@@ -21,9 +21,15 @@ import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
+@Execution(ExecutionMode.SAME_THREAD)
 class DataLoadingTest {
     private lateinit var config: Config
     private lateinit var entityType: EntityType

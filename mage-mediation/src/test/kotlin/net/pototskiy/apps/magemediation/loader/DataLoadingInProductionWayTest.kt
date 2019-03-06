@@ -18,10 +18,16 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 import java.io.ByteArrayOutputStream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Load data in production way")
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
+@Execution(ExecutionMode.SAME_THREAD)
 class DataLoadingInProductionWayTest {
 
     private lateinit var config: Config

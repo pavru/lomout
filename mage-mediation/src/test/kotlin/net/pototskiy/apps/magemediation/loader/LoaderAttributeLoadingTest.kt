@@ -34,6 +34,10 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import kotlin.collections.set
@@ -42,6 +46,8 @@ import kotlin.collections.set
 @Suppress("TooManyFunctions")
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
+@Execution(ExecutionMode.SAME_THREAD)
 class LoaderAttributeLoadingTest {
 
     private lateinit var config: Config

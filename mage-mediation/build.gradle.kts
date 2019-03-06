@@ -76,7 +76,7 @@ tasks.named<Test>("test") {
     minHeapSize = "1G"
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
-    useJUnitPlatform()
+    useJUnitPlatform ()
 //    maxParallelForks = 8
     testLogging {
         events("passed", "skipped", "failed")

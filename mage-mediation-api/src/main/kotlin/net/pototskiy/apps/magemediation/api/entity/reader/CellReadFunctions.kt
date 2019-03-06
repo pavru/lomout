@@ -1,7 +1,8 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
 import net.pototskiy.apps.magemediation.api.entity.Attribute
-import net.pototskiy.apps.magemediation.api.entity.sqlType
+import net.pototskiy.apps.magemediation.api.entity.DateType
+import net.pototskiy.apps.magemediation.api.entity.isTypeOf
 import net.pototskiy.apps.magemediation.api.entity.values.doubleToLong
 import net.pototskiy.apps.magemediation.api.entity.values.doubleToString
 import net.pototskiy.apps.magemediation.api.entity.values.longToString
@@ -13,9 +14,7 @@ import net.pototskiy.apps.magemediation.api.entity.values.stringToLong
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
-import org.jetbrains.exposed.sql.DateColumnType
 import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import java.util.*
 
 fun Cell.readeDateTime(
@@ -25,7 +24,7 @@ fun Cell.readeDateTime(
     CellType.LONG -> DateTime(Date(this.longValue))
     CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
     CellType.BOOL -> null
-    CellType.STRING -> if (attribute.valueType.sqlType() == DateColumnType::class) {
+    CellType.STRING -> if (attribute.valueType.isTypeOf<DateType>()) {
         this.stringValue.stringToDate(locale)
     } else {
         this.stringValue.stringToDateTime(locale)
@@ -40,7 +39,7 @@ fun Cell.readeDateTime(
     CellType.LONG -> DateTime(Date(this.longValue))
     CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
     CellType.BOOL -> null
-    CellType.STRING -> DateTimeFormat.forPattern(pattern).parseDateTime(this.stringValue)
+    CellType.STRING -> this.stringValue.stringToDateTime(pattern)
     CellType.BLANK -> null
 }
 
