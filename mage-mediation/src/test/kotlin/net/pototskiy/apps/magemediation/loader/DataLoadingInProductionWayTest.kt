@@ -32,7 +32,7 @@ class DataLoadingInProductionWayTest {
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.cleanEntityTypeConfiguration()
+        EntityTypeManager.currentManager = EntityTypeManager()
         Config.Builder.initConfigBuilder()
         // TODO: 23.02.2019 remove after test
         //EntityClass.initEntityCLassRegistrar()

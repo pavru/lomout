@@ -1,5 +1,5 @@
 class MarkCategoryToRemove : PipelineAssemblerPlugin() {
-    override fun assemble(target: EType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?> {
+    override fun assemble(target: EntityType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?> {
         try {
             val category = entities["mage-category"]
             val idAttr = category.findAttribute("entity_id")

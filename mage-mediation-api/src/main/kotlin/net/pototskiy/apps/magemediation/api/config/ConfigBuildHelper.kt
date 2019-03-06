@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.config
 
 import net.pototskiy.apps.magemediation.api.config.loader.SourceFileDefinition
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import java.util.Stack
 
 open class ConfigBuildHelper {
@@ -10,7 +10,7 @@ open class ConfigBuildHelper {
     fun popScope(): String = scopeStack.pop()
     fun currentScope(): String = scopeStack.peek()
 
-    private val definedEntities = ConfigObjectRegistrar<EType>()
+    private val definedEntities = ConfigObjectRegistrar<EntityType>()
     val definedSourceFiles = ConfigObjectRegistrar<SourceFileDefinition>()
 
     fun initConfigBuilder() {

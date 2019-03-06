@@ -2,18 +2,18 @@ package net.pototskiy.apps.magemediation.api.entity
 
 import kotlin.reflect.KClass
 
-// TODO: 18.02.2019 define parameters
 interface EntityAttributeManagerInterface {
     fun <T : Type> createAttribute(
-        name: AttributeName,
+        name: String,
         typeClass: KClass<out T>,
         block: Builder<T>.() -> Unit = {}
     ): Attribute<T>
 
-    fun getAttributeOrNull(name: AttributeName): Attribute<*>?
+    fun getEntityTypeAttributes(entityType: EntityType): AttributeCollection
+    fun getEntityAttribute(entityType: EntityType, attributeName: String): Attribute<*>?
 
     abstract class Builder<T : Type>(
-        protected val name: AttributeName,
+        protected val name: String,
         protected val typeClass: KClass<out T>
     ) {
         abstract fun key(key: Boolean?)

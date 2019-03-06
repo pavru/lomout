@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.database
 
-import net.pototskiy.apps.magemediation.api.ENTITY_TYPE_NAME_LENGTH
+import net.pototskiy.apps.magemediation.api.entity.entityType
 import org.jetbrains.exposed.dao.IntIdTable
 
 object DbEntityTable : IntIdTable("entity") {
-    val entityType = varchar("entity_type", ENTITY_TYPE_NAME_LENGTH).index()
+    val entityType = entityType("entity_type").index()
     val touchedInLoading = bool("touched_in_loading").index()
     val previousStatus = entityStatus("previous_status").nullable().index()
     val currentStatus = entityStatus("current_status").index()

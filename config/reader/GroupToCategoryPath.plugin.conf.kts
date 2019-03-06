@@ -1,7 +1,7 @@
 class GroupToCategoryPath : AttributeReaderPlugin<StringType>() {
     override fun read(attribute: Attribute<out StringType>, input: Cell): StringType? {
         try {
-            val extendedInfo = EType["onec-group-extended"]
+            val extendedInfo = EntityTypeManager["onec-group-extended"]
             val groupId = input.longValue
             val entity = DbEntity.getByAttribute(
                 extendedInfo,

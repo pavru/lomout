@@ -3,20 +3,20 @@ package net.pototskiy.apps.magemediation.api.config.mediator
 import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class ProductionLine(
     val lineType: LineType,
     val inputEntities: InputEntityCollection,
-    val outputEntity: EType,
+    val outputEntity: EntityType,
     val pipeline: Pipeline
 ) {
     enum class LineType { CROSS, UNION }
     @ConfigDsl
     class Builder(private val lineType: LineType) {
         private var inputs: InputEntityCollection? = null
-        private var output: EType? = null
+        private var output: EntityType? = null
         private var pipeline: Pipeline? = null
 
         fun input(block: InputEntityCollection.Builder.() -> Unit) {
@@ -32,8 +32,8 @@ data class ProductionLine(
         }
 
         @PublicApi
-        fun output(name: String, block: EType.Builder.() -> Unit) {
-            output = EType.Builder(name, false).apply(block).build()
+        fun output(name: String, block: EntityType.Builder.() -> Unit) {
+            output = EntityType.Builder(name, false).apply(block).build()
         }
 
         @PublicApi

@@ -14,7 +14,12 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
         fun Builder.entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
             val entity = EntityTypeManager.getEntityType(name)
                 ?: throw ConfigException("Entity<$name> has not been defined yet")
-            entities.add(InputEntity.Builder(entity).apply(block).build())
+            entities.add(
+                InputEntity
+                    .Builder(entity)
+                    .apply(block)
+                    .build()
+            )
         }
 
         fun build(): InputEntityCollection {

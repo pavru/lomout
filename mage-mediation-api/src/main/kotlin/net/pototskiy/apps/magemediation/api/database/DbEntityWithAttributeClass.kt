@@ -19,7 +19,8 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.Collections.synchronizedMap
+import java.util.Collections.*
+import kotlin.collections.set
 import kotlin.reflect.KClass
 
 abstract class DbEntityWithAttributeClass(
@@ -55,7 +56,7 @@ abstract class DbEntityWithAttributeClass(
         return transaction {
             val value = attrTable
                 .slice(attrTable.index, attrTable.value)
-                .select { (attrTable.owner eq entity.id) and (attrTable.code eq attribute.name.attributeName) }
+                .select { (attrTable.owner eq entity.id) and (attrTable.code eq attribute.name) }
                 .map { it[attrTable.index] to it[attrTable.value] }
                 .toMap()
             @Suppress("USELESS_CAST")
@@ -90,7 +91,7 @@ abstract class DbEntityWithAttributeClass(
         val v = eType.attributes.map { attr ->
             attr to wrapAValue(
                 attr,
-                dbValues[attr.name.attributeName]?.let { valueList ->
+                dbValues[attr.name]?.let { valueList ->
                     val value = valueList.map { it.index to it.value }.toMap()
                     when {
                         value.isEmpty() -> null
@@ -138,7 +139,7 @@ abstract class DbEntityWithAttributeClass(
         val attrTable = attrClass.table as AttributeTable<*>
         transaction {
             attrTable.deleteWhere {
-                (attrTable.owner eq entity.id) and (attrTable.code eq attribute.name.attributeName)
+                (attrTable.owner eq entity.id) and (attrTable.code eq attribute.name)
             }
         }
     }
@@ -153,7 +154,7 @@ abstract class DbEntityWithAttributeClass(
         transaction {
             attrClass.new {
                 this.owner = entity.id
-                this.code = attribute.name.attributeName
+                this.code = attribute.name
                 this.index = if (attribute.valueType.isList()) position else -1
                 try {
                     this.setValueWithTypeCheck(data)
