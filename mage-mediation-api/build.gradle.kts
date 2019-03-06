@@ -63,9 +63,10 @@ tasks.jar {
 //    include("META_INF/**")
     from({
         configurations.runtimeClasspath.get()
-            .filter { it.name.endsWith("jar") && it.name.contains("ivy")}
+            .filter { it.name.endsWith("jar") && it.name.contains("ivy") }
             .map { zipTree(it) }
-    })}
+    })
+}
 
 artifacts {
     add("spi", tasks["jar"])
@@ -93,10 +94,14 @@ tasks.named<Test>("test") {
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
     useJUnitPlatform()
-//    maxParallelForks = 8
     testLogging {
-        events("passed", "skipped", "failed")
-//        events("passed", "skipped", "failed", "standardOut", "standardError")
+        events(
+            "passed",
+            "skipped",
+            "failed",
+            "standardOut",
+            "standardError"
+        )
     }
 }
 
@@ -140,7 +145,7 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
     // Addon
-    detektPlugins ("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
 tasks.register<Jar>("sourcesJar") {

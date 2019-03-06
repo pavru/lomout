@@ -4,8 +4,8 @@ import java.util.*
 
 @Suppress("TooGenericExceptionCaught")
 fun String.createLocale(): Locale {
-    val (l, c) = this.split("_")
     return try {
+        val (l, c) = this.split("_")
         Locale(l, c)
     } catch (e: Exception) {
         Locale.getDefault()
