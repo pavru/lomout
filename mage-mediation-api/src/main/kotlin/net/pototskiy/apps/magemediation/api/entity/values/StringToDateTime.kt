@@ -7,7 +7,7 @@ import org.joda.time.format.DateTimeFormat
 import java.util.*
 
 fun String.stringToDate(locale: Locale): DateTime {
-    val format = DateTimeFormat.shortDate().withLocale(locale)
+    val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale))
     return try {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
@@ -35,7 +35,7 @@ fun String.stringToDateTime(pattern: String): DateTime {
 }
 
 fun String.stringToDateTime(locale: Locale): DateTime {
-    val format = DateTimeFormat.shortDateTime().withLocale(locale)
+    val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", locale))
     return try {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
@@ -52,10 +52,10 @@ fun String.stringToDateTime(locale: Locale): DateTime {
 }
 
 fun DateTime.dateToString(locale: Locale): String =
-    this.toString(DateTimeFormat.shortDate().withLocale(locale))
+    this.toString(DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale)))
 
 @PublicApi
 fun DateTime.datetimeToString(locale: Locale): String =
-    this.toString(DateTimeFormat.shortDateTime().withLocale(locale))
+    this.toString(DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", locale)))
 
 fun DateTime.datetimeToString(pattern: String): String = this.toString(pattern)

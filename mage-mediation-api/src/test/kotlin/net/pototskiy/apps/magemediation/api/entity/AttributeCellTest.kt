@@ -53,8 +53,9 @@ internal class AttributeCellTest {
         init {
             EntityTypeManager.currentManager = EntityTypeManager()
         }
-        private val dateFormat = DateTimeFormat.shortDate()!!
-        private val dateTimeFormat = DateTimeFormat.shortDateTime()
+
+        private val dateFormat = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", null))!!
+        private val dateTimeFormat = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", null))!!
         private val dateVal = dateFormat.parseDateTime(dateFormat.print(DateTime.now()))!!
         private val dateTimeVal = dateTimeFormat.parseDateTime(dateTimeFormat.print(DateTime.now()))!!
         private val boolTestData2 = TestData(
@@ -193,16 +194,18 @@ internal class AttributeCellTest {
                 TestData(
                     EntityTypeManager.createAttribute("attr15", AttributeListType::class),
                     "attr2=\"false\",attr3=\"111\"",
-                    AttributeListValue(mapOf(
-                        boolTestData2.attr.name to AttributeCell(
-                            boolTestData2.attr,
-                            boolTestData2.wrappedValue
-                        ),
-                        longTestData1.attr.name to AttributeCell(
-                            longTestData1.attr,
-                            longTestData1.wrappedValue
+                    AttributeListValue(
+                        mapOf(
+                            boolTestData2.attr.name to AttributeCell(
+                                boolTestData2.attr,
+                                boolTestData2.wrappedValue
+                            ),
+                            longTestData1.attr.name to AttributeCell(
+                                longTestData1.attr,
+                                longTestData1.wrappedValue
+                            )
                         )
-                    )),
+                    ),
                     CellType.STRING,
                     { it.stringValue },
                     "attr2=\"false\",attr3=\"111\"",
