@@ -65,7 +65,7 @@ internal class DefaultDateTimeReaderTest {
         try {
             assertThat(readerEnUs.read(attr, cell)?.value).isEqualTo(expected)
         } catch (e: Exception) {
-            println(e.message)
+            e.printStackTrace()
         }
         assertThatThrownBy { readerRuRu.read(attr, cell) }.isInstanceOf(SourceException::class.java)
         cell = workbook["datetime"][1]!![5]!!
