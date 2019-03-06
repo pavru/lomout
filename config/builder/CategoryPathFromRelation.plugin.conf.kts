@@ -3,7 +3,8 @@
 
 import org.apache.commons.collections4.map.LRUMap
 import java.lang.ref.WeakReference
-import java.util.Collections.synchronizedMap
+import java.util.Collections.*
+import kotlin.collections.set
 
 class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
     var separator: String = "/"
@@ -32,8 +33,9 @@ class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
     companion object {
         private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
         private const val eTypeName = "mage-category"
-        private val nameAttr by lazy { EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "name"))!! }
-        private val idAttr by lazy { EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "entity_id"))!! }
-        private val parentAttr by lazy { EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "parent_id"))!! }
+        private val entityType = EntityTypeManager[eTypeName]
+        private val nameAttr by lazy { EntityTypeManager.getEntityAttribute(entityType, "name")!! }
+        private val idAttr by lazy { EntityTypeManager.getEntityAttribute(entityType, "entity_id")!! }
+        private val parentAttr by lazy { EntityTypeManager.getEntityAttribute(entityType, "parent_id")!! }
     }
 }

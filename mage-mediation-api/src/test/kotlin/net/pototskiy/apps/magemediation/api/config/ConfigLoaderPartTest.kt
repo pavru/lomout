@@ -16,7 +16,7 @@ internal class ConfigLoaderPartTest {
     @BeforeEach
     internal fun setUp() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.cleanEntityTypeConfiguration()
+        EntityTypeManager.currentManager = EntityTypeManager()
         config = ConfigurationBuilderFromDSL(
             File("${System.getenv("TEST_DATA_DIR")}/conf-test.conf.kts")
         ).config
@@ -48,7 +48,7 @@ internal class ConfigLoaderPartTest {
         val entity1 = config.loader.entities.find { it.name == "test-entity-1" }
         assertThat(entity1).isNotNull
         assertThat(entity1?.attributes).hasSize(5)
-        assertThat(entity1?.attributes?.map { it.name.attributeName }).containsExactlyElementsOf(listOf(
+        assertThat(entity1?.attributes?.map { it.name }).containsExactlyElementsOf(listOf(
             "string-attr-1", "text-attr-1", "boolean-attr-1", "long-attr-1", "double-attr-1"
             ))
     }

@@ -2,8 +2,7 @@ package net.pototskiy.apps.magemediation.api.config.mediator
 
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.Attribute
-import net.pototskiy.apps.magemediation.api.entity.AttributeName
-import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.Type
 
 class PipelineData(
@@ -14,24 +13,22 @@ class PipelineData(
     val extData by lazy { inputEntity.extendedAttributes(entity) }
 
     operator fun get(attribute: String): Type? {
-        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entity.eType.type, attribute))
+        val attr = EntityTypeManager.getEntityAttribute(entity.eType, attribute)
         return when {
             attr != null -> data[attr]
             inputEntity.entityExtension != null ->
-                EntityAttributeManager.getAttributeOrNull(
-                    AttributeName(inputEntity.entityExtension.type, attribute)
-                )?.let { extData[it] }
+                EntityTypeManager.getEntityAttribute(inputEntity.entityExtension, attribute)
+                    ?.let { extData[it] }
             else -> null
         }
     }
 
     fun findAttribute(name: String): Attribute<*>? {
-        val attr = EntityAttributeManager.getAttributeOrNull(AttributeName(entity.eType.type, name))
+        val attr = EntityTypeManager.getEntityAttribute(entity.eType, name)
         return when {
             attr != null -> attr
-            inputEntity.entityExtension != null -> EntityAttributeManager.getAttributeOrNull(
-                AttributeName(inputEntity.entityExtension.type, name)
-            )
+            inputEntity.entityExtension != null -> EntityTypeManager
+                .getEntityAttribute(inputEntity.entityExtension, name)
             else -> null
         }
     }

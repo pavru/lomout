@@ -2,6 +2,7 @@ package net.pototskiy.apps.magemediation.api.entity
 
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
+import net.pototskiy.apps.magemediation.api.config.NamedObject
 import net.pototskiy.apps.magemediation.api.entity.reader.defaultReaders
 import net.pototskiy.apps.magemediation.api.entity.writer.defaultWriters
 import net.pototskiy.apps.magemediation.api.plugable.AttributeBuilderFunction
@@ -13,7 +14,7 @@ import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import kotlin.reflect.KClass
 
 abstract class Attribute<T : Type>(
-    val name: AttributeName,
+    override val name: String,
     val valueType: KClass<out T>,
     val key: Boolean = false,
     val nullable: Boolean = false,
@@ -21,30 +22,30 @@ abstract class Attribute<T : Type>(
     val reader: AttributeReader<out T>,
     val writer: AttributeWriter<out T>,
     val builder: AttributeBuilder<out T>? = null
-) {
+) : NamedObject {
+    lateinit var manager: EntityAttributeManagerInterface
+    lateinit var owner: EntityType
+    val isAssigned: Boolean
+        get() = ::owner.isInitialized
+    val fullName: String
+        get() = "${owner.name}:$name"
     val isSynthetic: Boolean = builder != null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Attribute<*>) return false
 
-        if (name != other.name) return false
+        if (fullName != other.fullName) return false
 
         return true
     }
 
-    override fun hashCode(): Int {
-        return name.hashCode()
-    }
-
-    override fun toString(): String {
-        return name.fullName
-    }
+    override fun hashCode(): Int = fullName.hashCode()
+    override fun toString(): String = fullName
 
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder<T : Type>(
-        private val entityType: String,
         private var name: String,
         private val typeClass: KClass<out Type>
     ) {
@@ -94,7 +95,7 @@ abstract class Attribute<T : Type>(
             validateKeyIsNotList()
             validateKeyIsNotNullable()
             @Suppress("UNCHECKED_CAST")
-            return EntityAttributeManager.createAttribute(AttributeName(entityType, name), typeClass) {
+            return EntityTypeManager.createAttribute(name, typeClass) {
                 key(key)
                 nullable(nullable)
                 auto(false)

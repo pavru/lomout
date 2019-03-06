@@ -12,7 +12,7 @@ import net.pototskiy.apps.magemediation.api.config.mediator.PipelineData
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollection
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.database.BooleanConst
 import net.pototskiy.apps.magemediation.database.PipelineSets
@@ -25,7 +25,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class PipelineExecutor(
     private val pipeline: Pipeline,
     private val inputEntities: InputEntityCollection,
-    private val targetEntity: EType,
+    private val targetEntity: EntityType,
     private val entityCache: LRUMap<Int, PipelineData>
 ) {
 
@@ -104,8 +104,8 @@ class PipelineExecutor(
             val entity = transaction { DbEntity.findById(id) }
                 ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
             entity.readAttributes()
-            val inputEntity = inputEntities.find { it.entity.type == entity.eType.type }
-                ?: throw MediationException("Unexpected input entity<${entity.eType.type}")
+            val inputEntity = inputEntities.find { it.entity.name == entity.eType.name }
+                ?: throw MediationException("Unexpected input entity<${entity.eType.name}")
             pipelineData = PipelineData(entity, inputEntity)
             entityCache[entity.id.value] = pipelineData
         }

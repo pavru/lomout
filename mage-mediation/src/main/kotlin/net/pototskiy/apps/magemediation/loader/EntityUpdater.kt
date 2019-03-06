@@ -3,19 +3,19 @@ package net.pototskiy.apps.magemediation.loader
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
-import net.pototskiy.apps.magemediation.api.entity.EType
+import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.Type
 
-class EntityUpdater(private val eType: EType) {
+class EntityUpdater(private val entityType: EntityType) {
 
     fun update(data: Map<AnyTypeAttribute, Type?>) {
-        var entity = DbEntity.getEntitiesByAttributes(eType, data, true).firstOrNull()
+        var entity = DbEntity.getEntitiesByAttributes(entityType, data, true).firstOrNull()
         val filteredData = data.filterNot { it.key.isSynthetic || it.key.valueType is AttributeListType }
         entity?.wasUnchanged()
         if (entity == null) {
             @Suppress("UNCHECKED_CAST")
             entity = DbEntity.insertEntity(
-                eType,
+                entityType,
                 filteredData.filterNot { it.value == null } as Map<AnyTypeAttribute, Type>
             )
             entity.wasCreated()
