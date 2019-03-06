@@ -61,7 +61,12 @@ internal class DefaultDateTimeReaderTest {
         val readerEnUs = DateTimeAttributeReader().apply { locale = "en_US" }
         val readerRuRu = DateTimeAttributeReader().apply { locale = "ru_RU" }
         var cell = workbook["datetime"][1]!![4]!!
-        assertThat(readerEnUs.read(attr, cell)?.value).isEqualTo(expected)
+        println("cell value: ${cell.asString()}")
+        try {
+            assertThat(readerEnUs.read(attr, cell)?.value).isEqualTo(expected)
+        } catch (e: Exception) {
+            println(e.message)
+        }
         assertThatThrownBy { readerRuRu.read(attr, cell) }.isInstanceOf(SourceException::class.java)
         cell = workbook["datetime"][1]!![5]!!
         assertThatThrownBy { readerEnUs.read(attr, cell) }.isInstanceOf(SourceException::class.java)
