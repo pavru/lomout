@@ -5,6 +5,8 @@ import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityType
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.addEntityAttribute
 
 data class Load(
     val headersRow: Int,
@@ -71,7 +73,7 @@ data class Load(
                 ?.map { it.fieldToAttr.attributes }
                 ?.flatten()
                 ?.filter { it.auto } ?: emptyList()
-            autoAttrs.forEach { entityType.addAttribute(it) }
+            autoAttrs.forEach { EntityTypeManager.addEntityAttribute(entityType, it) }
         }
 
         private fun validateFieldColumnDefinition() {

@@ -3,7 +3,7 @@
 
 import org.apache.commons.collections4.map.LRUMap
 import java.lang.ref.WeakReference
-import java.util.Collections.synchronizedMap
+import java.util.Collections.*
 import kotlin.collections.set
 
 class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
@@ -37,17 +37,19 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
     companion object {
         private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
         private const val eTypeName = "onec-group-relation"
+        private val relationEntityType = EntityTypeManager[eTypeName]
+        private val groupEntityType = EntityTypeManager["onec-group"]
         private val codeAttr by lazy {
-            EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "group_code"))!!
+            EntityTypeManager.getEntityAttribute(relationEntityType, "group_code")!!
         }
         private val groupCodeAttr by lazy {
-            EntityAttributeManager.getAttributeOrNull(AttributeName("onec-group", "group_code"))!!
+            EntityTypeManager.getEntityAttribute(groupEntityType, "group_code")!!
         }
         private val nameAttr by lazy {
-            EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName, "group_name"))!!
+            EntityTypeManager.getEntityAttribute(relationEntityType, "group_name")!!
         }
         private val parentAttr by lazy {
-            EntityAttributeManager.getAttributeOrNull(AttributeName(eTypeName,"group_parent_code"))!!
+            EntityTypeManager.getEntityAttribute(relationEntityType,"group_parent_code")!!
         }
     }
 }

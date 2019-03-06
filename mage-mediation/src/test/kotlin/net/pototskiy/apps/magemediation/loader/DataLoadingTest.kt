@@ -6,9 +6,7 @@ import net.pototskiy.apps.magemediation.api.config.loader.Load
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.database.EntityStatus
-import net.pototskiy.apps.magemediation.api.entity.AttributeName
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringValue
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
@@ -33,7 +31,7 @@ class DataLoadingTest {
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.cleanEntityTypeConfiguration()
+        EntityTypeManager.currentManager = EntityTypeManager()
         Config.Builder.initConfigBuilder()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
@@ -143,7 +141,7 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.name, "sku"))!!
+                    val skuAttr = EntityTypeManager.getEntityAttribute(entityType, "sku")!!
                     val entity = DbEntity.getEntitiesByAttributes(
                         entityType,
                         mapOf(skuAttr to StringValue("2")),

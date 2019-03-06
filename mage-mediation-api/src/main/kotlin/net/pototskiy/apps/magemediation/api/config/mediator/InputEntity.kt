@@ -8,10 +8,8 @@ import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
-import net.pototskiy.apps.magemediation.api.entity.AttributeName
 import net.pototskiy.apps.magemediation.api.entity.AttributeReader
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityAttributeManager
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.plugable.SqlFilterPlugin
@@ -19,14 +17,7 @@ import org.jetbrains.exposed.sql.Alias
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import java.util.*
-import kotlin.collections.Map
-import kotlin.collections.emptyList
-import kotlin.collections.get
-import kotlin.collections.map
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.collections.toList
-import kotlin.collections.toMap
 
 data class InputEntity(
     val entity: EntityType,
@@ -43,10 +34,8 @@ data class InputEntity(
     }
 
     @ConfigDsl
-    class Builder(@ConfigDsl val entityType: EntityType) {
-        @ConfigDsl
+    class Builder(val entityType: EntityType) {
         val attrPairs = mutableMapOf<Attribute<*>, Attribute<*>>()
-        @ConfigDsl
         var sqlFilter: SqlFilter? = null
         private val extEntityUUID = UUID.randomUUID().toString()
 
@@ -64,13 +53,13 @@ data class InputEntity(
             from: String,
             block: Attribute.Builder<T>.() -> Unit = {}
         ) {
-            val destAttr = Attribute.Builder<T>(extendedName(entityType.name), name, T::class).apply(block).build()
-            val origData = EntityAttributeManager.getAttributeOrNull(AttributeName(entityType.name, from))
-                ?: throw ConfigException("Attribute<${AttributeName(entityType.name, from)} is not defined>")
-            attrPairs[destAttr] = origData
+            val destAttr = Attribute.Builder<T>(name, T::class).apply(block).build()
+            val origData = EntityTypeManager.getEntityAttribute(entityType, from)
+                ?: throw ConfigException("Attribute<${entityType.name}:$from> is not defined>")
+            attrPairs[origData] = destAttr
         }
 
-        fun extendedName(type: String): String = "$type${"$$"}ext${"$$"}$extEntityUUID"
+        private fun extendedName(type: String): String = "$type${"$$"}ext${"$$"}$extEntityUUID"
 
         fun build(): InputEntity {
             val extEntity = if (attrPairs.isEmpty()) {
@@ -79,11 +68,15 @@ data class InputEntity(
                 EntityTypeManager.createEntityType(
                     extendedName(entityType.name),
                     emptyList(),
-                    AttributeCollection(attrPairs.keys.toList()),
                     false
-                )
+                ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(attrPairs.values.toList())) }
             }
-            return InputEntity(entityType, extEntity, sqlFilter, AttrMapCollection(attrPairs))
+            return InputEntity(
+                entityType,
+                extEntity,
+                sqlFilter,
+                AttrMapCollection(attrPairs.map { it.value to it.key }.toMap())
+            )
         }
     }
 }

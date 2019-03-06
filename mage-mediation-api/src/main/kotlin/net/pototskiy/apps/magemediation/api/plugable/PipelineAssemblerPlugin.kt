@@ -9,4 +9,5 @@ abstract class PipelineAssemblerPlugin : Plugin() {
     abstract fun assemble(target: EntityType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?>
 }
 
-typealias PipelineAssemblerFunction = (target: EntityType, entities: PipelineDataCollection) -> Map<AnyTypeAttribute, Type?>
+typealias PipelineAssemblerFunction =
+            (target: EntityType, entities: PipelineDataCollection) -> Map<AnyTypeAttribute, Type?>

@@ -20,19 +20,9 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.logging.log4j.LogManager
-import kotlin.collections.Map
-import kotlin.collections.MutableMap
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.count
-import kotlin.collections.filter
-import kotlin.collections.filterNot
-import kotlin.collections.find
-import kotlin.collections.forEach
-import kotlin.collections.get
-import kotlin.collections.mutableMapOf
 import kotlin.collections.set
-import kotlin.collections.toMutableMap
 
 class EntityLoader(
     private val loadConfig: Load,
@@ -166,12 +156,12 @@ class EntityLoader(
             attribute: Attribute<out Type>
         ) {
             val parentAttr = fields[field.parent]
-            if ((data[parentAttr] as AttributeListType).containsKey(attribute.name.attributeName) &&
+            if ((data[parentAttr] as AttributeListType).containsKey(attribute.name) &&
                 field.parent?.parent != null
             ) {
                 readNestedField(field.parent!!, fields[field.parent!!]!!)
             }
-            val attrCell = (data[parentAttr] as AttributeListValue).value[attribute.name.attributeName]
+            val attrCell = (data[parentAttr] as AttributeListValue).value[attribute.name]
             if (attrCell == null && !attribute.nullable && attribute.valueType !is AttributeListType) {
                 throw SourceException("Attribute<${attribute.name}> is not nullable there is no data for it")
             } else if (attrCell == null) {

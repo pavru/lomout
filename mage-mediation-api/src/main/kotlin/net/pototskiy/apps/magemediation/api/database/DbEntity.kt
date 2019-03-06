@@ -1,9 +1,7 @@
 package net.pototskiy.apps.magemediation.api.database
 
 import net.pototskiy.apps.magemediation.api.TIMESTAMP
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.Type
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
@@ -19,9 +17,9 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
     var removed by DbEntityTable.removed
     var absentDays by DbEntityTable.absentDays
 
-    val eType by lazy {
-        EntityTypeManager.getEntityType(entityType)
-            ?: throw ConfigException("Entity type<$entityType> is not defined")
+    val eType by lazy { entityType
+//        EntityTypeManager.getEntityType(entityType)
+//            ?: throw ConfigException("Entity type<$entityType> is not defined")
     }
 
     var data: MutableMap<AnyTypeAttribute, Type?> = mutableMapOf()

@@ -30,7 +30,7 @@ abstract class DbEntityClass(
     private val myTable by lazy { super.table as DbEntityTable }
 
     fun getEntities(entityType: EntityType, withAttributes: Boolean = false): List<DbEntity> =
-        transaction { find { myTable.entityType eq entityType.name }.toList() }.also { list ->
+        transaction { find { myTable.entityType eq entityType }.toList() }.also { list ->
             if (withAttributes) list.forEach { it.readAttributes() }
         }
 
@@ -43,15 +43,15 @@ abstract class DbEntityClass(
         onlyKeys: Boolean = false
     ): List<DbEntity> = transaction {
         var from: ColumnSet = myTable
-        var where = Op.build { myTable.entityType eq entityType.name }
+        var where = Op.build { myTable.entityType eq entityType }
         val dataToUse = if (onlyKeys) data.filter { it.key.key } else data
         dataToUse.filterNot { it.value == null }.forEach { attr, value ->
             value as Type
             val attrClass = getAttributeClassFor(attr.valueType)
             val attrTable = attrClass.table as AttributeTable<*>
-            val alias = attrTable.alias("${attr.name.attributeName}_table")
+            val alias = attrTable.alias("${attr.name}_table")
             from = from.innerJoin(alias, { table.id }, { alias[attrTable.owner] })
-            where = where.and(Op.build { alias[attrTable.code] eq attr.name.attributeName })
+            where = where.and(Op.build { alias[attrTable.code] eq attr.name })
             where = where.and(equalsBuild(alias[attrTable.value], value))
         }
         from
@@ -65,7 +65,7 @@ abstract class DbEntityClass(
         return transaction {
             val entity =
                 new {
-                    this.entityType = entityType.name
+                    this.entityType = entityType
                     touchedInLoading = true
                     previousStatus = EntityStatus.CREATED
                     currentStatus = EntityStatus.CREATED
@@ -88,7 +88,7 @@ abstract class DbEntityClass(
     }
 
     private fun getClassWhereClause(entityType: EntityType): Op<Boolean> = Op.build {
-        myTable.entityType eq entityType.name
+        myTable.entityType eq entityType
     }
 
     fun markEntitiesAsRemove(entityType: EntityType) {

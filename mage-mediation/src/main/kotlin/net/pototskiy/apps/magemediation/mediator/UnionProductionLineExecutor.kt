@@ -1,8 +1,13 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.magemediation.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineData
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollection
@@ -16,7 +21,14 @@ import net.pototskiy.apps.magemediation.loader.EntityUpdater
 import org.apache.commons.collections4.map.LRUMap
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.ColumnSet
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.alias
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnionProductionLineExecutor {
@@ -89,7 +101,7 @@ class UnionProductionLineExecutor {
     private fun createTopPipelineSet(line: ProductionLine) = transaction {
         line.inputEntities.forEach {
             val alias = DbEntityTable.alias("entity_${it.entity.name}")
-            var where = Op.build { alias[DbEntityTable.entityType] eq it.entity.name }
+            var where = Op.build { alias[DbEntityTable.entityType] eq it.entity }
             it.filter?.let { filter -> where = where.and(filter.where(alias)) }
             PipelineSets.insert(
                 alias
