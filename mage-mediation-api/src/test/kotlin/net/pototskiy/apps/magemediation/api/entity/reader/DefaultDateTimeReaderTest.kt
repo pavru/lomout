@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.DateTimeType
@@ -62,6 +63,7 @@ internal class DefaultDateTimeReaderTest {
         val readerRuRu = DateTimeAttributeReader().apply { locale = "ru_RU" }
         var cell = workbook["datetime"][1]!![4]!!
         println("cell value: ${cell.asString()}")
+        println("pattern: ${DateTimeFormat.patternForStyle("SS","en_US".createLocale())}")
         try {
             assertThat(readerEnUs.read(attr, cell)?.value).isEqualTo(expected)
         } catch (e: Exception) {
