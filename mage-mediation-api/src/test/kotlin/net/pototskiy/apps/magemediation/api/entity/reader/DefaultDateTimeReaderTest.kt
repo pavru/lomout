@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
 
+@Suppress("MagicNumber")
 internal class DefaultDateTimeReaderTest {
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
