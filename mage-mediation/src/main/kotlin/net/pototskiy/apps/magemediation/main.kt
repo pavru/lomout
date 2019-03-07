@@ -8,7 +8,6 @@ import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigurationBuilderFromDSL
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
@@ -41,11 +40,11 @@ fun main(args: Array<String>) {
 
     statusLog.info("Application has started")
 
-    EntityTypeManager.currentManager = EntityTypeManager()
+//    EntityTypeManager.currentManager = EntityTypeManager()
     Config.Builder.initConfigBuilder()
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
-    initDatabase(CONFIG_BUILDER.config.database)
     setupPluginContext()
+    initDatabase(CONFIG_BUILDER.config.database, CONFIG_BUILDER.config.entityTypeManager)
     DataLoader.load(CONFIG_BUILDER.config)
     DataMediator.mediate(CONFIG_BUILDER.config)
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
@@ -58,4 +57,5 @@ fun setLogLevel() {
 
 fun setupPluginContext() {
     PluginContext.config = CONFIG_BUILDER.config
+    PluginContext.entityTypeManager = CONFIG_BUILDER.config.entityTypeManager
 }

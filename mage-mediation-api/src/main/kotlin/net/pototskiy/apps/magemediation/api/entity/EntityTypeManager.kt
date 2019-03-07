@@ -138,7 +138,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
             ) {}
     }
 
-    companion object : EntityTypeManagerCompanion()
+//    companion object : EntityTypeManagerCompanion()
 }
 
 private fun checkThatAttributeIsNotAssigned(attributes: AttributeCollection) {
@@ -169,20 +169,20 @@ fun EntityTypeManager.addEntityAttributes(entityType: EntityType, attributes: Li
 fun EntityTypeManager.addEntityAttribute(entityType: EntityType, attribute: Attribute<*>) =
     this.addEntityAttributes(entityType, listOf(attribute))
 
-@PublicApi
-fun EntityTypeManager.Companion.addEntityAttributes(entityType: EntityType, attributes: List<Attribute<*>>) =
-    this.currentManager.addEntityAttributes(entityType, AttributeCollection(attributes))
-
-@PublicApi
-fun EntityTypeManager.Companion.addEntityAttribute(entityType: EntityType, attribute: Attribute<*>) =
-    this.currentManager.addEntityAttributes(entityType, listOf(attribute))
+// @PublicApi
+// fun EntityTypeManager.Companion.addEntityAttributes(entityType: EntityType, attributes: List<Attribute<*>>) =
+//    this.currentManager.addEntityAttributes(entityType, AttributeCollection(attributes))
+//
+// @PublicApi
+// fun EntityTypeManager.Companion.addEntityAttribute(entityType: EntityType, attribute: Attribute<*>) =
+//    this.currentManager.addEntityAttributes(entityType, listOf(attribute))
 
 operator fun EntityTypeManager.get(entityType: String) = this.getEntityType(entityType)
     ?: throw DatabaseException("Entity<$entityType> is not defined")
-
-operator fun EntityTypeManager.Companion.get(entityType: String) =
-    this.currentManager[entityType]
-
-@PublicApi
-fun EntityTypeManager.Companion.getEntityTypeOrNull(entityType: String) =
-    this.currentManager.getEntityType(entityType)
+//
+// operator fun EntityTypeManager.Companion.get(entityType: String) =
+//    this.currentManager[entityType]
+//
+// @PublicApi
+// fun EntityTypeManager.Companion.getEntityTypeOrNull(entityType: String) =
+//    this.currentManager.getEntityType(entityType)

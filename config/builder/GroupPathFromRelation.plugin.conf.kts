@@ -13,7 +13,7 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
     override fun build(entity: DbEntity): StringType? {
         val pathFromCache = pathCache[entity.id.value]?.get()
         if (pathFromCache != null) return StringValue(pathFromCache)
-        val eType = EntityTypeManager.getEntityType(eTypeName)
+        val eType = entityTypeManager.getEntityType(eTypeName)
             ?: throw PluginException("There is no group relations information, entity<$eTypeName>")
         val path = mutableListOf<String>()
         val groupCode = entity.data[groupCodeAttr]
@@ -35,21 +35,22 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
     }
 
     companion object {
+        private val typeManager by lazy { PluginContext.entityTypeManager }
         private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
         private const val eTypeName = "onec-group-relation"
-        private val relationEntityType = EntityTypeManager[eTypeName]
-        private val groupEntityType = EntityTypeManager["onec-group"]
+        private val relationEntityType by lazy { typeManager[eTypeName] }
+        private val groupEntityType by lazy { typeManager["onec-group"] }
         private val codeAttr by lazy {
-            EntityTypeManager.getEntityAttribute(relationEntityType, "group_code")!!
+            typeManager.getEntityAttribute(relationEntityType, "group_code")!!
         }
         private val groupCodeAttr by lazy {
-            EntityTypeManager.getEntityAttribute(groupEntityType, "group_code")!!
+            typeManager.getEntityAttribute(groupEntityType, "group_code")!!
         }
         private val nameAttr by lazy {
-            EntityTypeManager.getEntityAttribute(relationEntityType, "group_name")!!
+            typeManager.getEntityAttribute(relationEntityType, "group_name")!!
         }
         private val parentAttr by lazy {
-            EntityTypeManager.getEntityAttribute(relationEntityType,"group_parent_code")!!
+            typeManager.getEntityAttribute(relationEntityType, "group_parent_code")!!
         }
     }
 }

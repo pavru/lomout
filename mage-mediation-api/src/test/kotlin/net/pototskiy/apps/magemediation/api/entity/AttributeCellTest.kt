@@ -9,12 +9,15 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 import java.util.stream.*
 
 @Suppress("MagicNumber")
 @DisplayName("Test Attribute cell")
+@Execution(ExecutionMode.CONCURRENT)
 internal class AttributeCellTest {
 
 //    @BeforeEach
@@ -50,16 +53,14 @@ internal class AttributeCellTest {
     )
 
     companion object {
-        init {
-            EntityTypeManager.currentManager = EntityTypeManager()
-        }
+        private val typeManager = EntityTypeManager()
 
         private val dateFormat = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", null))!!
         private val dateTimeFormat = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", null))!!
         private val dateVal = dateFormat.parseDateTime(dateFormat.print(DateTime.now()))!!
         private val dateTimeVal = dateTimeFormat.parseDateTime(dateTimeFormat.print(DateTime.now()))!!
         private val boolTestData2 = TestData(
-            EntityTypeManager.createAttribute("attr2", BooleanType::class),
+            typeManager.createAttribute("attr2", BooleanType::class),
             false,
             BooleanValue(false),
             CellType.BOOL,
@@ -68,7 +69,7 @@ internal class AttributeCellTest {
             listOf<(Cell) -> Unit>({ it.longValue }, { it.doubleValue })
         )
         private val longTestData1 = TestData(
-            EntityTypeManager.createAttribute("attr3", LongType::class),
+            typeManager.createAttribute("attr3", LongType::class),
             111L,
             LongValue(111L),
             CellType.LONG,
@@ -82,7 +83,7 @@ internal class AttributeCellTest {
         fun testDataSource(): Stream<TestData<*, *>> {
             return Stream.of(
                 TestData(
-                    EntityTypeManager.createAttribute("attr1", BooleanType::class),
+                    typeManager.createAttribute("attr1", BooleanType::class),
                     true,
                     BooleanValue(true),
                     CellType.BOOL,
@@ -93,7 +94,7 @@ internal class AttributeCellTest {
                 boolTestData2,
                 longTestData1,
                 TestData(
-                    EntityTypeManager.createAttribute("attr4", DoubleType::class),
+                    typeManager.createAttribute("attr4", DoubleType::class),
                     11.1,
                     DoubleValue(11.1),
                     CellType.DOUBLE,
@@ -102,7 +103,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr5", StringType::class),
+                    typeManager.createAttribute("attr5", StringType::class),
                     "test value",
                     StringValue("test value"),
                     CellType.STRING,
@@ -111,7 +112,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr6", TextType::class),
+                    typeManager.createAttribute("attr6", TextType::class),
                     "test value",
                     TextValue("test value"),
                     CellType.STRING,
@@ -120,7 +121,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr7", DateType::class),
+                    typeManager.createAttribute("attr7", DateType::class),
                     HSSFDateUtil.getExcelDate(dateVal.toDate()),
                     DateValue(dateVal),
                     CellType.DOUBLE,
@@ -129,7 +130,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr8", DateTimeType::class),
+                    typeManager.createAttribute("attr8", DateTimeType::class),
                     HSSFDateUtil.getExcelDate(dateTimeVal.toDate()),
                     DateTimeValue(dateTimeVal),
                     CellType.DOUBLE,
@@ -138,7 +139,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr9", BooleanListType::class),
+                    typeManager.createAttribute("attr9", BooleanListType::class),
                     "true,false",
                     BooleanListValue(listOf(BooleanValue(true), BooleanValue(false))),
                     CellType.STRING,
@@ -147,7 +148,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr10", LongListType::class),
+                    typeManager.createAttribute("attr10", LongListType::class),
                     "1,2,3",
                     LongListValue(listOf(LongValue(1), LongValue(2), LongValue(3))),
                     CellType.STRING,
@@ -156,7 +157,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr11", DoubleListType::class),
+                    typeManager.createAttribute("attr11", DoubleListType::class),
                     "1.1,2.2",
                     DoubleListValue(listOf(DoubleValue(1.1), DoubleValue(2.2))),
                     CellType.STRING,
@@ -165,7 +166,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr12", StringListType::class),
+                    typeManager.createAttribute("attr12", StringListType::class),
                     "str1\",str2\"",
                     StringListValue(listOf(StringValue("str1\""), StringValue("str2\""))),
                     CellType.STRING,
@@ -174,7 +175,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr13", DateListType::class),
+                    typeManager.createAttribute("attr13", DateListType::class),
                     "$dateVal,$dateVal",
                     DateListValue(listOf(DateValue(dateVal), DateValue(dateVal))),
                     CellType.STRING,
@@ -183,7 +184,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr14", DateTimeListType::class),
+                    typeManager.createAttribute("attr14", DateTimeListType::class),
                     "$dateTimeVal,$dateTimeVal",
                     DateTimeListValue(listOf(DateTimeValue(dateTimeVal), DateTimeValue(dateTimeVal))),
                     CellType.STRING,
@@ -192,7 +193,7 @@ internal class AttributeCellTest {
                     listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    EntityTypeManager.createAttribute("attr15", AttributeListType::class),
+                    typeManager.createAttribute("attr15", AttributeListType::class),
                     "attr2=\"false\",attr3=\"111\"",
                     AttributeListValue(
                         mapOf(

@@ -9,6 +9,7 @@ import net.pototskiy.apps.magemediation.api.database.EntityStatus
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
@@ -33,16 +34,19 @@ import org.junit.jupiter.api.parallel.ResourceLock
 class DataLoadingTest {
     private lateinit var config: Config
     private lateinit var entityType: EntityType
+    private lateinit var typeManager: EntityTypeManager
 
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.currentManager = EntityTypeManager()
         Config.Builder.initConfigBuilder()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
-        util.initDataBase()
-        entityType = EntityTypeManager.getEntityType("onec-product")!!
+        typeManager = config.entityTypeManager
+        util.initDataBase(typeManager)
+        PluginContext.config = config
+        PluginContext.entityTypeManager = config.entityTypeManager
+        entityType = typeManager.getEntityType("onec-product")!!
         transaction { DbEntityTable.deleteAll() }
     }
 
@@ -60,9 +64,9 @@ class DataLoadingTest {
         @BeforeAll
         fun initAll() {
             val load = config.loader.loads.find {
-                it.entity.name == "onec-product"
-                        && it.sources.first().file.file.name.endsWith("test.attributes.xls")
-                        && it.sources.first().sheet.definition == "name:test-stock"
+                it.entity.name == "onec-product" &&
+                        it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
+                        it.sources.first().sheet.definition == "name:test-stock"
             }
             loadEntities(load!!)
         }
@@ -147,7 +151,7 @@ class DataLoadingTest {
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = EntityTypeManager.getEntityAttribute(entityType, "sku")!!
+                    val skuAttr = typeManager.getEntityAttribute(entityType, "sku")!!
                     val entity = DbEntity.getEntitiesByAttributes(
                         entityType,
                         mapOf(skuAttr to StringValue("2")),
@@ -179,7 +183,7 @@ class DataLoadingTest {
             )
             loader.load()
         }
-        entityType = EntityTypeManager.getEntityType("onec-product")!!
+        entityType = typeManager.getEntityType("onec-product")!!
     }
 
     private fun getHSSFWorkbook(load: Load): HSSFWorkbook {

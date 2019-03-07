@@ -17,7 +17,7 @@ abstract class EntityType(
         get() = manager.getEntityTypeAttributes(this)
 
     fun getAttributeOrNull(name: String): Attribute<*>? {
-        val attr = EntityTypeManager.getEntityAttribute(this, name)
+        val attr = manager.getEntityAttribute(this, name)
             ?: return null
         return if (attr in attributes) attr else null
     }
@@ -52,22 +52,26 @@ abstract class EntityType(
     }
 
     @ConfigDsl
-    class Builder(val entityType: String, private val open: Boolean) {
+    class Builder(
+        val typeManager: EntityTypeManager,
+        val entityType: String,
+        private val open: Boolean
+    ) {
         val attributes = mutableListOf<Attribute<*>>()
         private val inheritances = mutableListOf<ParentEntityType>()
 
         inline fun <reified T : Type> attribute(name: String, block: Attribute.Builder<T>.() -> Unit = {}) =
-            attributes.add(Attribute.Builder<T>(name, T::class).apply(block).build())
+            attributes.add(Attribute.Builder<T>(typeManager, name, T::class).apply(block).build())
 
         fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
-            val eType = EntityTypeManager.getEntityType(name)
+            val eType = typeManager.getEntityType(name)
                 ?: throw ConfigException("Entity type<$name> does not defined")
-            inheritances.add(ParentEntityType.Builder(eType).apply(block).build())
+            inheritances.add(ParentEntityType.Builder(typeManager, eType).apply(block).build())
         }
 
         fun build(): EntityType {
-            return EntityTypeManager.createEntityType(entityType, inheritances, open).also {
-                EntityTypeManager.initialAttributeSetup(it, AttributeCollection(attributes))
+            return typeManager.createEntityType(entityType, inheritances, open).also {
+                typeManager.initialAttributeSetup(it, AttributeCollection(attributes))
             }
         }
     }

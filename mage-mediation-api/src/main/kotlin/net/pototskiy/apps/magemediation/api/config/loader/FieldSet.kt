@@ -26,6 +26,7 @@ data class FieldSet(
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder(
+        val typeManager: EntityTypeManager,
         private val entityType: EntityType,
         private val name: String,
         private val mainSet: Boolean = false,
@@ -50,8 +51,8 @@ data class FieldSet(
 
         private fun addFiled(lastField: Field, lastAttribute: Attribute<*>?) {
             fields[lastField] = lastAttribute
-                ?: EntityTypeManager.getEntityAttribute(entityType, lastField.name)
-                        ?: EntityTypeManager.createAttribute(
+                ?: typeManager.getEntityAttribute(entityType, lastField.name)
+                        ?: typeManager.createAttribute(
                     lastField.name,
                     StringType::class
                 ) {
@@ -67,6 +68,7 @@ data class FieldSet(
             block: Attribute.Builder<T>.() -> Unit
         ): Attribute<*> =
             Attribute.Builder<T>(
+                typeManager,
                 name ?: throw ConfigException("Attribute name should be defined"),
                 T::class
             ).apply(block).build()
@@ -76,7 +78,7 @@ data class FieldSet(
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
 
         infix fun Field.to(attribute: AttributeWithName) {
-            val attr = EntityTypeManager.getEntityAttribute(entityType, attribute.name)
+            val attr = typeManager.getEntityAttribute(entityType, attribute.name)
                 ?: throw ConfigException("Attribute<$attribute> is not defined")
             addFiled(this, attr)
         }
@@ -111,15 +113,15 @@ data class FieldSet(
                         attr
                     )
                 } else {
-                    val attr = EntityTypeManager.getEntityAttribute(entityType, field.name)
-                        ?: EntityTypeManager.createAttribute(
+                    val attr = typeManager.getEntityAttribute(entityType, field.name)
+                        ?: typeManager.createAttribute(
                             field.name, StringType::class
                         ) {
                             key(false)
                             nullable(true)
                             auto(true)
                         }
-//                            .also { EntityTypeManager.addEntityAttribute(entityType, it) }
+//                            .also { typeManager.addEntityAttribute(entityType, it) }
                     Pair(field, attr)
                 }
             }.forEach {

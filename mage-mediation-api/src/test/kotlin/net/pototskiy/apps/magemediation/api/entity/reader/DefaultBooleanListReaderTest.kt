@@ -31,6 +31,7 @@ import kotlin.reflect.full.createInstance
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultBooleanListReaderTest {
 
+    private val typeManager = EntityTypeManager()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
@@ -40,10 +41,9 @@ internal class DefaultBooleanListReaderTest {
 
     @BeforeEach
     internal fun setUp() {
-        EntityTypeManager.currentManager = EntityTypeManager()
-        attr = EntityTypeManager.createAttribute("attr", BooleanListType::class)
-        entity = EntityTypeManager.createEntityType("test", emptyList(), false).also {
-            EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
+        attr = typeManager.createAttribute("attr", BooleanListType::class)
+        entity = typeManager.createEntityType("test", emptyList(), false).also {
+            typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")

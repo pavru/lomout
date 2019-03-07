@@ -3,7 +3,7 @@ package net.pototskiy.apps.magemediation.loader
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
@@ -38,7 +38,6 @@ class DataLoadingInProductionWayTest {
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.currentManager = EntityTypeManager()
         Config.Builder.initConfigBuilder()
         // TODO: 23.02.2019 remove after test
         //EntityClass.initEntityCLassRegistrar()
@@ -61,7 +60,9 @@ class DataLoadingInProductionWayTest {
         val util = LoadingDataTestPrepare()
         println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         config = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
-        util.initDataBase()
+        util.initDataBase(config.entityTypeManager)
+        PluginContext.config = config
+        PluginContext.entityTypeManager = config.entityTypeManager
     }
 
     @ObsoleteCoroutinesApi

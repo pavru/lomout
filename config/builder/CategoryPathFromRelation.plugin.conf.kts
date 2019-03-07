@@ -31,11 +31,12 @@ class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
     }
 
     companion object {
+        private val typeManager by lazy { PluginContext.entityTypeManager }
         private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
         private const val eTypeName = "mage-category"
-        private val entityType = EntityTypeManager[eTypeName]
-        private val nameAttr by lazy { EntityTypeManager.getEntityAttribute(entityType, "name")!! }
-        private val idAttr by lazy { EntityTypeManager.getEntityAttribute(entityType, "entity_id")!! }
-        private val parentAttr by lazy { EntityTypeManager.getEntityAttribute(entityType, "parent_id")!! }
+        private val entityType by lazy { typeManager[eTypeName] }
+        private val nameAttr by lazy { typeManager.getEntityAttribute(entityType, "name")!! }
+        private val idAttr by lazy { typeManager.getEntityAttribute(entityType, "entity_id")!! }
+        private val parentAttr by lazy { typeManager.getEntityAttribute(entityType, "parent_id")!! }
     }
 }

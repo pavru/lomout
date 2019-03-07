@@ -27,7 +27,7 @@ import kotlin.reflect.full.createInstance
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultDoubleReaderTest {
-
+    private val typeManager = EntityTypeManager()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
@@ -37,10 +37,9 @@ internal class DefaultDoubleReaderTest {
 
     @BeforeEach
     internal fun setUp() {
-        EntityTypeManager.currentManager = EntityTypeManager()
-        attr = EntityTypeManager.createAttribute("attr", DoubleType::class)
-        entity = EntityTypeManager.createEntityType("test", emptyList(), false).also {
-            EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
+        attr = typeManager.createAttribute("attr", DoubleType::class)
+        entity = typeManager.createEntityType("test", emptyList(), false).also {
+            typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")

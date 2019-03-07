@@ -10,7 +10,10 @@ class ParentEntityType(
     val exclude: AttributeCollection? = null
 ) {
     @ConfigDsl
-    class Builder(private val parent: EntityType) {
+    class Builder(
+        private val typeManager: EntityTypeManager,
+        private val parent: EntityType
+    ) {
         private val includes = mutableListOf<Attribute<*>>()
         private val excludes = mutableListOf<Attribute<*>>()
 
@@ -18,7 +21,7 @@ class ParentEntityType(
         fun include(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.includes.add(EntityTypeManager.getEntityAttribute(parent, it)!!)
+                this.includes.add(typeManager.getEntityAttribute(parent, it)!!)
             }
         }
 
@@ -26,7 +29,7 @@ class ParentEntityType(
         fun exclude(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.excludes.add(EntityTypeManager.getEntityAttribute(parent, it)!!)
+                this.excludes.add(typeManager.getEntityAttribute(parent, it)!!)
             }
         }
 

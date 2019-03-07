@@ -29,7 +29,7 @@ import kotlin.reflect.full.createInstance
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultDoubleListReaderTest {
-
+    private val typeManager = EntityTypeManager()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
@@ -39,10 +39,9 @@ internal class DefaultDoubleListReaderTest {
 
     @BeforeEach
     internal fun setUp() {
-        EntityTypeManager.currentManager = EntityTypeManager()
-        attr = EntityTypeManager.createAttribute("attr", DoubleListType::class)
-        entity = EntityTypeManager.createEntityType("test", emptyList(), false).also {
-            EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
+        attr = typeManager.createAttribute("attr", DoubleListType::class)
+        entity = typeManager.createEntityType("test", emptyList(), false).also {
+            typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")

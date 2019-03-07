@@ -6,11 +6,15 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Suppress("MagicNumber", "TooGenericExceptionCaught")
 @DisplayName("EntityType base functionality test")
+@Execution(ExecutionMode.CONCURRENT)
 internal class EntityTypeBaseTest {
 
+    private val typeManager = EntityTypeManager()
     private lateinit var attr1: Attribute<*>
     private lateinit var attr2: Attribute<*>
     private lateinit var attr3: Attribute<*>
@@ -20,22 +24,21 @@ internal class EntityTypeBaseTest {
 
     @BeforeEach
     internal fun setUp() {
-        EntityTypeManager.currentManager = EntityTypeManager()
-        attr1 = EntityTypeManager.createAttribute("attr1", StringType::class)
-        attr2 = EntityTypeManager.createAttribute("attr2", StringType::class)
-        attr3 = EntityTypeManager.createAttribute("attr3", StringType::class)
-        attr4 = EntityTypeManager.createAttribute("attr4", StringType::class)
-        attr5 = EntityTypeManager.createAttribute("attr5", StringType::class)
-        attr6 = EntityTypeManager.createAttribute("attr6", StringType::class)
+        attr1 = typeManager.createAttribute("attr1", StringType::class)
+        attr2 = typeManager.createAttribute("attr2", StringType::class)
+        attr3 = typeManager.createAttribute("attr3", StringType::class)
+        attr4 = typeManager.createAttribute("attr4", StringType::class)
+        attr5 = typeManager.createAttribute("attr5", StringType::class)
+        attr6 = typeManager.createAttribute("attr6", StringType::class)
     }
 
     @Test
     internal fun createEntityTest() {
-        val eType = EntityTypeManager.createEntityType(
+        val eType = typeManager.createEntityType(
             "test1",
             emptyList(),
             false
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThat(eType).isNotNull
         assertThat(eType.name).isEqualTo("test1")
         assertThat(eType.attributes)
@@ -43,13 +46,13 @@ internal class EntityTypeBaseTest {
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2))
         assertThat(eType.open).isFalse()
         assertThatThrownBy {
-            EntityTypeManager.addEntityAttribute(
+            typeManager.addEntityAttribute(
                 eType,
                 attr3
             )
         }.isInstanceOf(DatabaseException::class.java)
         assertThat(eType["attr2"]).isEqualTo(attr2)
-        assertThat(EntityTypeManager["test1"]).isEqualTo(eType)
+        assertThat(typeManager["test1"]).isEqualTo(eType)
         try {
             eType.checkAttributeDefined(attr1)
             assertThat(true).isTrue()
@@ -68,15 +71,15 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun createOpenAndRefineTest() {
-        val eType = EntityTypeManager.createEntityType(
+        val eType = typeManager.createEntityType(
             "test1",
             emptyList(),
             true
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThat(eType.attributes)
             .hasSize(2)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2))
-        EntityTypeManager.addEntityAttribute(eType, attr3)
+        typeManager.addEntityAttribute(eType, attr3)
         assertThat(eType.attributes)
             .hasSize(3)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2, attr3))
@@ -84,21 +87,21 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun createEntityWithInheritanceTest() {
-        val test1 = EntityTypeManager.createEntityType(
+        val test1 = typeManager.createEntityType(
             "test1",
             emptyList(),
             true
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
-        val test2 = EntityTypeManager.createEntityType(
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        val test2 = typeManager.createEntityType(
             "test2",
             listOf(ParentEntityType(test1)),
             false
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
         assertThat(test2.attributes)
             .hasSize(3)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2, attr4))
         assertThat(test2["attr2"]).isEqualTo(attr2)
-        assertThat(EntityTypeManager["test2"]).isEqualTo(test2)
+        assertThat(typeManager["test2"]).isEqualTo(test2)
         try {
             test2.checkAttributeDefined(attr1)
             assertThat(true).isTrue()
@@ -113,30 +116,30 @@ internal class EntityTypeBaseTest {
         assertThat(test2.getAttribute("attr1")).isEqualTo(attr1)
         assertThatThrownBy { test2.getAttribute("attr3") }.isInstanceOf(DatabaseException::class.java)
         assertThatThrownBy { test2.getAttribute("attr5") }.isInstanceOf(DatabaseException::class.java)
-        EntityTypeManager.addEntityAttribute(test1, attr3)
+        typeManager.addEntityAttribute(test1, attr3)
         assertThat(test2["attr3"]).isEqualTo(attr3)
     }
 
     @Test
     internal fun createWithInheritanceIncludeTest() {
-        val test1 = EntityTypeManager.createEntityType(
+        val test1 = typeManager.createEntityType(
             "test1",
             emptyList(),
             true
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
-        val test2 = EntityTypeManager.createEntityType(
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
+        val test2 = typeManager.createEntityType(
             "test2",
             listOf(ParentEntityType(test1, AttributeCollection(listOf(attr1, attr3)))),
             false
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
-        val test3 = EntityTypeManager.createEntityType(
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
+        val test3 = typeManager.createEntityType(
             "test3",
             listOf(
                 ParentEntityType(test2, AttributeCollection(listOf(attr4, attr3))),
                 ParentEntityType(test1, AttributeCollection(listOf(attr2)))
             ),
             false
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr5, attr6))) }
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr5, attr6))) }
         assertThat(test2.attributes)
             .hasSize(3)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr3, attr4))
@@ -147,24 +150,24 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun createWithInheritanceExcludeTest() {
-        val test1 = EntityTypeManager.createEntityType(
+        val test1 = typeManager.createEntityType(
             "test1",
             emptyList(),
             true
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
-        val test2 = EntityTypeManager.createEntityType(
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
+        val test2 = typeManager.createEntityType(
             "test2",
             listOf(ParentEntityType(test1, null, AttributeCollection(listOf(attr2)))),
             false
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
-        val test3 = EntityTypeManager.createEntityType(
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
+        val test3 = typeManager.createEntityType(
             "test3",
             listOf(
                 ParentEntityType(test2, null, AttributeCollection(listOf(attr1, attr2))),
                 ParentEntityType(test1, null, AttributeCollection(listOf(attr1, attr3)))
             ),
             false
-        ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr5, attr6))) }
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr5, attr6))) }
         assertThat(test2.attributes)
             .hasSize(3)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr3, attr4))

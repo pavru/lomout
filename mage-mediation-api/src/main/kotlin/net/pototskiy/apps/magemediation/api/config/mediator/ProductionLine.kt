@@ -14,13 +14,13 @@ data class ProductionLine(
 ) {
     enum class LineType { CROSS, UNION }
     @ConfigDsl
-    class Builder(private val lineType: LineType) {
+    class Builder(private val typeManager: EntityTypeManager, private val lineType: LineType) {
         private var inputs: InputEntityCollection? = null
         private var output: EntityType? = null
         private var pipeline: Pipeline? = null
 
         fun input(block: InputEntityCollection.Builder.() -> Unit) {
-            inputs = InputEntityCollection.Builder().apply(block).build()
+            inputs = InputEntityCollection.Builder(typeManager).apply(block).build()
         }
 
         fun pipeline(
@@ -33,18 +33,20 @@ data class ProductionLine(
 
         @PublicApi
         fun output(name: String, block: EntityType.Builder.() -> Unit) {
-            output = EntityType.Builder(name, false).apply(block).build()
+            output = EntityType.Builder(typeManager, name, false).apply(block).build()
         }
 
         @PublicApi
         fun output(name: String) {
-            output = EntityTypeManager.getEntityType(name)
+            output = typeManager.getEntityType(name)
         }
 
         @Suppress("ThrowsCount")
         fun build(): ProductionLine {
-            validatePipeline(pipeline
-                ?: throw ConfigException("Production line must have plugins.pipeline"))
+            validatePipeline(
+                pipeline
+                    ?: throw ConfigException("Production line must have plugins.pipeline")
+            )
             return ProductionLine(
                 lineType,
                 inputs ?: throw ConfigException("At least one input entity must be defined"),
