@@ -40,7 +40,6 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                                 "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
                     )
                 AttributeListValue(
-                    AttributeListValue(
                         names.mapIndexedNotNull { c, cell ->
                             if (cell != null) {
                                 cell.stringValue to values.getOrEmptyCell(c)
@@ -48,7 +47,6 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                                 null
                             }
                         }.toMap()
-                    )
                 )
             }
             else -> throw SourceException(

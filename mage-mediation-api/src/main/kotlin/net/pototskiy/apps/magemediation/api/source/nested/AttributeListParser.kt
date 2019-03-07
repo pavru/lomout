@@ -53,7 +53,7 @@ class AttributeListParser(
 
         if (valueDelimiter.isNotBlank())
             format = format.withDelimiter(valueDelimiter[0])
-        if (valueQuote?.isBlank() == true) {
+        if (valueQuote?.isBlank() == false) {
             format = format.withQuote(valueQuote[0])
         } else {
             format = format.withEscape('\\')

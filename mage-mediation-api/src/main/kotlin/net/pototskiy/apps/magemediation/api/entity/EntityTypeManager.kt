@@ -76,6 +76,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
     override fun removeEntityType(entityType: EntityType) {
         entitySupers.remove(entityType)
         entityAttributes.remove(entityType)
+        entities.remove(entityType.name)
     }
 
     override fun <T : Type> createAttribute(
