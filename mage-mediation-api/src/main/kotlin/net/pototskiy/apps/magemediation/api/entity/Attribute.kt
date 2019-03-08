@@ -46,6 +46,7 @@ abstract class Attribute<T : Type>(
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder<T : Type>(
+        private val typeManager: EntityTypeManager,
         private var name: String,
         private val typeClass: KClass<out Type>
     ) {
@@ -95,7 +96,7 @@ abstract class Attribute<T : Type>(
             validateKeyIsNotList()
             validateKeyIsNotNullable()
             @Suppress("UNCHECKED_CAST")
-            return EntityTypeManager.createAttribute(name, typeClass) {
+            return typeManager.createAttribute(name, typeClass) {
                 key(key)
                 nullable(nullable)
                 auto(false)

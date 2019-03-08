@@ -1,10 +1,15 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.magemediation.api.config.mediator.Pipeline
@@ -13,16 +18,23 @@ import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollecti
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.EntityType
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.database.BooleanConst
 import net.pototskiy.apps.magemediation.database.PipelineSets
 import net.pototskiy.apps.magemediation.database.StringConst
 import org.apache.commons.collections4.map.LRUMap
 import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.jetbrains.exposed.sql.update
 
 class PipelineExecutor(
+    private val entityTypeManager: EntityTypeManager,
     private val pipeline: Pipeline,
     private val inputEntities: InputEntityCollection,
     private val targetEntity: EntityType,
@@ -38,7 +50,7 @@ class PipelineExecutor(
             val matchedData: Channel<PipelineDataCollection> = Channel()
             val nextMatchedPipe = pipeline.pipelines.find {
                 it.isApplicablePipeline(Pipeline.CLASS.MATCHED)
-            }?.let { PipelineExecutor(it, inputEntities, targetEntity, entityCache) }
+            }?.let { PipelineExecutor(entityTypeManager, it, inputEntities, targetEntity, entityCache) }
 
             jobs.add(launch { nextMatchedPipe?.execute(matchedData)?.consumeEach { send(it) } })
 
@@ -61,7 +73,7 @@ class PipelineExecutor(
             val unMatchedData: Channel<PipelineDataCollection> = Channel()
             val nextUnMatchedPipe = pipeline.pipelines.find {
                 it.isApplicablePipeline(Pipeline.CLASS.UNMATCHED)
-            }?.let { PipelineExecutor(it, inputEntities, targetEntity, entityCache) }
+            }?.let { PipelineExecutor(entityTypeManager, it, inputEntities, targetEntity, entityCache) }
             jobs.add(launch { nextUnMatchedPipe?.execute(unMatchedData)?.consumeEach { send(it) } })
             if (nextUnMatchedPipe != null) {
                 createChildUmMatchedSet(nextUnMatchedPipe)
@@ -106,7 +118,7 @@ class PipelineExecutor(
             entity.readAttributes()
             val inputEntity = inputEntities.find { it.entity.name == entity.eType.name }
                 ?: throw MediationException("Unexpected input entity<${entity.eType.name}")
-            pipelineData = PipelineData(entity, inputEntity)
+            pipelineData = PipelineData(entityTypeManager, entity, inputEntity)
             entityCache[entity.id.value] = pipelineData
         }
         return pipelineData

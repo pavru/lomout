@@ -22,6 +22,7 @@ import net.pototskiy.apps.magemediation.api.entity.LongValue
 import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.entity.StringValue
 import net.pototskiy.apps.magemediation.api.entity.get
+import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
@@ -56,26 +57,29 @@ class LoaderAttributeLoadingTest {
     private lateinit var nameAttr: Attribute<StringType>
     private val loads = mutableMapOf<String, Load>()
     private lateinit var entityType: EntityType
+    private lateinit var typeManager: EntityTypeManager
 
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.currentManager = EntityTypeManager()
         Config.Builder.initConfigBuilder()
         // TODO: 23.02.2019 remove after test
         //EntityClass.initEntityCLassRegistrar()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
-        util.initDataBase()
-        entityType = EntityTypeManager["onec-product"]
+        typeManager = config.entityTypeManager
+        util.initDataBase(typeManager)
+        PluginContext.config = config
+        PluginContext.entityTypeManager = config.entityTypeManager
+        entityType = typeManager["onec-product"]
         @Suppress("UNCHECKED_CAST")
-        skuAttr = EntityTypeManager
+        skuAttr = typeManager
             .getEntityAttribute(entityType, "sku") as Attribute<StringType>
         @Suppress("UNCHECKED_CAST")
-        codeAttr = EntityTypeManager
+        codeAttr = typeManager
             .getEntityAttribute(entityType, "group_code") as Attribute<LongType>
         @Suppress("UNCHECKED_CAST")
-        nameAttr = EntityTypeManager
+        nameAttr = typeManager
             .getEntityAttribute(entityType, "group_name") as Attribute<StringType>
         loads[xlsLoad] = config.loader.loads.find {
             it.entity.name == entityTypeName && it.sources.first().file.file.name == "test.attributes.xls"
@@ -287,7 +291,7 @@ class LoaderAttributeLoadingTest {
     }
 
     private fun attr(attrName: String) =
-        EntityTypeManager.getEntityAttribute(entityType, attrName)!!
+        typeManager.getEntityAttribute(entityType, attrName)!!
 
     private fun loadEntities(loadID: String) {
         val load = loads[loadID]!!
@@ -299,7 +303,7 @@ class LoaderAttributeLoadingTest {
             val loader = EntityLoader(load, EmptyRowStrategy.STOP, sheet)
             loader.load()
         }
-        entityType = EntityTypeManager.getEntityType(entityTypeName)!!
+        entityType = typeManager.getEntityType(entityTypeName)!!
     }
 
     companion object {

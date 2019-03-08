@@ -29,18 +29,9 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                     ),
                     attribute.name
                 )
-                val names = attrs[0][0]
-                    ?: throw SourceException(
-                        "Can not read attributes from value<${input.stringValue}>, " +
-                                "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
-                    )
-                val values = attrs[0][1]
-                    ?: throw SourceException(
-                        "Can not read attributes from value<${input.stringValue}>, " +
-                                "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
-                    )
+                val names = attrs[0][0]!!
+                val values = attrs[0][1]!!
                 AttributeListValue(
-                    AttributeListValue(
                         names.mapIndexedNotNull { c, cell ->
                             if (cell != null) {
                                 cell.stringValue to values.getOrEmptyCell(c)
@@ -48,7 +39,6 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                                 null
                             }
                         }.toMap()
-                    )
                 )
             }
             else -> throw SourceException(

@@ -2,7 +2,6 @@ package net.pototskiy.apps.magemediation.api.config
 
 import net.pototskiy.apps.magemediation.api.NoExitSecurityManager
 import net.pototskiy.apps.magemediation.api.createLocale
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -16,7 +15,6 @@ internal class ConfigLoaderPartTest {
     @BeforeEach
     internal fun setUp() {
         System.setSecurityManager(NoExitSecurityManager())
-        EntityTypeManager.currentManager = EntityTypeManager()
         config = ConfigurationBuilderFromDSL(
             File("${System.getenv("TEST_DATA_DIR")}/conf-test.conf.kts")
         ).config

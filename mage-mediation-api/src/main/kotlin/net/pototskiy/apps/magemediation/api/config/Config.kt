@@ -2,14 +2,16 @@ package net.pototskiy.apps.magemediation.api.config
 
 import net.pototskiy.apps.magemediation.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.magemediation.api.config.mediator.MediatorConfiguration
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class Config(
+    val entityTypeManager: EntityTypeManager,
     val database: DatabaseConfig,
     val loader: LoaderConfiguration,
     val mediator: MediatorConfiguration
 ) {
     @ConfigDsl
-    class Builder {
+    class Builder(private val typeManager: EntityTypeManager) {
         private var database: DatabaseConfig? = null
         private var loader: LoaderConfiguration? = null
         private var mediator: MediatorConfiguration? = null
@@ -27,14 +29,14 @@ data class Config(
         @Suppress("unused")
         fun Builder.loader(block: LoaderConfiguration.Builder.() -> Unit) {
             pushScope("loader")
-            loader = LoaderConfiguration.Builder().apply(block).build()
+            loader = LoaderConfiguration.Builder(typeManager).apply(block).build()
             popScope()
         }
 
         @Suppress("unused")
         fun Builder.mediator(block: MediatorConfiguration.Builder.() -> Unit) {
             pushScope("mediator")
-            mediator = MediatorConfiguration.Builder().apply(block).build()
+            mediator = MediatorConfiguration.Builder(typeManager).apply(block).build()
             popScope()
         }
 
@@ -44,7 +46,7 @@ data class Config(
                 ?: throw ConfigException("Loader section must be in configuration")
             val realMediator = mediator
                 ?: throw ConfigException("Mediator section must be in configuration")
-            return Config(realDatabase, realLoader, realMediator)
+            return Config(typeManager, realDatabase, realLoader, realMediator)
         }
 
         companion object : ConfigBuildHelper()
@@ -59,7 +61,7 @@ fun Any.config(block: Config.Builder.() -> Unit) {
     val script = (this as? ConfigScript)
     if (script != null) {
         Config.Builder.initConfigBuilder()
-        script.evaluatedConfig = Config.Builder().apply(block).build()
+        script.evaluatedConfig = Config.Builder(EntityTypeManager()).apply(block).build()
     } else
         throw ConfigException("Wrong config script object type")
 }

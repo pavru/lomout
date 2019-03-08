@@ -34,7 +34,10 @@ data class InputEntity(
     }
 
     @ConfigDsl
-    class Builder(val entityType: EntityType) {
+    class Builder(
+        val typeManager: EntityTypeManager,
+        val entityType: EntityType
+    ) {
         val attrPairs = mutableMapOf<Attribute<*>, Attribute<*>>()
         var sqlFilter: SqlFilter? = null
         private val extEntityUUID = UUID.randomUUID().toString()
@@ -53,8 +56,8 @@ data class InputEntity(
             from: String,
             block: Attribute.Builder<T>.() -> Unit = {}
         ) {
-            val destAttr = Attribute.Builder<T>(name, T::class).apply(block).build()
-            val origData = EntityTypeManager.getEntityAttribute(entityType, from)
+            val destAttr = Attribute.Builder<T>(typeManager, name, T::class).apply(block).build()
+            val origData = this.typeManager.getEntityAttribute(entityType, from)
                 ?: throw ConfigException("Attribute<${entityType.name}:$from> is not defined>")
             attrPairs[origData] = destAttr
         }
@@ -65,11 +68,11 @@ data class InputEntity(
             val extEntity = if (attrPairs.isEmpty()) {
                 null
             } else {
-                EntityTypeManager.createEntityType(
+                typeManager.createEntityType(
                     extendedName(entityType.name),
                     emptyList(),
                     false
-                ).also { EntityTypeManager.initialAttributeSetup(it, AttributeCollection(attrPairs.values.toList())) }
+                ).also { typeManager.initialAttributeSetup(it, AttributeCollection(attrPairs.values.toList())) }
             }
             return InputEntity(
                 entityType,

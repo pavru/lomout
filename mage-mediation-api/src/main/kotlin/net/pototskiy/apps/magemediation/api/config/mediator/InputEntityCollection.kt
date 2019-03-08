@@ -7,16 +7,16 @@ import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 data class InputEntityCollection(private val entities: List<InputEntity>) : List<InputEntity> by entities {
 
     @ConfigDsl
-    class Builder {
+    class Builder(val typeManager: EntityTypeManager) {
         private val entities = mutableListOf<InputEntity>()
 
         @Suppress("unused")
         fun Builder.entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
-            val entity = EntityTypeManager.getEntityType(name)
+            val entity = typeManager.getEntityType(name)
                 ?: throw ConfigException("Entity<$name> has not been defined yet")
             entities.add(
                 InputEntity
-                    .Builder(entity)
+                    .Builder(typeManager, entity)
                     .apply(block)
                     .build()
             )

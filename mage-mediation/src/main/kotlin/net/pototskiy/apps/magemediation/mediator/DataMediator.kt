@@ -19,8 +19,8 @@ object DataMediator {
         orderedLines.forEach { (_, lines) ->
             lines.forEach {
                 when (it.lineType) {
-                    CROSS -> CrossProductionLineExecutor().executeLine(it)
-                    UNION -> UnionProductionLineExecutor().executeLine(it)
+                    CROSS -> CrossProductionLineExecutor(config.entityTypeManager).executeLine(it)
+                    UNION -> UnionProductionLineExecutor(config.entityTypeManager).executeLine(it)
                 }
             }
         }

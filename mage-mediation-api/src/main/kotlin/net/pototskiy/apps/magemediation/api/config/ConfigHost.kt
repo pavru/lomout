@@ -7,7 +7,6 @@ import java.io.File
 import kotlin.script.experimental.api.CompiledScript
 import kotlin.script.experimental.api.ResultValue
 import kotlin.script.experimental.api.ScriptDiagnostic
-import kotlin.script.experimental.api.ScriptDiagnostic.Severity.*
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.constructorArgs
@@ -43,7 +42,12 @@ class ConfigHost(private val configFile: File) {
                 logger.trace("Exception:", it.exception)
                 logger.trace("Caused:", it.exception?.cause)
             }
-            if (result.reports.any { it.severity in arrayOf(ERROR, FATAL) }) {
+            if (result.reports.any {
+                    it.severity in arrayOf(
+                        ScriptDiagnostic.Severity.ERROR,
+                        ScriptDiagnostic.Severity.FATAL
+                    )
+                }) {
                 throw ConfigException("Configuration file can not be compiled")
             }
         }
@@ -75,7 +79,12 @@ class ConfigHost(private val configFile: File) {
                             )
                         logger.trace(diagnostic.message, diagnostic.exception)
                     }
-                    if (result.reports.any { it.severity in arrayOf(ERROR, FATAL) }) {
+                    if (result.reports.any {
+                            it.severity in arrayOf(
+                                ScriptDiagnostic.Severity.ERROR,
+                                ScriptDiagnostic.Severity.FATAL
+                            )
+                        }) {
                         throw ConfigException("Configuration file can not be evaluated")
                     }
                 }
@@ -96,11 +105,11 @@ class ConfigHost(private val configFile: File) {
     private fun logMessage(severity: ScriptDiagnostic.Severity, message: String, file: String, line: Int) {
         val messageTemplate = "{} ({}:{})"
         when (severity) {
-            FATAL -> logger.fatal(messageTemplate, message, file, line)
-            ERROR -> logger.error(messageTemplate, message, file, line)
-            WARNING -> logger.warn(messageTemplate, message, file, line)
-            INFO -> logger.info(messageTemplate, message, file, line)
-            DEBUG -> logger.debug(messageTemplate, message, file, line)
+            ScriptDiagnostic.Severity.FATAL -> logger.fatal(messageTemplate, message, file, line)
+            ScriptDiagnostic.Severity.ERROR -> logger.error(messageTemplate, message, file, line)
+            ScriptDiagnostic.Severity.WARNING -> logger.warn(messageTemplate, message, file, line)
+            ScriptDiagnostic.Severity.INFO -> logger.info(messageTemplate, message, file, line)
+            ScriptDiagnostic.Severity.DEBUG -> logger.debug(messageTemplate, message, file, line)
         }
     }
 }

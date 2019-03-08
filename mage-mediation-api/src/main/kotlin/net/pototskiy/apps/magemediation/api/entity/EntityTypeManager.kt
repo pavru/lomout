@@ -30,9 +30,9 @@ class EntityTypeManager : EntityTypeManagerInterface {
 
     override fun initialAttributeSetup(entityType: EntityType, attributes: AttributeCollection) {
         attributes.forEach { it.owner = entityType }
-        if (attributes.any { it in this.attributes }) {
-            val alreadyExists = attributes.filter { it in this.attributes }.joinToString(",") { it.fullName }
-            throw DatabaseException("Attributes<$$alreadyExists> are already defined")
+        if (attributes.any { it in entityType.attributes }) {
+            val alreadyExists = attributes.filter { it in entityType.attributes }.joinToString(",") { it.fullName }
+            throw DatabaseException("Attributes<$alreadyExists> are already defined")
         }
         this.entityAttributes[entityType] = attributes.map { it.name to it }.toMap().toMutableMap()
     }
@@ -76,6 +76,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
     override fun removeEntityType(entityType: EntityType) {
         entitySupers.remove(entityType)
         entityAttributes.remove(entityType)
+        entities.remove(entityType.name)
     }
 
     override fun <T : Type> createAttribute(
@@ -137,7 +138,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
             ) {}
     }
 
-    companion object : EntityTypeManagerCompanion()
+//    companion object : EntityTypeManagerCompanion()
 }
 
 private fun checkThatAttributeIsNotAssigned(attributes: AttributeCollection) {
@@ -168,20 +169,5 @@ fun EntityTypeManager.addEntityAttributes(entityType: EntityType, attributes: Li
 fun EntityTypeManager.addEntityAttribute(entityType: EntityType, attribute: Attribute<*>) =
     this.addEntityAttributes(entityType, listOf(attribute))
 
-@PublicApi
-fun EntityTypeManager.Companion.addEntityAttributes(entityType: EntityType, attributes: List<Attribute<*>>) =
-    this.currentManager.addEntityAttributes(entityType, AttributeCollection(attributes))
-
-@PublicApi
-fun EntityTypeManager.Companion.addEntityAttribute(entityType: EntityType, attribute: Attribute<*>) =
-    this.currentManager.addEntityAttributes(entityType, listOf(attribute))
-
 operator fun EntityTypeManager.get(entityType: String) = this.getEntityType(entityType)
     ?: throw DatabaseException("Entity<$entityType> is not defined")
-
-operator fun EntityTypeManager.Companion.get(entityType: String) =
-    this.currentManager[entityType]
-
-@PublicApi
-fun EntityTypeManager.Companion.getEntityTypeOrNull(entityType: String) =
-    this.currentManager.getEntityType(entityType)

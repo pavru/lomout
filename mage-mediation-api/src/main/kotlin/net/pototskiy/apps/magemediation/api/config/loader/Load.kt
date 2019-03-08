@@ -17,7 +17,10 @@ data class Load(
     val fieldSets: FieldSetCollection
 ) {
     @ConfigDsl
-    class Builder(private val entityType: EntityType) {
+    class Builder(
+        private val typeManager: EntityTypeManager,
+        private val entityType: EntityType
+    ) {
         private var headersRow: Int = UNDEFINED_ROW
         private var rowsToSkip: Int = 0
         private var maxAbsentDays: Int = defaultAbsentDays
@@ -42,6 +45,7 @@ data class Load(
 
         fun sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
             fieldSets = FieldSetCollection.Builder(
+                typeManager,
                 entityType,
                 headersRow != UNDEFINED_COLUMN,
                 sources,
@@ -73,7 +77,7 @@ data class Load(
                 ?.map { it.fieldToAttr.attributes }
                 ?.flatten()
                 ?.filter { it.auto } ?: emptyList()
-            autoAttrs.forEach { EntityTypeManager.addEntityAttribute(entityType, it) }
+            autoAttrs.forEach { typeManager.addEntityAttribute(entityType, it) }
         }
 
         private fun validateFieldColumnDefinition() {

@@ -14,6 +14,7 @@ import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollecti
 import net.pototskiy.apps.magemediation.api.config.mediator.ProductionLine
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.database.BooleanConst
 import net.pototskiy.apps.magemediation.database.PipelineSets
 import net.pototskiy.apps.magemediation.database.StringConst
@@ -31,7 +32,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class UnionProductionLineExecutor {
+class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManager) {
 
     private val pipelineDataCache = LRUMap<Int, PipelineData>(1000, 300)
     private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
@@ -54,7 +55,13 @@ class UnionProductionLineExecutor {
 //                    )
 //                ) as EntityClass<PersistentSourceEntity>
                 val entityUpdater = EntityUpdater(targetEntityClass)
-                val pipeline = PipelineExecutor(line.pipeline, line.inputEntities, line.outputEntity, pipelineDataCache)
+                val pipeline = PipelineExecutor(
+                    entityTypeManager,
+                    line.pipeline,
+                    line.inputEntities,
+                    line.outputEntity,
+                    pipelineDataCache
+                )
                 createTopPipelineSet(line)
                 val (from, where, columns) = mainQuery(line)
                 val inputChannel: Channel<PipelineDataCollection> = Channel()
@@ -87,6 +94,7 @@ class UnionProductionLineExecutor {
                     ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
                 entity.readAttributes()
                 PipelineData(
+                    entityTypeManager,
                     entity,
                     line.inputEntities.find {
                         it.entity.name == entity.eType.name

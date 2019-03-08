@@ -11,7 +11,7 @@ data class LoaderConfiguration(
     val loads: LoadCollection
 ) {
     @ConfigDsl
-    class Builder {
+    class Builder(private val typeManager: EntityTypeManager) {
         private var files: SourceFileCollection? = null
         private var entities: EntityTypeCollection? = null
         private var loads = mutableListOf<Load>()
@@ -23,14 +23,14 @@ data class LoaderConfiguration(
 
         @Suppress("unused")
         fun Builder.entities(block: EntityTypeCollection.Builder.() -> Unit) {
-            this.entities = EntityTypeCollection.Builder().apply(block).build()
+            this.entities = EntityTypeCollection.Builder(typeManager).apply(block).build()
         }
 
         @Suppress("unused")
         fun Builder.loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
-            val entity = EntityTypeManager.getEntityType(entityType)
+            val entity = typeManager.getEntityType(entityType)
                 ?: throw ConfigException("Define entity<$entityType> before load configuration")
-            loads.add(Load.Builder(entity).apply(block).build())
+            loads.add(Load.Builder(typeManager, entity).apply(block).build())
         }
 
         fun build(): LoaderConfiguration {
