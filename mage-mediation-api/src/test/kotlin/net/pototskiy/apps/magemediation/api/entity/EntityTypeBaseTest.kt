@@ -67,6 +67,9 @@ internal class EntityTypeBaseTest {
         assertThat(eType.getAttribute("attr1")).isEqualTo(attr1)
         assertThatThrownBy { eType.getAttribute("attr3") }.isInstanceOf(DatabaseException::class.java)
         assertThatThrownBy { eType.getAttribute("attr4") }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy {
+            typeManager.initialAttributeSetup(eType, AttributeCollection(listOf(attr1, attr2)))
+        }.isInstanceOf(DatabaseException::class.java)
     }
 
     @Test
@@ -174,5 +177,17 @@ internal class EntityTypeBaseTest {
         assertThat(test3.attributes)
             .hasSize(5)
             .containsExactlyInAnyOrderElementsOf(listOf(attr4, attr3, attr2, attr5, attr6))
+    }
+
+    @Test
+    internal fun removeEntityTypeTest() {
+        val eType = typeManager.createEntityType(
+            "test1",
+            emptyList(),
+            false
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        assertThat(typeManager["test1"]).isEqualTo(eType)
+        typeManager.removeEntityType(eType)
+        assertThatThrownBy { typeManager["test1"] }.isInstanceOf(DatabaseException::class.java)
     }
 }

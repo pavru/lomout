@@ -26,10 +26,14 @@ class AttributeListParser(
         val result = mutableMapOf<String, String>()
         val nameValueFormat = getNameValueFormat()
         val attrFormat = getAttrFormat()
-        val attrParser = CSVParser.parse(data, attrFormat)
-        for (attr in attrParser.records[0]) {
-            val parsed = CSVParser.parse(attr, nameValueFormat).records
-            result[parsed[0][0]] = parsed[0][1]
+        val attrRecords = CSVParser.parse(data, attrFormat).records
+        if (attrRecords.isNotEmpty()) {
+            for (attr in attrRecords[0]) {
+                val valueRecords = CSVParser.parse(attr, nameValueFormat).records
+                if (valueRecords.isNotEmpty() && valueRecords[0].size() == 2) {
+                    result[valueRecords[0][0]] = valueRecords[0][1]
+                }
+            }
         }
         return result
     }

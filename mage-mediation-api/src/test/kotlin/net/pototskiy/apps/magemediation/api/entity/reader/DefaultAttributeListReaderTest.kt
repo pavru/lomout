@@ -82,6 +82,20 @@ internal class DefaultAttributeListReaderTest {
     }
 
     @Test
+    internal fun readeAttributeListUnsuccessfulTest() {
+        val reader = AttributeListReader().apply {
+            delimiter = ","
+            quote = null
+            valueDelimiter = "="
+            valueQuote = "'"
+        }
+        xlsTestDataCell.setCellValue("")
+        assertThat(reader.read(attr, inputCell)).hasSize(0)
+        xlsTestDataCell.setCellValue("attr1,attr2")
+        assertThat(reader.read(attr, inputCell)).hasSize(0)
+    }
+
+    @Test
     internal fun defaultDateReader() {
         @Suppress("UNCHECKED_CAST")
         val reader = defaultReaders[AttributeListType::class]
