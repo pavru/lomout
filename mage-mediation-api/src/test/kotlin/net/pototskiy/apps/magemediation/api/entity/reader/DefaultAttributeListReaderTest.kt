@@ -3,6 +3,7 @@ package net.pototskiy.apps.magemediation.api.entity.reader
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
+import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -19,7 +20,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import kotlin.reflect.full.createInstance
 
+@Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultAttributeListReaderTest {
     private lateinit var xlsWorkbook: HSSFWorkbook
@@ -76,5 +79,22 @@ internal class DefaultAttributeListReaderTest {
         }
         xlsTestDataCell.setCellValue(1.1)
         assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
+    }
+
+    @Test
+    internal fun defaultDateReader() {
+        @Suppress("UNCHECKED_CAST")
+        val reader = defaultReaders[AttributeListType::class]
+        assertThat(reader).isNotNull
+        assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
+        reader as AttributeReaderWithPlugin
+        assertThat(reader.pluginClass).isEqualTo(AttributeListReader::class)
+        val v = reader.pluginClass.createInstance() as AttributeListReader
+        @Suppress("UNCHECKED_CAST")
+        v.apply(reader.options as (AttributeListReader.() -> Unit))
+        assertThat(v.quote).isEqualTo("")
+        assertThat(v.delimiter).isEqualTo(",")
+        assertThat(v.valueDelimiter).isEqualTo("=")
+        assertThat(v.valueQuote).isEqualTo("\"")
     }
 }
