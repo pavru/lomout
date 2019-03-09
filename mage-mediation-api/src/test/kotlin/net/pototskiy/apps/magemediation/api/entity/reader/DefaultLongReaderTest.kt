@@ -4,9 +4,9 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.magemediation.api.entity.DoubleType
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.LongType
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -24,23 +24,22 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import java.text.ParseException
 import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
-internal class DefaultDoubleReaderTest {
+internal class DefaultLongReaderTest {
     private val typeManager = EntityTypeManager()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<DoubleType>
+    private lateinit var attr: Attribute<LongType>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        attr = typeManager.createAttribute("attr", DoubleType::class)
+        attr = typeManager.createAttribute("attr", LongType::class)
         entity = typeManager.createEntityType("test", emptyList(), false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
@@ -59,52 +58,55 @@ internal class DefaultDoubleReaderTest {
 
     @Test
     internal fun readDoubleCellTest() {
-        val reader = DoubleAttributeReader().apply { locale = "en_US" }
-        xlsTestDataCell.setCellValue(1.1)
+        val reader = LongAttributeReader().apply { locale = "en_US" }
+        xlsTestDataCell.setCellValue(2.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(1.1)
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(2)
+        xlsTestDataCell.setCellValue(2.2)
+        assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
+        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(TypeCastException::class.java)
     }
 
     @Test
     internal fun readLongCellTest() {
-        val reader = DoubleAttributeReader().apply { locale = "en_US" }
+        val reader = LongAttributeReader().apply { locale = "en_US" }
         val cell = createCsvCell("11")
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)?.value).isEqualTo(11.0)
+        assertThat(reader.read(attr, cell)?.value).isEqualTo(11)
     }
 
     @Test
     internal fun readBooleanCellTest() {
-        val reader = DoubleAttributeReader().apply { locale = "en_US" }
+        val reader = LongAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(1.0)
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(1)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(0.0)
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(0)
     }
 
     @Test
     internal fun readStringEnUsCellTest() {
-        val readerEnUs = DoubleAttributeReader().apply { locale = "en_US" }
-        val readerRuRu = DoubleAttributeReader().apply { locale = "ru_RU" }
-        xlsTestDataCell.setCellValue("1.1")
+        val readerEnUs = LongAttributeReader().apply { locale = "en_US" }
+        val readerRuRu = LongAttributeReader().apply { locale = "ru_RU" }
+        xlsTestDataCell.setCellValue("11")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(1.1)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(ParseException::class.java)
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(11L)
+        assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(11L)
     }
 
     @Test
-    internal fun defaultDoubleReaderTest() {
+    internal fun defaultLongReaderTest() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[DoubleType::class]
+        val reader = defaultReaders[LongType::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin
-        assertThat(reader.pluginClass).isEqualTo(DoubleAttributeReader::class)
-        val v = reader.pluginClass.createInstance() as DoubleAttributeReader
+        assertThat(reader.pluginClass).isEqualTo(LongAttributeReader::class)
+        val v = reader.pluginClass.createInstance() as LongAttributeReader
         @Suppress("UNCHECKED_CAST")
-        v.apply(reader.options as (DoubleAttributeReader.() -> Unit))
+        v.apply(reader.options as (LongAttributeReader.() -> Unit))
         assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
     }
 

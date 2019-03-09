@@ -12,7 +12,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvCell
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
+import org.apache.commons.csv.CSVFormat
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -70,6 +73,19 @@ internal class DefaultDateTimeReaderTest {
     }
 
     @Test
+    internal fun readLongCellTest() {
+        val expected = DateTime().withTime(7, 21, 0, 0)
+        val readerEnUs = DateTimeAttributeReader().apply { locale = "en_US" }
+        val readerRuRu = DateTimeAttributeReader().apply { locale = "ru_RU" }
+        val readerWithPattern = DateTimeAttributeReader().apply { pattern = "d.M.yy h:m" }
+        val cell = createCsvCell(expected.millis.toString())
+        assertThat(cell.cellType).isEqualTo(CellType.LONG)
+        assertThat(readerEnUs.read(attr, cell)?.value).isEqualTo(expected)
+        assertThat(readerRuRu.read(attr, cell)?.value).isEqualTo(expected)
+        assertThat(readerWithPattern.read(attr, cell)?.value).isEqualTo(expected)
+    }
+
+    @Test
     internal fun readStringCellWithLocaleTest() {
         val expected = DateTime().withTime(7, 21, 0, 0)
         val readerEnUs = DateTimeAttributeReader().apply { locale = "en_US" }
@@ -108,7 +124,7 @@ internal class DefaultDateTimeReaderTest {
     }
 
     @Test
-    internal fun defaultDateReader() {
+    internal fun defaultDateReaderTest() {
         @Suppress("UNCHECKED_CAST")
         val reader = defaultReaders[DateTimeType::class]
         assertThat(reader).isNotNull
@@ -120,5 +136,12 @@ internal class DefaultDateTimeReaderTest {
         v.apply(reader.options as (DateTimeAttributeReader.() -> Unit))
         assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
         assertThat(v.pattern).isEqualTo("d.M.yy H:m")
+    }
+
+    private fun createCsvCell(value: String): CsvCell {
+        val reader = value.byteInputStream().reader()
+        CsvWorkbook(reader, CSVFormat.RFC4180).use {
+            return it[0][0][0]!!
+        }
     }
 }

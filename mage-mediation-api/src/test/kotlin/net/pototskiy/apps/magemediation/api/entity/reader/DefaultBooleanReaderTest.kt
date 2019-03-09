@@ -68,6 +68,17 @@ internal class DefaultBooleanReaderTest {
     }
 
     @Test
+    internal fun readBooleanCellTest() {
+        val reader = BooleanAttributeReader().apply { locale = "en_US" }
+        xlsTestDataCell.setCellValue(true)
+        assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
+        assertThat(reader.read(attr, inputCell)?.value).isTrue()
+        xlsTestDataCell.setCellValue(false)
+        assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
+        assertThat(reader.read(attr, inputCell)?.value).isFalse()
+    }
+
+    @Test
     internal fun readStringEnUsCorrectCellTest() {
         val readerEnUs = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("true")
@@ -106,7 +117,7 @@ internal class DefaultBooleanReaderTest {
     }
 
     @Test
-    internal fun defaultBooleanReader() {
+    internal fun defaultBooleanReaderTest() {
         @Suppress("UNCHECKED_CAST")
         val reader = defaultReaders[BooleanType::class]
         assertThat(reader).isNotNull

@@ -7,16 +7,23 @@ import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.File
+import java.io.InputStreamReader
 import java.net.URL
 import java.util.*
 
 class CsvWorkbook(
-    private val sourceURL: URL,
-    private val csvFormat: CSVFormat,
+    private val reader: InputStreamReader,
+    csvFormat: CSVFormat,
     val workbookLocale: Locale = DEFAULT_LOCALE
 ) : Workbook {
+    private var sourceURL: URL = URL("file", "local", "virtual")
 
-    private var reader = sourceURL.openStream().reader() // file.plugins.reader()
+    constructor(sourceURL: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
+            : this(sourceURL.openStream().reader(), csvFormat, workbookLocale) {
+        this.sourceURL = sourceURL
+    }
+
+    //    private var reader = sourceURL.openStream().reader() // file.plugins.reader()
     private var _parser: CSVParser = csvFormat.parse(reader)
 
     override val name: String
