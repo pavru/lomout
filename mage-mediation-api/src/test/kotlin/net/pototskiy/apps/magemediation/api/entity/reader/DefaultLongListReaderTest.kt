@@ -4,16 +4,16 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.magemediation.api.entity.DoubleType
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.LongListType
+import net.pototskiy.apps.magemediation.api.entity.LongListValue
+import net.pototskiy.apps.magemediation.api.entity.LongValue
+import net.pototskiy.apps.magemediation.api.plugable.PluginException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
-import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvCell
-import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
-import org.apache.commons.csv.CSVFormat
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory
@@ -24,23 +24,22 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import java.text.ParseException
 import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
-internal class DefaultDoubleReaderTest {
+internal class DefaultLongListReaderTest {
     private val typeManager = EntityTypeManager()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<DoubleType>
+    private lateinit var attr: Attribute<LongListType>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        attr = typeManager.createAttribute("attr", DoubleType::class)
+        attr = typeManager.createAttribute("attr", LongListType::class)
         entity = typeManager.createEntityType("test", emptyList(), false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
@@ -59,59 +58,42 @@ internal class DefaultDoubleReaderTest {
 
     @Test
     internal fun readDoubleCellTest() {
-        val reader = DoubleAttributeReader().apply { locale = "en_US" }
+        val reader = LongListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.1)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(1.1)
-    }
-
-    @Test
-    internal fun readLongCellTest() {
-        val reader = DoubleAttributeReader().apply { locale = "en_US" }
-        val cell = createCsvCell("11")
-        assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)?.value).isEqualTo(11.0)
-    }
-
-    @Test
-    internal fun readBooleanCellTest() {
-        val reader = DoubleAttributeReader().apply { locale = "en_US" }
-        xlsTestDataCell.setCellValue(true)
-        assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(1.0)
-        xlsTestDataCell.setCellValue(false)
-        assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(0.0)
+        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(PluginException::class.java)
     }
 
     @Test
     internal fun readStringEnUsCellTest() {
-        val readerEnUs = DoubleAttributeReader().apply { locale = "en_US" }
-        val readerRuRu = DoubleAttributeReader().apply { locale = "ru_RU" }
-        xlsTestDataCell.setCellValue("1.1")
+        val readerEnUs = LongListAttributeReader().apply { locale = "en_US" }
+        xlsTestDataCell.setCellValue("11, 22,33")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(1.1)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(ParseException::class.java)
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
+            LongListValue(
+                listOf(
+                    LongValue(11L), LongValue(22L), LongValue(33L)
+                )
+            )
+        )
+        xlsTestDataCell.setCellValue("11, 22,A")
+        assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
+        assertThatThrownBy { readerEnUs.read(attr, inputCell) } .isInstanceOf(PluginException::class.java)
     }
 
     @Test
-    internal fun defaultDoubleReaderTest() {
+    internal fun defaultLongListReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[DoubleType::class]
+        val reader = defaultReaders[LongListType::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin
-        assertThat(reader.pluginClass).isEqualTo(DoubleAttributeReader::class)
-        val v = reader.pluginClass.createInstance() as DoubleAttributeReader
+        assertThat(reader.pluginClass).isEqualTo(LongListAttributeReader::class)
+        val v = reader.pluginClass.createInstance() as LongListAttributeReader
         @Suppress("UNCHECKED_CAST")
-        v.apply(reader.options as (DoubleAttributeReader.() -> Unit))
+        v.apply(reader.options as (LongListAttributeReader.() -> Unit))
         assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
-    }
-
-    private fun createCsvCell(value: String): CsvCell {
-        val reader = value.byteInputStream().reader()
-        CsvWorkbook(reader, CSVFormat.RFC4180).use {
-            return it[0][0][0]!!
-        }
+        assertThat(v.delimiter).isEqualTo(",")
+        assertThat(v.quote).isNull()
     }
 }

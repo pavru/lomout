@@ -16,6 +16,7 @@ internal class EntityTypeBaseTest {
 
     private val typeManager = EntityTypeManager()
     private lateinit var attr1: Attribute<*>
+    private lateinit var dupAttr1: Attribute<*>
     private lateinit var attr2: Attribute<*>
     private lateinit var attr3: Attribute<*>
     private lateinit var attr4: Attribute<*>
@@ -25,6 +26,7 @@ internal class EntityTypeBaseTest {
     @BeforeEach
     internal fun setUp() {
         attr1 = typeManager.createAttribute("attr1", StringType::class)
+        dupAttr1 = typeManager.createAttribute("attr1", StringType::class)
         attr2 = typeManager.createAttribute("attr2", StringType::class)
         attr3 = typeManager.createAttribute("attr3", StringType::class)
         attr4 = typeManager.createAttribute("attr4", StringType::class)
@@ -189,5 +191,18 @@ internal class EntityTypeBaseTest {
         assertThat(typeManager["test1"]).isEqualTo(eType)
         typeManager.removeEntityType(eType)
         assertThatThrownBy { typeManager["test1"] }.isInstanceOf(DatabaseException::class.java)
+    }
+
+    @Test
+    internal fun tryToAddAlreadyAssignedAttributeTest() {
+        val eType = typeManager.createEntityType(
+            "test1",
+            emptyList(),
+            true
+        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        assertThatThrownBy { typeManager.addEntityAttribute(eType, attr1) }
+            .isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { typeManager.addEntityAttribute(eType, dupAttr1) }
+            .isInstanceOf(DatabaseException::class.java)
     }
 }
