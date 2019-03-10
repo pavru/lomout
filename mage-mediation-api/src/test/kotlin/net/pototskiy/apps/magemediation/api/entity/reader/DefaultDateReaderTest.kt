@@ -90,13 +90,13 @@ internal class DefaultDateReaderTest {
 
     @Test
     internal fun readBooleanCellTest() {
-        val expected = DateTimeFormat.forPattern("d.M.YY").parseDateTime("15.03.31")
         val readerEnUs = DateAttributeReader().apply { locale = "en_US" }
         val readerRuRu = DateAttributeReader().apply { locale = "ru_RU" }
         val readerWithPattern = DateAttributeReader().apply { pattern = "d.M.yy" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isNull()
+        assertThat(readerRuRu.read(attr, inputCell)?.value).isNull()
         assertThat(readerWithPattern.read(attr, inputCell)?.value).isNull()
     }
 

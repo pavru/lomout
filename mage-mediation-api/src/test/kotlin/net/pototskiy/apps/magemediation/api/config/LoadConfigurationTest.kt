@@ -14,6 +14,10 @@ internal class LoadConfigurationTest {
     private val logCatcher = LogCatcher()
     private val compileErrorConf = "${System.getenv("TEST_DATA_DIR")}/compile-error.conf.kts"
     private val evaluateErrorConf = "${System.getenv("TEST_DATA_DIR")}/evaluate-error.conf.kts"
+    private val errorFreeConf = "${System.getenv("TEST_DATA_DIR")}/error-free.conf.kts"
+    private val importErrorConf = "${System.getenv("TEST_DATA_DIR")}/import-error.conf.kts"
+    @Suppress("SpellCheckingInspection")
+    private val depenedsOnErrorConf = "${System.getenv("TEST_DATA_DIR")}/dependson-error.conf.kts"
 
     @BeforeEach
     internal fun setUp() {
@@ -46,5 +50,61 @@ internal class LoadConfigurationTest {
         val log = logCatcher.log
         logCatcher.stopToCatch()
         assertThat(log).contains("Source file<id:file-2> is not defined (evaluate-error.conf.kts:20)")
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    @Test
+    internal fun loadConfigImportErrorTest() {
+        logCatcher.startToCatch(Level.OFF, Level.ERROR)
+        try {
+            ConfigurationBuilderFromDSL(File(importErrorConf)).config
+        } catch (e: Exception) {
+            assertThat(true).isTrue()
+        }
+        val log = logCatcher.log
+        logCatcher.stopToCatch()
+        assertThat(
+            log.contains(
+                Regex(
+                    ".*ERROR.*- Source file or directory not found.*absent-file.plugin.conf.kts"
+                )
+            )
+        ).isTrue()
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    @Test
+    internal fun loadConfigDependsOnErrorTest() {
+        logCatcher.startToCatch(Level.OFF, Level.ERROR)
+        try {
+            ConfigurationBuilderFromDSL(File(depenedsOnErrorConf)).config
+        } catch (e: Exception) {
+            assertThat(true).isTrue()
+        }
+        val log = logCatcher.log
+        logCatcher.stopToCatch()
+        assertThat(
+            log.contains(
+                Regex(
+                    ".*ERROR.*- Unable to resolve dependency.*absent-file.plugin.conf.kts"
+                )
+            )
+        ).isTrue()
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    @Test
+    internal fun loadErrorFreeConfigurationTest() {
+        logCatcher.startToCatch(Level.OFF, Level.ERROR)
+        try {
+            val v = ConfigurationBuilderFromDSL(File(errorFreeConf))
+            assertThat(v.config).isNotNull
+            assertThat(v.config).isNotNull
+        } catch (e: Exception) {
+            assertThat(true).isTrue()
+        }
+        val log = logCatcher.log
+        logCatcher.stopToCatch()
+        assertThat(log.contains("ERROR")).isFalse()
     }
 }

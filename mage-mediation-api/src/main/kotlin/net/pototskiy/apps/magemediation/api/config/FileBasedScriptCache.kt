@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.Generated
 import org.jetbrains.kotlin.daemon.common.toHexString
 import java.io.File
 import java.io.ObjectInputStream
@@ -13,6 +14,7 @@ import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 
 // TODO: 07.02.2019 remove suppress after bug with serialization will be resolved
 @Suppress("unused")
+@Generated
 class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache {
 
     private fun uniqueHash(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): String {

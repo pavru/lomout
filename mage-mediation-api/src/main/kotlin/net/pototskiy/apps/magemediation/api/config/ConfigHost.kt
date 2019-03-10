@@ -63,7 +63,7 @@ class ConfigHost(private val configFile: File) {
                 }).onFailure { result ->
                     result.reports.forEach { diagnostic ->
                         ((diagnostic.exception?.cause) ?: diagnostic.exception)?.let {
-                            val position = findExcretionPosition(it, File(diagnostic.sourcePath))
+                            val position = findExceptionPosition(it, File(diagnostic.sourcePath))
                             logMessage(
                                 diagnostic.severity,
                                 it.message ?: "",
@@ -95,7 +95,7 @@ class ConfigHost(private val configFile: File) {
         return evaluatedConfig ?: throw ConfigException("Config file can not be loaded")
     }
 
-    private fun findExcretionPosition(throwable: Throwable, sourceFile: File): SourceCode.Position? {
+    private fun findExceptionPosition(throwable: Throwable, sourceFile: File): SourceCode.Position? {
         val callee = throwable.stackTrace.find { it.fileName == sourceFile.name }
         return callee?.let {
             SourceCode.Position(it.lineNumber, 0)

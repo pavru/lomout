@@ -52,9 +52,9 @@ data class Config(
         companion object : ConfigBuildHelper()
     }
 
-    companion object {
-        var config: Config? = null
-    }
+//    companion object {
+//        var config: Config? = null
+//    }
 }
 
 fun Any.config(block: Config.Builder.() -> Unit) {
