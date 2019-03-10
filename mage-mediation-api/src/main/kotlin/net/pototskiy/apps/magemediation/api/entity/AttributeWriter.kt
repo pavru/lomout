@@ -7,13 +7,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 sealed class AttributeWriter<T : Type> {
-    fun write(attribute: Attribute<T>, value: T?, cell: Cell) {
+    fun write(value: T?, cell: Cell) {
         return when (this) {
             is AttributeWriterWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)
-                it.write(attribute, value, cell)
+                it.write(value, cell)
             }
-            is AttributeWriterWithFunction -> function(attribute, value, cell)
+            is AttributeWriterWithFunction -> function(value, cell)
         }
     }
 }
