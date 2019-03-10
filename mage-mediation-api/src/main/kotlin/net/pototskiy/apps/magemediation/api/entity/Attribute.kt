@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.Generated
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
@@ -49,16 +50,13 @@ abstract class Attribute<T : Type>(
     class Builder<T : Type>(
         private val helper: ConfigBuildHelper,
         private var name: String,
-        private val typeClass: KClass<out Type>
+        private val typeClass: KClass<out T>
     ) {
         @Suppress("UNCHECKED_CAST")
         private var key: Boolean = false
         private var nullable: Boolean = false
-        @ConfigDsl
         var builder: AttributeBuilder<out T>? = null
-        @ConfigDsl
         var reader: AttributeReader<out T>? = null
-        @ConfigDsl
         var writer: AttributeWriter<out T>? = null
 
         fun key() = this.let { key = true }
@@ -70,6 +68,7 @@ abstract class Attribute<T : Type>(
         }
 
         @JvmName("builder__plugin")
+        @Generated
         inline fun <reified P : AttributeBuilderPlugin<T>> builder(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
             this.builder = AttributeBuilderWithPlugin(P::class, block as (AttributeBuilderPlugin<T>.() -> Unit))
@@ -79,6 +78,7 @@ abstract class Attribute<T : Type>(
             this.reader = AttributeReaderWithFunction(block)
         }
 
+        @Generated
         inline fun <reified P : AttributeReaderPlugin<T>> reader(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
             this.reader = AttributeReaderWithPlugin(P::class, block as (AttributeReaderPlugin<T>.() -> Unit))
@@ -88,6 +88,7 @@ abstract class Attribute<T : Type>(
             this.writer = AttributeWriterWithFunction(block)
         }
 
+        @Generated
         inline fun <reified P : AttributeWriterPlugin<T>> writer(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
             this.writer = AttributeWriterWithPlugin(P::class, block as (AttributeWriterPlugin<T>.() -> Unit))
@@ -115,7 +116,7 @@ abstract class Attribute<T : Type>(
 
         private fun validateKeyIsNotList() {
             if (key && (typeClass.isList() || builder != null)) {
-                throw ConfigException("Key attribute can not have list type or plugins.builder")
+                throw ConfigException("Key attribute can not have list type or builder")
             }
         }
     }

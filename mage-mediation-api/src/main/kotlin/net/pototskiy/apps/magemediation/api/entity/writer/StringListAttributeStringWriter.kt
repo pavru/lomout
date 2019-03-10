@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
-import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.StringListType
 import net.pototskiy.apps.magemediation.api.entity.StringListValue
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
@@ -10,7 +9,10 @@ open class StringListAttributeStringWriter : AttributeWriterPlugin<StringListTyp
     var quote: String? = null
     var delimiter: String = ","
 
-    override fun write(attribute: Attribute<StringListType>, value: StringListType?, cell: Cell) {
+    override fun write(
+        value: StringListType?,
+        cell: Cell
+    ) {
         (value as? StringListValue)?.let { list ->
             list.value.joinToString(delimiter) {
                 "${quote ?: ""}$it${quote ?: ""}"
