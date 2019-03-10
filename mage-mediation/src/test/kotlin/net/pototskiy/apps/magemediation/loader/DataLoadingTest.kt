@@ -39,7 +39,6 @@ class DataLoadingTest {
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        Config.Builder.initConfigBuilder()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         typeManager = config.entityTypeManager

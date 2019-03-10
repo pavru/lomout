@@ -2,9 +2,11 @@ package net.pototskiy.apps.magemediation.api.config
 
 import net.pototskiy.apps.magemediation.api.config.loader.SourceFileDefinition
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import java.util.Stack
+import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import java.util.*
 
-open class ConfigBuildHelper {
+open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
+
     private val scopeStack = Stack<String>().apply { push("root") }
     fun pushScope(name: String) = scopeStack.push(name)!!
     fun popScope(): String = scopeStack.pop()
@@ -13,7 +15,7 @@ open class ConfigBuildHelper {
     private val definedEntities = ConfigObjectRegistrar<EntityType>()
     val definedSourceFiles = ConfigObjectRegistrar<SourceFileDefinition>()
 
-    fun initConfigBuilder() {
+    init {
         scopeStack.clear()
         scopeStack.push("root")
         definedEntities.clear()

@@ -41,7 +41,8 @@ class IvyResolver : GenericRepositoryWithBridge {
                         error("Unknown set of arguments to maven resolver: $stringCoordinates")
                     }
                 }
-            resolveArtifact(artifactId)
+            val artifact = resolveArtifact(artifactId)
+            if (artifact.isEmpty()) null else artifact
         }
 
     private val ivyResolvers = arrayListOf<URLResolver>()

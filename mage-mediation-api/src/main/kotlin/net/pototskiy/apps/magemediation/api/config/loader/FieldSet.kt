@@ -1,12 +1,13 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.Generated
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.Field
@@ -26,7 +27,7 @@ data class FieldSet(
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder(
-        val typeManager: EntityTypeManager,
+        val helper: ConfigBuildHelper,
         private val entityType: EntityType,
         private val name: String,
         private val mainSet: Boolean = false,
@@ -49,11 +50,14 @@ data class FieldSet(
             }
         }
 
-        private fun addFiled(lastField: Field, lastAttribute: Attribute<*>?) {
-            fields[lastField] = lastAttribute
-                ?: typeManager.getEntityAttribute(entityType, lastField.name)
-                        ?: typeManager.createAttribute(
-                    lastField.name,
+        private fun addFiled(field: Field, lastAttribute: Attribute<*>?) {
+            if (fields.containsKey(field)) {
+                throw ConfigException("Field<${field.name}> is already defined")
+            }
+            fields[field] = lastAttribute
+                ?: helper.typeManager.getEntityAttribute(entityType, field.name)
+                        ?: helper.typeManager.createAttribute(
+                    field.name,
                     StringType::class
                 ) {
                     key(false)
@@ -63,12 +67,13 @@ data class FieldSet(
             this.lastField = null
         }
 
+        @Generated
         inline fun <reified T : Type> attribute(
             name: String? = lastFieldName,
             block: Attribute.Builder<T>.() -> Unit
         ): Attribute<*> =
             Attribute.Builder<T>(
-                typeManager,
+                helper,
                 name ?: throw ConfigException("Attribute name should be defined"),
                 T::class
             ).apply(block).build()
@@ -78,7 +83,7 @@ data class FieldSet(
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
 
         infix fun Field.to(attribute: AttributeWithName) {
-            val attr = typeManager.getEntityAttribute(entityType, attribute.name)
+            val attr = helper.typeManager.getEntityAttribute(entityType, attribute.name)
                 ?: throw ConfigException("Attribute<$attribute> is not defined")
             addFiled(this, attr)
         }
@@ -88,10 +93,7 @@ data class FieldSet(
             val name = this.name
             if (withSourceHeaders && mainSet) collectFieldsFromSources()
             validateAtOneLeastFieldDefined()
-            validateFiledHasUniqueName()
             validateFieldHasUniqueColumn()
-            validateNestedParentPaired()
-            validateNestedParentHasNoCycle()
             return FieldSet(name, mainSet, FieldAttributeMap(fields))
         }
 
@@ -113,8 +115,8 @@ data class FieldSet(
                         attr
                     )
                 } else {
-                    val attr = typeManager.getEntityAttribute(entityType, field.name)
-                        ?: typeManager.createAttribute(
+                    val attr = helper.typeManager.getEntityAttribute(entityType, field.name)
+                        ?: helper.typeManager.createAttribute(
                             field.name, StringType::class
                         ) {
                             key(false)
@@ -129,46 +131,11 @@ data class FieldSet(
             }
         }
 
-        private fun validateNestedParentHasNoCycle() {
-            for (f in fields.keys.filter { it.isNested }) {
-                val visited = mutableListOf<Field>()
-                visited.add(f)
-                var v = f
-                do {
-                    v = fields.keys.find { it.name == v.parent?.name }!!
-                    if (visited.any { it.name == v.name }) {
-                        throw ConfigException("Filed<${f.name}> has cycle in nested chain")
-                    }
-                    visited.add(v)
-                } while (v.isNested)
-            }
-        }
-
-        private fun validateNestedParentPaired() {
-            val names = fields.keys.map { it.name }
-            val parentNames = fields.keys.filter { it.isNested }.map { it.parent?.name }
-            if (!names.containsAll(parentNames)) {
-                val wrongParents = parentNames.minus(names)
-                val wrongFields = fields.keys.filter { it.isNested && wrongParents.contains(it.parent?.name) }
-                    .joinToString(", ") { it.name }
-                throw ConfigException("Fields<$wrongFields> have wrong parents")
-            }
-        }
-
         private fun validateFieldHasUniqueColumn() {
             val dupColumns = fields.keys.filter { it.column != UNDEFINED_COLUMN }.groupBy { it.column }
             if (dupColumns.any { it.value.size > 1 }) {
                 throw ConfigException(
                     "Field columns<${dupColumns.filter { it.value.size > 1 }.keys.joinToString(", ")}> are duplicated"
-                )
-            }
-        }
-
-        private fun validateFiledHasUniqueName() {
-            val dupNames = fields.keys.groupBy { it.name }
-            if (dupNames.any { it.value.size > 1 }) {
-                throw ConfigException(
-                    "Field names<${dupNames.filter { it.value.size > 1 }.keys.joinToString(", ")} are duplicated>"
                 )
             }
         }

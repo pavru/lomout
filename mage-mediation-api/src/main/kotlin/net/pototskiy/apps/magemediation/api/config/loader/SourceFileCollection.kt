@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.magemediation.api.config.Config
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.createLocale
@@ -10,14 +10,14 @@ import java.util.*
 
 data class SourceFileCollection(private val files: List<SourceFileDefinition>) : List<SourceFileDefinition> by files {
     @ConfigDsl
-    class Builder {
+    class Builder(private val helper: ConfigBuildHelper) {
         private val files = mutableListOf<SourceFileDefinition>()
 
         fun file(id: String, block: PathBuilder.() -> Unit) {
             val (file, locale) = PathBuilder().apply(block).build()
             val sourceFile = SourceFileDefinition(id, file, locale)
             files.add(sourceFile)
-            Config.Builder.definedSourceFiles.register(sourceFile)
+            helper.definedSourceFiles.register(sourceFile)
         }
 
         fun build() = SourceFileCollection(files)

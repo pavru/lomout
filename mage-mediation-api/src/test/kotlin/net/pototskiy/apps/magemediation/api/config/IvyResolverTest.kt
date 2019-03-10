@@ -32,7 +32,7 @@ internal class IvyResolverTest {
         var deps = resolver.tryResolve("org.jetbrains.kotlin:kotlin-stdlib:1.3.21")
         assertThat(deps).isNotEmpty
         deps = resolver.tryResolve("org.jetbrains.exposed:exposed:0.12.2")
-        assertThat(deps).isEmpty()
+        assertThat(deps).isNull()
         assertThat(
             resolver.tryAddRepository(jCenter())
         ).isTrue()

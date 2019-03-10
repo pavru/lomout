@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
 import net.pototskiy.apps.magemediation.api.PublicApi
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class ProductionLine(
     val lineType: LineType,
@@ -14,13 +14,13 @@ data class ProductionLine(
 ) {
     enum class LineType { CROSS, UNION }
     @ConfigDsl
-    class Builder(private val typeManager: EntityTypeManager, private val lineType: LineType) {
+    class Builder(private val helper: ConfigBuildHelper, private val lineType: LineType) {
         private var inputs: InputEntityCollection? = null
         private var output: EntityType? = null
         private var pipeline: Pipeline? = null
 
         fun input(block: InputEntityCollection.Builder.() -> Unit) {
-            inputs = InputEntityCollection.Builder(typeManager).apply(block).build()
+            inputs = InputEntityCollection.Builder(helper).apply(block).build()
         }
 
         fun pipeline(
@@ -33,12 +33,12 @@ data class ProductionLine(
 
         @PublicApi
         fun output(name: String, block: EntityType.Builder.() -> Unit) {
-            output = EntityType.Builder(typeManager, name, false).apply(block).build()
+            output = EntityType.Builder(helper, name, false).apply(block).build()
         }
 
         @PublicApi
         fun output(name: String) {
-            output = typeManager.getEntityType(name)
+            output = helper.typeManager.getEntityType(name)
         }
 
         @Suppress("ThrowsCount")

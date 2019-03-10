@@ -2,10 +2,10 @@ package net.pototskiy.apps.magemediation.api.config.loader
 
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.addEntityAttribute
 
 data class Load(
@@ -18,7 +18,7 @@ data class Load(
 ) {
     @ConfigDsl
     class Builder(
-        private val typeManager: EntityTypeManager,
+        private val helper: ConfigBuildHelper,
         private val entityType: EntityType
     ) {
         private var headersRow: Int = UNDEFINED_ROW
@@ -40,12 +40,12 @@ data class Load(
         }
 
         fun fromSources(block: SourceDataCollection.Builder.() -> Unit) {
-            this.sources = SourceDataCollection.Builder().apply(block).build()
+            this.sources = SourceDataCollection.Builder(helper).apply(block).build()
         }
 
         fun sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
             fieldSets = FieldSetCollection.Builder(
-                typeManager,
+                helper,
                 entityType,
                 headersRow != UNDEFINED_COLUMN,
                 sources,
@@ -77,7 +77,7 @@ data class Load(
                 ?.map { it.fieldToAttr.attributes }
                 ?.flatten()
                 ?.filter { it.auto } ?: emptyList()
-            autoAttrs.forEach { typeManager.addEntityAttribute(entityType, it) }
+            autoAttrs.forEach { helper.typeManager.addEntityAttribute(entityType, it) }
         }
 
         private fun validateFieldColumnDefinition() {

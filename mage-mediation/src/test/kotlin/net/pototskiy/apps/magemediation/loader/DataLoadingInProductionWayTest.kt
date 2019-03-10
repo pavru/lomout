@@ -34,13 +34,9 @@ class DataLoadingInProductionWayTest {
     private val logOut = ByteArrayOutputStream()
     private lateinit var appender: WriterAppender
 
-
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        Config.Builder.initConfigBuilder()
-        // TODO: 23.02.2019 remove after test
-        //EntityClass.initEntityCLassRegistrar()
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val layout = PatternLayout.newBuilder()

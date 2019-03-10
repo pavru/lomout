@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
@@ -46,7 +47,7 @@ abstract class Attribute<T : Type>(
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder<T : Type>(
-        private val typeManager: EntityTypeManager,
+        private val helper: ConfigBuildHelper,
         private var name: String,
         private val typeClass: KClass<out Type>
     ) {
@@ -96,7 +97,7 @@ abstract class Attribute<T : Type>(
             validateKeyIsNotList()
             validateKeyIsNotNullable()
             @Suppress("UNCHECKED_CAST")
-            return typeManager.createAttribute(name, typeClass) {
+            return helper.typeManager.createAttribute(name, typeClass) {
                 key(key)
                 nullable(nullable)
                 auto(false)

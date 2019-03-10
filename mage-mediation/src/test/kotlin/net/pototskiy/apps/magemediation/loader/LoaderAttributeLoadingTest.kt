@@ -62,9 +62,6 @@ class LoaderAttributeLoadingTest {
     @BeforeAll
     fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
-        Config.Builder.initConfigBuilder()
-        // TODO: 23.02.2019 remove after test
-        //EntityClass.initEntityCLassRegistrar()
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         typeManager = config.entityTypeManager
