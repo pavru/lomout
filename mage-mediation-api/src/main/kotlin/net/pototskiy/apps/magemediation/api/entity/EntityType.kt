@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity
 
 import net.pototskiy.apps.magemediation.api.PublicApi
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
@@ -53,7 +54,7 @@ abstract class EntityType(
 
     @ConfigDsl
     class Builder(
-        val typeManager: EntityTypeManager,
+        val helper: ConfigBuildHelper,
         val entityType: String,
         private val open: Boolean
     ) {
@@ -61,17 +62,17 @@ abstract class EntityType(
         private val inheritances = mutableListOf<ParentEntityType>()
 
         inline fun <reified T : Type> attribute(name: String, block: Attribute.Builder<T>.() -> Unit = {}) =
-            attributes.add(Attribute.Builder<T>(typeManager, name, T::class).apply(block).build())
+            attributes.add(Attribute.Builder<T>(helper, name, T::class).apply(block).build())
 
         fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
-            val eType = typeManager.getEntityType(name)
+            val eType = helper.typeManager.getEntityType(name)
                 ?: throw ConfigException("Entity type<$name> does not defined")
-            inheritances.add(ParentEntityType.Builder(typeManager, eType).apply(block).build())
+            inheritances.add(ParentEntityType.Builder(helper, eType).apply(block).build())
         }
 
         fun build(): EntityType {
-            return typeManager.createEntityType(entityType, inheritances, open).also {
-                typeManager.initialAttributeSetup(it, AttributeCollection(attributes))
+            return helper.typeManager.createEntityType(entityType, inheritances, open).also {
+                helper.typeManager.initialAttributeSetup(it, AttributeCollection(attributes))
             }
         }
     }

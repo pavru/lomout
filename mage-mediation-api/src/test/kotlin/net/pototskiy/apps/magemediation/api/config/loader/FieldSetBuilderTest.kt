@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
@@ -14,12 +15,13 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Execution(ExecutionMode.CONCURRENT)
 internal class FieldSetBuilderTest {
     private val typeManager = EntityTypeManager()
+    private val helper = ConfigBuildHelper(typeManager)
     private val entity = typeManager.createEntityType("test", emptyList(), true)
 
     @Test
     internal fun noFieldDefinedTest() {
         val fs = FieldSet.Builder(
-            typeManager,
+            helper,
             entity,
             "test",
             true,
@@ -35,7 +37,7 @@ internal class FieldSetBuilderTest {
     internal fun uniqueFieldNameTest() {
         assertThatThrownBy {
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,
@@ -53,7 +55,7 @@ internal class FieldSetBuilderTest {
     internal fun uniqueFieldColumnTest() {
         assertThatThrownBy {
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,
@@ -71,7 +73,7 @@ internal class FieldSetBuilderTest {
     internal fun assignUndefinedAttributeTest() {
         assertThatThrownBy {
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,
@@ -88,7 +90,7 @@ internal class FieldSetBuilderTest {
     internal fun assignAttributeWithNullNameTest() {
         assertThatThrownBy {
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,
@@ -105,7 +107,7 @@ internal class FieldSetBuilderTest {
     internal fun assignAttributeWithDefinitionTest() {
         assertThat(
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,
@@ -122,7 +124,7 @@ internal class FieldSetBuilderTest {
     internal fun wrongParentTest() {
         assertThatThrownBy {
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,
@@ -140,7 +142,7 @@ internal class FieldSetBuilderTest {
     internal fun cycleNestedParentTest() {
         assertThat(
             FieldSet.Builder(
-                typeManager,
+                helper,
                 entity,
                 "test",
                 true,

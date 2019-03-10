@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DbEntity
@@ -10,7 +11,6 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeReader
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.plugable.SqlFilterPlugin
 import org.jetbrains.exposed.sql.Alias
@@ -35,7 +35,7 @@ data class InputEntity(
 
     @ConfigDsl
     class Builder(
-        val typeManager: EntityTypeManager,
+        val helper: ConfigBuildHelper,
         val entityType: EntityType
     ) {
         val attrPairs = mutableMapOf<Attribute<*>, Attribute<*>>()
@@ -56,8 +56,8 @@ data class InputEntity(
             from: String,
             block: Attribute.Builder<T>.() -> Unit = {}
         ) {
-            val destAttr = Attribute.Builder<T>(typeManager, name, T::class).apply(block).build()
-            val origData = this.typeManager.getEntityAttribute(entityType, from)
+            val destAttr = Attribute.Builder<T>(helper, name, T::class).apply(block).build()
+            val origData = this.helper.typeManager.getEntityAttribute(entityType, from)
                 ?: throw ConfigException("Attribute<${entityType.name}:$from> is not defined>")
             attrPairs[origData] = destAttr
         }
@@ -68,11 +68,11 @@ data class InputEntity(
             val extEntity = if (attrPairs.isEmpty()) {
                 null
             } else {
-                typeManager.createEntityType(
+                helper.typeManager.createEntityType(
                     extendedName(entityType.name),
                     emptyList(),
                     false
-                ).also { typeManager.initialAttributeSetup(it, AttributeCollection(attrPairs.values.toList())) }
+                ).also { helper.typeManager.initialAttributeSetup(it, AttributeCollection(attrPairs.values.toList())) }
             }
             return InputEntity(
                 entityType,

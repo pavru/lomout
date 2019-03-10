@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity
 
 import net.pototskiy.apps.magemediation.api.PublicApi
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 
@@ -11,7 +12,7 @@ class ParentEntityType(
 ) {
     @ConfigDsl
     class Builder(
-        private val typeManager: EntityTypeManager,
+        private val helper: ConfigBuildHelper,
         private val parent: EntityType
     ) {
         private val includes = mutableListOf<Attribute<*>>()
@@ -21,7 +22,7 @@ class ParentEntityType(
         fun include(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.includes.add(typeManager.getEntityAttribute(parent, it)!!)
+                this.includes.add(helper.typeManager.getEntityAttribute(parent, it)!!)
             }
         }
 
@@ -29,7 +30,7 @@ class ParentEntityType(
         fun exclude(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
             name.toList().forEach {
-                this.excludes.add(typeManager.getEntityAttribute(parent, it)!!)
+                this.excludes.add(helper.typeManager.getEntityAttribute(parent, it)!!)
             }
         }
 

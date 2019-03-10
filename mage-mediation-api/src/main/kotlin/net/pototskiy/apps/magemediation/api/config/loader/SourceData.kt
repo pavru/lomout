@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
-import net.pototskiy.apps.magemediation.api.config.Config
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
@@ -11,14 +11,14 @@ data class SourceData(
     val emptyRowStrategy: EmptyRowStrategy
 ) {
     @ConfigDsl
-    class Builder {
+    class Builder(private val helper: ConfigBuildHelper) {
         private var file: SourceFileDefinition? = null
         private var sheet: SourceSheetDefinition = SourceSheetDefinition(null, Regex(".*"))
         private var emptyRowStrategy: EmptyRowStrategy = EmptyRowStrategy.IGNORE
         @Suppress("unused")
         fun Builder.file(id: String): Builder =
             this.apply {
-                file = Config.Builder.definedSourceFiles.findRegistered(id)
+                file = helper.definedSourceFiles.findRegistered(id)
                     ?: throw ConfigException("Source file<id:$id> is not defined")
             }
 

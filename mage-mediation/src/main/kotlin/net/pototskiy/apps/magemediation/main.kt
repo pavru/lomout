@@ -6,7 +6,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
-import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigurationBuilderFromDSL
 import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.database.initDatabase
@@ -40,8 +39,6 @@ fun main(args: Array<String>) {
 
     statusLog.info("Application has started")
 
-//    EntityTypeManager.currentManager = EntityTypeManager()
-    Config.Builder.initConfigBuilder()
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
     setupPluginContext()
     initDatabase(CONFIG_BUILDER.config.database, CONFIG_BUILDER.config.entityTypeManager)

@@ -11,7 +11,7 @@ data class Config(
     val mediator: MediatorConfiguration
 ) {
     @ConfigDsl
-    class Builder(private val typeManager: EntityTypeManager) {
+    class Builder(private val helper: ConfigBuildHelper) {
         private var database: DatabaseConfig? = null
         private var loader: LoaderConfiguration? = null
         private var mediator: MediatorConfiguration? = null
@@ -21,23 +21,23 @@ data class Config(
          */
         @Suppress("unused")
         fun Builder.database(block: DatabaseConfig.Builder.() -> Unit) {
-            pushScope("database")
+            helper.pushScope("database")
             this.database = DatabaseConfig.Builder().apply(block).build()
-            popScope()
+            helper.popScope()
         }
 
         @Suppress("unused")
         fun Builder.loader(block: LoaderConfiguration.Builder.() -> Unit) {
-            pushScope("loader")
-            loader = LoaderConfiguration.Builder(typeManager).apply(block).build()
-            popScope()
+            helper.pushScope("loader")
+            loader = LoaderConfiguration.Builder(helper).apply(block).build()
+            helper.popScope()
         }
 
         @Suppress("unused")
         fun Builder.mediator(block: MediatorConfiguration.Builder.() -> Unit) {
-            pushScope("mediator")
-            mediator = MediatorConfiguration.Builder(typeManager).apply(block).build()
-            popScope()
+            helper.pushScope("mediator")
+            mediator = MediatorConfiguration.Builder(helper).apply(block).build()
+            helper.popScope()
         }
 
         fun build(): Config {
@@ -46,10 +46,10 @@ data class Config(
                 ?: throw ConfigException("Loader section must be in configuration")
             val realMediator = mediator
                 ?: throw ConfigException("Mediator section must be in configuration")
-            return Config(typeManager, realDatabase, realLoader, realMediator)
+            return Config(helper.typeManager, realDatabase, realLoader, realMediator)
         }
 
-        companion object : ConfigBuildHelper()
+//        companion object : ConfigBuildHelper()
     }
 
 //    companion object {
@@ -60,8 +60,8 @@ data class Config(
 fun Any.config(block: Config.Builder.() -> Unit) {
     val script = (this as? ConfigScript)
     if (script != null) {
-        Config.Builder.initConfigBuilder()
-        script.evaluatedConfig = Config.Builder(EntityTypeManager()).apply(block).build()
+        val helper = ConfigBuildHelper(EntityTypeManager())
+        script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
         throw ConfigException("Wrong config script object type")
 }

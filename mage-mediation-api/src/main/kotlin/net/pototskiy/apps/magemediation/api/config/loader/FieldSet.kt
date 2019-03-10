@@ -3,11 +3,11 @@ package net.pototskiy.apps.magemediation.api.config.loader
 import net.pototskiy.apps.magemediation.api.Generated
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
+import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.EntityType
-import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.Field
@@ -27,7 +27,7 @@ data class FieldSet(
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder(
-        val typeManager: EntityTypeManager,
+        val helper: ConfigBuildHelper,
         private val entityType: EntityType,
         private val name: String,
         private val mainSet: Boolean = false,
@@ -55,8 +55,8 @@ data class FieldSet(
                 throw ConfigException("Field<${field.name}> is already defined")
             }
             fields[field] = lastAttribute
-                ?: typeManager.getEntityAttribute(entityType, field.name)
-                        ?: typeManager.createAttribute(
+                ?: helper.typeManager.getEntityAttribute(entityType, field.name)
+                        ?: helper.typeManager.createAttribute(
                     field.name,
                     StringType::class
                 ) {
@@ -73,7 +73,7 @@ data class FieldSet(
             block: Attribute.Builder<T>.() -> Unit
         ): Attribute<*> =
             Attribute.Builder<T>(
-                typeManager,
+                helper,
                 name ?: throw ConfigException("Attribute name should be defined"),
                 T::class
             ).apply(block).build()
@@ -83,7 +83,7 @@ data class FieldSet(
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
 
         infix fun Field.to(attribute: AttributeWithName) {
-            val attr = typeManager.getEntityAttribute(entityType, attribute.name)
+            val attr = helper.typeManager.getEntityAttribute(entityType, attribute.name)
                 ?: throw ConfigException("Attribute<$attribute> is not defined")
             addFiled(this, attr)
         }
@@ -115,8 +115,8 @@ data class FieldSet(
                         attr
                     )
                 } else {
-                    val attr = typeManager.getEntityAttribute(entityType, field.name)
-                        ?: typeManager.createAttribute(
+                    val attr = helper.typeManager.getEntityAttribute(entityType, field.name)
+                        ?: helper.typeManager.createAttribute(
                             field.name, StringType::class
                         ) {
                             key(false)
