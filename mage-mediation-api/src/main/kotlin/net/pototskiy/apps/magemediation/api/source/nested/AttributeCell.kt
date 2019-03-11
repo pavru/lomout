@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
-import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -9,44 +8,38 @@ import org.joda.time.DateTime
 
 class AttributeCell(
     override val address: CellAddress,
-    private val backingValue: String,
+    private var backingValue: String,
     override val row: AttributeRow
 ) : Cell {
 
-    override fun asString(): String = backingValue
+    override fun asString(): String {
+        return stringValue
+    }
 
     override val cellType: CellType = CellType.STRING
     override val booleanValue: Boolean
-        get() {
-            throw SourceException("${AttributeCell::class.simpleName} supports only string type value")
-        }
+        get() = throwNotSupportCellType()
     override val longValue: Long
-        get() {
-            throw SourceException("${AttributeCell::class.simpleName} supports only string type value")
-        }
+        get() = throwNotSupportCellType()
     override val doubleValue: Double
-        get() {
-            throw SourceException("${AttributeCell::class.simpleName} supports only string type value")
-        }
-    override val stringValue: String = backingValue
+        get() = throwNotSupportCellType()
+
+    private fun throwNotSupportCellType(): Nothing {
+        throw SourceException("${AttributeCell::class.simpleName} supports only string type value")
+    }
+
+    override val stringValue: String
+        get() = backingValue
 
     override fun setCellValue(value: String) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
+        backingValue = value
     }
 
-    override fun setCellValue(value: Boolean) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: Boolean) = throwNotSupportCellType()
 
-    override fun setCellValue(value: Long) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: Long) = throwNotSupportCellType()
 
-    override fun setCellValue(value: Double) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: Double) = throwNotSupportCellType()
 
-    override fun setCellValue(value: DateTime) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: DateTime) = throwNotSupportCellType()
 }

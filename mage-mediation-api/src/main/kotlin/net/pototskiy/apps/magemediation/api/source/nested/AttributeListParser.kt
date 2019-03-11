@@ -1,68 +1,67 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
-import org.apache.commons.csv.QuoteMode
+import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
+import org.apache.commons.csv.CSVRecord
+import java.io.StringReader
 
 class AttributeListParser(
-    private val data: String,
-    private val quote: String?,
-    private val delimiter: String,
-    private val valueQuote: String?,
-    private val valueDelimiter: String
-) {
+    quote: String?,
+    delimiter: String,
+    valueQuote: String?,
+    valueDelimiter: String
+) : AttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
-    private val attrs: Map<String, String> = parse()
-    operator fun get(row: Int): Array<String> =
-        when (row) {
-            0 -> attrs.keys.toTypedArray()
-            1 -> attrs.values.toTypedArray()
-            else -> throw IndexOutOfBoundsException(
-                "${AttributeListParser::class.simpleName} has only two rows: 0 and 1"
-            )
-        }
-
-    private fun parse(): Map<String, String> {
+    fun parse(string: String): Map<String, String> {
         val result = mutableMapOf<String, String>()
-        val nameValueFormat = getNameValueFormat()
-        val attrFormat = getAttrFormat()
-        val attrRecords = CSVParser.parse(data, attrFormat).records
-        if (attrRecords.isNotEmpty()) {
-            for (attr in attrRecords[0]) {
-                val valueRecords = CSVParser.parse(attr, nameValueFormat).records
-                if (valueRecords.isNotEmpty() && valueRecords[0].size() == 2) {
-                    result[valueRecords[0][0]] = valueRecords[0][1]
-                }
+        try {
+            string.reader().use { attrReader ->
+                parsePairsList(attrReader, result)
             }
+        } catch (e: SourceException) {
+            throw SourceException("Can not parse attribute list<$string>")
         }
+//        val nameValueFormat = getNameValueFormat()
+//        val attrFormat = getAttrFormat()
+//        val attrRecords = CSVParser.parse(string, attrFormat).records
+//        if (attrRecords.isNotEmpty()) {
+//            for (attr in attrRecords[0]) {
+//                val valueRecords = CSVParser.parse(attr, nameValueFormat).records
+//                if (valueRecords.isNotEmpty() && valueRecords[0].size() == 2) {
+//                    result[valueRecords[0][0]] = valueRecords[0][1]
+//                }
+//            }
+//        }
         return result
     }
 
-    private fun getAttrFormat(): CSVFormat {
-        var format = CSVFormat.RFC4180
-        if (delimiter.isNotBlank()) {
-            format = format.withDelimiter(delimiter[0])
+    private fun parsePairsList(attrReader: StringReader, result: MutableMap<String, String>) {
+        return getAttrFormat().parse(attrReader).use { attrParser ->
+            attrParser.records.firstOrNull()?.forEach { attr ->
+                attr?.reader()?.use { valueReader ->
+                    parseNameValue(valueReader, result)
+                }
+            }
         }
-        if (quote?.isNotBlank() == true) {
-            format = format.withQuote(quote[0])
-        } else {
-            format = format.withEscape('\\')
-            format = format.withQuoteMode(QuoteMode.NONE)
-        }
-        return format
     }
 
-    private fun getNameValueFormat(): CSVFormat {
-        var format = CSVFormat.RFC4180
-
-        if (valueDelimiter.isNotBlank())
-            format = format.withDelimiter(valueDelimiter[0])
-        if (valueQuote?.isBlank() == false) {
-            format = format.withQuote(valueQuote[0])
-        } else {
-            format = format.withEscape('\\')
-            format = format.withQuoteMode(QuoteMode.NONE)
+    private fun parseNameValue(valueReader: StringReader, result: MutableMap<String, String>) {
+        return getNameValueFormat().parse(valueReader).use { valueParser ->
+            valueParser.records.firstOrNull()?.let {
+                addToResultMap(result, it)
+            }
         }
-        return format
+    }
+
+    @Suppress("TooGenericExceptionCaught")
+    private fun addToResultMap(result: MutableMap<String, String>, it: CSVRecord) {
+        try {
+            result[it[0]] = try {
+                it[1]
+            } catch (e: Exception) {
+                ""
+            }
+        } catch (e: Exception) {
+            throw SourceException("Can not parse attribute list")
+        }
     }
 }

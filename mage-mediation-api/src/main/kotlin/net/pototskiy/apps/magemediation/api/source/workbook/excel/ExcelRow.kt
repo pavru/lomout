@@ -6,6 +6,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 
 class ExcelRow(private val row: org.apache.poi.ss.usermodel.Row) :
     Row {
+    override fun insertCell(column: Int): Cell {
+        return ExcelCell(row.createCell(column))
+    }
+
     override fun getOrEmptyCell(column: Int): Cell {
         return get(column) ?: ExcelCell(row.createCell(column))
     }

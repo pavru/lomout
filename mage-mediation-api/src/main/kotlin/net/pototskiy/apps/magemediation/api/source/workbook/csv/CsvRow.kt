@@ -4,12 +4,21 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
+import org.apache.commons.csv.CSVRecord
 
 class CsvRow(
     private val backingRow: Int,
-    private val backingData: Array<String>,
+    data: CSVRecord?,
     private val backingSheet: CsvSheet
 ) : Row {
+    private val cells: MutableList<CsvCell?> = mutableListOf()
+
+    init {
+        data?.forEachIndexed { c, value ->
+            cells.add(CsvCell(CellAddress(backingRow, c), value, this))
+        }
+    }
+
     override fun getOrEmptyCell(column: Int): Cell = get(column)
         ?: CsvCell(
             CellAddress(
@@ -24,18 +33,23 @@ class CsvRow(
         get() = backingRow
 
     override fun get(column: Int): CsvCell? =
-        if (column < backingData.size) {
-            CsvCell(
-                CellAddress(
-                    backingRow,
-                    column
-                ), backingData[column], this
-            )
+        if (column < cells.size) {
+            cells[column]
         } else {
             null
         }
 
-    override fun countCell(): Int = backingData.size
+    override fun insertCell(column: Int): Cell {
+        checkThatItIsCsvOutputWorkbook(backingSheet.workbook as CsvWorkbook)
+        val newCell = CsvCell(CellAddress(backingRow, column), "", this)
+        cells.add(column, newCell)
+        cells.forEachIndexed { c, cell ->
+            cell?.address?.column = c
+        }
+        return newCell
+    }
+
+    override fun countCell(): Int = cells.size
 
     override fun iterator(): Iterator<CsvCell?> =
         CsvCellIterator(this)

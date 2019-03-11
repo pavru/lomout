@@ -7,5 +7,6 @@ interface Workbook : Iterable<Sheet>, Closeable {
     val type: WorkbookType
     operator fun get(sheet: String): Sheet
     operator fun get(sheet: Int): Sheet
+    fun insertSheet(sheet: String): Sheet
     fun hasSheet(sheet: String): Boolean
 }

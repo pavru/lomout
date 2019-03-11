@@ -7,9 +7,15 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 
 class AttributeRow(
     private val backingRow: Int,
-    private val backingData: Array<String>,
+    private val backingData: MutableList<AttributeCell>,
     private val backingSheet: AttributeSheet
 ) : Row {
+    override fun insertCell(column: Int): Cell {
+        val cell = AttributeCell(CellAddress(backingRow, column), "", this)
+        backingData.add(column, cell)
+        return cell
+    }
+
     override fun getOrEmptyCell(column: Int): Cell = get(column)
 
     override val sheet: Sheet
@@ -19,11 +25,7 @@ class AttributeRow(
 
     override fun countCell(): Int = backingData.count()
 
-    override fun get(column: Int): Cell = AttributeCell(
-        CellAddress(
-            backingRow,
-            column
-        ), backingData[column], this)
+    override fun get(column: Int): Cell = backingData[column]
 
     override fun iterator(): Iterator<Cell?> = AttributeCellIterator(this)
 }

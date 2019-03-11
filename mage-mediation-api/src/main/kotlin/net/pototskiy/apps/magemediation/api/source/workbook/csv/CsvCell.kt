@@ -1,6 +1,8 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
-import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
+import net.pototskiy.apps.magemediation.api.entity.values.datetimeToString
+import net.pototskiy.apps.magemediation.api.entity.values.doubleToString
+import net.pototskiy.apps.magemediation.api.entity.values.longToString
 import net.pototskiy.apps.magemediation.api.entity.values.stringToBoolean
 import net.pototskiy.apps.magemediation.api.entity.values.stringToDouble
 import net.pototskiy.apps.magemediation.api.entity.values.stringToLong
@@ -13,7 +15,7 @@ import java.text.ParseException
 
 class CsvCell(
     private val backingAddress: CellAddress,
-    private val backingValue: String,
+    private var backingValue: String,
     private val backingRow: CsvRow
 ) : Cell {
     override val address: CellAddress
@@ -36,23 +38,23 @@ class CsvCell(
     }
 
     override fun setCellValue(value: String) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
+        backingValue = value
     }
 
     override fun setCellValue(value: Boolean) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
+        backingValue = if (value) "1" else "0"
     }
 
     override fun setCellValue(value: Long) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
+        backingValue = value.longToString(workbookLocale)
     }
 
     override fun setCellValue(value: Double) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
+        backingValue = value.doubleToString(workbookLocale)
     }
 
     override fun setCellValue(value: DateTime) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
+        backingValue = value.datetimeToString(workbookLocale)
     }
 
     override val row: Row

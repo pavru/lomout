@@ -4,7 +4,6 @@ import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
-import net.pototskiy.apps.magemediation.api.source.nested.AttributeListParser
 import net.pototskiy.apps.magemediation.api.source.nested.AttributeWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -20,25 +19,23 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
         return when (input.cellType) {
             CellType.STRING -> {
                 val attrs = AttributeWorkbook(
-                    AttributeListParser(
-                        input.stringValue,
-                        quote,
-                        delimiter,
-                        valueQuote,
-                        valueDelimiter
-                    ),
+                    quote,
+                    delimiter,
+                    valueQuote,
+                    valueDelimiter,
                     attribute.name
                 )
+                attrs.string = input.stringValue
                 val names = attrs[0][0]!!
                 val values = attrs[0][1]!!
                 AttributeListValue(
-                        names.mapIndexedNotNull { c, cell ->
-                            if (cell != null) {
-                                cell.stringValue to values.getOrEmptyCell(c)
-                            } else {
-                                null
-                            }
-                        }.toMap()
+                    names.mapIndexedNotNull { c, cell ->
+                        if (cell != null) {
+                            cell.stringValue to values.getOrEmptyCell(c)
+                        } else {
+                            null
+                        }
+                    }.toMap()
                 )
             }
             else -> throw SourceException(

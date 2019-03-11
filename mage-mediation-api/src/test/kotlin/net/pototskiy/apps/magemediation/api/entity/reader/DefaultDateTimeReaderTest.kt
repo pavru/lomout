@@ -13,7 +13,7 @@ import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvCell
-import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvWorkbook
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvInputWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import org.apache.commons.csv.CSVFormat
 import org.apache.poi.hssf.usermodel.HSSFCell
@@ -140,7 +140,7 @@ internal class DefaultDateTimeReaderTest {
 
     private fun createCsvCell(value: String): CsvCell {
         val reader = value.byteInputStream().reader()
-        CsvWorkbook(reader, CSVFormat.RFC4180).use {
+        CsvInputWorkbook(reader, CSVFormat.RFC4180).use {
             return it[0][0][0]!!
         }
     }

@@ -9,7 +9,7 @@ import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvCell
-import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvWorkbook
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvInputWorkbook
 import org.apache.commons.csv.CSVFormat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -163,7 +163,7 @@ internal class AttributeBuilderTest {
 
     private fun createCsvCell(value: String): CsvCell {
         val reader = value.byteInputStream().reader()
-        CsvWorkbook(reader, CSVFormat.RFC4180).use {
+        CsvInputWorkbook(reader, CSVFormat.RFC4180).use {
             return it[0][0][0]!!
         }
     }

@@ -74,10 +74,16 @@ val testdataImplementation: Configuration by configurations.getting {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
+    systemProperties(
+        mapOf(
+            "junit.jupiter.execution.parallel.enabled" to "true",
+            "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
+//    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
+        )
+    )
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
-    useJUnitPlatform ()
-//    maxParallelForks = 8
+    useJUnitPlatform()
     testLogging {
         events("passed", "skipped", "failed")
 //        events("passed", "skipped", "failed", "standardOut", "standardError")

@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.excel
 
-import net.pototskiy.apps.magemediation.api.NOT_IMPLEMENTED
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -41,25 +40,15 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
     override val row: Row
         get() = ExcelRow(cell.row)
 
-    override fun setCellValue(value: String) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: String) = cell.setCellValue(value)
 
-    override fun setCellValue(value: Boolean) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: Boolean) = cell.setCellValue(value)
 
-    override fun setCellValue(value: Long) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: Long) = cell.setCellValue(value.toDouble())
 
-    override fun setCellValue(value: Double) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: Double) = cell.setCellValue(value)
 
-    override fun setCellValue(value: DateTime) {
-        TODO(NOT_IMPLEMENTED) // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun setCellValue(value: DateTime) = cell.setCellValue(value.toDate())
 
     override fun asString(): String {
         val format = NumberFormat.getInstance().apply { isGroupingUsed = false }
