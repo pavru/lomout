@@ -4,12 +4,12 @@ import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
-class AttributeListParser(
+class NestedAttributeListParser(
     quote: String?,
     delimiter: String,
     valueQuote: String?,
     valueDelimiter: String
-) : AttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
+) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
     fun parse(string: String): Map<String, String> {
         val result = mutableMapOf<String, String>()
@@ -20,17 +20,6 @@ class AttributeListParser(
         } catch (e: SourceException) {
             throw SourceException("Can not parse attribute list<$string>")
         }
-//        val nameValueFormat = getNameValueFormat()
-//        val attrFormat = getAttrFormat()
-//        val attrRecords = CSVParser.parse(string, attrFormat).records
-//        if (attrRecords.isNotEmpty()) {
-//            for (attr in attrRecords[0]) {
-//                val valueRecords = CSVParser.parse(attr, nameValueFormat).records
-//                if (valueRecords.isNotEmpty() && valueRecords[0].size() == 2) {
-//                    result[valueRecords[0][0]] = valueRecords[0][1]
-//                }
-//            }
-//        }
         return result
     }
 

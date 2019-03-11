@@ -6,7 +6,7 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
-import net.pototskiy.apps.magemediation.api.source.nested.AttributeWorkbook
+import net.pototskiy.apps.magemediation.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
@@ -51,7 +51,7 @@ internal class DefaultAttributeListWriterTest {
 
     @Test
     internal fun writeAttributeListToCellTest() {
-        val wb = AttributeWorkbook(null, ",", "\"", "=", "test")
+        val wb = NestedAttributeWorkbook(null, ",", "\"", "=", "test")
         wb.string = "attr1=value1,attr2=value2"
         val list = AttributeListValue(
             mapOf(

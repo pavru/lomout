@@ -6,10 +6,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.joda.time.DateTime
 
-class AttributeCell(
+class NestedAttributeCell(
     override val address: CellAddress,
     private var backingValue: String,
-    override val row: AttributeRow
+    override val row: NestedAttributeRow
 ) : Cell {
 
     override fun asString(): String {
@@ -25,7 +25,7 @@ class AttributeCell(
         get() = throwNotSupportCellType()
 
     private fun throwNotSupportCellType(): Nothing {
-        throw SourceException("${AttributeCell::class.simpleName} supports only string type value")
+        throw SourceException("${NestedAttributeCell::class.simpleName} supports only string type value")
     }
 
     override val stringValue: String

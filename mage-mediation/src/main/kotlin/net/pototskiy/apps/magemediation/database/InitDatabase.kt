@@ -25,6 +25,7 @@ fun initDatabase(
     datasource.password = config.server.password
     datasource.serverTimezone = TimeZone.getDefault().id
 
+    @Suppress("TooGenericExceptionCaught")
     try {
         val db = Database.connect(datasource)
         statusLog.info("DB dialect: ${db.dialect.name}")

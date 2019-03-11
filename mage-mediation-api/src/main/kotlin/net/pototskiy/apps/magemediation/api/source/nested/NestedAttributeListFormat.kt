@@ -3,11 +3,11 @@ package net.pototskiy.apps.magemediation.api.source.nested
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.QuoteMode
 
-open class AttributeListFormat(
-    protected val quote: String?,
-    protected val delimiter: String,
-    protected val valueQuote: String?,
-    protected val valueDelimiter: String
+open class NestedAttributeListFormat(
+    private val quote: String?,
+    private val delimiter: String,
+    private val valueQuote: String?,
+    private val valueDelimiter: String
 ) {
     protected fun getAttrFormat(): CSVFormat {
         var format = CSVFormat.RFC4180.withRecordSeparator("")

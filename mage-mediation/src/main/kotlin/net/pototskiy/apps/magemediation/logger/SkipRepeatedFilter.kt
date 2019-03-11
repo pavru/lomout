@@ -27,15 +27,14 @@ class SkipRepeatedFilter(
             updateLast(event)
             return onMatch
         } else {
-            if (lastMsg == event?.message?.formattedMessage &&
-                lastThread == event?.threadName &&
-                lastLogger == event?.loggerName &&
-                lastLevel == event?.level
-            ) {
-                updateLast(event)
+            val matched = lastMsg == event?.message?.formattedMessage &&
+                    lastThread == event?.threadName &&
+                    lastLogger == event?.loggerName &&
+                    lastLevel == event?.level
+            updateLast(event)
+            if (matched) {
                 onMismatch
             } else {
-                updateLast(event)
                 onMatch
             }
         }

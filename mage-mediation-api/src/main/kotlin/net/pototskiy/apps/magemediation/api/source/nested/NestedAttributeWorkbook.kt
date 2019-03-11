@@ -5,30 +5,30 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 
-class AttributeWorkbook(
-    private val quote: String?,
-    private val delimiter: String,
-    private val valueQuote: String?,
-    private val valueDelimiter: String,
+class NestedAttributeWorkbook(
+    quote: String?,
+    delimiter: String,
+    valueQuote: String?,
+    valueDelimiter: String,
     private val attributeName: String
 ) : Workbook {
-    private val parser = AttributeListParser(quote, delimiter, valueQuote, valueDelimiter)
-    private val printer = AttributeListPrinter(quote, delimiter, valueQuote, valueDelimiter)
+    private val parser = NestedAttributeListParser(quote, delimiter, valueQuote, valueDelimiter)
+    private val printer = NestedAttributeListPrinter(quote, delimiter, valueQuote, valueDelimiter)
 
-    val cells = Array<MutableList<AttributeCell>>(2) { mutableListOf() }
+    val cells = Array<MutableList<NestedAttributeCell>>(2) { mutableListOf() }
 
     var string: String
         set(value) {
             cells.forEach { it.clear() }
-            val sheet = AttributeSheet(this)
+            val sheet = NestedAttributeSheet(this)
             val rows = arrayOf(
-                AttributeRow(0, cells[0], sheet),
-                AttributeRow(0, cells[1], sheet)
+                NestedAttributeRow(0, cells[0], sheet),
+                NestedAttributeRow(1, cells[1], sheet)
             )
             var column = 0
-            parser.parse(value).forEach { key, value ->
-                cells[0].add(column, AttributeCell(CellAddress(0, column), key, rows[0]))
-                cells[1].add(column, AttributeCell(CellAddress(1, column), value, rows[1]))
+            parser.parse(value).forEach { key, valueData ->
+                cells[0].add(column, NestedAttributeCell(CellAddress(0, column), key, rows[0]))
+                cells[1].add(column, NestedAttributeCell(CellAddress(1, column), valueData, rows[1]))
                 column++
             }
         }
@@ -49,10 +49,10 @@ class AttributeWorkbook(
     override val type: WorkbookType
         get() = WorkbookType.ATTRIBUTE
 
-    override fun get(sheet: String): Sheet = AttributeSheet(this)
-    override fun get(sheet: Int): Sheet = AttributeSheet(this)
+    override fun get(sheet: String): Sheet = NestedAttributeSheet(this)
+    override fun get(sheet: Int): Sheet = NestedAttributeSheet(this)
     override fun hasSheet(sheet: String): Boolean = true
-    override fun iterator(): Iterator<Sheet> = AttributeSheetIterator(this)
+    override fun iterator(): Iterator<Sheet> = NestedAttributeSheetIterator(this)
     override fun close() {
         // nothing to close workbook use string
     }

@@ -1,6 +1,11 @@
 package net.pototskiy.apps.magemediation.loader
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
@@ -8,9 +13,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.LogManager
 import org.joda.time.DateTime
 import org.joda.time.Duration
-import java.util.concurrent.atomic.AtomicLong
+import java.util.concurrent.atomic.*
 
 object DataLoader {
+    private const val millisInSecond = 1000.0
     private var startTime = DateTime()
     private val processedRows = AtomicLong(0)
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
@@ -43,8 +49,9 @@ object DataLoader {
                 log.debug("Finish loading file<{}>", file.id)
             }.also { jobs.add(it) }
         }
+        @Suppress("SpreadOperator")
         joinAll(*jobs.toTypedArray())
-        val duration = Duration(startTime, DateTime()).millis.toDouble() / 1000.0
+        val duration = Duration(startTime, DateTime()).millis.toDouble() / millisInSecond
         statusLog.info("Data loading has finished, duration: ${duration}s, rows: ${processedRows.get()}")
     }
 }

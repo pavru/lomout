@@ -32,7 +32,7 @@ class EntityUpdater(private val entityType: EntityType) {
             if (value != null && !value.isTransient && storedValue == null) {
                 entity.addAttribute(attr, data.getValue(attr)!!)
                 entity.wasUpdated(true)
-            } else if (value != null && !value.isTransient && storedValue != null && value != storedValue) {
+            } else if (needToUpdate(value, storedValue)) {
                 entity.updateAttribute(attr, data.getValue(attr)!!)
                 entity.wasUpdated(true)
             } else if (value == null && storedValue != null) {
@@ -41,4 +41,9 @@ class EntityUpdater(private val entityType: EntityType) {
             }
         }
     }
+
+    private fun needToUpdate(
+        value: Type?,
+        storedValue: Type?
+    ) = value != null && !value.isTransient && storedValue != null && value != storedValue
 }

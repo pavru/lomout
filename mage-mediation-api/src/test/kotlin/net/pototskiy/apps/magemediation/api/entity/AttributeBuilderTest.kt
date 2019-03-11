@@ -49,7 +49,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithBuildFunctionTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             builder {
                 LongValue(123L)
             }
@@ -60,7 +60,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithBuildPluginTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             builder<TestBuilder> {
                 returnValue = 321L
             }
@@ -71,7 +71,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithReaderFunctionTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             reader { _, _ ->
                 LongValue(234L)
             }
@@ -85,7 +85,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithReaderPluginTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             reader<TestReader>()
         }.build()
         assertThat(attr.reader).isNotNull.isInstanceOf(AttributeReaderWithPlugin::class.java)
@@ -98,7 +98,7 @@ internal class AttributeBuilderTest {
     @Test
     internal fun attributeWithWriterFunctionTest() {
         var v = 0L
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             writer { value, _ ->
                 v = value?.value!!
             }
@@ -112,7 +112,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithWriterPluginTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             writer<TestWriter>()
         }.build()
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriterWithPlugin::class.java)
@@ -125,7 +125,7 @@ internal class AttributeBuilderTest {
     @Test
     internal fun ketNullableTest() {
         assertThatThrownBy {
-            Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+            Attribute.Builder(helper, "test", LongType::class).apply {
                 key()
                 nullable()
             }.build()

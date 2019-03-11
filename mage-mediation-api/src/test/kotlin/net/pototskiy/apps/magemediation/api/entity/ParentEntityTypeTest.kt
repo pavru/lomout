@@ -16,7 +16,6 @@ internal class ParentEntityTypeTest {
     private val attr1 = typeManager.createAttribute("attr1", StringType::class)
     private val attr2 = typeManager.createAttribute("attr2", StringType::class)
     private val attr3 = typeManager.createAttribute("attr3", StringType::class)
-    private val attr4 = typeManager.createAttribute("attr4", StringType::class)
 
     @BeforeEach
     internal fun setUp() {

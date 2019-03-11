@@ -2,12 +2,12 @@ package net.pototskiy.apps.magemediation.api.source.nested
 
 import java.io.StringWriter
 
-class AttributeListPrinter(
+class NestedAttributeListPrinter(
     quote: String?,
     delimiter: String,
     valueQuote: String?,
     valueDelimiter: String
-) : AttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
+) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
     fun print(value: Map<String, String>): String {
         val values = value.map { (attr, value) ->
