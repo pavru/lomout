@@ -92,7 +92,10 @@ internal class DefaultAttributeListReaderTest {
         xlsTestDataCell.setCellValue("")
         assertThat(reader.read(attr, inputCell)).hasSize(0)
         xlsTestDataCell.setCellValue("attr1,attr2")
-        assertThat(reader.read(attr, inputCell)).hasSize(0)
+        assertThat(reader.read(attr, inputCell)).hasSize(2)
+        assertThat(reader.read(attr, inputCell)!!.map { (key, value) ->
+            key to value.stringValue
+        }.toMap()).containsAllEntriesOf(mapOf("attr1" to "", "attr2" to ""))
     }
 
     @Test

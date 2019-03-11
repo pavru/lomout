@@ -91,6 +91,7 @@ class PipelineExecutor(
                 }.consumeEach { unMatchedData.send(it) }
             }
             unMatchedData.close()
+            @Suppress("SpreadOperator")
             joinAll(*jobs.toTypedArray())
         }
 

@@ -5,11 +5,17 @@ import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 
-class AttributeRow(
+class NestedAttributeRow(
     private val backingRow: Int,
-    private val backingData: Array<String>,
-    private val backingSheet: AttributeSheet
+    private val backingData: MutableList<NestedAttributeCell>,
+    private val backingSheet: NestedAttributeSheet
 ) : Row {
+    override fun insertCell(column: Int): Cell {
+        val cell = NestedAttributeCell(CellAddress(backingRow, column), "", this)
+        backingData.add(column, cell)
+        return cell
+    }
+
     override fun getOrEmptyCell(column: Int): Cell = get(column)
 
     override val sheet: Sheet
@@ -19,11 +25,7 @@ class AttributeRow(
 
     override fun countCell(): Int = backingData.count()
 
-    override fun get(column: Int): Cell = AttributeCell(
-        CellAddress(
-            backingRow,
-            column
-        ), backingData[column], this)
+    override operator fun get(column: Int): Cell = backingData[column]
 
     override fun iterator(): Iterator<Cell?> = AttributeCellIterator(this)
 }

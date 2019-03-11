@@ -10,7 +10,6 @@ import kotlin.reflect.KClass
 class EntityTypeManager : EntityTypeManagerInterface {
 
     private val entityAttributes = mutableMapOf<EntityType, MutableMap<String, Attribute<*>>>()
-    private val attributes = entityAttributes.values.map { it.values }.flatten()
     private val entities = mutableMapOf<String, EntityType>()
     private val entitySupers = mutableMapOf<EntityType, List<ParentEntityType>>()
 

@@ -62,7 +62,7 @@ abstract class EntityType(
         private val inheritances = mutableListOf<ParentEntityType>()
 
         inline fun <reified T : Type> attribute(name: String, block: Attribute.Builder<T>.() -> Unit = {}) =
-            attributes.add(Attribute.Builder<T>(helper, name, T::class).apply(block).build())
+            attributes.add(Attribute.Builder(helper, name, T::class).apply(block).build())
 
         fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
             val eType = helper.typeManager.getEntityType(name)

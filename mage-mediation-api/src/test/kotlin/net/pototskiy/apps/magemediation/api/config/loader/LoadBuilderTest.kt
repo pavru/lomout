@@ -34,7 +34,7 @@ internal class LoadBuilderTest {
 
     @Test
     internal fun fieldColumnsNotDefinedTest() {
-        val v = SourceFileCollection.Builder(helper).apply {
+        SourceFileCollection.Builder(helper).apply {
             file("file1") { path("test") }
         }.build()
         assertThatThrownBy {

@@ -47,6 +47,7 @@ class EntityLoader(
         DbEntity.removeOldEntities(eType, loadConfig.maxAbsentDays)
     }
 
+    @Suppress("TooGenericExceptionCaught")
     private fun processRows() {
         loop@ for (row in sheet) {
             processedRows++
@@ -76,7 +77,7 @@ class EntityLoader(
             plusAdditionalData(data)
             validateKeyFieldData(data, rowFiledSet.fieldToAttr)
             @Suppress("UNCHECKED_CAST")
-            updateDatabase(data)
+            updater.update(data)
         } else {
             val data = getData(row, rowFiledSet.fieldToAttr)
             extraData[rowFiledSet.name] = data
@@ -144,10 +145,7 @@ class EntityLoader(
         }
     }
 
-    private fun updateDatabase(data: Map<AnyTypeAttribute, Type?>) {
-        updater.update(data)
-    }
-
+    @Suppress("ComplexMethod", "ThrowsCount")
     private fun getData(row: Row, fields: FieldAttributeMap): Map<AnyTypeAttribute, Type?> {
         val data: MutableMap<AnyTypeAttribute, Type?> = mutableMapOf()
 
@@ -201,18 +199,7 @@ class EntityLoader(
         (if (fieldSets.count() > 1) {
             var fittedSet: FieldSet? = null
             for (set in fieldSets) {
-                var fit = true
-                for (field in set.fields.filter { field -> field.regex != null }) {
-                    val cell = row[field.column]
-                        ?: throw LoaderException(
-                            "Workbook<${row.sheet.workbook.name}>, " +
-                                    "sheet<${row.sheet.name}>, " +
-                                    "row<${row.rowNum + 1}> " +
-                                    "does not exist, but it's required for row classification"
-                        )
-                    if (!field.isMatchToPattern(cell.asString())) fit = false
-                }
-                if (fit) {
+                if (testRowAgainstFieldSet(row, set)) {
                     fittedSet = set
                     break
                 }
@@ -222,4 +209,19 @@ class EntityLoader(
             null
         } ?: fieldSets.find { it.mainSet }
         ?: throw LoaderException("Row field set can not be found for loading entity type<${loadConfig.entity.name}>"))
+
+    private fun testRowAgainstFieldSet(row: Row, set: FieldSet): Boolean {
+        var fit = true
+        for (field in set.fields.filter { field -> field.regex != null }) {
+            val cell = row[field.column]
+                ?: throw LoaderException(
+                    "Workbook<${row.sheet.workbook.name}>, " +
+                            "sheet<${row.sheet.name}>, " +
+                            "row<${row.rowNum + 1}> " +
+                            "does not exist, but it's required for row classification"
+                )
+            if (!field.isMatchToPattern(cell.asString())) fit = false
+        }
+        return fit
+    }
 }

@@ -95,6 +95,7 @@ internal class AValueWrapperKtTest {
     @Test
     internal fun wrapBooleanListTest() {
         val attr = EntityTypeManager().createAttribute("attr", BooleanListType::class)
+        @Suppress("BooleanLiteralArgument")
         assertThat(wrapAValue(attr, listOf(true, false)))
             .isEqualTo(BooleanListValue(listOf(BooleanValue(true), BooleanValue(false))))
     }

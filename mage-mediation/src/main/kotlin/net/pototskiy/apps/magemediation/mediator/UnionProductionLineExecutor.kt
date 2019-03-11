@@ -34,12 +34,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManager) {
 
-    private val pipelineDataCache = LRUMap<Int, PipelineData>(1000, 300)
+    private val pipelineDataCache = LRUMap<Int, PipelineData>(maxCacheSize, initialCacheSize)
     private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private val jobs = mutableListOf<Job>()
 
     @ExperimentalCoroutinesApi
     @ObsoleteCoroutinesApi
+    @Suppress("TooGenericExceptionCaught", "SpreadOperator")
     fun executeLine(line: ProductionLine) {
         try {
             runBlocking {
@@ -132,5 +133,10 @@ class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManag
     private fun processException(e: Exception) {
         logger.error("{}", e.message)
         logger.trace("Caused by:", e)
+    }
+
+    companion object {
+        private const val maxCacheSize = 1000
+        private const val initialCacheSize = 300
     }
 }

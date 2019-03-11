@@ -5,8 +5,11 @@ import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.IntIdTable
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.Function
+import org.jetbrains.exposed.sql.QueryBuilder
+import org.jetbrains.exposed.sql.ReferenceOption
+import org.jetbrains.exposed.sql.VarCharColumnType
 
 private const val UUID_LENGTH = 50
 

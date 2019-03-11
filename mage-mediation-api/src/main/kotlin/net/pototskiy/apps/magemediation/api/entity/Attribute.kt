@@ -105,7 +105,7 @@ abstract class Attribute<T : Type>(
                 reader(reader ?: defaultReaders[typeClass] as AttributeReader<out T>)
                 writer(writer ?: defaultWriters[typeClass] as AttributeWriter<out T>)
                 builder(builder)
-            } as Attribute<T>
+            }
         }
 
         private fun validateKeyIsNotNullable() {

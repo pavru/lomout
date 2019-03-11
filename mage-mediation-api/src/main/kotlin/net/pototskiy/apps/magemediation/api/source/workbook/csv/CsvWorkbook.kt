@@ -4,27 +4,17 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVParser
 import java.io.File
-import java.io.InputStreamReader
 import java.net.URL
 import java.util.*
 
-class CsvWorkbook(
-    private val reader: InputStreamReader,
-    csvFormat: CSVFormat,
+abstract class CsvWorkbook(
     val workbookLocale: Locale = DEFAULT_LOCALE
 ) : Workbook {
+
+    var sheet: CsvSheet? = null
+
     private var sourceURL: URL = URL("file", "local", "virtual")
-
-    constructor(sourceURL: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
-            : this(sourceURL.openStream().reader(), csvFormat, workbookLocale) {
-        this.sourceURL = sourceURL
-    }
-
-    //    private var reader = sourceURL.openStream().reader() // file.plugins.reader()
-    private var _parser: CSVParser = csvFormat.parse(reader)
 
     override val name: String
         get() = File(sourceURL.file).name // _fileName
@@ -33,7 +23,7 @@ class CsvWorkbook(
 
     override fun get(sheet: String): CsvSheet {
         if (sheet == "default") {
-            return CsvSheet(this)
+            return CsvSheet(this).also { this.sheet = it }
         } else {
             throw SourceException("CSV file supports only one sheet with name: \"default\"")
         }
@@ -41,7 +31,7 @@ class CsvWorkbook(
 
     override fun get(sheet: Int): CsvSheet {
         if (sheet == 0) {
-            return CsvSheet(this)
+            return CsvSheet(this).also { this.sheet = it }
         } else {
             throw SourceException("CSV file support only one sheet with index: 0")
         }
@@ -53,12 +43,4 @@ class CsvWorkbook(
 
     override fun iterator(): Iterator<CsvSheet> =
         CsvSheetIterator(this)
-
-    val parser: CSVParser
-        get() = _parser
-
-    override fun close() {
-        _parser.close()
-        reader.close()
-    }
 }

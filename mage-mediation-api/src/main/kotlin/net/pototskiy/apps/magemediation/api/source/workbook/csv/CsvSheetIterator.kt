@@ -6,5 +6,8 @@ class CsvSheetIterator(private val workbook: CsvWorkbook) : Iterator<CsvSheet> {
 
     override fun next(): CsvSheet = CsvSheet(
         workbook
-    ).apply { index++ }
+    ).also {
+        workbook.sheet = it
+        index++
+    }
 }

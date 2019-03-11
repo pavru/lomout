@@ -72,7 +72,7 @@ data class FieldSet(
             name: String? = lastFieldName,
             block: Attribute.Builder<T>.() -> Unit
         ): Attribute<*> =
-            Attribute.Builder<T>(
+            Attribute.Builder(
                 helper,
                 name ?: throw ConfigException("Attribute name should be defined"),
                 T::class

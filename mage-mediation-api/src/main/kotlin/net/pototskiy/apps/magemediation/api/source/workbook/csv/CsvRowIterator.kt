@@ -1,6 +1,9 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
 class CsvRowIterator(private val sheet: CsvSheet) : Iterator<CsvRow> {
+    init {
+        checkThatItIsCsvInputWorkbook(sheet.workbook as CsvWorkbook)
+    }
     private val iterator = sheet.parser.iterator()
     private var index = 0
 
@@ -8,8 +11,6 @@ class CsvRowIterator(private val sheet: CsvSheet) : Iterator<CsvRow> {
 
     override fun next(): CsvRow {
         val v = iterator.next()
-        val data = mutableListOf<String>()
-        for (s in v) data.add(s)
-        return CsvRow(index, data.toTypedArray(), sheet).apply { index++ }
+        return CsvRow(index, v, sheet).apply { index++ }
     }
 }

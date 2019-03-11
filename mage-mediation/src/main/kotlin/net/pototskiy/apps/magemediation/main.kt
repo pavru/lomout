@@ -26,6 +26,7 @@ fun main(args: Array<String>) {
         .addObject(Args)
         .build()
     try {
+        @Suppress("SpreadOperator")
         jCommander.parse(*args)
     } catch (e: ParameterException) {
         System.exit(1)

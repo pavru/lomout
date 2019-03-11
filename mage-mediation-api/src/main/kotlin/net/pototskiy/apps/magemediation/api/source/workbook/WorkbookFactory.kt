@@ -1,7 +1,8 @@
 package net.pototskiy.apps.magemediation.api.source.workbook
 
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
-import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvWorkbook
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvInputWorkbook
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvOutputWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.setFileName
 import org.apache.commons.csv.CSVFormat
@@ -16,30 +17,50 @@ import java.util.*
 
 class WorkbookFactory {
     companion object {
-        fun create(source: URL, workbookLocale: Locale = DEFAULT_LOCALE): Workbook {
+        fun create(source: URL, workbookLocale: Locale = DEFAULT_LOCALE, forInput: Boolean = true): Workbook {
             val fileName = File(source.file).name
-            val input = source.openStream()
             val file = File(fileName)
             return when (file.extension.toLowerCase()) {
                 "xls" -> {
-                    val wb = HSSFWorkbook(input)
-                    HSSFFormulaEvaluator.evaluateAllFormulaCells(wb)
-                    wb.setFileName(fileName)
-                    ExcelWorkbook(wb)
+                    val wb = hssfWorkbook(forInput, source)
+                    wb.setFileName(File(source.file))
+                    ExcelWorkbook(wb, forInput)
                 }
                 "xlsx" -> {
-                    val wb = SXSSFWorkbook(XSSFWorkbook(input))
-                    XSSFFormulaEvaluator.evaluateAllFormulaCells(wb)
-                    wb.setFileName(fileName)
-                    ExcelWorkbook(wb)
+                    val wb = xssfWorkbook(forInput, source)
+                    wb.setFileName(File(source.file))
+                    ExcelWorkbook(wb, forInput)
                 }
                 "csv" -> {
                     val format = CSVFormat.RFC4180.withEscape('\\')
-                    CsvWorkbook(source, format, workbookLocale)
+                    if (forInput)
+                        CsvInputWorkbook(source, format, workbookLocale)
+                    else
+                        CsvOutputWorkbook(source, format, workbookLocale)
                 }
                 else ->
                     throw SourceException("Unsupported file format, file: $fileName")
             }
+        }
+
+        private fun xssfWorkbook(forInput: Boolean, input: URL): org.apache.poi.ss.usermodel.Workbook =
+            if (forInput) {
+                SXSSFWorkbook(XSSFWorkbook(input.openStream())).also {
+                    XSSFFormulaEvaluator.evaluateAllFormulaCells(it)
+                }
+            } else {
+                XSSFWorkbook()
+            }
+
+        private fun hssfWorkbook(
+            forInput: Boolean,
+            input: URL
+        ): HSSFWorkbook = if (forInput) {
+            HSSFWorkbook(input.openStream()).also {
+                HSSFFormulaEvaluator.evaluateAllFormulaCells(it)
+            }
+        } else {
+            HSSFWorkbook()
         }
     }
 }

@@ -9,7 +9,7 @@ import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvCell
-import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvWorkbook
+import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvInputWorkbook
 import org.apache.commons.csv.CSVFormat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -49,7 +49,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithBuildFunctionTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             builder {
                 LongValue(123L)
             }
@@ -60,7 +60,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithBuildPluginTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             builder<TestBuilder> {
                 returnValue = 321L
             }
@@ -71,7 +71,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithReaderFunctionTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             reader { _, _ ->
                 LongValue(234L)
             }
@@ -85,7 +85,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithReaderPluginTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             reader<TestReader>()
         }.build()
         assertThat(attr.reader).isNotNull.isInstanceOf(AttributeReaderWithPlugin::class.java)
@@ -98,7 +98,7 @@ internal class AttributeBuilderTest {
     @Test
     internal fun attributeWithWriterFunctionTest() {
         var v = 0L
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             writer { value, _ ->
                 v = value?.value!!
             }
@@ -112,7 +112,7 @@ internal class AttributeBuilderTest {
 
     @Test
     internal fun attributeWithWriterPluginTest() {
-        val attr = Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+        val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             writer<TestWriter>()
         }.build()
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriterWithPlugin::class.java)
@@ -125,7 +125,7 @@ internal class AttributeBuilderTest {
     @Test
     internal fun ketNullableTest() {
         assertThatThrownBy {
-            Attribute.Builder<LongType>(helper, "test", LongType::class).apply {
+            Attribute.Builder(helper, "test", LongType::class).apply {
                 key()
                 nullable()
             }.build()
@@ -163,7 +163,7 @@ internal class AttributeBuilderTest {
 
     private fun createCsvCell(value: String): CsvCell {
         val reader = value.byteInputStream().reader()
-        CsvWorkbook(reader, CSVFormat.RFC4180).use {
+        CsvInputWorkbook(reader, CSVFormat.RFC4180).use {
             return it[0][0][0]!!
         }
     }
