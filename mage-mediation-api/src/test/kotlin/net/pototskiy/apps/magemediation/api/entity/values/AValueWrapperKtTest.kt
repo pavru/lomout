@@ -1,8 +1,11 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
+import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.AttributeCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
+import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithFunction
+import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithFunction
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
 import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
 import net.pototskiy.apps.magemediation.api.entity.BooleanType
@@ -28,9 +31,12 @@ import net.pototskiy.apps.magemediation.api.entity.StringListType
 import net.pototskiy.apps.magemediation.api.entity.StringListValue
 import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.entity.TextListType
+import net.pototskiy.apps.magemediation.api.entity.TextListValue
 import net.pototskiy.apps.magemediation.api.entity.TextType
 import net.pototskiy.apps.magemediation.api.entity.TextValue
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.joda.time.DateTime
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
@@ -44,6 +50,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", BooleanType::class)
         assertThat(wrapAValue(attr, true)).isEqualTo(BooleanValue(true))
         assertThat(wrapAValue(attr, false)).isEqualTo(BooleanValue(false))
+        assertThatThrownBy { wrapAValue(attr, 1) }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to BooleanType")
     }
 
     @Test
@@ -51,6 +60,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", LongType::class)
         assertThat(wrapAValue(attr, 111L)).isEqualTo(LongValue(111L))
         assertThat(wrapAValue(attr, 123L)).isEqualTo(LongValue(123L))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to LongType")
     }
 
     @Test
@@ -58,6 +70,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", DoubleType::class)
         assertThat(wrapAValue(attr, 11.1)).isEqualTo(DoubleValue(11.1))
         assertThat(wrapAValue(attr, 12.3)).isEqualTo(DoubleValue(12.3))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to DoubleType")
     }
 
     @Test
@@ -65,6 +80,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", StringType::class)
         assertThat(wrapAValue(attr, "11.1")).isEqualTo(StringValue("11.1"))
         assertThat(wrapAValue(attr, "12.3")).isEqualTo(StringValue("12.3"))
+        assertThatThrownBy { wrapAValue(attr, 1) }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to StringType")
     }
 
     @Test
@@ -74,6 +92,9 @@ internal class AValueWrapperKtTest {
         val now2 = DateTime()
         assertThat(wrapAValue(attr, now1)).isEqualTo(DateValue(now1))
         assertThat(wrapAValue(attr, now2)).isEqualTo(DateValue(now2))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to DateType")
     }
 
     @Test
@@ -83,6 +104,9 @@ internal class AValueWrapperKtTest {
         val now2 = DateTime()
         assertThat(wrapAValue(attr, now1)).isEqualTo(DateTimeValue(now1))
         assertThat(wrapAValue(attr, now2)).isEqualTo(DateTimeValue(now2))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to DateTimeType")
     }
 
     @Test
@@ -90,6 +114,36 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", TextType::class)
         assertThat(wrapAValue(attr, "11.1")).isEqualTo(TextValue("11.1"))
         assertThat(wrapAValue(attr, "12.3")).isEqualTo(TextValue("12.3"))
+        assertThatThrownBy { wrapAValue(attr, 1) }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to TextType")
+    }
+
+    @Test
+    internal fun wrapTextListTest() {
+        val attr = EntityTypeManager().createAttribute("attr", TextListType::class) {
+            reader(AttributeReaderWithFunction { _, _ -> TextListValue(listOf()) })
+            writer(AttributeWriterWithFunction { _, _ -> Unit })
+        }
+        assertThat(wrapAValue(attr, listOf("11.1"))).isEqualTo(TextListValue(listOf(TextValue("11.1"))))
+        assertThat(wrapAValue(attr, listOf("12.3"))).isEqualTo(TextListValue(listOf(TextValue("12.3"))))
+        assertThatThrownBy { wrapAValue(attr, 1) }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to TextListType")
+    }
+
+    abstract class NewType : LongType(1, false)
+    class NewValue : NewType()
+
+    @Test
+    internal fun wrapUnknownTypeTest() {
+        val attr = EntityTypeManager().createAttribute("attr", NewType::class) {
+            reader(AttributeReaderWithFunction { _, _ -> NewValue() })
+            writer(AttributeWriterWithFunction { _, _ -> Unit })
+        }
+        assertThatThrownBy { wrapAValue(attr, 1) }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Unexpected type<${NewType::class.simpleName}>")
     }
 
     @Test
@@ -98,6 +152,9 @@ internal class AValueWrapperKtTest {
         @Suppress("BooleanLiteralArgument")
         assertThat(wrapAValue(attr, listOf(true, false)))
             .isEqualTo(BooleanListValue(listOf(BooleanValue(true), BooleanValue(false))))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to BooleanListType")
     }
 
     @Test
@@ -105,6 +162,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", LongListType::class)
         assertThat(wrapAValue(attr, listOf(111L, 123L)))
             .isEqualTo(LongListValue(listOf(LongValue(111L), LongValue(123L))))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to LongListType")
     }
 
     @Test
@@ -112,6 +172,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", DoubleListType::class)
         assertThat(wrapAValue(attr, listOf(11.1, 12.3)))
             .isEqualTo(DoubleListValue(listOf(DoubleValue(11.1), DoubleValue(12.3))))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to DoubleListType")
     }
 
     @Test
@@ -119,6 +182,9 @@ internal class AValueWrapperKtTest {
         val attr = EntityTypeManager().createAttribute("attr", StringListType::class)
         assertThat(wrapAValue(attr, listOf("11.1", "12.3")))
             .isEqualTo(StringListValue(listOf(StringValue("11.1"), StringValue("12.3"))))
+        assertThatThrownBy { wrapAValue(attr, 1) }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to StringListType")
     }
 
     @Test
@@ -128,6 +194,9 @@ internal class AValueWrapperKtTest {
         val now2 = DateTime()
         assertThat(wrapAValue(attr, listOf(now1, now2)))
             .isEqualTo(DateListValue(listOf(DateValue(now1), DateValue(now2))))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to DateListType")
     }
 
     @Test
@@ -137,6 +206,9 @@ internal class AValueWrapperKtTest {
         val now2 = DateTime()
         assertThat(wrapAValue(attr, listOf(now1, now2)))
             .isEqualTo(DateTimeListValue(listOf(DateTimeValue(now1), DateTimeValue(now2))))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to DateTimeListType")
     }
 
     @Test
@@ -150,5 +222,8 @@ internal class AValueWrapperKtTest {
         )
         assertThat(wrapAValue(attr, attrMap))
             .isEqualTo(AttributeListValue(attrMap))
+        assertThatThrownBy { wrapAValue(attr, "1") }
+            .isInstanceOf(DatabaseException::class.java)
+            .hasMessageContaining("Can not wrap value to AttributeListType")
     }
 }

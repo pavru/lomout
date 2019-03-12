@@ -34,7 +34,6 @@ import net.pototskiy.apps.magemediation.api.entity.TextType
 import net.pototskiy.apps.magemediation.api.entity.TextValue
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.joda.time.DateTime
 
 @Suppress("ComplexMethod")
@@ -71,6 +70,6 @@ fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
             TextListValue(list.map { TextValue(it) })
         }
         AttributeListType::class -> (value as? Map<String, Cell>)?.let { AttributeListValue(it) }
-        else -> throw SourceException("Unexpected type<${attribute.valueType.simpleName}>")
+        else -> throw DatabaseException("Unexpected type<${attribute.valueType.simpleName}>")
     } ?: throw DatabaseException("Can not wrap value to ${attribute.valueType.simpleName}")
 }
