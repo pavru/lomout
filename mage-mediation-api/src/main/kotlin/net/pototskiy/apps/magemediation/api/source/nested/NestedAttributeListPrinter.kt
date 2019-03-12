@@ -3,10 +3,10 @@ package net.pototskiy.apps.magemediation.api.source.nested
 import java.io.StringWriter
 
 class NestedAttributeListPrinter(
-    quote: String?,
-    delimiter: String,
-    valueQuote: String?,
-    valueDelimiter: String
+    quote: Char?,
+    delimiter: Char,
+    valueQuote: Char?,
+    valueDelimiter: Char
 ) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
     fun print(value: Map<String, String>): String {

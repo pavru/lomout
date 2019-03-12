@@ -11,7 +11,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class NestedAttributeSheetTest {
     @Test
     internal fun insertAndGetRowTest() {
-        val workbook = NestedAttributeWorkbook(null, ",", null, "=", "test")
+        val workbook = NestedAttributeWorkbook(null, ',', null, '=', "test")
         workbook.string = "attr1=value1,attr1=value1"
         val sheet = workbook[0]
         assertThat(sheet[0]?.toList()).containsExactlyElementsOf(sheet.insertRow(0).toList())
@@ -26,7 +26,7 @@ internal class NestedAttributeSheetTest {
 
     @Test
     internal fun sheetNameTest() {
-        val workbook = NestedAttributeWorkbook(null, ",", null, "=", "test")
+        val workbook = NestedAttributeWorkbook(null, ',', null, '=', "test")
         workbook.string = "attr1=value1,attr1=value1"
         assertThat(workbook[0].name).isEqualTo("default")
     }

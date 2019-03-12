@@ -46,26 +46,26 @@ config {
                     reader<DateTimeAttributeReader> { pattern = "d.M.yy H:m" }
                 }
                 attribute<StringListType>("string_list") {
-                    reader<StringListAttributeReader> { delimiter = ","; quote = "" }
+                    reader<StringListAttributeReader> { delimiter = ','; quote = null }
                 }
                 attribute<BooleanListType>("bool_list") {
-                    reader<BooleanListAttributeReader> { delimiter = ","; quote = "" }
+                    reader<BooleanListAttributeReader> { delimiter = ','; quote = null }
                 }
                 attribute<LongListType>("long_list") {
-                    reader<LongListAttributeReader> { delimiter = ","; quote = "" }
+                    reader<LongListAttributeReader> { delimiter = ','; quote = null }
                 }
                 attribute<DoubleListType>("double_list") {
-                    reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = "|"; quote = "" }
+                    reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = '|'; quote = null }
                 }
                 attribute<DateListType>("date_list") {
-                    reader<DateListAttributeReader> { delimiter = ",";quote = "";pattern = "d.M.yy" }
+                    reader<DateListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy" }
                 }
                 attribute<DateTimeListType>("datetime_list") {
-                    reader<DateTimeListAttributeReader> { delimiter = ",";quote = "";pattern = "d.M.yy H:m" }
+                    reader<DateTimeListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy H:m" }
                 }
                 attribute<AttributeListType>("compound") {
                     reader<AttributeListReader> {
-                        delimiter = ",";quote = "";valueDelimiter = "=";valueQuote = "\""
+                        delimiter = ',';quote = null;valueDelimiter = '=';valueQuote = '"'
                     }
                 }
                 attribute<LongType>("nested1")

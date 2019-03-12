@@ -14,7 +14,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class NestedAttributeCellTest {
     @Test
     internal fun getCellAddressTest() {
-        val workbook = NestedAttributeWorkbook(null, ",", null, "=", "test")
+        val workbook = NestedAttributeWorkbook(null, ',', null, '=', "test")
         workbook.string = "attr1=value1,attr2=value2"
         val cell = workbook[0][1]!![1]
         assertThat(cell).isNotNull
@@ -24,7 +24,7 @@ internal class NestedAttributeCellTest {
 
     @Test
     internal fun notAllowOperationsTest() {
-        val workbook = NestedAttributeWorkbook(null, ",", null, "=", "test")
+        val workbook = NestedAttributeWorkbook(null, ',', null, '=', "test")
         workbook.string = "attr1=value1,attr2=value2"
         val cell = workbook[0][1]!![1]
         assertThatThrownBy { cell?.booleanValue }

@@ -10,10 +10,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 
 open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
-    var quote: String? = null
-    var delimiter: String = ","
-    var valueQuote: String? = null
-    var valueDelimiter: String = "="
+    var quote: Char? = null
+    var delimiter: Char = ','
+    var valueQuote: Char? = null
+    var valueDelimiter: Char = '='
 
     override fun read(attribute: Attribute<out AttributeListType>, input: Cell): AttributeListType? {
         return when (input.cellType) {

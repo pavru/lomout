@@ -13,6 +13,6 @@ open class BooleanAttributeStringWriter : AttributeWriterPlugin<BooleanType>() {
         value: BooleanType?,
         cell: Cell
     ) {
-        (value as? BooleanValue)?.let { cell.setCellValue(it.value) }
+        (value as? BooleanValue)?.let { cell.setCellValue(if (it.value) "1" else "0") }
     }
 }

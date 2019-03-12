@@ -9,16 +9,16 @@
 @file:Import("pipeline/assembler/CategoryFromGroupAssembler.plugin.conf.kts")
 @file:Import("pipeline/assembler/MarkCategoryToRemove.plugin.conf.kts")
 
-import OnecGroupToLong_plugin_conf.*
-import GroupPathFromRelation_plugin_conf.*
-import CategoryPathFromRelation_plugin_conf.*
-import RelationGroupNameFromGroup_plugin_conf.*
-import GroupToCategoryPath_plugin_conf.*
-import CategoryClassifier_plugin_conf.*
-import MatchedCategoryAssembler_plugin_conf.*
-import EntityTypeClassifier_plugin_conf.*
-import CategoryFromGroupAssembler_plugin_conf.*
-import MarkCategoryToRemove_plugin_conf.*
+import CategoryClassifier_plugin_conf.CategoryClassifier
+import CategoryFromGroupAssembler_plugin_conf.CategoryFromGroupAssembler
+import CategoryPathFromRelation_plugin_conf.CategoryPathFromRelation
+import EntityTypeClassifier_plugin_conf.EntityTypeClassifier
+import GroupPathFromRelation_plugin_conf.GroupPathFromRelation
+import GroupToCategoryPath_plugin_conf.GroupToCategoryPath
+import MarkCategoryToRemove_plugin_conf.MarkCategoryToRemove
+import MatchedCategoryAssembler_plugin_conf.MatchedCategoryAssembler
+import OnecGroupToLong_plugin_conf.OnecGroupToLong
+import RelationGroupNameFromGroup_plugin_conf.RelationGroupNameFromGroup
 
 config {
     database {
@@ -78,7 +78,7 @@ config {
                 attribute<StringType>("sku") { key() }
                 attribute<AttributeListType>("additional_attributes") {
                     reader<AttributeListReader> {
-                        quote = "";delimiter = ",";valueQuote = "\"";valueDelimiter = "="
+                        quote = null;delimiter = ',';valueQuote = '"';valueDelimiter = '='
                     }
                 }
                 attribute<TextType>("description")
@@ -131,27 +131,27 @@ config {
                 attribute<BooleanType>("is_decimal_divided")
                 attribute<LongType>("website_id")
                 attribute<StringListType>("related_skus") {
-                    reader<StringListAttributeReader> { quote = "";delimiter = "," }
+                    reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
                 attribute<StringListType>("crosssell_skus") {
-                    reader<StringListAttributeReader> { quote = "";delimiter = "," }
+                    reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
                 attribute<StringListType>("upsell_skus") {
-                    reader<StringListAttributeReader> { quote = "";delimiter = "," }
+                    reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
                 attribute<StringListType>("additional_images") {
-                    reader<StringListAttributeReader> { quote = "";delimiter = "," }
+                    reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
                 attribute<StringListType>("additional_image_labels") {
-                    reader<StringListAttributeReader> { quote = "";delimiter = "," }
+                    reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
                 attribute<StringListType>("associated_skus") {
-                    reader<StringListAttributeReader> { quote = "";delimiter = "," }
+                    reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
                 attribute<DoubleType>("ratings_summary") { nullable() }
@@ -191,7 +191,7 @@ config {
                 attribute<BooleanType>("use_name_in_product_search")
                 attribute<LongType>("gen_store_id")
                 attribute<LongListType>("gen_products") {
-                    reader<LongListAttributeReader> { quote = "";delimiter = "|" }
+                    reader<LongListAttributeReader> { quote = null;delimiter = '|' }
                     nullable()
                 }
                 attribute<StringType>("__path") {

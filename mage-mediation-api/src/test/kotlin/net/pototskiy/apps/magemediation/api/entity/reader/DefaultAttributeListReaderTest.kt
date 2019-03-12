@@ -55,10 +55,10 @@ internal class DefaultAttributeListReaderTest {
     @Test
     internal fun readeAttributeListTest() {
         val reader = AttributeListReader().apply {
-            delimiter = ","
+            delimiter = ','
             quote = null
-            valueDelimiter = "="
-            valueQuote = "'"
+            valueDelimiter = '='
+            valueQuote = '\''
         }
         xlsTestDataCell.setCellValue("attr1='value1',attr2='value2'")
         val list = reader.read(attr, inputCell)?.value
@@ -72,10 +72,10 @@ internal class DefaultAttributeListReaderTest {
     @Test
     internal fun readAttributeListDoubleCellTest() {
         val reader = AttributeListReader().apply {
-            delimiter = ","
+            delimiter = ','
             quote = null
-            valueDelimiter = "="
-            valueQuote = "'"
+            valueDelimiter = '='
+            valueQuote = '\''
         }
         xlsTestDataCell.setCellValue(1.1)
         assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
@@ -84,10 +84,10 @@ internal class DefaultAttributeListReaderTest {
     @Test
     internal fun readeAttributeListUnsuccessfulTest() {
         val reader = AttributeListReader().apply {
-            delimiter = ","
+            delimiter = ','
             quote = null
-            valueDelimiter = "="
-            valueQuote = "'"
+            valueDelimiter = '='
+            valueQuote = '\''
         }
         xlsTestDataCell.setCellValue("")
         assertThat(reader.read(attr, inputCell)).hasSize(0)
@@ -109,9 +109,9 @@ internal class DefaultAttributeListReaderTest {
         val v = reader.pluginClass.createInstance() as AttributeListReader
         @Suppress("UNCHECKED_CAST")
         v.apply(reader.options as (AttributeListReader.() -> Unit))
-        assertThat(v.quote).isEqualTo("")
-        assertThat(v.delimiter).isEqualTo(",")
-        assertThat(v.valueDelimiter).isEqualTo("=")
-        assertThat(v.valueQuote).isEqualTo("\"")
+        assertThat(v.quote).isNull()
+        assertThat(v.delimiter).isEqualTo(',')
+        assertThat(v.valueDelimiter).isEqualTo('=')
+        assertThat(v.valueQuote).isEqualTo('"')
     }
 }

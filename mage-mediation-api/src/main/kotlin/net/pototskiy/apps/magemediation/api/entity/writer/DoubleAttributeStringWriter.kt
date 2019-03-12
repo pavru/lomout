@@ -15,6 +15,6 @@ open class DoubleAttributeStringWriter : AttributeWriterPlugin<DoubleType>() {
         value: DoubleType?,
         cell: Cell
     ) {
-        cell.setCellValue((value as DoubleValue).value.doubleToString(locale.createLocale()))
+        (value as? DoubleValue)?.let { cell.setCellValue(it.value.doubleToString(locale.createLocale())) }
     }
 }

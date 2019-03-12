@@ -40,7 +40,7 @@ internal class DefaultAttributeListWriterTest {
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
         xlsTestDataCell = xlsSheet.createRow(0).createCell(0)
-        workbook = ExcelWorkbook(xlsWorkbook,false)
+        workbook = ExcelWorkbook(xlsWorkbook, false)
         outputCell = workbook["test-data"][0]!![0]!!
     }
 
@@ -51,7 +51,7 @@ internal class DefaultAttributeListWriterTest {
 
     @Test
     internal fun writeAttributeListToCellTest() {
-        val wb = NestedAttributeWorkbook(null, ",", "\"", "=", "test")
+        val wb = NestedAttributeWorkbook(null, ',', '"', '=', "test")
         wb.string = "attr1=value1,attr2=value2"
         val list = AttributeListValue(
             mapOf(
@@ -60,9 +60,9 @@ internal class DefaultAttributeListWriterTest {
             )
         )
         val writer = AttributeListStringWriter().apply {
-            delimiter = ","
-            valueQuote = "\""
-            valueDelimiter = "="
+            delimiter = ','
+            valueQuote = '"'
+            valueDelimiter = '='
         }
         writer.write(list, outputCell)
         assertThat(outputCell.stringValue).isEqualTo("attr1=value1,attr2=value2")

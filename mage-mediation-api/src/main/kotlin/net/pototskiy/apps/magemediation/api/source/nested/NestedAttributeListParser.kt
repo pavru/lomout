@@ -5,10 +5,10 @@ import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
 class NestedAttributeListParser(
-    quote: String?,
-    delimiter: String,
-    valueQuote: String?,
-    valueDelimiter: String
+    quote: Char?,
+    delimiter: Char,
+    valueQuote: Char?,
+    valueDelimiter: Char
 ) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
     fun parse(string: String): Map<String, String> {

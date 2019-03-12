@@ -2,22 +2,26 @@ package net.pototskiy.apps.magemediation.api.entity.writer
 
 import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.magemediation.api.entity.BooleanListType
-import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
+import net.pototskiy.apps.magemediation.api.createLocale
+import net.pototskiy.apps.magemediation.api.entity.DateListType
+import net.pototskiy.apps.magemediation.api.entity.DateListValue
+import net.pototskiy.apps.magemediation.api.entity.values.dateToString
+import net.pototskiy.apps.magemediation.api.entity.values.datetimeToString
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
 
-open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BooleanListType>() {
+open class DateListAttributeStringWriter : AttributeWriterPlugin<DateListType>() {
     var locale: String = DEFAULT_LOCALE_STR
+    var pattern: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
     override fun write(
-        value: BooleanListType?,
+        value: DateListType?,
         cell: Cell
     ) {
-        (value as? BooleanListValue)?.let { list ->
+        (value as? DateListValue)?.let { list ->
             val listValue = ByteOutputStream().use { stream ->
                 stream.writer().use { writer ->
                     CSVFormat.RFC4180
@@ -25,7 +29,10 @@ open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BooleanListT
                         .withDelimiter(delimiter)
                         .withRecordSeparator("")
                         .print(writer)
-                        .printRecord(list.map { if (it.value) "1" else "0" })
+                        .printRecord(list.map { data ->
+                            pattern?.let { data.value.datetimeToString(it) }
+                                ?: data.value.dateToString(locale.createLocale())
+                        })
                 }
                 stream.toString()
             }

@@ -24,6 +24,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import java.text.ParseException
 import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
@@ -78,7 +79,7 @@ internal class DefaultLongListReaderTest {
         )
         xlsTestDataCell.setCellValue("11, 22,A")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) } .isInstanceOf(PluginException::class.java)
+        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(ParseException::class.java)
     }
 
     @Test
@@ -93,7 +94,7 @@ internal class DefaultLongListReaderTest {
         @Suppress("UNCHECKED_CAST")
         v.apply(reader.options as (LongListAttributeReader.() -> Unit))
         assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
-        assertThat(v.delimiter).isEqualTo(",")
+        assertThat(v.delimiter).isEqualTo(',')
         assertThat(v.quote).isNull()
     }
 }

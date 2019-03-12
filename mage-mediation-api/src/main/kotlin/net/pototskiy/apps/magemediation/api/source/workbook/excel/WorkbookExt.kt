@@ -3,13 +3,14 @@ package net.pototskiy.apps.magemediation.api.source.workbook.excel
 import org.apache.poi.ss.usermodel.Workbook
 import java.io.File
 import java.lang.ref.WeakReference
+import java.util.*
 
 private data class WorkbookFile(
     val workbook: WeakReference<Workbook>,
     val file: File
 )
 
-private val files = mutableListOf<WorkbookFile>()
+private val files = Collections.synchronizedList(mutableListOf<WorkbookFile>())
 
 fun Workbook.setFileName(file: File) {
     cleanFiles()
