@@ -24,7 +24,11 @@ val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(
     AttributeListType::class to AttributeWriterWithPlugin(
         AttributeListStringWriter::class
     ) {
-        TODO()
+        this as AttributeListStringWriter
+        quote = null
+        delimiter = ','
+        valueQuote = '"'
+        valueDelimiter = '='
     },
     BooleanType::class to AttributeWriterWithPlugin(
         BooleanAttributeStringWriter::class

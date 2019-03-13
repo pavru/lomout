@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
-import com.sun.xml.internal.messaging.saaj.util.ByteOutputStream
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
 import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
+import java.io.ByteArrayOutputStream
 
 open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BooleanListType>() {
     var locale: String = DEFAULT_LOCALE_STR
@@ -18,7 +18,7 @@ open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BooleanListT
         cell: Cell
     ) {
         (value as? BooleanListValue)?.let { list ->
-            val listValue = ByteOutputStream().use { stream ->
+            val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
                     CSVFormat.RFC4180
                         .withQuote(quote)

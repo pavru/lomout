@@ -7,7 +7,7 @@ import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.Attribute
-import net.pototskiy.apps.magemediation.api.entity.AttributeCell
+import net.pototskiy.apps.magemediation.api.entity.AttributeAsCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeReader
 import net.pototskiy.apps.magemediation.api.entity.EntityType
@@ -29,7 +29,7 @@ data class InputEntity(
         return extAttrMaps.keys.map { attr ->
             @Suppress("UNCHECKED_CAST")
             attr to (attr.reader as AttributeReader<Type>)
-                .read(attr, AttributeCell(extAttrMaps[attr] as Attribute<Type>, entity.data[extAttrMaps[attr]]))
+                .read(attr, AttributeAsCell(extAttrMaps[attr] as Attribute<Type>, entity.data[extAttrMaps[attr]]))
         }.toMap()
     }
 

@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
-import net.pototskiy.apps.magemediation.api.entity.AttributeCell
+import net.pototskiy.apps.magemediation.api.entity.AttributeAsCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
 import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithFunction
@@ -217,8 +217,8 @@ internal class AValueWrapperKtTest {
         val attr = entityTypeManager.createAttribute("attr", AttributeListType::class)
         val attr1 = entityTypeManager.createAttribute("attr1", StringType::class)
         val attrMap = mapOf(
-            "test1" to AttributeCell(attr1, StringValue("123")),
-            "test2" to AttributeCell(attr1, StringValue("234"))
+            "test1" to AttributeAsCell(attr1, StringValue("123")),
+            "test2" to AttributeAsCell(attr1, StringValue("234"))
         )
         assertThat(wrapAValue(attr, attrMap))
             .isEqualTo(AttributeListValue(attrMap))
