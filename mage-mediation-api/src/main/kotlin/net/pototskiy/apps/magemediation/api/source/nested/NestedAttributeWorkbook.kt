@@ -6,10 +6,10 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 
 class NestedAttributeWorkbook(
-    quote: String?,
-    delimiter: String,
-    valueQuote: String?,
-    valueDelimiter: String,
+    quote: Char?,
+    delimiter: Char,
+    valueQuote: Char?,
+    valueDelimiter: Char,
     private val attributeName: String
 ) : Workbook {
     private val parser = NestedAttributeListParser(quote, delimiter, valueQuote, valueDelimiter)
@@ -40,9 +40,7 @@ class NestedAttributeWorkbook(
             )
         }
 
-    override fun insertSheet(sheet: String): Sheet {
-        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
-    }
+    override fun insertSheet(sheet: String): Sheet = NestedAttributeSheet(this)
 
     override val name: String
         get() = "workbook_for_$attributeName"

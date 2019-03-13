@@ -17,12 +17,10 @@ open class DateAttributeStringWriter : AttributeWriterPlugin<DateType>() {
         value: DateType?,
         cell: Cell
     ) {
-        (value as? DateValue)?.let {
-            if (pattern != null) {
-                cell.setCellValue(it.value.datetimeToString(pattern as String))
-            } else {
-                cell.setCellValue(it.value.dateToString(locale.createLocale()))
-            }
+        (value as? DateValue)?.let { dateValue ->
+            pattern?.let {
+                cell.setCellValue(dateValue.value.datetimeToString(it))
+            } ?: cell.setCellValue(dateValue.value.dateToString(locale.createLocale()))
         }
     }
 }

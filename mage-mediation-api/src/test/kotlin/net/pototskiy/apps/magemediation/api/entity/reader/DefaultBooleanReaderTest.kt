@@ -142,7 +142,7 @@ internal class DefaultBooleanReaderTest {
         @Suppress("UNCHECKED_CAST")
         v.apply(reader.options as (BooleanListAttributeReader.() -> Unit))
         assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
-        assertThat(v.delimiter).isEqualTo(",")
+        assertThat(v.delimiter).isEqualTo(',')
         assertThat(v.quote).isNull()
     }
 }

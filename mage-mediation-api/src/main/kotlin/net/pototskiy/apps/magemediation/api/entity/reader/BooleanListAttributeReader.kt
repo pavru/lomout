@@ -6,30 +6,37 @@ import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
 import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
 import net.pototskiy.apps.magemediation.api.entity.BooleanValue
-import net.pototskiy.apps.magemediation.api.entity.values.checkAndRemoveQuote
 import net.pototskiy.apps.magemediation.api.entity.values.stringToBoolean
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
+import org.apache.commons.csv.CSVFormat
 
 open class BooleanListAttributeReader : AttributeReaderPlugin<BooleanListType>() {
     var locale: String = DEFAULT_LOCALE_STR
-    var quote: String? = null
-    var delimiter: String = ","
+    var quote: Char? = null
+    var delimiter: Char = ','
 
     override fun read(attribute: Attribute<out BooleanListType>, input: Cell): BooleanListType? =
         when (input.cellType) {
-            CellType.STRING -> BooleanListValue(
-                BooleanListValue(
-                    input.stringValue
-                        .split(delimiter)
-                        .checkAndRemoveQuote(quote)
+            CellType.STRING -> {
+                val listValue = input.stringValue.reader().use { reader ->
+                    CSVFormat.RFC4180
+                        .withQuote(quote)
+                        .withDelimiter(delimiter)
+                        .withRecordSeparator("")
+                        .parse(reader)
+                        .records
+                        .map { it.toList() }.flatten()
                         .map { BooleanValue(it.stringToBoolean(locale.createLocale())) }
-                )
-            )
+                }
+                BooleanListValue(listValue)
+            }
             CellType.BLANK -> null
-            else -> throw PluginException("Reading Boolean from cell type<${input.cellType}}> is not supported, " +
-                    "attribute<${attribute.name}:${attribute.valueType.simpleName}>")
+            else -> throw PluginException(
+                "Reading Boolean from cell type<${input.cellType}}> is not supported, " +
+                        "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
+            )
         }
 }

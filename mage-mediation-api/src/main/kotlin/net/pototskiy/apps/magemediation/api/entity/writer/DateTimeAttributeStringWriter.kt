@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.DateTimeType
 import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
 import net.pototskiy.apps.magemediation.api.entity.values.datetimeToString
@@ -15,13 +16,11 @@ open class DateTimeAttributeStringWriter : AttributeWriterPlugin<DateTimeType>()
         value: DateTimeType?,
         cell: Cell
     ) {
-        (value as? DateTimeValue)?.let {
+        (value as? DateTimeValue)?.let { dateValue ->
             cell.setCellValue(
-                if (pattern != null) {
-                    it.value.datetimeToString(pattern as String)
-                } else {
-                    it.value.datetimeToString(locale)
-                }
+                pattern?.let {
+                    dateValue.value.datetimeToString(it)
+                } ?: dateValue.value.datetimeToString(locale.createLocale())
             )
         }
     }

@@ -90,7 +90,7 @@ internal class DefaultDoubleListReaderTest {
         @Suppress("UNCHECKED_CAST")
         v.apply(reader.options as (DoubleListAttributeReader.() -> Unit))
         assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
-        assertThat(v.delimiter).isEqualTo(",")
+        assertThat(v.delimiter).isEqualTo(',')
         assertThat(v.quote).isNull()
     }
 }

@@ -24,7 +24,11 @@ val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(
     AttributeListType::class to AttributeWriterWithPlugin(
         AttributeListStringWriter::class
     ) {
-        TODO()
+        this as AttributeListStringWriter
+        quote = null
+        delimiter = ','
+        valueQuote = '"'
+        valueDelimiter = '='
     },
     BooleanType::class to AttributeWriterWithPlugin(
         BooleanAttributeStringWriter::class
@@ -45,9 +49,9 @@ val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(
         pattern = "d.M.yy"
     },
     DateListType::class to AttributeWriterWithPlugin(
-        DateListAttributeStringWrite::class
+        DateListAttributeStringWriter::class
     ) {
-        this as DateListAttributeStringWrite
+        this as DateListAttributeStringWriter
         pattern = "d.M.yy"
     },
     DateTimeType::class to AttributeWriterWithPlugin(
@@ -57,9 +61,9 @@ val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(
         pattern = "d.M.yy H:m"
     },
     DateTimeListType::class to AttributeWriterWithPlugin(
-        DateTimeListAttributeStringWrite::class
+        DateTimeListAttributeStringWriter::class
     ) {
-        this as DateTimeListAttributeStringWrite
+        this as DateTimeListAttributeStringWriter
         pattern = "d.M.yy H:m"
     },
     DoubleType::class to AttributeWriterWithPlugin(
@@ -93,8 +97,8 @@ val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(
         StringListAttributeStringWriter::class
     ) {
         this as StringListAttributeStringWriter
-        quote = "\""
-        delimiter = ","
+        quote = '"'
+        delimiter = ','
     },
     TextType::class to AttributeWriterWithPlugin(
         TextAttributeStringWriter::class

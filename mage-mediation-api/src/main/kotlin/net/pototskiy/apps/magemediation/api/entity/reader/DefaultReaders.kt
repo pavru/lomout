@@ -25,10 +25,10 @@ val defaultReaders = mapOf<KClass<out Type>, AttributeReader<out Type>>(
         AttributeListReader::class
     ) {
         this as AttributeListReader
-        quote = ""
-        delimiter = ","
-        valueQuote = "\""
-        valueDelimiter = "="
+        quote = null
+        delimiter = ','
+        valueQuote = '"'
+        valueDelimiter = '='
     },
     BooleanType::class to AttributeReaderWithPlugin(
         BooleanAttributeReader::class
@@ -97,8 +97,8 @@ val defaultReaders = mapOf<KClass<out Type>, AttributeReader<out Type>>(
         StringListAttributeReader::class
     ) {
         this as StringListAttributeReader
-        quote = "\""
-        delimiter = ","
+        quote = '"'
+        delimiter = ','
     },
     TextType::class to AttributeReaderWithPlugin(
         TextAttributeReader::class

@@ -11,19 +11,19 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class CheckAndRemoveQuoteKtTest {
     @Test
     internal fun testCorrectQuoted() {
-        assertThat(listOf(" '1234'  ", "'2345''").checkAndRemoveQuote("'"))
+        assertThat(listOf(" '1234'  ", "'2345''").checkAndRemoveQuote('\''))
             .isEqualTo(listOf("1234", "2345'"))
     }
 
     @Test
     internal fun testIncorrectEndQuoted() {
-        assertThatThrownBy { (listOf(" '1234'  ", "'2345").checkAndRemoveQuote("'")) }
+        assertThatThrownBy { (listOf(" '1234'  ", "'2345").checkAndRemoveQuote('\'')) }
             .isInstanceOf(SourceException::class.java)
     }
 
     @Test
     internal fun testIncorrectStartQuoted() {
-        assertThatThrownBy { (listOf(" '1234'  ", " 2345'").checkAndRemoveQuote("'")) }
+        assertThatThrownBy { (listOf(" '1234'  ", " 2345'").checkAndRemoveQuote('\'')) }
             .isInstanceOf(SourceException::class.java)
     }
 
