@@ -2,7 +2,7 @@ package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
 import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
-import net.pototskiy.apps.magemediation.api.source.SourceException
+import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 import java.io.File
@@ -15,7 +15,7 @@ abstract class CsvWorkbook(
 
     var sheet: CsvSheet? = null
 
-    private var sourceURL: URL = URL("file", "local", "virtual")
+    protected var sourceURL: URL = URL("file", "local", "virtual")
 
     override val name: String
         get() = File(sourceURL.file).name // _fileName

@@ -2,8 +2,8 @@ package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
 import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
-import net.pototskiy.apps.magemediation.api.source.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
+import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileOutputStream
@@ -17,11 +17,10 @@ class CsvOutputWorkbook(
     csvFormat: CSVFormat,
     workbookLocale: Locale = DEFAULT_LOCALE
 ) : CsvWorkbook(workbookLocale) {
-    private var sourceURL: URL = URL("file", "local", "virtual")
 
-    constructor(sourceURL: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
-            : this(FileOutputStream(sourceURL.file).writer(), csvFormat, workbookLocale) {
-        this.sourceURL = sourceURL
+    constructor(source: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
+            : this(FileOutputStream(source.file).writer(), csvFormat, workbookLocale) {
+        this.sourceURL = source
     }
 
     private var _printer: CSVPrinter = csvFormat.print(writer)
@@ -31,10 +30,6 @@ class CsvOutputWorkbook(
             throw SourceException("CSV workbook supports only sheet with name<default>")
         }
         return CsvSheet(this).also { this.sheet = it }
-    }
-
-    override fun hasSheet(sheet: String): Boolean {
-        return sheet == CSV_SHEET_NAME
     }
 
     val printer: CSVPrinter

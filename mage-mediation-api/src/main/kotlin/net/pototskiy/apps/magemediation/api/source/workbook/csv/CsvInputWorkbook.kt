@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
-import net.pototskiy.apps.magemediation.api.source.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
+import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.InputStreamReader
@@ -15,11 +15,10 @@ class CsvInputWorkbook(
     csvFormat: CSVFormat,
     workbookLocale: Locale = DEFAULT_LOCALE
 ) : CsvWorkbook(workbookLocale) {
-    private var sourceURL: URL = URL("file", "local", "virtual")
 
-    constructor(sourceURL: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
-            : this(sourceURL.openStream().reader(), csvFormat, workbookLocale) {
-        this.sourceURL = sourceURL
+    constructor(source: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
+            : this(source.openStream().reader(), csvFormat, workbookLocale) {
+        this.sourceURL = source
     }
 
     private var _parser: CSVParser = csvFormat.parse(reader)
