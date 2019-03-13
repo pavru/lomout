@@ -7,6 +7,7 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.DateType
 import net.pototskiy.apps.magemediation.api.entity.DateValue
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
+import net.pototskiy.apps.magemediation.api.entity.values.dateToString
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -77,9 +78,7 @@ internal class DateAttributeStringWriterTest {
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue)
             .isEqualTo(
-                now.toString(
-                    DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", DEFAULT_LOCALE))
-                )
+                now.dateToString(DEFAULT_LOCALE)
             )
     }
 
