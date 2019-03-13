@@ -13,10 +13,10 @@ class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
     override val type: WorkbookType
         get() = WorkbookType.EXCEL
 
-    override fun get(sheet: String): ExcelSheet =
+    override operator fun get(sheet: String): ExcelSheet =
         ExcelSheet(workbook.getSheet(sheet))
 
-    override fun get(sheet: Int): ExcelSheet =
+    override operator fun get(sheet: Int): ExcelSheet =
         ExcelSheet(workbook.getSheetAt(sheet))
 
     override fun hasSheet(sheet: String): Boolean {
