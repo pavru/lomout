@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,6 +29,6 @@ internal class NestedAttributeSheetTest {
     internal fun sheetNameTest() {
         val workbook = NestedAttributeWorkbook(null, ',', null, '=', "test")
         workbook.string = "attr1=value1,attr1=value1"
-        assertThat(workbook[0].name).isEqualTo("default")
+        assertThat(workbook[0].name).isEqualTo(CSV_SHEET_NAME)
     }
 }
