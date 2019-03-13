@@ -19,11 +19,9 @@ class ExcelRow(private val row: org.apache.poi.ss.usermodel.Row) :
     override val rowNum: Int
         get() = row.rowNum
 
-    override fun get(column: Int): ExcelCell? = row.getCell(column)?.let {
-        ExcelCell(
-            it
-        )
-    }
+    override operator fun get(column: Int): ExcelCell? =
+        row.getCell(column)?.let { ExcelCell(it) }
+
     override fun countCell(): Int = if (row.lastCellNum.toInt() == -1) 0 else row.lastCellNum.toInt()
     override fun iterator(): Iterator<ExcelCell> =
         ExcelCellIterator(row)

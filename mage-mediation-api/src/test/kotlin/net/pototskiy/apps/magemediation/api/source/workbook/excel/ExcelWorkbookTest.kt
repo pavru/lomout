@@ -10,6 +10,7 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
 
+@Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class ExcelWorkbookTest {
     @Test
@@ -71,5 +72,4 @@ internal class ExcelWorkbookTest {
             listOf("21", "22", "23")
         )
     }
-
 }
