@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
@@ -26,14 +27,14 @@ class CsvOutputWorkbook(
     private var _printer: CSVPrinter = csvFormat.print(writer)
 
     override fun insertSheet(sheet: String): Sheet {
-        if (sheet != "default") {
+        if (sheet != CSV_SHEET_NAME) {
             throw SourceException("CSV workbook supports only sheet with name<default>")
         }
         return CsvSheet(this).also { this.sheet = it }
     }
 
     override fun hasSheet(sheet: String): Boolean {
-        return sheet == "default"
+        return sheet == CSV_SHEET_NAME
     }
 
     val printer: CSVPrinter

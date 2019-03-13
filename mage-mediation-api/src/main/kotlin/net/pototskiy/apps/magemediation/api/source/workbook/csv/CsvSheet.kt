@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
@@ -12,7 +13,7 @@ class CsvSheet(
     private var lastCreatedRow: CsvRow? = null
 
     override val name: String
-        get() = "default"
+        get() = CSV_SHEET_NAME
     override val workbook: Workbook
         get() = backingWorkbook
 

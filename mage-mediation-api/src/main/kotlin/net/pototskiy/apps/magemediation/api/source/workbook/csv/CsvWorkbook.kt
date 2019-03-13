@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -22,7 +23,7 @@ abstract class CsvWorkbook(
         get() = WorkbookType.CSV
 
     override fun get(sheet: String): CsvSheet {
-        if (sheet == "default") {
+        if (sheet == CSV_SHEET_NAME) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
             throw SourceException("CSV file supports only one sheet with name: \"default\"")
@@ -38,7 +39,7 @@ abstract class CsvWorkbook(
     }
 
     override fun hasSheet(sheet: String): Boolean {
-        return sheet == "default"
+        return sheet == CSV_SHEET_NAME
     }
 
     override fun iterator(): Iterator<CsvSheet> =

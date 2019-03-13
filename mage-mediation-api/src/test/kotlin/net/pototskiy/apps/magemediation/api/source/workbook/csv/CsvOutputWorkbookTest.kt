@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookFactory
 import org.apache.commons.csv.CSVFormat
@@ -18,7 +19,7 @@ internal class CsvOutputWorkbookTest {
         file.delete()
         assertThat(file.exists()).isFalse()
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
-            val sheet = workbook.insertSheet("default")
+            val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for (list in testDataForWrite) {
                 val row = sheet.insertRow(0)
                 list.forEachIndexed { c, v ->

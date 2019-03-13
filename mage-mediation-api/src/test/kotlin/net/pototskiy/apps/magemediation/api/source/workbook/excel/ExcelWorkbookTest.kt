@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.excel
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -24,7 +25,7 @@ internal class ExcelWorkbookTest {
         file.delete()
         assertThat(file.exists()).isFalse()
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
-            val sheet = workbook.insertSheet("default")
+            val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for ((rowNum, list) in testDataForWrite.withIndex()) {
                 val row = sheet.insertRow(rowNum)
                 list.forEachIndexed { c, v ->
@@ -35,7 +36,7 @@ internal class ExcelWorkbookTest {
         assertThat(file.exists()).isTrue()
         file.inputStream().use { reader ->
             HSSFWorkbook(reader).use { wb ->
-                val sheet = wb.getSheet("default")
+                val sheet = wb.getSheet(CSV_SHEET_NAME)
                 for ((rowNum, row) in sheet.withIndex()) {
                     assertThat(row.map { it.stringCellValue }).containsExactlyElementsOf(testDataForWrite[rowNum])
                 }
@@ -50,7 +51,7 @@ internal class ExcelWorkbookTest {
         file.delete()
         assertThat(file.exists()).isFalse()
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
-            val sheet = workbook.insertSheet("default")
+            val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for ((rowNum, list) in testDataForWrite.withIndex()) {
                 val row = sheet.insertRow(rowNum)
                 list.forEachIndexed { c, v ->
@@ -61,7 +62,7 @@ internal class ExcelWorkbookTest {
         assertThat(file.exists()).isTrue()
         file.inputStream().use { reader ->
             XSSFWorkbook(reader).use { wb ->
-                val sheet = wb.getSheet("default")
+                val sheet = wb.getSheet(CSV_SHEET_NAME)
                 for ((rowNum, row) in sheet.withIndex()) {
                     assertThat(row.map { it.stringCellValue }).containsExactlyElementsOf(testDataForWrite[rowNum])
                 }

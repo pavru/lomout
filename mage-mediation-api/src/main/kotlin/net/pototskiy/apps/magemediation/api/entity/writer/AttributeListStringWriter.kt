@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
+import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.nested.NestedAttributeSheet
@@ -17,7 +18,7 @@ open class AttributeListStringWriter : AttributeWriterPlugin<AttributeListType>(
         cell: Cell
     ) {
         val workbook = NestedAttributeWorkbook(quote, delimiter, valueQuote, valueDelimiter, "attributeWriter")
-        val sheet = workbook["default"] as NestedAttributeSheet
+        val sheet = workbook[CSV_SHEET_NAME] as NestedAttributeSheet
         val rows = arrayOf(sheet[0], sheet[1])
         var column = 0
         value?.value?.forEach { attr, attrValue ->
