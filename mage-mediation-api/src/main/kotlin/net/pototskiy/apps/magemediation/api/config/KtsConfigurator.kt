@@ -6,7 +6,6 @@ import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
 import kotlin.script.dependencies.ScriptContents
-import kotlin.script.dependencies.ScriptDependenciesResolver
 import kotlin.script.experimental.api.RefineScriptCompilationConfigurationHandler
 import kotlin.script.experimental.api.ResultWithDiagnostics
 import kotlin.script.experimental.api.ScriptCollectedData
@@ -18,8 +17,6 @@ import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.foundAnnotations
 import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.host.FileScriptSource
-import kotlin.script.experimental.jvm.compat.mapLegacyDiagnosticSeverity
-import kotlin.script.experimental.jvm.compat.mapLegacyScriptPosition
 import kotlin.script.experimental.jvm.updateClasspath
 
 @Suppress("ReturnCount", "TooGenericExceptionCaught")
@@ -48,9 +45,7 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
             resolver.resolve(
                 scriptContents,
                 emptyMap(),
-                { severity, message, position ->
-                    report(context, diagnostics, severity, message, position)
-                },
+                { _, _, _ -> },
                 null
             ).get()?.classpath?.toList()
         } catch (e: Throwable) {
@@ -76,22 +71,5 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
                 FileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
             } ?: emptyList()
         }
-    }
-
-    private fun report(
-        context: ScriptConfigurationRefinementContext,
-        diagnostics: MutableList<ScriptDiagnostic>,
-        severity: ScriptDependenciesResolver.ReportSeverity,
-        message: String,
-        position: ScriptContents.Position?
-    ) {
-        diagnostics.add(
-            ScriptDiagnostic(
-                message,
-                mapLegacyDiagnosticSeverity(severity),
-                context.script.locationId,
-                mapLegacyScriptPosition(position)
-            )
-        )
     }
 }
