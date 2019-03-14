@@ -12,6 +12,7 @@ import net.pototskiy.apps.magemediation.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineData
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollection
 import net.pototskiy.apps.magemediation.api.config.mediator.ProductionLine
+import net.pototskiy.apps.magemediation.api.config.mediator.ProductionLine.LineType
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
@@ -32,7 +33,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManager) {
+class ProductionLineExecutor(val entityTypeManager: EntityTypeManager) {
 
     private val pipelineDataCache = LRUMap<Int, PipelineData>(maxCacheSize, initialCacheSize)
     private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
@@ -45,17 +46,8 @@ class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManag
         try {
             runBlocking {
                 @Suppress("UNCHECKED_CAST")
-                val targetEntityClass = line.outputEntity
-                // TODO: 23.02.2019 remove
-//                    EntityClass.getOrRegisterClass(
-//                    EntityClass(
-//                        line.outputEntity.name,
-//                        SourceEntity,
-//                        line.outputEntity.attributes,
-//                        line.outputEntity.open
-//                    )
-//                ) as EntityClass<PersistentSourceEntity>
-                val entityUpdater = EntityUpdater(targetEntityClass)
+                val targetEntityType = line.outputEntity
+                val entityUpdater = EntityUpdater(targetEntityType)
                 val pipeline = PipelineExecutor(
                     entityTypeManager,
                     line.pipeline,
@@ -64,7 +56,11 @@ class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManag
                     pipelineDataCache
                 )
                 createTopPipelineSet(line)
-                val (from, where, columns) = mainQuery(line)
+                val (from, where, columns) = if (line.lineType == LineType.CROSS) {
+                    crossMainQuery(line)
+                } else {
+                    unionMainQuery(line)
+                }
                 val inputChannel: Channel<PipelineDataCollection> = Channel()
                 jobs.add(launch {
                     pipeline.execute(inputChannel).consumeEach {
@@ -123,7 +119,25 @@ class UnionProductionLineExecutor(private val entityTypeManager: EntityTypeManag
         }
     }
 
-    private fun mainQuery(line: ProductionLine): Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
+    private fun crossMainQuery(line: ProductionLine): Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
+        val startTable = DbEntityTable.alias("start_table")
+        var from: ColumnSet = startTable
+        var where = Op.build {
+            startTable[DbEntityTable.entityType] eq line.inputEntities.first().entity
+        }
+        line.inputEntities.first().filter?.let { where = where.and(it.where(startTable)) }
+        val columns = mutableListOf(startTable[DbEntityTable.id])
+        line.inputEntities.drop(1).forEachIndexed { i, entity ->
+            val alias = DbEntityTable.alias("source_entity_$i")
+            from = from.crossJoin(alias)
+            where = where.and(Op.build { alias[DbEntityTable.entityType] eq entity.entity })
+            entity.filter?.let { where = where.and(it.where(alias)) }
+            columns.add(alias[DbEntityTable.id])
+        }
+        return Triple(from, where, columns)
+    }
+
+    private fun unionMainQuery(line: ProductionLine): Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
         val from: ColumnSet = PipelineSets
         val where = Op.build { PipelineSets.setID eq line.pipeline.pipelineID }
         val columns = mutableListOf(PipelineSets.entityID)
