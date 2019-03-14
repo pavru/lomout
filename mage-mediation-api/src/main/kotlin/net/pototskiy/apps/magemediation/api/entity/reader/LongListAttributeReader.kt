@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.LongListType
-import net.pototskiy.apps.magemediation.api.entity.LongListValue
-import net.pototskiy.apps.magemediation.api.entity.LongValue
+import net.pototskiy.apps.magemediation.api.entity.LongType
 import net.pototskiy.apps.magemediation.api.entity.values.stringToLong
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
@@ -28,12 +27,12 @@ open class LongListAttributeReader : AttributeReaderPlugin<LongListType>() {
                     .parse(reader)
                     .records
                     .map { it.toList() }.flatten()
-                    .map { LongValue(it.stringToLong(locale.createLocale())) }
+                    .map { LongType(it.stringToLong(locale.createLocale())) }
             }
-            LongListValue(listValue)
+            LongListType(listValue)
         }
         CellType.BLANK -> null
-        CellType.LONG -> LongListValue(listOf(LongValue(input.longValue)))
+        CellType.LONG -> LongListType(listOf(LongType(input.longValue)))
         else -> throw PluginException(
             "Reading long list from cell type<${input.cellType}> is not supported, " +
                     "attribute<${attribute.name}:${attribute.valueType.simpleName}>"

@@ -10,7 +10,7 @@ class EntityUpdater(private val entityType: EntityType) {
 
     fun update(data: Map<AnyTypeAttribute, Type?>) {
         var entity = DbEntity.getEntitiesByAttributes(entityType, data, true).firstOrNull()
-        val filteredData = data.filterNot { it.key.isSynthetic || it.key.valueType is AttributeListType }
+        val filteredData = data.filterNot { it.key.isSynthetic || it.key.valueType == AttributeListType::class }
         entity?.wasUnchanged()
         if (entity == null) {
             @Suppress("UNCHECKED_CAST")

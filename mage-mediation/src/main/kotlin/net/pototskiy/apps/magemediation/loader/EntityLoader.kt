@@ -9,9 +9,8 @@ import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
-import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
 import net.pototskiy.apps.magemediation.api.entity.AttributeReader
-import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.Field
 import net.pototskiy.apps.magemediation.api.source.FieldAttributeMap
@@ -139,7 +138,7 @@ class EntityLoader(
         val keyFields = fields.filter { it.value.key }
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
-            if (v == null || (v is StringValue && v.value.isBlank())) {
+            if (v == null || (v is StringType && v.value.isBlank())) {
                 throw LoaderException("Attribute<${attr.name}> is key but has no value")
             }
         }
@@ -159,9 +158,9 @@ class EntityLoader(
             ) {
                 readNestedField(field.parent!!, fields[field.parent!!]!!)
             }
-            val attrCell = (data[parentAttr] as AttributeListValue).value[attribute.name]
-            if (attrCell == null && !attribute.nullable && attribute.valueType !is AttributeListType) {
-                throw SourceException("Attribute<${attribute.name}> is not nullable there is no data for it")
+            val attrCell = (data[parentAttr] as AttributeListType).value[attribute.name]
+            if (attrCell == null && !attribute.nullable && attribute.valueType != AttributeListType::class) {
+                throw SourceException("Attribute<${attribute.name}> is not nullable and there is no data for it")
             } else if (attrCell == null) {
                 data[attribute] = null
                 return

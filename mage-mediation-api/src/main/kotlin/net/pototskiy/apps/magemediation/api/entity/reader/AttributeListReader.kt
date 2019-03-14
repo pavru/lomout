@@ -2,7 +2,6 @@ package net.pototskiy.apps.magemediation.api.entity.reader
 
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
-import net.pototskiy.apps.magemediation.api.entity.AttributeListValue
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -28,7 +27,7 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                 attrs.string = input.stringValue
                 val names = attrs[0][0]!!
                 val values = attrs[0][1]!!
-                AttributeListValue(
+                AttributeListType(
                     names.mapIndexedNotNull { c, cell ->
                         if (cell != null) {
                             cell.stringValue to values.getOrEmptyCell(c)

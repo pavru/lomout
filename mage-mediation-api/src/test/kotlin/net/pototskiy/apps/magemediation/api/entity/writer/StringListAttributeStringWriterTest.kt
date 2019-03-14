@@ -5,8 +5,7 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringListType
-import net.pototskiy.apps.magemediation.api.entity.StringListValue
-import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -52,7 +51,7 @@ internal class StringListAttributeStringWriterTest {
                 quote = null
             })
         }
-        val value = StringListValue(listOf(StringValue("test1"), StringValue("test2")))
+        val value = StringListType(listOf(StringType("test1"), StringType("test2")))
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<StringListType>).write(value, cell)
@@ -69,7 +68,7 @@ internal class StringListAttributeStringWriterTest {
                 quote = '\''
             })
         }
-        val value = StringListValue(listOf(StringValue("test1"), StringValue("test2,")))
+        val value = StringListType(listOf(StringType("test1"), StringType("test2,")))
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<StringListType>).write(value, cell)

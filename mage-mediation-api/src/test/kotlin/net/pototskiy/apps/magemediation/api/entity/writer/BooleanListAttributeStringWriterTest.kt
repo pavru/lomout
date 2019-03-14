@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
-import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
-import net.pototskiy.apps.magemediation.api.entity.BooleanValue
+import net.pototskiy.apps.magemediation.api.entity.BooleanType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -52,7 +51,7 @@ internal class BooleanListAttributeStringWriterTest {
                 quote = null
             })
         }
-        val value = BooleanListValue(listOf(BooleanValue(true), BooleanValue(false)))
+        val value = BooleanListType(listOf(BooleanType(true), BooleanType(false)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<BooleanListType>).write(value, cell)
@@ -69,7 +68,7 @@ internal class BooleanListAttributeStringWriterTest {
                 quote = '\''
             })
         }
-        val value = BooleanListValue(listOf(BooleanValue(true), BooleanValue(false)))
+        val value = BooleanListType(listOf(BooleanType(true), BooleanType(false)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<BooleanListType>).write(value, cell)

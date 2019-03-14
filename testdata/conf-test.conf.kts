@@ -27,7 +27,7 @@ config {
         entities {
             entity("test-entity-1", false) {
                 attribute<StringType>("string-attr-1") {
-                    reader { _, _ -> StringValue("test reader function") }
+                    reader { _, _ -> StringType("test reader function") }
                 }
                 attribute<TextType>("text-attr-1") { key() }
                 attribute<BooleanType>("boolean-attr-1") { nullable() }

@@ -12,7 +12,7 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
 
     override fun build(entity: DbEntity): StringType? {
         val pathFromCache = pathCache[entity.id.value]?.get()
-        if (pathFromCache != null) return StringValue(pathFromCache)
+        if (pathFromCache != null) return StringType(pathFromCache)
         val eType = entityTypeManager.getEntityType(eTypeName)
             ?: throw PluginException("There is no group relations information, entity<$eTypeName>")
         val path = mutableListOf<String>()
@@ -25,11 +25,11 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
         var name = relationEntity.readAttribute(nameAttr)?.value as? String
         while (name != null) {
             path.add(name)
-            val parent = relationEntity.readAttribute(parentAttr) as? LongValue ?: break
+            val parent = relationEntity.readAttribute(parentAttr) as? LongType ?: break
             relationEntity = DbEntity.getByAttribute(eType, codeAttr, parent).firstOrNull() ?: break
             name = relationEntity.readAttribute(nameAttr)?.value as? String
         }
-        return StringValue("$root${path.reversed().joinToString(separator)}").also {
+        return StringType("$root${path.reversed().joinToString(separator)}").also {
             pathCache[entity.id.value] = WeakReference(it.value)
         }
     }

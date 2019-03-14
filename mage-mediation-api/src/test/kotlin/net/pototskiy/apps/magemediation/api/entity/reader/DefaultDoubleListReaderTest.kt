@@ -5,8 +5,7 @@ import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.DoubleListType
-import net.pototskiy.apps.magemediation.api.entity.DoubleListValue
-import net.pototskiy.apps.magemediation.api.entity.DoubleValue
+import net.pototskiy.apps.magemediation.api.entity.DoubleType
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
@@ -70,9 +69,9 @@ internal class DefaultDoubleListReaderTest {
         xlsTestDataCell.setCellValue("1.1, 2.2,3.3")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            DoubleListValue(
+            DoubleListType(
                 listOf(
-                    DoubleValue(1.1), DoubleValue(2.2), DoubleValue(3.3)
+                    DoubleType(1.1), DoubleType(2.2), DoubleType(3.3)
                 )
             )
         )

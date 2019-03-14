@@ -2,8 +2,7 @@ package net.pototskiy.apps.magemediation.api.entity.reader
 
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.StringListType
-import net.pototskiy.apps.magemediation.api.entity.StringListValue
-import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -25,9 +24,9 @@ open class StringListAttributeReader : AttributeReaderPlugin<StringListType>() {
                         .parse(reader)
                         .records
                         .map { it.toList() }.flatten()
-                        .map { StringValue(it) }
+                        .map { StringType(it) }
                 }
-                StringListValue(listValue)
+                StringListType(listValue)
             }
             CellType.BLANK -> null
             else -> throw SourceException(

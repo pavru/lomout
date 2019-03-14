@@ -7,8 +7,7 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.LongListType
-import net.pototskiy.apps.magemediation.api.entity.LongListValue
-import net.pototskiy.apps.magemediation.api.entity.LongValue
+import net.pototskiy.apps.magemediation.api.entity.LongType
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -71,9 +70,9 @@ internal class DefaultLongListReaderTest {
         xlsTestDataCell.setCellValue("11, 22,33")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            LongListValue(
+            LongListType(
                 listOf(
-                    LongValue(11L), LongValue(22L), LongValue(33L)
+                    LongType(11L), LongType(22L), LongType(33L)
                 )
             )
         )

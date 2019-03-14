@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.DoubleListType
-import net.pototskiy.apps.magemediation.api.entity.DoubleListValue
-import net.pototskiy.apps.magemediation.api.entity.DoubleValue
+import net.pototskiy.apps.magemediation.api.entity.DoubleType
 import net.pototskiy.apps.magemediation.api.entity.values.stringToDouble
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
@@ -29,9 +28,9 @@ open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
                         .parse(reader)
                         .records
                         .map { it.toList() }.flatten()
-                        .map { DoubleValue(it.stringToDouble(locale.createLocale())) }
+                        .map { DoubleType(it.stringToDouble(locale.createLocale())) }
                 }
-                DoubleListValue(listValue)
+                DoubleListType(listValue)
             }
             CellType.BLANK -> null
             else -> throw PluginException(

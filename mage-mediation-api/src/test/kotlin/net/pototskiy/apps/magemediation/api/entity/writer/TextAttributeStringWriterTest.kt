@@ -5,7 +5,6 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.TextType
-import net.pototskiy.apps.magemediation.api.entity.TextValue
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -46,7 +45,7 @@ internal class TextAttributeStringWriterTest {
         val attr = typeManager.createAttribute("attr", TextType::class)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<TextType>).write(TextValue("test"), cell)
+        (attr.writer as AttributeWriter<TextType>).write(TextType("test"), cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("test")
     }
