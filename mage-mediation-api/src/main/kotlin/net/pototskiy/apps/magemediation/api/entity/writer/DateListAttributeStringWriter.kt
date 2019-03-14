@@ -3,7 +3,6 @@ package net.pototskiy.apps.magemediation.api.entity.writer
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.DateListType
-import net.pototskiy.apps.magemediation.api.entity.DateListValue
 import net.pototskiy.apps.magemediation.api.entity.values.dateToString
 import net.pototskiy.apps.magemediation.api.entity.values.datetimeToString
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
@@ -21,7 +20,7 @@ open class DateListAttributeStringWriter : AttributeWriterPlugin<DateListType>()
         value: DateListType?,
         cell: Cell
     ) {
-        (value as? DateListValue)?.let { list ->
+        value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
                     CSVFormat.RFC4180

@@ -5,7 +5,6 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.BooleanType
-import net.pototskiy.apps.magemediation.api.entity.BooleanValue
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -51,14 +50,14 @@ internal class BooleanAttributeStringWriterTest {
                 locale = "en_US"
             })
         }
-        val value = BooleanValue(true)
+        val value = BooleanType(true)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<BooleanType>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("1")
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<BooleanType>).write(BooleanValue(false), cell)
+        (attr.writer as AttributeWriter<BooleanType>).write(BooleanType(false), cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("0")
     }

@@ -5,6 +5,7 @@ import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.Type.Companion.TYPE_NOT_SUPPORT_SQL
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
+import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.DateColumnType
 import org.jetbrains.exposed.sql.DoubleColumnType
@@ -91,130 +92,144 @@ sealed class MapType<K, V>(override val value: Map<K, V>, override val isTransie
     override fun toString(): String = value.toString()
 }
 
-abstract class BooleanType(
+class BooleanType(
     override val value: Boolean,
-    override val isTransient: Boolean = false,
-    override val sqlType: KClass<BooleanColumnType> = BooleanColumnType::class
+    override val isTransient: Boolean = false
 ) : Type(), Comparable<BooleanType> {
+    override val sqlType: KClass<BooleanColumnType> = BooleanColumnType::class
     override fun toString(): String = value.toString()
     override fun compareTo(other: BooleanType): Int = value.compareTo(other.value)
 }
 
-abstract class LongType(
+open class LongType(
     override val value: Long,
-    override val isTransient: Boolean = false,
+    override val isTransient: Boolean = false
+) : Type(), Comparable<LongType> {
     override val sqlType: KClass<LongColumnType> = LongColumnType::class
-) :
-    Type(), Comparable<LongType> {
     override fun toString(): String = value.toString()
     override fun compareTo(other: LongType): Int = value.compareTo(other.value)
 }
 
-abstract class DoubleType(
+class DoubleType(
     override val value: Double,
-    override val isTransient: Boolean = false,
+    override val isTransient: Boolean = false
+) : Type(), Comparable<DoubleType> {
     override val sqlType: KClass<DoubleColumnType> = DoubleColumnType::class
-) :
-    Type(), Comparable<DoubleType> {
     override fun toString(): String = value.toString()
     override fun compareTo(other: DoubleType): Int = value.compareTo(other.value)
 }
 
-abstract class StringType(
+class StringType(
     override val value: String,
-    override val isTransient: Boolean = false,
+    override val isTransient: Boolean = false
+) : Type(), Comparable<StringType>, CharSequence by value {
     override val sqlType: KClass<VarCharColumnType> = VarCharColumnType::class
-) :
-    Type(), Comparable<StringType>, CharSequence by value {
     override fun toString(): String = value
     override fun compareTo(other: StringType): Int = value.compareTo(other.value)
 }
 
-abstract class DateType(
+class DateType(
     override val value: DateTime,
-    override val isTransient: Boolean = false,
+    override val isTransient: Boolean = false
+) : Type(), ReadableDateTime by value {
     override val sqlType: KClass<DateColumnType> = DateColumnType::class
-) :
-    Type(), ReadableDateTime by value {
     override fun toString(): String = value.toString()
 }
 
-abstract class DateTimeType(
+class DateTimeType(
     override val value: DateTime,
-    override val isTransient: Boolean = false,
+    override val isTransient: Boolean = false
+) : Type(), ReadableDateTime by value {
     override val sqlType: KClass<DateColumnType> = DateColumnType::class
-) :
-    Type(), ReadableDateTime by value {
     override fun toString(): String = value.toString()
 }
 
-abstract class TextType(
+class TextType(
     override val value: String,
-    override val isTransient: Boolean = false,
+    override val isTransient: Boolean = false
+) : Type(), Comparable<TextType>, CharSequence by value {
     override val sqlType: KClass<TextColumnType> = TextColumnType::class
-) :
-    Type(), Comparable<TextType>, CharSequence by value {
     override fun toString(): String = value
     override fun compareTo(other: TextType): Int = value.compareTo(other.value)
 }
 
-abstract class BooleanListType(
+class BooleanListType(
     value: List<BooleanType>,
-    isTransient: Boolean = false,
+    isTransient: Boolean = false
+) : ListType<BooleanType>(value, isTransient) {
     override val sqlType: KClass<BooleanColumnType> = BooleanColumnType::class
-) :
-    ListType<BooleanType>(value, isTransient)
+}
 
-abstract class LongListType(
+class LongListType(
     value: List<LongType>,
-    isTransient: Boolean,
+    isTransient: Boolean = false
+) : ListType<LongType>(value, isTransient) {
     override val sqlType: KClass<LongColumnType> = LongColumnType::class
-) :
-    ListType<LongType>(value, isTransient)
+}
 
-abstract class DoubleListType(
+class DoubleListType(
     value: List<DoubleType>,
-    isTransient: Boolean = false,
+    isTransient: Boolean = false
+) : ListType<DoubleType>(value, isTransient) {
     override val sqlType: KClass<DoubleColumnType> = DoubleColumnType::class
-) :
-    ListType<DoubleType>(value, isTransient)
+}
 
-abstract class StringListType(
+class StringListType(
     value: List<StringType>,
-    isTransient: Boolean = false,
+    isTransient: Boolean = false
+) : ListType<StringType>(value, isTransient) {
     override val sqlType: KClass<VarCharColumnType> = VarCharColumnType::class
-) :
-    ListType<StringType>(value, isTransient)
+}
 
-abstract class TextListType(
+class TextListType(
     value: List<TextType>,
-    isTransient: Boolean = false,
+    isTransient: Boolean = false
+) : ListType<TextType>(value, isTransient) {
     override val sqlType: KClass<TextColumnType> = TextColumnType::class
-) :
-    ListType<TextType>(value, isTransient)
+}
 
-abstract class DateListType(
+class DateListType(
     value: List<DateType>,
-    isTransient: Boolean = false,
+    isTransient: Boolean = false
+) : ListType<DateType>(value, isTransient) {
     override val sqlType: KClass<DateColumnType> = DateColumnType::class
-) :
-    ListType<DateType>(value, isTransient)
+}
 
-abstract class DateTimeListType(
+class DateTimeListType(
     value: List<DateTimeType>,
-    isTransient: Boolean = false,
+    isTransient: Boolean = false
+) : ListType<DateTimeType>(value, isTransient) {
     override val sqlType: KClass<DateColumnType> = DateColumnType::class
-) :
-    ListType<DateTimeType>(value, isTransient)
+}
 
 @Generated
 class NoSqlColumn(override var nullable: Boolean = true) : IColumnType {
     override fun sqlType(): String = "no_sql_type"
 }
 
-abstract class AttributeListType(
+class AttributeListType(
     value: Map<String, Cell>,
-    isTransient: Boolean = true,
+    isTransient: Boolean = true
+) : MapType<String, Cell>(value, isTransient) {
     override val sqlType: KClass<NoSqlColumn> = NoSqlColumn::class
-) :
-    MapType<String, Cell>(value, isTransient)
+}
+
+fun Type.toList(): ListType<*> {
+    return when (this) {
+        is BooleanListType,
+        is LongListType,
+        is DoubleListType,
+        is StringListType,
+        is TextListType,
+        is DateListType,
+        is DateTimeListType,
+        is AttributeListType -> throw SourceException("Value already is list")
+        is BooleanType -> BooleanListType(listOf(this))
+        is LongType -> LongListType(listOf(this))
+        is DoubleType -> DoubleListType(listOf(this))
+        is StringType -> StringListType(listOf(this))
+        is DateType -> DateListType(listOf(this))
+        is DateTimeType -> DateTimeListType(listOf(this))
+        is TextType -> TextListType(listOf(this))
+    }
+}

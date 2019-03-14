@@ -8,7 +8,7 @@ import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.database.EntityStatus
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
-import net.pototskiy.apps.magemediation.api.entity.StringValue
+import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -153,7 +153,7 @@ class DataLoadingTest {
                     val skuAttr = typeManager.getEntityAttribute(entityType, "sku")!!
                     val entity = DbEntity.getEntitiesByAttributes(
                         entityType,
-                        mapOf(skuAttr to StringValue("2")),
+                        mapOf(skuAttr to StringType("2")),
                         true
                     ).first()
                     @Suppress("MagicNumber")

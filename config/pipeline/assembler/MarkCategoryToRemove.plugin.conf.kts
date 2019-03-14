@@ -8,7 +8,7 @@ class MarkCategoryToRemove : PipelineAssemblerPlugin() {
                 ?: throw PluginException("Can not find attribute<remove_flag>")
             return mapOf(
                 idAttr to category["entity_id"],
-                removeAttr to BooleanValue(true)
+                removeAttr to BooleanType(true)
             )
         } catch (e: Exception) {
             throw PluginException(e.message, e)

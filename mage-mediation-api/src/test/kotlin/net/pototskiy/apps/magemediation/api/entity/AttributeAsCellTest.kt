@@ -78,7 +78,7 @@ internal class AttributeAsCellTest {
                 })
             },
             false,
-            BooleanValue(false),
+            BooleanType(false),
             CellType.BOOL,
             { it.booleanValue },
             false.toString(),
@@ -91,7 +91,7 @@ internal class AttributeAsCellTest {
                 })
             },
             111L,
-            LongValue(111L),
+            LongType(111L),
             CellType.LONG,
             { it.longValue },
             111L.toString(),
@@ -109,7 +109,7 @@ internal class AttributeAsCellTest {
                         })
                     },
                     true,
-                    BooleanValue(true),
+                    BooleanType(true),
                     CellType.BOOL,
                     { it.booleanValue },
                     true.toString(),
@@ -124,7 +124,7 @@ internal class AttributeAsCellTest {
                         })
                     },
                     11.1,
-                    DoubleValue(11.1),
+                    DoubleType(11.1),
                     CellType.DOUBLE,
                     { it.doubleValue },
                     11.1.toString(),
@@ -133,7 +133,7 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr5", StringType::class),
                     "test value",
-                    StringValue("test value"),
+                    StringType("test value"),
                     CellType.STRING,
                     { it.stringValue },
                     "test value",
@@ -142,7 +142,7 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr6", TextType::class),
                     "test value",
-                    TextValue("test value"),
+                    TextType("test value"),
                     CellType.STRING,
                     { it.stringValue },
                     "test value",
@@ -155,7 +155,7 @@ internal class AttributeAsCellTest {
                         })
                     },
                     HSSFDateUtil.getExcelDate(dateVal.toDate()),
-                    DateValue(dateVal),
+                    DateType(dateVal),
                     CellType.DOUBLE,
                     { it.doubleValue },
                     dateVal.toString(),
@@ -168,7 +168,7 @@ internal class AttributeAsCellTest {
                         })
                     },
                     HSSFDateUtil.getExcelDate(dateTimeVal.toDate()),
-                    DateTimeValue(dateTimeVal),
+                    DateTimeType(dateTimeVal),
                     CellType.DOUBLE,
                     { it.doubleValue },
                     dateTimeVal.toString(),
@@ -177,7 +177,7 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr9", BooleanListType::class),
                     "1,0",
-                    BooleanListValue(listOf(BooleanValue(true), BooleanValue(false))),
+                    BooleanListType(listOf(BooleanType(true), BooleanType(false))),
                     CellType.STRING,
                     { it.stringValue },
                     "1,0",
@@ -186,7 +186,7 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr10", LongListType::class),
                     "1,2,3",
-                    LongListValue(listOf(LongValue(1), LongValue(2), LongValue(3))),
+                    LongListType(listOf(LongType(1), LongType(2), LongType(3))),
                     CellType.STRING,
                     { it.stringValue },
                     "1,2,3",
@@ -195,7 +195,7 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr11", DoubleListType::class),
                     "1.1,2.2",
-                    DoubleListValue(listOf(DoubleValue(1.1), DoubleValue(2.2))),
+                    DoubleListType(listOf(DoubleType(1.1), DoubleType(2.2))),
                     CellType.STRING,
                     { it.stringValue },
                     "1.1,2.2",
@@ -204,7 +204,7 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr12", StringListType::class),
                     "\"str1\"\"\",\"str2\"\"\"",
-                    StringListValue(listOf(StringValue("str1\""), StringValue("str2\""))),
+                    StringListType(listOf(StringType("str1\""), StringType("str2\""))),
                     CellType.STRING,
                     { it.stringValue },
                     "\"str1\"\"\",\"str2\"\"\"",
@@ -214,7 +214,7 @@ internal class AttributeAsCellTest {
                     typeManager.createAttribute("attr13", DateListType::class),
                     "${dateVal.toString(DateTimeFormat.forPattern("d.M.yy"))}," +
                             dateVal.toString(DateTimeFormat.forPattern("d.M.yy")),
-                    DateListValue(listOf(DateValue(dateVal), DateValue(dateVal))),
+                    DateListType(listOf(DateType(dateVal), DateType(dateVal))),
                     CellType.STRING,
                     { it.stringValue },
                     "$dateVal,$dateVal",
@@ -224,7 +224,7 @@ internal class AttributeAsCellTest {
                     typeManager.createAttribute("attr14", DateTimeListType::class),
                     "${dateTimeVal.toString(DateTimeFormat.forPattern("d.M.yy H:m"))}," +
                             dateTimeVal.toString(DateTimeFormat.forPattern("d.M.yy H:m")),
-                    DateTimeListValue(listOf(DateTimeValue(dateTimeVal), DateTimeValue(dateTimeVal))),
+                    DateTimeListType(listOf(DateTimeType(dateTimeVal), DateTimeType(dateTimeVal))),
                     CellType.STRING,
                     { it.stringValue },
                     "$dateTimeVal,$dateTimeVal",
@@ -233,15 +233,15 @@ internal class AttributeAsCellTest {
                 TestData(
                     typeManager.createAttribute("attr15", AttributeListType::class),
                     "sAttr1=false,sAttr2=111",
-                    AttributeListValue(
+                    AttributeListType(
                         mapOf(
                             stringAttr1.name to AttributeAsCell(
                                 stringAttr1,
-                                StringValue("false")
+                                StringType("false")
                             ),
                             stringAttr2.name to AttributeAsCell(
                                 stringAttr2,
-                                StringValue("111")
+                                StringType("111")
                             )
                         )
                     ),

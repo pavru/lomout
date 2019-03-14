@@ -5,8 +5,7 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.LongListType
-import net.pototskiy.apps.magemediation.api.entity.LongListValue
-import net.pototskiy.apps.magemediation.api.entity.LongValue
+import net.pototskiy.apps.magemediation.api.entity.LongType
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -52,7 +51,7 @@ internal class LongListAttributeStringWriterTest {
                 quote = null
             })
         }
-        val value = LongListValue(listOf(LongValue(11), LongValue(33)))
+        val value = LongListType(listOf(LongType(11), LongType(33)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<LongListType>).write(value, cell)
@@ -69,7 +68,7 @@ internal class LongListAttributeStringWriterTest {
                 quote = '\''
             })
         }
-        val value = LongListValue(listOf(LongValue(11), LongValue(33)))
+        val value = LongListType(listOf(LongType(11), LongType(33)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<LongListType>).write(value, cell)

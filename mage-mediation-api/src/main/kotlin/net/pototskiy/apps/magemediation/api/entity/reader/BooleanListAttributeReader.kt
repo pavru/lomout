@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
-import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
-import net.pototskiy.apps.magemediation.api.entity.BooleanValue
+import net.pototskiy.apps.magemediation.api.entity.BooleanType
 import net.pototskiy.apps.magemediation.api.entity.values.stringToBoolean
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
@@ -29,9 +28,9 @@ open class BooleanListAttributeReader : AttributeReaderPlugin<BooleanListType>()
                         .parse(reader)
                         .records
                         .map { it.toList() }.flatten()
-                        .map { BooleanValue(it.stringToBoolean(locale.createLocale())) }
+                        .map { BooleanType(it.stringToBoolean(locale.createLocale())) }
                 }
-                BooleanListValue(listValue)
+                BooleanListType(listValue)
             }
             CellType.BLANK -> null
             else -> throw PluginException(

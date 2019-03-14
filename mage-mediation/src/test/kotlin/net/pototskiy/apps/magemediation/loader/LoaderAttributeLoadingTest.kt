@@ -8,19 +8,13 @@ import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.BooleanType
-import net.pototskiy.apps.magemediation.api.entity.BooleanValue
 import net.pototskiy.apps.magemediation.api.entity.DateTimeType
-import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
 import net.pototskiy.apps.magemediation.api.entity.DateType
-import net.pototskiy.apps.magemediation.api.entity.DateValue
 import net.pototskiy.apps.magemediation.api.entity.DoubleType
-import net.pototskiy.apps.magemediation.api.entity.DoubleValue
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.LongType
-import net.pototskiy.apps.magemediation.api.entity.LongValue
 import net.pototskiy.apps.magemediation.api.entity.StringType
-import net.pototskiy.apps.magemediation.api.entity.StringValue
 import net.pototskiy.apps.magemediation.api.entity.get
 import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookFactory
@@ -175,8 +169,8 @@ class LoaderAttributeLoadingTest {
         val attr = attr("string_list")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
-            assertThat(entity.data[attr]?.value as List<StringValue>)
-                .containsExactlyElementsOf((i + 1..i + 3).map { StringValue("val$it") })
+            assertThat(entity.data[attr]?.value as List<StringType>)
+                .containsExactlyElementsOf((i + 1..i + 3).map { StringType("val$it") })
         }
     }
 
@@ -191,7 +185,7 @@ class LoaderAttributeLoadingTest {
             assertThat(sku).isNotNull()
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<BooleanType>)
-                .containsExactlyElementsOf((0..2).toList().map { BooleanValue(((sku!! - 1) and (4 shr it)) != 0) })
+                .containsExactlyElementsOf((0..2).toList().map { BooleanType(((sku!! - 1) and (4 shr it)) != 0) })
         }
     }
 
@@ -204,7 +198,7 @@ class LoaderAttributeLoadingTest {
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<LongType>)
-                .containsExactlyElementsOf((10..12).toList().map { LongValue((it + i + 1).toLong()) })
+                .containsExactlyElementsOf((10..12).toList().map { LongType((it + i + 1).toLong()) })
         }
     }
 
@@ -218,7 +212,7 @@ class LoaderAttributeLoadingTest {
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<DoubleType>)
                 .containsExactlyElementsOf(
-                    (10..12).map { DoubleValue((it + i + 1).toDouble() + ((it + i + 1).toDouble() / 100.0)) }
+                    (10..12).map { DoubleType((it + i + 1).toDouble() + ((it + i + 1).toDouble() / 100.0)) }
                 )
         }
     }
@@ -235,7 +229,7 @@ class LoaderAttributeLoadingTest {
                 .containsExactlyElementsOf(
                     (i + 7..i + 8)
                         .mapIndexed { j, v ->
-                            DateValue(
+                            DateType(
                                 DateTimeFormat.forPattern("d.M.yy")
                                     .parseDateTime("$v.${j % 2 + 11}.${j % 2 + 11}")
                             )
@@ -256,7 +250,7 @@ class LoaderAttributeLoadingTest {
                 .containsExactlyElementsOf(
                     (i + 7..i + 8)
                         .mapIndexed { j, v ->
-                            DateTimeValue(
+                            DateTimeType(
                                 DateTimeFormat.forPattern("d.M.yy H:m")
                                     .parseDateTime("$v.${j % 2 + 11}.${j % 2 + 11} $v:${j % 2 + 11}")
                             )
