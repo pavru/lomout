@@ -7,7 +7,7 @@ class GroupToCategoryPath : AttributeReaderPlugin<StringType>() {
                 extendedInfo,
                 extendedInfo.getAttributeOrNull("group_code")
                     ?: throw PluginException("Attribute<group_code> is not defined in entity<onec-group-extended>"),
-                LongValue(groupId)
+                LongType(groupId)
             ).firstOrNull()
             return entity?.readAttribute(
                 extendedInfo.getAttributeOrNull("magento_path")

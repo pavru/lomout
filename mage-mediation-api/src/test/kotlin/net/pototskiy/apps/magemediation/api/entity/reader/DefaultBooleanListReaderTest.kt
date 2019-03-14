@@ -5,8 +5,7 @@ import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
-import net.pototskiy.apps.magemediation.api.entity.BooleanListValue
-import net.pototskiy.apps.magemediation.api.entity.BooleanValue
+import net.pototskiy.apps.magemediation.api.entity.BooleanType
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.plugable.PluginException
@@ -72,9 +71,9 @@ internal class DefaultBooleanListReaderTest {
         xlsTestDataCell.setCellValue("true,false, false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            BooleanListValue(
+            BooleanListType(
                 listOf(
-                    BooleanValue(true), BooleanValue(false), BooleanValue(false)
+                    BooleanType(true), BooleanType(false), BooleanType(false)
                 )
             )
         )
@@ -94,9 +93,9 @@ internal class DefaultBooleanListReaderTest {
         xlsTestDataCell.setCellValue("иСтина,Ложь, ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerRuRU.read(attr, inputCell)?.value).isEqualTo(
-            BooleanListValue(
+            BooleanListType(
                 listOf(
-                    BooleanValue(true), BooleanValue(false), BooleanValue(false)
+                    BooleanType(true), BooleanType(false), BooleanType(false)
                 )
             )
         )

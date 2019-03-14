@@ -16,7 +16,7 @@ class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
                     data[targetAttr] = onecGroup[targetAttr.name]
                 }
             }
-            data[target.getAttribute("remove_flag")] = BooleanValue(false)
+            data[target.getAttribute("remove_flag")] = BooleanType(false)
         } catch (e: Exception) {
             throw PluginException(e.message, e)
         }

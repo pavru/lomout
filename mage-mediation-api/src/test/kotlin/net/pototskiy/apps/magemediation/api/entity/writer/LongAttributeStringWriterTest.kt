@@ -6,7 +6,6 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.LongType
-import net.pototskiy.apps.magemediation.api.entity.LongValue
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
@@ -46,7 +45,7 @@ internal class LongAttributeStringWriterTest {
     @Test
     internal fun simpleWriteTest() {
         val attr = typeManager.createAttribute("attr", LongType::class)
-        val value = LongValue(111L)
+        val value = LongType(111L)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<LongType>).write(value, cell)

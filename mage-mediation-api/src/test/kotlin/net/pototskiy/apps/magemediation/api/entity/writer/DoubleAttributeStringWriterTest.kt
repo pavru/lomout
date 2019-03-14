@@ -5,7 +5,6 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.DoubleType
-import net.pototskiy.apps.magemediation.api.entity.DoubleValue
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -46,7 +45,7 @@ internal class DoubleAttributeStringWriterTest {
     @Test
     internal fun simpleWriteTest() {
         val attr = typeManager.createAttribute("attr", DoubleType::class)
-        val value = DoubleValue(111.222)
+        val value = DoubleType(111.222)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DoubleType>).write(value, cell)

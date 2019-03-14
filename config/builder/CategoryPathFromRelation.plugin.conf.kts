@@ -12,20 +12,20 @@ class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
 
     override fun build(entity: DbEntity): StringType? {
         val cachedPath = pathCache[entity.id.value]?.get()
-        if (cachedPath != null) return StringValue(cachedPath)
+        if (cachedPath != null) return StringType(cachedPath)
         val eType = entity.eType
         val path = mutableListOf<String>()
         var current: DbEntity? = entity
         var name = entity.readAttribute(nameAttr)?.value as String?
         while (name != null && current != null) {
             path.add(name)
-            val parentId = current.readAttribute(parentAttr) as LongValue
+            val parentId = current.readAttribute(parentAttr) as LongType
             current = current.let {
                 DbEntity.getByAttribute(eType, idAttr, parentId).firstOrNull()
             }
             name = current?.let { it.readAttribute(nameAttr)?.value as? String }
         }
-        return StringValue("$root${path.reversed().joinToString(separator)}").also {
+        return StringType("$root${path.reversed().joinToString(separator)}").also {
             pathCache[entity.id.value] = WeakReference(it.value)
         }
     }

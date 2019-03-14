@@ -5,7 +5,6 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.DateTimeType
-import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -49,7 +48,7 @@ internal class DateTimeAttributeStringWriterTest {
     internal fun simpleWriteTest() {
         val attr = typeManager.createAttribute("attr", DateTimeType::class)
         val now = DateTime.now()
-        val value = DateTimeValue(now)
+        val value = DateTimeType(now)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DateTimeType>).write(value, cell)
@@ -69,7 +68,7 @@ internal class DateTimeAttributeStringWriterTest {
             })
         }
         val now = DateTime.now()
-        val value = DateTimeValue(now)
+        val value = DateTimeType(now)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DateTimeType>).write(value, cell)

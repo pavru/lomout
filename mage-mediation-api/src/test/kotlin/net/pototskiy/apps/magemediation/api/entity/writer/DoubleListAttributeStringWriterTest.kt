@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.DoubleListType
-import net.pototskiy.apps.magemediation.api.entity.DoubleListValue
-import net.pototskiy.apps.magemediation.api.entity.DoubleValue
+import net.pototskiy.apps.magemediation.api.entity.DoubleType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -52,7 +51,7 @@ internal class DoubleListAttributeStringWriterTest {
                 quote = null
             })
         }
-        val value = DoubleListValue(listOf(DoubleValue(11.22), DoubleValue(33.44)))
+        val value = DoubleListType(listOf(DoubleType(11.22), DoubleType(33.44)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DoubleListType>).write(value, cell)
@@ -69,7 +68,7 @@ internal class DoubleListAttributeStringWriterTest {
                 quote = '\''
             })
         }
-        val value = DoubleListValue(listOf(DoubleValue(11.22), DoubleValue(33.44)))
+        val value = DoubleListType(listOf(DoubleType(11.22), DoubleType(33.44)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DoubleListType>).write(value, cell)

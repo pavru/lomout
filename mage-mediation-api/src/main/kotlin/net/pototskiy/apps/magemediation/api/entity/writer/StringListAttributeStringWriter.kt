@@ -1,7 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.writer
 
 import net.pototskiy.apps.magemediation.api.entity.StringListType
-import net.pototskiy.apps.magemediation.api.entity.StringListValue
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
@@ -15,7 +14,7 @@ open class StringListAttributeStringWriter : AttributeWriterPlugin<StringListTyp
         value: StringListType?,
         cell: Cell
     ) {
-        (value as? StringListValue)?.let { list ->
+        value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
                     CSVFormat.RFC4180

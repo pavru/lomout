@@ -3,7 +3,6 @@ package net.pototskiy.apps.magemediation.api.entity.writer
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.LongListType
-import net.pototskiy.apps.magemediation.api.entity.LongListValue
 import net.pototskiy.apps.magemediation.api.entity.values.longToString
 import net.pototskiy.apps.magemediation.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -19,7 +18,7 @@ open class LongListAttributeStringWriter : AttributeWriterPlugin<LongListType>()
         value: LongListType?,
         cell: Cell
     ) {
-        (value as? LongListValue)?.let { list ->
+        value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
                     CSVFormat.RFC4180

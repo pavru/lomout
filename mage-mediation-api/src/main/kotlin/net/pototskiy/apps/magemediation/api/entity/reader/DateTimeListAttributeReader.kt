@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.DateTimeListType
-import net.pototskiy.apps.magemediation.api.entity.DateTimeListValue
-import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
+import net.pototskiy.apps.magemediation.api.entity.DateTimeType
 import net.pototskiy.apps.magemediation.api.entity.values.stringToDateTime
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -31,13 +30,13 @@ open class DateTimeListAttributeReader : AttributeReaderPlugin<DateTimeListType>
                         .records
                         .map { it.toList() }.flatten()
                         .map { data ->
-                            DateTimeValue(
+                            DateTimeType(
                                 pattern?.let { data.stringToDateTime(it) }
                                     ?: data.stringToDateTime(locale.createLocale())
                             )
                         }
                 }
-                DateTimeListValue(listValue)
+                DateTimeListType(listValue)
             }
             CellType.BLANK -> null
             else -> throw SourceException(

@@ -4,8 +4,7 @@ import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriter
 import net.pototskiy.apps.magemediation.api.entity.AttributeWriterWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.DateTimeListType
-import net.pototskiy.apps.magemediation.api.entity.DateTimeListValue
-import net.pototskiy.apps.magemediation.api.entity.DateTimeValue
+import net.pototskiy.apps.magemediation.api.entity.DateTimeType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.values.datetimeToString
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
@@ -57,7 +56,7 @@ internal class DateTimeListAttributeStringWriterTest {
         }
         val now1 = DateTime.now()
         val now2 = DateTime.now().withFieldAdded(DurationFieldType.days(), 2)
-        val value = DateTimeListValue(listOf(DateTimeValue(now1), DateTimeValue(now2)))
+        val value = DateTimeListType(listOf(DateTimeType(now1), DateTimeType(now2)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DateTimeListType>).write(value, cell)
@@ -79,7 +78,7 @@ internal class DateTimeListAttributeStringWriterTest {
         }
         val now1 = DateTime.now()
         val now2 = DateTime.now().withFieldAdded(DurationFieldType.days(), 2)
-        val value = DateTimeListValue(listOf(DateTimeValue(now1), DateTimeValue(now2)))
+        val value = DateTimeListType(listOf(DateTimeType(now1), DateTimeType(now2)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<DateTimeListType>).write(value, cell)

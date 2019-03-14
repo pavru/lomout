@@ -26,14 +26,14 @@ internal class AttributeBuilderTest {
 
     class TestBuilder : AttributeBuilderPlugin<LongType>() {
         var returnValue: Long = 0L
-        override fun build(entity: DbEntity): LongValue? {
-            return LongValue(returnValue)
+        override fun build(entity: DbEntity): LongType? {
+            return LongType(returnValue)
         }
     }
 
     class TestReader : AttributeReaderPlugin<LongType>() {
         override fun read(attribute: Attribute<out LongType>, input: Cell): LongType? {
-            return LongValue(input.asString().toLong())
+            return LongType(input.asString().toLong())
         }
     }
 
@@ -51,11 +51,11 @@ internal class AttributeBuilderTest {
     internal fun attributeWithBuildFunctionTest() {
         val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             builder {
-                LongValue(123L)
+                LongType(123L)
             }
         }.build()
         assertThat(attr.builder).isNotNull.isInstanceOf(AttributeBuilderWithFunction::class.java)
-        assertThat(attr.builder?.build(DbEntity(EntityID(1, DbEntityTable)))).isEqualTo(LongValue(123L))
+        assertThat(attr.builder?.build(DbEntity(EntityID(1, DbEntityTable)))).isEqualTo(LongType(123L))
     }
 
     @Test
@@ -66,21 +66,21 @@ internal class AttributeBuilderTest {
             }
         }.build()
         assertThat(attr.builder).isNotNull.isInstanceOf(AttributeBuilderWithPlugin::class.java)
-        assertThat(attr.builder?.build(DbEntity(EntityID(1, DbEntityTable)))).isEqualTo(LongValue(321L))
+        assertThat(attr.builder?.build(DbEntity(EntityID(1, DbEntityTable)))).isEqualTo(LongType(321L))
     }
 
     @Test
     internal fun attributeWithReaderFunctionTest() {
         val attr = Attribute.Builder(helper, "test", LongType::class).apply {
             reader { _, _ ->
-                LongValue(234L)
+                LongType(234L)
             }
         }.build()
         assertThat(attr.reader).isNotNull.isInstanceOf(AttributeReaderWithFunction::class.java)
         @Suppress("UNCHECKED_CAST")
         assertThat(
             (attr.reader as AttributeReader<LongType>).read(attr, createCsvCell("123"))
-        ).isEqualTo(LongValue(234L))
+        ).isEqualTo(LongType(234L))
     }
 
     @Test
@@ -92,7 +92,7 @@ internal class AttributeBuilderTest {
         @Suppress("UNCHECKED_CAST")
         assertThat(
             (attr.reader as AttributeReader<LongType>).read(attr, createCsvCell("123"))
-        ).isEqualTo(LongValue(123L))
+        ).isEqualTo(LongType(123L))
     }
 
     @Test
@@ -106,7 +106,7 @@ internal class AttributeBuilderTest {
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriterWithFunction::class.java)
         assertThat(v).isZero()
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LongType>).write(LongValue(123L), createCsvCell("123"))
+        (attr.writer as AttributeWriter<LongType>).write(LongType(123L), createCsvCell("123"))
         assertThat(v).isEqualTo(123L)
     }
 
@@ -118,7 +118,7 @@ internal class AttributeBuilderTest {
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriterWithPlugin::class.java)
         assertThat(testVal).isZero()
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LongType>).write(LongValue(123L), createCsvCell("123"))
+        (attr.writer as AttributeWriter<LongType>).write(LongType(123L), createCsvCell("123"))
         assertThat(testVal).isEqualTo(123L)
     }
 
@@ -145,7 +145,7 @@ internal class AttributeBuilderTest {
             Attribute.Builder(helper, "test", LongListType::class).apply {
                 key()
                 builder {
-                    LongListValue(listOf(LongValue(123L)))
+                    LongListType(listOf(LongType(123L)))
                 }
             }.build()
         }.isInstanceOf(ConfigException::class.java)
@@ -154,7 +154,7 @@ internal class AttributeBuilderTest {
             Attribute.Builder(helper, "test", LongType::class).apply {
                 key()
                 builder {
-                    LongValue(123L)
+                    LongType(123L)
                 }
             }.build()
         }.isInstanceOf(ConfigException::class.java)
