@@ -1,6 +1,0 @@
-class MatchedCategoryProcessor : MatchedEntityProcessorPlugin() {
-
-    override fun process(entities: Map<String, MatcherEntityData>): Map<AnyTypeAttribute, Type?> {
-        TODO(NOT_IMPLEMENTED) //To change body of created functions use File | Settings | File Templates.
-    }
-}
