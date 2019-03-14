@@ -37,8 +37,4 @@ class ConfigurationBuilderFromDSL(private val configFile: File) {
         statusLog.info("Configuration loading has finished")
         return evaluatedConfig
     }
-
-    private fun createConfigExceptionMessage(e: ConfigException): String {
-        return "${e.message}"
-    }
 }
