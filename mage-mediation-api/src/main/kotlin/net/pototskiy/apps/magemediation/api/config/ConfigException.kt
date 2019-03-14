@@ -2,6 +2,9 @@
 
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.Generated
+
+@Generated
 class ConfigException : Exception {
     constructor() : super()
     constructor(message: String?) : super(message)
