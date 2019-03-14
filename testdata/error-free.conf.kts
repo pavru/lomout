@@ -1,7 +1,7 @@
 @file:DependsOn("kotlin-stdlib", "org.jetbrains.kotlin", "kotlin-stdlib", "1.3.20")
 
 config {
-    val a: Int = 100
+    @Suppress("RedundantExplicitType") val a: Int = 100
     database {
         name("test")
         server {

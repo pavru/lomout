@@ -45,7 +45,7 @@ data class ProductionLine(
         fun build(): ProductionLine {
             validatePipeline(
                 pipeline
-                    ?: throw ConfigException("Production line must have plugins.pipeline")
+                    ?: throw ConfigException("Production line must have start pipeline")
             )
             return ProductionLine(
                 lineType,
