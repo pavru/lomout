@@ -23,8 +23,6 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.parallel.Execution
@@ -39,14 +37,6 @@ import org.junit.jupiter.api.parallel.ResourceLock
 internal class MediatorBasicTest {
     private val typeManager = EntityTypeManager()
     private val helper = ConfigBuildHelper(typeManager)
-
-    @BeforeEach
-    internal fun setUp() {
-    }
-
-    @AfterEach
-    internal fun tearDown() {
-    }
 
     @Test
     internal fun complexBasicTest() {
