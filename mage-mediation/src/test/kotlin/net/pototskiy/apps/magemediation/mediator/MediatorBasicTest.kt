@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-@ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
 @Suppress("MagicNumber")
 internal class MediatorBasicTest {

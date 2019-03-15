@@ -1,9 +1,7 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.consumeEach
@@ -42,8 +40,6 @@ class PipelineExecutor(
 
     private val jobs = mutableListOf<Job>()
 
-    @ExperimentalCoroutinesApi
-    @ObsoleteCoroutinesApi
     suspend fun execute(inputData: Channel<PipelineDataCollection>): ReceiveChannel<Map<AnyTypeAttribute, Type?>> =
         GlobalScope.produce {
             val matchedData: Channel<PipelineDataCollection> = Channel()

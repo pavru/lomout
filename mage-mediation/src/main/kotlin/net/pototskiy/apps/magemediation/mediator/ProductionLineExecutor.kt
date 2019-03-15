@@ -1,8 +1,6 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.joinAll
@@ -39,8 +37,6 @@ class ProductionLineExecutor(val entityTypeManager: EntityTypeManager) {
     private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private val jobs = mutableListOf<Job>()
 
-    @ExperimentalCoroutinesApi
-    @ObsoleteCoroutinesApi
     @Suppress("TooGenericExceptionCaught", "SpreadOperator")
     fun executeLine(line: ProductionLine) {
         try {
