@@ -2,6 +2,7 @@
 
 import io.gitlab.arturbosch.detekt.detekt
 import org.gradle.plugins.ide.idea.model.Module
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -38,9 +39,6 @@ idea {
             }
         }
     }
-}
-
-kotlin {
 }
 
 sourceSets {
@@ -90,6 +88,12 @@ tasks.named<Test>("test") {
     }
 }
 
+kotlin {
+    experimental {
+        coroutines = Coroutines.ENABLE
+    }
+}
+
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         jvmTarget = "1.8"
@@ -112,8 +116,6 @@ tasks.withType(JacocoReport::class.java).all {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
-
-
 
 tasks.jar {
     manifest {
@@ -184,37 +186,10 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
 }
 
-//compileKotlin {
-//    kotlinOptions.jvmTarget = "1.8"
-//}
-//compileTestKotlin {
-//    kotlinOptions.jvmTarget = "1.8"
-//}
-
 tasks.jacocoTestReport {
     reports {
         xml.isEnabled = true
         html.isEnabled = true
-    }
-}
-
-sonarqube {
-    val coverageFiles = fileTree("$projectDir") {
-        include("build/jacoco/*.exec")
-    }
-    val javaBinaries = listOf(
-        "$projectDir/build/classes/kotlin/main"
-    )
-    val testBinaries = listOf(
-        "$projectDir/build/classes/kotlin/test"
-    )
-    properties {
-        property("sonar.sourceEncoding", "UTF-8")
-        property("sonar.java.source", "1.8")
-        property("sonar.java.binaries", javaBinaries.joinToString(","))
-        property("sonar.java.test.binaries", testBinaries.joinToString(","))
-//        property("sonar.jacoco.reportPaths", coverageFiles.joinToString(","))
-        property("sonar.coverage.jacoco.xmlReportPaths", "$projectDir/build/reports/jacoco/test/jacocoTestReport.xml")
     }
 }
 
