@@ -12,17 +12,7 @@ buildscript {
 group = "oooast-tools"
 version = "1.0-SNAPSHOT"
 
-sonarqube {
-    properties {
-        property("sonar.host.url", "https://sonarcloud.io")
-        property("sonar.login", "5c3469fb9d814033e8aaa5a0983d59e5c51f94bb")
-        property("sonar.organization", "pavru-github")
-        property("sonar.projectKey", "pavru_oooast-tools")
-        property("sonar.projectName", "oooast-tools")
-        property("sonar.projectVersion", "1.0-SNAPSHOT")
-    }
-}
-allprojects {
+subprojects {
     apply {
         plugin("java")
         plugin("jacoco")
@@ -35,6 +25,10 @@ repositories {
 }
 tasks["sonarqube"].group = "verification"
 
+jacoco {
+    toolVersion = "0.8.3"
+}
+
 task<JacocoReport>("codeCoverageReport") {
     group = "verification"
 
@@ -43,7 +37,6 @@ task<JacocoReport>("codeCoverageReport") {
     })
 
     subprojects {
-        val v = the<SourceSetContainer>()["main"]
         this@task.sourceSets(the<SourceSetContainer>()["main"])
     }
 
@@ -55,4 +48,3 @@ task<JacocoReport>("codeCoverageReport") {
         csv.isEnabled = false
     }
 }
-
