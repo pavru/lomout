@@ -119,7 +119,8 @@ class ProductionLineExecutor(val entityTypeManager: EntityTypeManager) {
         }
     }
 
-    private fun crossMainQuery(line: ProductionLine): Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
+    private fun crossMainQuery(line: ProductionLine):
+            Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
         val startTable = DbEntityTable.alias("start_table")
         var from: ColumnSet = startTable
         var where = Op.build {
@@ -137,7 +138,8 @@ class ProductionLineExecutor(val entityTypeManager: EntityTypeManager) {
         return Triple(from, where, columns)
     }
 
-    private fun unionMainQuery(line: ProductionLine): Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
+    private fun unionMainQuery(line: ProductionLine):
+            Triple<ColumnSet, Op<Boolean>, MutableList<Column<EntityID<Int>>>> {
         val from: ColumnSet = PipelineSets
         val where = Op.build { PipelineSets.setID eq line.pipeline.pipelineID }
         val columns = mutableListOf(PipelineSets.entityID)
@@ -150,7 +152,8 @@ class ProductionLineExecutor(val entityTypeManager: EntityTypeManager) {
     }
 
     companion object {
-        private const val maxCacheSize = 1000
-        private const val initialCacheSize = 300
+        private val cacheSizeProperty = System.getProperty("mediation.line.cache.size").toIntOrNull() ?: 0
+        private val maxCacheSize = if (cacheSizeProperty == 0) 1000 else cacheSizeProperty
+        private val initialCacheSize = if (cacheSizeProperty == 0) 300 else cacheSizeProperty / 2
     }
 }
