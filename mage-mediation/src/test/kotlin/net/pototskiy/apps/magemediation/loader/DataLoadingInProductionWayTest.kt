@@ -28,14 +28,14 @@ import java.io.ByteArrayOutputStream
 @DisplayName("Load data in production way")
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
-class DataLoadingInProductionWayTest {
+internal class DataLoadingInProductionWayTest {
 
     private lateinit var config: Config
     private val logOut = ByteArrayOutputStream()
     private lateinit var appender: WriterAppender
 
     @BeforeAll
-    fun initAll() {
+    internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
@@ -64,13 +64,13 @@ class DataLoadingInProductionWayTest {
     @ObsoleteCoroutinesApi
     @Test
     @DisplayName("Load data according production config")
-    fun loadDataTest() {
+    internal fun loadDataTest() {
         DataLoader.load(config)
         assertThat(logOut.toString()).isEmpty()
     }
 
     @AfterAll
-    fun finishAll() {
+    internal fun finishAll() {
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
         logger.removeAppender(appender)
         appender.stop()

@@ -31,13 +31,13 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @DisplayName("Loading entity from source file")
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
-class DataLoadingTest {
+internal class DataLoadingTest {
     private lateinit var config: Config
     private lateinit var entityType: EntityType
     private lateinit var typeManager: EntityTypeManager
 
     @BeforeAll
-    fun initAll() {
+    internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
@@ -51,17 +51,17 @@ class DataLoadingTest {
 
     @Test
     @DisplayName("There is no any loaded entity")
-    fun thereIsNoAnyLoadedEntity() {
+    internal fun thereIsNoAnyLoadedEntity() {
         assertThat(DbEntity.getEntities(entityType).count()).isZero()
     }
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @DisplayName("Load entity first time")
-    inner class FirstLoadEntityTest {
+    internal inner class FirstLoadEntityTest {
 
         @BeforeAll
-        fun initAll() {
+        internal fun initAll() {
             val load = config.loader.loads.find {
                 it.entity.name == "onec-product" &&
                         it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
@@ -72,13 +72,13 @@ class DataLoadingTest {
 
         @Test
         @DisplayName("Six entities should be loaded")
-        fun numberOfEntitiesTest() {
+        internal fun numberOfEntitiesTest() {
             assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
         }
 
         @Test
         @DisplayName("All entities should be in state CREATED/CREATED")
-        fun createdCreatedStateTest() {
+        internal fun createdCreatedStateTest() {
             DbEntity.getEntities(entityType).forEach {
                 assertThat(it.previousStatus).isEqualTo(EntityStatus.CREATED)
                 assertThat(it.currentStatus).isEqualTo(EntityStatus.CREATED)
@@ -88,9 +88,9 @@ class DataLoadingTest {
         @TestInstance(TestInstance.Lifecycle.PER_CLASS)
         @Nested
         @DisplayName("Repeat first loading with one removed and one updated entities")
-        inner class SecondLoadEntityTest {
+        internal inner class SecondLoadEntityTest {
             @BeforeAll
-            fun initAll() {
+            internal fun initAll() {
                 val load = config.loader.loads.find {
                     it.entity.name == "onec-product"
                             && it.sources.first().file.file.name.endsWith("test.attributes.xls")
@@ -105,13 +105,13 @@ class DataLoadingTest {
 
             @Test
             @DisplayName("Six entities should be loaded")
-            fun numberOfEntitiesTes() {
+            internal fun numberOfEntitiesTes() {
                 assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
             }
 
             @Test
             @DisplayName("Four entities should be in state CREATED/UNCHANGED")
-            fun createdCreatedStateTest() {
+            internal fun createdCreatedStateTest() {
                 assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.UNCHANGED
@@ -120,7 +120,7 @@ class DataLoadingTest {
 
             @Test
             @DisplayName("One entities should be in state CREATED/UPDATED")
-            fun createdUpdatedStateTest() {
+            internal fun createdUpdatedStateTest() {
                 assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.UPDATED
@@ -129,7 +129,7 @@ class DataLoadingTest {
 
             @Test
             @DisplayName("One entity should be in state CREATED/REMOVED")
-            fun createdRemovedStateTest() {
+            internal fun createdRemovedStateTest() {
                 assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.REMOVED
@@ -139,9 +139,9 @@ class DataLoadingTest {
             @Nested
             @TestInstance(TestInstance.Lifecycle.PER_CLASS)
             @DisplayName("Repeat first loading with one deleted entity")
-            inner class ThirdLoadingTest {
+            internal inner class ThirdLoadingTest {
                 @BeforeAll
-                fun initAll() {
+                internal fun initAll() {
                     val load = config.loader.loads.find {
                         it.entity.name == "onec-product" &&
                                 it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
@@ -163,7 +163,7 @@ class DataLoadingTest {
 
                 @Test
                 @DisplayName("Five entities should be loaded")
-                fun numberOfEntitiesTest() {
+                internal fun numberOfEntitiesTest() {
                     assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(5)
                 }
             }

@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Level
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.io.File
 
-class LoadingDataTestPrepare {
+internal class LoadingDataTestPrepare {
     private lateinit var config: Config
 
     init {
@@ -16,25 +16,25 @@ class LoadingDataTestPrepare {
     }
 
     @Suppress("unused")
-    fun loadConfiguration(): Config {
+    internal fun loadConfiguration(): Config {
         config = ConfigurationBuilderFromDSL(
             File(this::class.java.classLoader.getResource("test.config.kts").toURI())
         ).config
         return config
     }
 
-    fun loadConfiguration(file: String): Config {
+    internal fun loadConfiguration(file: String): Config {
         config = ConfigurationBuilderFromDSL(File(file)).config
         return config
     }
 
     @Suppress("unused")
-    fun openHSSWorkbookFromResources(name: String): HSSFWorkbook {
+    internal fun openHSSWorkbookFromResources(name: String): HSSFWorkbook {
         val testData = this::class.java.classLoader.getResourceAsStream(name)
         return HSSFWorkbook(testData)
     }
 
-    fun initDataBase(entityTypeManager: EntityTypeManager) {
+    internal fun initDataBase(entityTypeManager: EntityTypeManager) {
         initDatabase(config.database, entityTypeManager, Level.ERROR)
     }
 }
