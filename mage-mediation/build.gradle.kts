@@ -96,7 +96,9 @@ tasks.withType<KotlinCompile> {
         noReflect = false
         freeCompilerArgs = freeCompilerArgs + listOf(
             "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-            "-Xuse-experimental=kotlin.Experimental"
+            "-Xuse-experimental=kotlin.Experimental",
+            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
         )
     }
 }

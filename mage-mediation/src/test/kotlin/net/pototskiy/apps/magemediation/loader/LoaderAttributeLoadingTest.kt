@@ -43,7 +43,7 @@ import kotlin.collections.set
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
-class LoaderAttributeLoadingTest {
+internal class LoaderAttributeLoadingTest {
 
     private lateinit var config: Config
     private lateinit var skuAttr: Attribute<StringType>
@@ -54,7 +54,7 @@ class LoaderAttributeLoadingTest {
     private lateinit var typeManager: EntityTypeManager
 
     @BeforeAll
-    fun initAll() {
+    internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
@@ -84,14 +84,14 @@ class LoaderAttributeLoadingTest {
     }
 
     @BeforeEach
-    fun initEach() {
+    internal fun initEach() {
         transaction { DbEntityTable.deleteAll() }
     }
 
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Six entities should be loaded")
-    fun numberOfLoadedEntitiesTest(loadsID: String) {
+    internal fun numberOfLoadedEntitiesTest(loadsID: String) {
         loadEntities(loadsID)
         assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
     }
@@ -99,7 +99,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entities should have right group_code and group_name")
-    fun groupCodeAndNameTest(loadID: String) {
+    internal fun groupCodeAndNameTest(loadID: String) {
         loadEntities(loadID)
         DbEntity.getEntities(entityType, true).forEachIndexed { index, entity ->
             assertThat(entity.data[codeAttr]?.value as String).isEqualTo("G00${index / 3 + 1}")
@@ -109,7 +109,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entities should have description = `description` + sku")
-    fun entityDescriptionTest(loadID: String) {
+    internal fun entityDescriptionTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("description")
         DbEntity.getEntities(entityType, true).forEachIndexed { _, entity ->
@@ -121,7 +121,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity bool_val attributes should have right value")
-    fun entityBoolValTest(loadID: String) {
+    internal fun entityBoolValTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("bool_val")
         DbEntity.getEntities(entityType, true).forEach { entity ->
@@ -135,7 +135,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity date_val attributes should have right value")
-    fun entityDateValTest(loadID: String) {
+    internal fun entityDateValTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("date_val")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -150,7 +150,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity datetime_val attributes should have right value")
-    fun entityDateTimeValTest(loadID: String) {
+    internal fun entityDateTimeValTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("datetime_val")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -164,7 +164,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity string_list attributes should have right value")
-    fun entityStringListTest(loadID: String) {
+    internal fun entityStringListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("string_list")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -177,7 +177,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity bool_list attributes should have right value")
-    fun entityBoolListTest(loadID: String) {
+    internal fun entityBoolListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("bool_list")
         DbEntity.getEntities(entityType, true).forEach { entity ->
@@ -192,7 +192,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity long_list attributes should have right value")
-    fun entityLongListTest(loadID: String) {
+    internal fun entityLongListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("long_list")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -205,7 +205,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity double_list attributes should have right value")
-    fun entityDoubleListTest(loadID: String) {
+    internal fun entityDoubleListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("double_list")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -220,7 +220,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity date_list attributes should have right value")
-    fun entityDateListTest(loadID: String) {
+    internal fun entityDateListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("date_list")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -241,7 +241,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity datetime_list attributes should have right value")
-    fun entityDateTimeListTest(loadID: String) {
+    internal fun entityDateTimeListTest(loadID: String) {
         loadEntities(loadID)
         val attr = attr("datetime_list")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -262,7 +262,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity nested1 attributes should have right value")
-    fun entityNested1Test(loadID: String) {
+    internal fun entityNested1Test(loadID: String) {
         loadEntities(loadID)
         val attr = attr("nested1")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->
@@ -273,7 +273,7 @@ class LoaderAttributeLoadingTest {
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity nested1 attributes should have right value")
-    fun entityNested2Test(loadID: String) {
+    internal fun entityNested2Test(loadID: String) {
         loadEntities(loadID)
         val attr = attr("nested2")
         DbEntity.getEntities(entityType, true).forEachIndexed { i, entity ->

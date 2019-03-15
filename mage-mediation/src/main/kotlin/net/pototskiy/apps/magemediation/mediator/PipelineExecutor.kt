@@ -1,16 +1,13 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.magemediation.api.config.mediator.Pipeline
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineData
@@ -43,8 +40,6 @@ class PipelineExecutor(
 
     private val jobs = mutableListOf<Job>()
 
-    @ExperimentalCoroutinesApi
-    @ObsoleteCoroutinesApi
     suspend fun execute(inputData: Channel<PipelineDataCollection>): ReceiveChannel<Map<AnyTypeAttribute, Type?>> =
         GlobalScope.produce {
             val matchedData: Channel<PipelineDataCollection> = Channel()
@@ -61,8 +56,7 @@ class PipelineExecutor(
                         addToSet(nextMatchedPipe.pipeline.pipelineID, data)
                         matchedData.send(data)
                     } else {
-                        val assembler = pipeline.assembler
-                            ?: throw ConfigException("Pipeline has no child matched plugins.pipeline neither assembler")
+                        val assembler = pipeline.assembler!!
                         send(assembler.assemble(targetEntity, data))
                     }
                     markAsMatched(data)
