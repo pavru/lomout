@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.mediator
 
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
@@ -27,8 +26,15 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.parallel.Execution
+import org.junit.jupiter.api.parallel.ExecutionMode
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 
-@ObsoleteCoroutinesApi
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
+@Execution(ExecutionMode.SAME_THREAD)
 @Suppress("MagicNumber")
 internal class MediatorBasicTest {
     private val typeManager = EntityTypeManager()
