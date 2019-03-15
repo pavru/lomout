@@ -15,6 +15,7 @@ import net.pototskiy.apps.magemediation.api.entity.Type
 import net.pototskiy.apps.magemediation.api.source.Field
 import net.pototskiy.apps.magemediation.api.source.FieldAttributeMap
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
+import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
 import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
@@ -59,9 +60,6 @@ class EntityLoader(
             }
             try {
                 processRow(row)
-            } catch (e: LoaderStopException) {
-                rowException(row, e)
-                break
             } catch (e: Exception) {
                 rowException(row, e)
                 continue
@@ -105,7 +103,7 @@ class EntityLoader(
         row: Row,
         emptyRowStrategy: EmptyRowStrategy
     ): EmptyRowTestResult {
-        return if (row.countCell() == 0) {
+        return if (row.countCell() == 0 || row.all { it == null || it.cellType == CellType.BLANK }) {
             when (emptyRowStrategy) {
                 EmptyRowStrategy.STOP -> {
                     log.info(
