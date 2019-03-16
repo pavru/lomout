@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
+import net.pototskiy.apps.magemediation.api.AppDataException
 import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
@@ -17,8 +17,8 @@ class NestedAttributeListParser(
             string.reader().use { attrReader ->
                 parsePairsList(attrReader, result)
             }
-        } catch (e: SourceException) {
-            throw SourceException("Can not parse attribute list<$string>")
+        } catch (e: AppDataException) {
+            throw AppDataException("Can not parse attribute list<$string>")
         }
         return result
     }
@@ -50,7 +50,7 @@ class NestedAttributeListParser(
                 ""
             }
         } catch (e: Exception) {
-            throw SourceException("Can not parse attribute list")
+            throw AppDataException("Can not parse attribute list")
         }
     }
 }

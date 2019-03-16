@@ -1,11 +1,11 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
 
 abstract class EntityType(
     override val name: String,
@@ -24,11 +24,11 @@ abstract class EntityType(
     }
 
     fun getAttribute(name: String): Attribute<*> = manager.getEntityAttribute(this, name)
-        ?: throw DatabaseException("Attribute<$name> is not defined in entity<$this.name>")
+        ?: throw AppAttributeException("Attribute<$name> is not defined in entity<$this.name>")
 
     fun checkAttributeDefined(attribute: Attribute<*>) {
         if (!isAttributeDefined(attribute)) {
-            throw DatabaseException("Attribute<${attribute.name}> is not defined for entity<$this.name>")
+            throw AppAttributeException("Attribute<${attribute.name}> is not defined for entity<$this.name>")
         }
     }
 
@@ -66,7 +66,7 @@ abstract class EntityType(
 
         fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
             val eType = helper.typeManager.getEntityType(name)
-                ?: throw ConfigException("Entity type<$name> does not defined")
+                ?: throw AppEntityTypeException("Entity type<$name> does not defined")
             inheritances.add(ParentEntityType.Builder(helper, eType).apply(block).build())
         }
 

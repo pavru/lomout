@@ -1,11 +1,10 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppDataException
 import net.pototskiy.apps.magemediation.api.Generated
 import net.pototskiy.apps.magemediation.api.PublicApi
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.Type.Companion.TYPE_NOT_SUPPORT_SQL
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.DateColumnType
 import org.jetbrains.exposed.sql.DoubleColumnType
@@ -40,9 +39,9 @@ sealed class Type {
 
     fun sqlType(): KClass<out IColumnType> {
         when {
-            isTransient -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
+            isTransient -> throw AppDataException(TYPE_NOT_SUPPORT_SQL)
             this.sqlType != NoSqlColumn::class -> return this.sqlType
-            else -> throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
+            else -> throw AppDataException(TYPE_NOT_SUPPORT_SQL)
         }
     }
 
@@ -79,7 +78,7 @@ fun KClass<out Type>.sqlType(): KClass<out IColumnType> {
             return type as KClass<out IColumnType>
         }
     }
-    throw DatabaseException(TYPE_NOT_SUPPORT_SQL)
+    throw AppDataException(TYPE_NOT_SUPPORT_SQL)
 }
 
 sealed class ListType<T>(override val value: List<T>, override val isTransient: Boolean = false) :
@@ -223,7 +222,7 @@ fun Type.toList(): ListType<*> {
         is TextListType,
         is DateListType,
         is DateTimeListType,
-        is AttributeListType -> throw SourceException("Value already is list")
+        is AttributeListType -> throw AppDataException("Value already is list")
         is BooleanType -> BooleanListType(listOf(this))
         is LongType -> LongListType(listOf(this))
         is DoubleType -> DoubleListType(listOf(this))

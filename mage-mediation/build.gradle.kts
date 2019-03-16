@@ -2,7 +2,6 @@
 
 import io.gitlab.arturbosch.detekt.detekt
 import org.gradle.plugins.ide.idea.model.Module
-import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -85,12 +84,6 @@ tasks.named<Test>("test") {
     testLogging {
         events("passed", "skipped", "failed")
 //        events("passed", "skipped", "failed", "standardOut", "standardError")
-    }
-}
-
-kotlin {
-    experimental {
-        coroutines = Coroutines.ENABLE
     }
 }
 

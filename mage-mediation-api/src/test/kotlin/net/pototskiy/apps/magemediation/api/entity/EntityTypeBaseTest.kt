@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -52,7 +52,7 @@ internal class EntityTypeBaseTest {
                 eType,
                 attr3
             )
-        }.isInstanceOf(DatabaseException::class.java)
+        }.isInstanceOf(AppEntityTypeException::class.java)
         assertThat(eType["attr2"]).isEqualTo(attr2)
         assertThat(typeManager["test1"]).isEqualTo(eType)
         try {
@@ -61,17 +61,17 @@ internal class EntityTypeBaseTest {
         } catch (e: Exception) {
             assertThat(false).isTrue()
         }
-        assertThatThrownBy { eType.checkAttributeDefined(attr3) }.isInstanceOf(DatabaseException::class.java)
-        assertThatThrownBy { eType.checkAttributeDefined(attr4) }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { eType.checkAttributeDefined(attr3) }.isInstanceOf(AppEntityTypeException::class.java)
+        assertThatThrownBy { eType.checkAttributeDefined(attr4) }.isInstanceOf(AppEntityTypeException::class.java)
         assertThat(eType.getAttributeOrNull("attr1")).isEqualTo(attr1)
         assertThat(eType.getAttributeOrNull("attr3")).isNull()
         assertThat(eType.getAttributeOrNull("attr4")).isNull()
         assertThat(eType.getAttribute("attr1")).isEqualTo(attr1)
-        assertThatThrownBy { eType.getAttribute("attr3") }.isInstanceOf(DatabaseException::class.java)
-        assertThatThrownBy { eType.getAttribute("attr4") }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { eType.getAttribute("attr3") }.isInstanceOf(AppEntityTypeException::class.java)
+        assertThatThrownBy { eType.getAttribute("attr4") }.isInstanceOf(AppEntityTypeException::class.java)
         assertThatThrownBy {
             typeManager.initialAttributeSetup(eType, AttributeCollection(listOf(attr1, attr2)))
-        }.isInstanceOf(DatabaseException::class.java)
+        }.isInstanceOf(AppEntityTypeException::class.java)
     }
 
     @Test
@@ -113,14 +113,14 @@ internal class EntityTypeBaseTest {
         } catch (e: Exception) {
             assertThat(false).isTrue()
         }
-        assertThatThrownBy { test2.checkAttributeDefined(attr3) }.isInstanceOf(DatabaseException::class.java)
-        assertThatThrownBy { test2.checkAttributeDefined(attr5) }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { test2.checkAttributeDefined(attr3) }.isInstanceOf(AppEntityTypeException::class.java)
+        assertThatThrownBy { test2.checkAttributeDefined(attr5) }.isInstanceOf(AppEntityTypeException::class.java)
         assertThat(test2.getAttributeOrNull("attr1")).isEqualTo(attr1)
         assertThat(test2.getAttributeOrNull("attr3")).isNull()
         assertThat(test2.getAttributeOrNull("attr4")).isEqualTo(attr4)
         assertThat(test2.getAttribute("attr1")).isEqualTo(attr1)
-        assertThatThrownBy { test2.getAttribute("attr3") }.isInstanceOf(DatabaseException::class.java)
-        assertThatThrownBy { test2.getAttribute("attr5") }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { test2.getAttribute("attr3") }.isInstanceOf(AppEntityTypeException::class.java)
+        assertThatThrownBy { test2.getAttribute("attr5") }.isInstanceOf(AppEntityTypeException::class.java)
         typeManager.addEntityAttribute(test1, attr3)
         assertThat(test2["attr3"]).isEqualTo(attr3)
     }
@@ -190,7 +190,7 @@ internal class EntityTypeBaseTest {
         ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThat(typeManager["test1"]).isEqualTo(eType)
         typeManager.removeEntityType(eType)
-        assertThatThrownBy { typeManager["test1"] }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { typeManager["test1"] }.isInstanceOf(AppEntityTypeException::class.java)
     }
 
     @Test
@@ -201,8 +201,8 @@ internal class EntityTypeBaseTest {
             true
         ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThatThrownBy { typeManager.addEntityAttribute(eType, attr1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppEntityTypeException::class.java)
         assertThatThrownBy { typeManager.addEntityAttribute(eType, dupAttr1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppEntityTypeException::class.java)
     }
 }

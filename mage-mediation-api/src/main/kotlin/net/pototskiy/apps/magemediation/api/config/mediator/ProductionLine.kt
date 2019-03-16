@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 
 data class ProductionLine(
@@ -45,19 +45,19 @@ data class ProductionLine(
         fun build(): ProductionLine {
             validatePipeline(
                 pipeline
-                    ?: throw ConfigException("Production line must have start pipeline")
+                    ?: throw AppConfigException("Production line must have start pipeline")
             )
             return ProductionLine(
                 lineType,
-                inputs ?: throw ConfigException("At least one input entity must be defined"),
-                output ?: throw ConfigException("Output entity must be defined"),
+                inputs ?: throw AppConfigException("At least one input entity must be defined"),
+                output ?: throw AppConfigException("Output entity must be defined"),
                 pipeline!!
             )
         }
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw ConfigException("Pipeline with matched child must have assembler")
+                throw AppConfigException("Pipeline with matched child must have assembler")
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }

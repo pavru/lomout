@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity
 
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
+import net.pototskiy.apps.magemediation.api.AppDataException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.jetbrains.exposed.sql.BooleanColumnType
@@ -21,13 +21,13 @@ internal class TypeTest {
     internal fun sqlTypeTest() {
         assertThat(StringType("").sqlType()).isEqualTo(VarCharColumnType::class)
         assertThatThrownBy { StringType("", true).sqlType() }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
         assertThatThrownBy { AttributeListType(emptyMap()).sqlType() }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
         assertThatThrownBy { AttributeListType(emptyMap(), false).sqlType() }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
         assertThat(StringType::class.sqlType()).isEqualTo(VarCharColumnType::class)
-        assertThatThrownBy { AttributeListType::class.sqlType() }.isInstanceOf(DatabaseException::class.java)
+        assertThatThrownBy { AttributeListType::class.sqlType() }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test

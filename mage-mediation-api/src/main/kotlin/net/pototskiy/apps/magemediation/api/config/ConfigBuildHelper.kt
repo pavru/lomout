@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.loader.SourceFileDefinition
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
@@ -30,7 +31,7 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
         fun register(entity: T) {
             val scope = currentScope()
             if (register[scope]?.any { it.name == entity.name } == true)
-                throw ConfigException("Object is already defined in scope<$scope>")
+                throw AppConfigException("Object is already defined in scope<$scope>")
             register.getOrPut(scope) { mutableListOf() }.add(entity)
         }
 

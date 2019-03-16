@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import net.pototskiy.apps.magemediation.api.PublicApi
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 
 class ParentEntityType(
     val parent: EntityType,
@@ -43,7 +43,9 @@ class ParentEntityType(
         private fun checkThatParentHasAttributes(parent: EntityType, names: List<String>) {
             val notFound = names.minus(parent.attributes.map { it.name })
             if (notFound.isNotEmpty()) {
-                throw ConfigException("Entity type<${parent.name}> has no attribute<${notFound.joinToString(",")}>")
+                throw AppEntityTypeException(
+                    "Entity type<${parent.name}> has no attribute<${notFound.joinToString(",")}>"
+                )
             }
         }
     }

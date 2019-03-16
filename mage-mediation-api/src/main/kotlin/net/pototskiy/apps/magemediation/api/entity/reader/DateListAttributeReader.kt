@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
@@ -10,7 +11,6 @@ import net.pototskiy.apps.magemediation.api.entity.values.stringToDateTime
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.commons.csv.CSVFormat
 
 open class DateListAttributeReader : AttributeReaderPlugin<DateListType>() {
@@ -38,7 +38,7 @@ open class DateListAttributeReader : AttributeReaderPlugin<DateListType>() {
                 DateListType(listValue)
             }
             CellType.BLANK -> null
-            else -> throw SourceException(
+            else -> throw AppCellDataException(
                 "Reading Date list from cell type<${input.cellType}> is not supported, " +
                         "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
             )

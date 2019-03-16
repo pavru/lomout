@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
+import net.pototskiy.apps.magemediation.api.AppDataException
 import net.pototskiy.apps.magemediation.api.entity.AttributeAsCell
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithFunction
@@ -36,7 +36,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, true)).isEqualTo(BooleanType(true))
         assertThat(wrapAValue(attr, false)).isEqualTo(BooleanType(false))
         assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to BooleanType")
     }
 
@@ -46,7 +46,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, 111L)).isEqualTo(LongType(111L))
         assertThat(wrapAValue(attr, 123L)).isEqualTo(LongType(123L))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to LongType")
     }
 
@@ -56,7 +56,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, 11.1)).isEqualTo(DoubleType(11.1))
         assertThat(wrapAValue(attr, 12.3)).isEqualTo(DoubleType(12.3))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to DoubleType")
     }
 
@@ -66,7 +66,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, "11.1")).isEqualTo(StringType("11.1"))
         assertThat(wrapAValue(attr, "12.3")).isEqualTo(StringType("12.3"))
         assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to StringType")
     }
 
@@ -78,7 +78,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, now1)).isEqualTo(DateType(now1))
         assertThat(wrapAValue(attr, now2)).isEqualTo(DateType(now2))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to DateType")
     }
 
@@ -90,7 +90,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, now1)).isEqualTo(DateTimeType(now1))
         assertThat(wrapAValue(attr, now2)).isEqualTo(DateTimeType(now2))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to DateTimeType")
     }
 
@@ -100,7 +100,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, "11.1")).isEqualTo(TextType("11.1"))
         assertThat(wrapAValue(attr, "12.3")).isEqualTo(TextType("12.3"))
         assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to TextType")
     }
 
@@ -113,7 +113,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf("11.1"))).isEqualTo(TextListType(listOf(TextType("11.1"))))
         assertThat(wrapAValue(attr, listOf("12.3"))).isEqualTo(TextListType(listOf(TextType("12.3"))))
         assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to TextListType")
     }
 
@@ -126,7 +126,7 @@ internal class AValueWrapperKtTest {
             writer(AttributeWriterWithFunction { _, _ -> Unit })
         }
         assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Unexpected type<${NewType::class.simpleName}>")
     }
 
@@ -137,7 +137,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf(true, false)))
             .isEqualTo(BooleanListType(listOf(BooleanType(true), BooleanType(false))))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to BooleanListType")
     }
 
@@ -147,7 +147,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf(111L, 123L)))
             .isEqualTo(LongListType(listOf(LongType(111L), LongType(123L))))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to LongListType")
     }
 
@@ -157,7 +157,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf(11.1, 12.3)))
             .isEqualTo(DoubleListType(listOf(DoubleType(11.1), DoubleType(12.3))))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to DoubleListType")
     }
 
@@ -167,7 +167,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf("11.1", "12.3")))
             .isEqualTo(StringListType(listOf(StringType("11.1"), StringType("12.3"))))
         assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to StringListType")
     }
 
@@ -179,7 +179,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf(now1, now2)))
             .isEqualTo(DateListType(listOf(DateType(now1), DateType(now2))))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to DateListType")
     }
 
@@ -191,7 +191,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf(now1, now2)))
             .isEqualTo(DateTimeListType(listOf(DateTimeType(now1), DateTimeType(now2))))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to DateTimeListType")
     }
 
@@ -207,7 +207,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, attrMap))
             .isEqualTo(AttributeListType(attrMap))
         assertThatThrownBy { wrapAValue(attr, "1") }
-            .isInstanceOf(DatabaseException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Can not wrap value to AttributeListType")
     }
 }
