@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.joda.time.DateTime
 
 class NestedAttributeCell(
@@ -25,7 +25,7 @@ class NestedAttributeCell(
         get() = throwNotSupportCellType()
 
     private fun throwNotSupportCellType(): Nothing {
-        throw SourceException("${NestedAttributeCell::class.simpleName} supports only string type value")
+        throw AppCellDataException("${NestedAttributeCell::class.simpleName} supports only string type value")
     }
 
     override val stringValue: String

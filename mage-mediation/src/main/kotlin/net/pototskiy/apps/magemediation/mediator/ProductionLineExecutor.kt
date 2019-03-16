@@ -6,6 +6,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.pototskiy.apps.magemediation.api.AppDataException
 import net.pototskiy.apps.magemediation.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineData
 import net.pototskiy.apps.magemediation.api.config.mediator.PipelineDataCollection
@@ -84,7 +85,7 @@ class ProductionLineExecutor(val entityTypeManager: EntityTypeManager) {
             val pipelineData = pipelineDataCache[id.value]
             if (pipelineData == null) {
                 val entity = transaction { DbEntity.findById(id) }
-                    ?: throw MediationException("Matched entity<id:${id.value}> can not be found")
+                    ?: throw AppDataException("Matched entity<id:${id.value}> can not be found")
                 entity.readAttributes()
                 PipelineData(
                     entityTypeManager,

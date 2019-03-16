@@ -1,11 +1,12 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.Generated
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.StringType
@@ -52,7 +53,7 @@ data class FieldSet(
 
         private fun addFiled(field: Field, lastAttribute: Attribute<*>?) {
             if (fields.containsKey(field)) {
-                throw ConfigException("Field<${field.name}> is already defined")
+                throw AppConfigException("Field<${field.name}> is already defined")
             }
             fields[field] = lastAttribute
                 ?: helper.typeManager.getEntityAttribute(entityType, field.name)
@@ -74,7 +75,7 @@ data class FieldSet(
         ): Attribute<*> =
             Attribute.Builder(
                 helper,
-                name ?: throw ConfigException("Attribute name should be defined"),
+                name ?: throw AppAttributeException("Attribute name should be defined"),
                 T::class
             ).apply(block).build()
 
@@ -84,7 +85,7 @@ data class FieldSet(
 
         infix fun Field.to(attribute: AttributeWithName) {
             val attr = helper.typeManager.getEntityAttribute(entityType, attribute.name)
-                ?: throw ConfigException("Attribute<$attribute> is not defined")
+                ?: throw AppAttributeException("Attribute<$attribute> is not defined")
             addFiled(this, attr)
         }
 
@@ -102,8 +103,8 @@ data class FieldSet(
             checkHeaderRowDefined(headerRow)
             val collectedFields = try {
                 readFieldNamesFromSource(sources, headerRow)
-            } catch (e: ConfigException) {
-                throw ConfigException("Can not collect headers (fields) from sources", e)
+            } catch (e: AppConfigException) {
+                throw AppConfigException("Can not collect headers (fields) from sources", e)
             }
             collectedFields.map { field ->
                 val configuredField = fields.keys.find { it == field }
@@ -134,7 +135,7 @@ data class FieldSet(
         private fun validateFieldHasUniqueColumn() {
             val dupColumns = fields.keys.filter { it.column != UNDEFINED_COLUMN }.groupBy { it.column }
             if (dupColumns.any { it.value.size > 1 }) {
-                throw ConfigException(
+                throw AppConfigException(
                     "Field columns<${dupColumns.filter { it.value.size > 1 }.keys.joinToString(", ")}> are duplicated"
                 )
             }
@@ -142,7 +143,7 @@ data class FieldSet(
 
         private fun validateAtOneLeastFieldDefined() {
             if (fields.isEmpty() && !withSourceHeaders) {
-                throw ConfigException("At least one field must be defined for field set")
+                throw AppConfigException("At least one field must be defined for field set")
             }
         }
     }
@@ -155,7 +156,7 @@ private fun checkSourcesNotNull(sources: SourceDataCollection?) {
         returns() implies (sources != null)
     }
     if (sources == null) {
-        throw ConfigException("Sources must be defined before source field sets")
+        throw AppConfigException("Sources must be defined before source field sets")
     }
 }
 
@@ -164,6 +165,6 @@ private fun checkHeaderRowDefined(headerRow: Int?) {
         returns() implies (headerRow != null)
     }
     if (headerRow == null && headerRow != UNDEFINED_ROW) {
-        throw ConfigException("Header row must be defined before source field sets")
+        throw AppConfigException("Header row must be defined before source field sets")
     }
 }

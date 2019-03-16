@@ -1,8 +1,9 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeCollection
 
 data class LoaderConfiguration(
@@ -29,15 +30,15 @@ data class LoaderConfiguration(
         @Suppress("unused")
         fun Builder.loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
             val entity = helper.typeManager.getEntityType(entityType)
-                ?: throw ConfigException("Define entity<$entityType> before load configuration")
+                ?: throw AppEntityTypeException("Define entity<$entityType> before load configuration")
             loads.add(Load.Builder(helper, entity).apply(block).build())
         }
 
         fun build(): LoaderConfiguration {
-            val files = this.files ?: throw ConfigException("Files is not defined in loader section")
+            val files = this.files ?: throw AppConfigException("Files is not defined in loader section")
             return LoaderConfiguration(
                 files,
-                entities ?: throw ConfigException("At least one entity must be defined"),
+                entities ?: throw AppEntityTypeException("At least one entity must be defined"),
                 LoadCollection(loads)
             )
         }

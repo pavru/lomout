@@ -1,12 +1,12 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.magemediation.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 
 open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
     var quote: Char? = null
@@ -37,7 +37,7 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                     }.toMap()
                 )
             }
-            else -> throw SourceException(
+            else -> throw AppCellDataException(
                 "Reading attribute list from cell type<${input.cellType}> " +
                         "is not supported, attribute<${attribute.name}:${attribute.valueType.simpleName}>"
             )

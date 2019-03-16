@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.AppSheetException
 import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 import java.io.File
@@ -26,7 +26,7 @@ abstract class CsvWorkbook(
         if (sheet == CSV_SHEET_NAME) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
-            throw SourceException("CSV file supports only one sheet with name: \"default\"")
+            throw AppSheetException("CSV file supports only one sheet with name: \"default\"")
         }
     }
 
@@ -34,7 +34,7 @@ abstract class CsvWorkbook(
         if (sheet == 0) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
-            throw SourceException("CSV file support only one sheet with index: 0")
+            throw AppSheetException("CSV file support only one sheet with index: 0")
         }
     }
 

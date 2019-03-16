@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -39,7 +39,7 @@ internal class AttributeAsCellTest {
         assertThat(cell.asString()).isEqualTo(data.value.toString())
         assertThatThrownBy { cell.row }.isInstanceOf(NotImplementedError::class.java)
         data.notCompatible.forEach {
-            assertThatThrownBy { it(cell) }.isInstanceOf(SourceException::class.java)
+            assertThatThrownBy { it(cell) }.isInstanceOf(AppCellDataException::class.java)
         }
     }
 
@@ -49,7 +49,7 @@ internal class AttributeAsCellTest {
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         assertThat(cell.asString()).isEqualTo("")
         assertThatThrownBy { cell.stringValue }
-            .isInstanceOf(SourceException::class.java)
+            .isInstanceOf(AppCellDataException::class.java)
     }
 
     class TestData<T : Type, VT : Any>(

@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 
@@ -32,22 +32,22 @@ class AttributeAsCell<T : Type>(
     override val booleanValue: Boolean
         get() = when (val v = cellValue) {
             is CellBooleanValue -> v.value
-            else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
+            else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
     override val longValue: Long
         get() = when (val v = cellValue) {
             is CellLongValue -> v.value
-            else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
+            else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
     override val doubleValue: Double
         get() = when (val v = cellValue) {
             is CellDoubleValue -> v.value
-            else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
+            else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
     override val stringValue: String
         get() = when (val v = cellValue) {
             is CellStringValue -> v.value
-            else -> throw SourceException(DATA_INCOMPATIBLE_MSG)
+            else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
     override val row: Row
         get() = throw NotImplementedError("Attribute cell has no row")

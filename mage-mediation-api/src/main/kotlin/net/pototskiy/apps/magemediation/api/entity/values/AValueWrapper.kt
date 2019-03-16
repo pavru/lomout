@@ -1,6 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.values
 
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
+import net.pototskiy.apps.magemediation.api.AppDataException
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.BooleanListType
@@ -55,6 +55,6 @@ fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
             TextListType(list.map { TextType(it) })
         }
         AttributeListType::class -> (value as? Map<String, Cell>)?.let { AttributeListType(it) }
-        else -> throw DatabaseException("Unexpected type<${attribute.valueType.simpleName}>")
-    } ?: throw DatabaseException("Can not wrap value to ${attribute.valueType.simpleName}")
+        else -> throw AppDataException("Unexpected type<${attribute.valueType.simpleName}>")
+    } ?: throw AppDataException("Can not wrap value to ${attribute.valueType.simpleName}")
 }

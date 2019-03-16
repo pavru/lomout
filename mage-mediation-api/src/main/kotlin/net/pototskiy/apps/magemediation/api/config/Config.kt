@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.config
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.magemediation.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
@@ -43,9 +44,9 @@ data class Config(
         fun build(): Config {
             val realDatabase = database ?: DatabaseConfig.Builder().build()
             val realLoader = loader
-                ?: throw ConfigException("Loader section must be in configuration")
+                ?: throw AppConfigException("Loader section must be in configuration")
             val realMediator = mediator
-                ?: throw ConfigException("Mediator section must be in configuration")
+                ?: throw AppConfigException("Mediator section must be in configuration")
             return Config(helper.typeManager, realDatabase, realLoader, realMediator)
         }
 
@@ -63,5 +64,5 @@ fun Any.config(block: Config.Builder.() -> Unit) {
         val helper = ConfigBuildHelper(EntityTypeManager())
         script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
-        throw ConfigException("Wrong config script object type")
+        throw AppConfigException("Wrong config script object type")
 }

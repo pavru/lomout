@@ -1,6 +1,7 @@
 package net.pototskiy.apps.magemediation.api.source
 
-import net.pototskiy.apps.magemediation.api.config.ConfigException
+import net.pototskiy.apps.magemediation.api.AppConfigException
+import net.pototskiy.apps.magemediation.api.AppSheetException
 import net.pototskiy.apps.magemediation.api.config.loader.SourceData
 import net.pototskiy.apps.magemediation.api.config.loader.SourceDataCollection
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
@@ -20,13 +21,13 @@ private fun readHeaders(
         workbook.filter { source.sheet.isMatch(it.name) }.map { sheet ->
             sheet[headerRow]?.mapIndexed { c, cell ->
                 if (cell == null || cell.cellType != CellType.STRING) {
-                    throw ConfigException(
+                    throw AppConfigException(
                         "Header row in source<${workbook.name}:${sheet.name}> " +
                                 "has no cell or cell has not string type in column ${c + 1}"
                     )
                 }
                 Field(cell.stringValue, c, null, null)
-            } ?: throw ConfigException("Source<${workbook.name}:${sheet.name}> has no header row")
+            } ?: throw AppSheetException("Source<${workbook.name}:${sheet.name}> has no header row")
         }.flatten()
     }
 }
@@ -35,10 +36,10 @@ private fun validateAllSourcesCompatible(fieldSets: List<List<Field>>) {
     // TODO: 02.03.2019 write test for this validate
     val fieldSetSizes = fieldSets.groupBy { it.size }
     if (fieldSetSizes.keys.size > 1) {
-        throw ConfigException("Sources have different number of fields")
+        throw AppConfigException("Sources have different number of fields")
     }
     val fieldSetNameColumn = fieldSets.flatten().groupBy { Pair(it.name, it.column) }
     if (fieldSetNameColumn.values.any { it.size != fieldSetSizes.values.size }) {
-        throw ConfigException("Sources have different fields or fields in different columns")
+        throw AppConfigException("Sources have different fields or fields in different columns")
     }
 }

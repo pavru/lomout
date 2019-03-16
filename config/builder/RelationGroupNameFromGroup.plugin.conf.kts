@@ -15,15 +15,15 @@ class RelationGroupNameFromGroup : AttributeBuilderPlugin<StringType>() {
         private val groupEntityType by lazy { typeManager["onec-group"] }
         private val relationGroupCodeAttr by lazy {
             typeManager.getEntityAttribute(relationEntityType, "group_code")
-                ?: throw PluginException("Attribute<$relationEntityType:group_code> is not defined")
+                ?: throw AppPluginException("Attribute<$relationEntityType:group_code> is not defined")
         }
         private val groupCodeAttr by lazy {
             typeManager.getEntityAttribute(groupEntityType, "group_code")
-                ?: throw PluginException("Attribute<$groupEntityType:group_code> is not defined")
+                ?: throw AppPluginException("Attribute<$groupEntityType:group_code> is not defined")
         }
         private val groupNameAttr by lazy {
             typeManager.getEntityAttribute(groupEntityType, "group_name")
-                ?: throw PluginException("Attribute<$groupEntityType:group_name> is not defined")
+                ?: throw AppPluginException("Attribute<$groupEntityType:group_name> is not defined")
         }
     }
 }

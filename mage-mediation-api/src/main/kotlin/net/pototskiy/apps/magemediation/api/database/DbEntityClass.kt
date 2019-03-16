@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.database
 
+import net.pototskiy.apps.magemediation.api.AppDatabaseException
 import net.pototskiy.apps.magemediation.api.TIMESTAMP
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.EntityType
@@ -139,7 +140,7 @@ fun equalsBuild(column: Column<*>, value: Type): Expression<Boolean> =
         is DoubleColumnType -> Op.build { (column as Column<Double>) eq (value.value as Double) }
         is BooleanColumnType -> Op.build { (column as Column<Boolean>) eq (value.value as Boolean) }
         is DateColumnType -> Op.build { (column as Column<DateTime>) eq (value.value as DateTime) }
-        else -> throw DatabaseException(
+        else -> throw AppDatabaseException(
             "Can not build equals operator for column type ${column.columnType.sqlType()}"
         )
     }

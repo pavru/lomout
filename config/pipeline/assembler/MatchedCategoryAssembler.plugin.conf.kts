@@ -18,7 +18,7 @@ class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
             }
             data[target.getAttribute("remove_flag")] = BooleanType(false)
         } catch (e: Exception) {
-            throw PluginException(e.message, e)
+            throw AppPluginException(e.message, e)
         }
         return data
     }

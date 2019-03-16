@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.source.workbook
 
+import net.pototskiy.apps.magemediation.api.AppWorkbookException
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvInputWorkbook
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvOutputWorkbook
@@ -39,7 +40,7 @@ class WorkbookFactory {
                         CsvOutputWorkbook(source, format, workbookLocale)
                 }
                 else ->
-                    throw SourceException("Unsupported file format, file: $fileName")
+                    throw AppWorkbookException("Unsupported file format, file: $fileName")
             }
         }
 

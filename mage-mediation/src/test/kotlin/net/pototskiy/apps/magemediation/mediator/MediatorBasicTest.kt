@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.mediator
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.ROOT_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
@@ -15,7 +16,6 @@ import net.pototskiy.apps.magemediation.api.entity.LongType
 import net.pototskiy.apps.magemediation.api.entity.StringType
 import net.pototskiy.apps.magemediation.api.entity.get
 import net.pototskiy.apps.magemediation.api.entity.values.stringToDouble
-import net.pototskiy.apps.magemediation.api.medium.MediatorException
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
 import org.apache.logging.log4j.Level
@@ -184,7 +184,7 @@ internal class MediatorBasicTest {
                             val flag1 = try {
                                 entities["unknown"]
                                 false
-                            } catch (e: MediatorException) {
+                            } catch (e: AppConfigException) {
                                 true
                             }
                             val flag2 = entities.getEntityOrNull("unknown") == null &&

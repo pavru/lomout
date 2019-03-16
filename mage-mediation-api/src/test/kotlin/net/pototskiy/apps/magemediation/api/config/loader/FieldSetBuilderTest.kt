@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.entity.StringType
@@ -30,7 +30,7 @@ internal class FieldSetBuilderTest {
             null
         ).apply {
         }
-        Assertions.assertThatThrownBy { fs.build() }.isInstanceOf(ConfigException::class.java)
+        Assertions.assertThatThrownBy { fs.build() }.isInstanceOf(AppConfigException::class.java)
     }
 
     @Test
@@ -48,7 +48,7 @@ internal class FieldSetBuilderTest {
                 field("f1")
                 field("f1")
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
     }
 
     @Test
@@ -66,7 +66,7 @@ internal class FieldSetBuilderTest {
                 field("f1") { column(0) }
                 field("f2") { column(0) }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
     }
 
     @Test
@@ -83,7 +83,7 @@ internal class FieldSetBuilderTest {
             ).apply {
                 field("f1") to attribute("f1")
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
     }
 
     @Test
@@ -100,7 +100,7 @@ internal class FieldSetBuilderTest {
             ).apply {
                 field("f1") to attribute<StringType>(null) {}
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
     }
 
     @Test
@@ -135,7 +135,7 @@ internal class FieldSetBuilderTest {
                 field("f1")
                 field("f2") { parent("f3") }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
     }
 
     @Test

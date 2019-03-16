@@ -1,7 +1,8 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.database.EntityStatus
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
@@ -96,14 +97,14 @@ internal class MediatorConfigurationBuilderTest {
     @Test
     internal fun checkEmptyInputErrorTest() {
         assertThatThrownBy { createConfEmptyInput() }
-            .isInstanceOf(ConfigException::class.java)
+            .isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("At least one input entity must be defined")
     }
 
     @Test
     internal fun checkInputEntityDefinedTest() {
         assertThatThrownBy { createConfInputNotExists() }
-            .isInstanceOf(ConfigException::class.java)
+            .isInstanceOf(AppEntityTypeException::class.java)
             .hasMessageContaining("Entity<input-entity-3> has not been defined yet")
     }
 
@@ -117,14 +118,14 @@ internal class MediatorConfigurationBuilderTest {
     @Test
     internal fun noPipelineTest() {
         assertThatThrownBy { createConfNoPipeline() }
-            .isInstanceOf(ConfigException::class.java)
+            .isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Production line must have start pipeline")
     }
 
     @Test
     internal fun noAssemblerTest() {
         assertThatThrownBy { createConfNoAssembler() }
-            .isInstanceOf(ConfigException::class.java)
+            .isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Pipeline with matched child must have assembler")
     }
 
@@ -172,6 +173,7 @@ internal class MediatorConfigurationBuilderTest {
             }
         }.build()
     }
+
     private fun createConfInputNotExists(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
             crossProductionLine {
@@ -216,6 +218,7 @@ internal class MediatorConfigurationBuilderTest {
             }
         }.build()
     }
+
     private fun createConfEmptyInput(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
             crossProductionLine {
@@ -238,6 +241,7 @@ internal class MediatorConfigurationBuilderTest {
             }
         }.build()
     }
+
     private fun createConfOutputDefined(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
             crossProductionLine {
@@ -279,6 +283,7 @@ internal class MediatorConfigurationBuilderTest {
             }
         }.build()
     }
+
     private fun createConfNoPipeline(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
             crossProductionLine {
@@ -311,6 +316,7 @@ internal class MediatorConfigurationBuilderTest {
             }
         }.build()
     }
+
     private fun createConfNoAssembler(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
             crossProductionLine {

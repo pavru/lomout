@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeCollection
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
@@ -7,7 +8,6 @@ import net.pototskiy.apps.magemediation.api.entity.AttributeReaderWithPlugin
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFCell
@@ -78,7 +78,7 @@ internal class DefaultAttributeListReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setCellValue(1.1)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
+        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)
     }
 
     @Test

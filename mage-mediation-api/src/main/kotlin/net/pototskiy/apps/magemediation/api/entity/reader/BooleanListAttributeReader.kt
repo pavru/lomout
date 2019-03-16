@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
@@ -7,7 +8,6 @@ import net.pototskiy.apps.magemediation.api.entity.BooleanListType
 import net.pototskiy.apps.magemediation.api.entity.BooleanType
 import net.pototskiy.apps.magemediation.api.entity.values.stringToBoolean
 import net.pototskiy.apps.magemediation.api.plugable.AttributeReaderPlugin
-import net.pototskiy.apps.magemediation.api.plugable.PluginException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
@@ -33,7 +33,7 @@ open class BooleanListAttributeReader : AttributeReaderPlugin<BooleanListType>()
                 BooleanListType(listValue)
             }
             CellType.BLANK -> null
-            else -> throw PluginException(
+            else -> throw AppCellDataException(
                 "Reading Boolean from cell type<${input.cellType}}> is not supported, " +
                         "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
             )

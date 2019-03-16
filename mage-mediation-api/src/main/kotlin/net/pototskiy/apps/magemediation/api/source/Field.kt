@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.source
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.AttributeListType
 
@@ -47,7 +47,7 @@ data class Field(
         fun parent(parent: String) {
             val field = definedFields.keys.find { it.name == parent }?.takeIf {
                 definedFields[it]?.valueType == AttributeListType::class
-            } ?: throw ConfigException("Parent field<$parent> must be defined and has type attribute list")
+            } ?: throw AppConfigException("Parent field<$parent> must be defined and has type attribute list")
             this.parent = field
         }
 

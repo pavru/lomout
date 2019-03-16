@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.plugable.AttributeBuilderPlugin
@@ -129,7 +129,7 @@ internal class AttributeBuilderTest {
                 key()
                 nullable()
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppAttributeException::class.java)
             .hasMessageContaining("Key attribute can not be nullable")
     }
 
@@ -139,7 +139,7 @@ internal class AttributeBuilderTest {
             Attribute.Builder(helper, "test", LongListType::class).apply {
                 key()
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppAttributeException::class.java)
             .hasMessageContaining("Key attribute can not have list type or builder")
         assertThatThrownBy {
             Attribute.Builder(helper, "test", LongListType::class).apply {
@@ -148,7 +148,7 @@ internal class AttributeBuilderTest {
                     LongListType(listOf(LongType(123L)))
                 }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppAttributeException::class.java)
             .hasMessageContaining("Key attribute can not have list type or builder")
         assertThatThrownBy {
             Attribute.Builder(helper, "test", LongType::class).apply {
@@ -157,7 +157,7 @@ internal class AttributeBuilderTest {
                     LongType(123L)
                 }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppAttributeException::class.java)
             .hasMessageContaining("Key attribute can not have list type or builder")
     }
 

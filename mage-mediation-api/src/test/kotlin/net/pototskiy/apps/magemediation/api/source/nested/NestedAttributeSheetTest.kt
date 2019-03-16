@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.source.nested
 
+import net.pototskiy.apps.magemediation.api.AppWorkbookException
 import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -18,10 +18,10 @@ internal class NestedAttributeSheetTest {
         assertThat(sheet[0]?.toList()).containsExactlyElementsOf(sheet.insertRow(0).toList())
         assertThat(sheet[1]?.toList()).containsExactlyElementsOf(sheet.insertRow(1).toList())
         assertThatThrownBy { sheet[2] }
-            .isInstanceOf(SourceException::class.java)
+            .isInstanceOf(AppWorkbookException::class.java)
             .hasMessageContaining("Attribute workbook has only 2 rows")
         assertThatThrownBy { sheet.insertRow(2) }
-            .isInstanceOf(SourceException::class.java)
+            .isInstanceOf(AppWorkbookException::class.java)
             .hasMessageContaining("Attribute workbook has only 2 rows")
     }
 

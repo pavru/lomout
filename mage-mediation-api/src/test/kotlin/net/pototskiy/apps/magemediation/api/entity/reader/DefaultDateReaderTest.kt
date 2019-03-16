@@ -1,5 +1,6 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.createLocale
 import net.pototskiy.apps.magemediation.api.entity.Attribute
@@ -10,7 +11,6 @@ import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvCell
 import net.pototskiy.apps.magemediation.api.source.workbook.csv.CsvInputWorkbook
@@ -114,7 +114,9 @@ internal class DefaultDateReaderTest {
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
+        assertThatThrownBy { readerRuRu.read(attr, inputCell) }
+            .isInstanceOf(AppCellDataException::class.java)
+            .hasMessageContaining("String can not be converted to date with locale")
         xlsTestDataCell.setCellValue(
             expected.toString(
                 DateTimeFormat.forPattern(
@@ -123,7 +125,9 @@ internal class DefaultDateReaderTest {
             )
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
+        assertThatThrownBy { readerEnUs.read(attr, inputCell) }
+            .isInstanceOf(AppCellDataException::class.java)
+            .hasMessageContaining("String can not be converted to date with locale")
         assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(expected)
     }
 
@@ -135,10 +139,12 @@ internal class DefaultDateReaderTest {
         xlsTestDataCell.setCellValue(expected.toString(DateTimeFormat.forPattern("M/d/YY")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
+        assertThatThrownBy { readerRuRu.read(attr, inputCell) }
+            .isInstanceOf(AppCellDataException::class.java)
+            .hasMessageContaining("String can not be converted to date with pattern")
         xlsTestDataCell.setCellValue(expected.toString(DateTimeFormat.forPattern("d.M.YY")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(SourceException::class.java)
+        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)
         assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(expected)
     }
 
