@@ -2,8 +2,6 @@ package net.pototskiy.apps.magemediation.loader
 
 import net.pototskiy.apps.magemediation.api.AppAttributeException
 import net.pototskiy.apps.magemediation.api.AppCellDataException
-import net.pototskiy.apps.magemediation.api.AppConfigException
-import net.pototskiy.apps.magemediation.api.AppDataException
 import net.pototskiy.apps.magemediation.api.AppException
 import net.pototskiy.apps.magemediation.api.AppRowException
 import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
@@ -64,6 +62,9 @@ class EntityLoader(
             }
             try {
                 processRow(row)
+            } catch (e: AppRowException) {
+                rowException(row, e)
+                continue
             } catch (e: Exception) {
                 rowException(row, e)
                 continue
@@ -162,7 +163,7 @@ class EntityLoader(
             }
             val attrCell = (data[parentAttr] as AttributeListType).value[attribute.name]
             if (attrCell == null && !attribute.nullable && attribute.valueType != AttributeListType::class) {
-                throw AppDataException("Attribute<${attribute.name}> is not nullable and there is no data for it")
+                throw AppCellDataException("Attribute<${attribute.name}> is not nullable and there is no data for it")
             } else if (attrCell == null) {
                 data[attribute] = null
                 return
@@ -180,7 +181,7 @@ class EntityLoader(
             @Suppress("UNCHECKED_CAST")
             data[attr] = (attr.reader as AttributeReader<Type>).read(attr, cell).also {
                 if (it == null && (!attr.nullable || attr.key)) {
-                    throw AppDataException("Attribute<${attr.name}> is not nullable and can not be null")
+                    throw AppCellDataException("Attribute<${attr.name}> is not nullable and can not be null")
                 }
             }
         }
@@ -208,10 +209,7 @@ class EntityLoader(
             fittedSet
         } else {
             null
-        } ?: fieldSets.find { it.mainSet }
-        ?: throw AppConfigException(
-            "Row field set can not be found for loading entity type<${loadConfig.entity.name}>"
-        ))
+        } ?: fieldSets.mainSet)
 
     private fun testRowAgainstFieldSet(row: Row, set: FieldSet): Boolean {
         var fit = true

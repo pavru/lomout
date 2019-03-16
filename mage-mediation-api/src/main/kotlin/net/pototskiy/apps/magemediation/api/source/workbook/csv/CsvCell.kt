@@ -65,7 +65,7 @@ class CsvCell(
             tryLong() -> CellType.LONG
             tryDouble() -> CellType.DOUBLE
             tryBoolean() -> CellType.BOOL
-            this.isNotBlank() -> CellType.STRING
+            this.isNotEmpty() -> CellType.STRING
             else -> CellType.BLANK
         }
     }

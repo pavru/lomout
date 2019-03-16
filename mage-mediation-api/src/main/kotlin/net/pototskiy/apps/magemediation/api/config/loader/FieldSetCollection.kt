@@ -1,9 +1,13 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 
 data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet> by sets {
+    val mainSet: FieldSet
+        get() = this.find { it.mainSet }!!
+
     class Builder(
         private val helper: ConfigBuildHelper,
         private val entityType: EntityType,
@@ -39,6 +43,11 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
                 ).apply(block).build()
             )
 
-        fun build(): FieldSetCollection = FieldSetCollection(fieldSets)
+        fun build(): FieldSetCollection {
+            if (!fieldSets.any { it.mainSet }) {
+                throw AppConfigException("Field set collection must contain main set")
+            }
+            return FieldSetCollection(fieldSets)
+        }
     }
 }
