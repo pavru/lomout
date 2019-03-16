@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,7 +28,7 @@ internal class LoadBuilderTest {
                     }
                 }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Field columns<0, 1> are duplicated")
     }
 
@@ -49,7 +49,7 @@ internal class LoadBuilderTest {
                     }
                 }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Dataset has no headers row but fields<f1, f2, f3, f4> has no column defined")
     }
 
@@ -64,7 +64,7 @@ internal class LoadBuilderTest {
                     }
                 }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Source files are not defined for entity type<entity> loading")
     }
 
@@ -78,7 +78,7 @@ internal class LoadBuilderTest {
             Load.Builder(helper, entity).apply {
                 fromSources { source { file("file1"); sheet("test") } }
             }.build()
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Field set is not defined for entity type<entity> loading")
     }
 }

@@ -1,5 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity.reader
 
+import net.pototskiy.apps.magemediation.api.AppCellDataException
+import net.pototskiy.apps.magemediation.api.AppDataException
 import net.pototskiy.apps.magemediation.api.entity.Attribute
 import net.pototskiy.apps.magemediation.api.entity.DateType
 import net.pototskiy.apps.magemediation.api.entity.isTypeOf
@@ -17,6 +19,7 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 import java.util.*
 
+@Suppress("ComplexMethod")
 fun Cell.readeDateTime(
     attribute: Attribute<*>,
     locale: Locale
@@ -24,10 +27,14 @@ fun Cell.readeDateTime(
     CellType.LONG -> DateTime(Date(this.longValue))
     CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
     CellType.BOOL -> null
-    CellType.STRING -> if (attribute.valueType.isTypeOf<DateType>()) {
-        this.stringValue.stringToDate(locale)
-    } else {
-        this.stringValue.stringToDateTime(locale)
+    CellType.STRING -> try {
+        if (attribute.valueType.isTypeOf<DateType>()) {
+            this.stringValue.stringToDate(locale)
+        } else {
+            this.stringValue.stringToDateTime(locale)
+        }
+    } catch (e: AppDataException) {
+        throw AppCellDataException(e.message, e)
     }
     CellType.BLANK -> null
 }
@@ -39,7 +46,11 @@ fun Cell.readeDateTime(
     CellType.LONG -> DateTime(Date(this.longValue))
     CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
     CellType.BOOL -> null
-    CellType.STRING -> this.stringValue.stringToDateTime(pattern)
+    CellType.STRING -> try {
+        this.stringValue.stringToDateTime(pattern)
+    } catch (e: AppDataException) {
+        throw AppCellDataException(e.message, e)
+    }
     CellType.BLANK -> null
 }
 
@@ -47,23 +58,37 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.LONG -> this.longValue != 0L
     CellType.DOUBLE -> this.doubleValue != 0.0
     CellType.BOOL -> this.booleanValue
-    CellType.STRING -> this.stringValue.stringToBoolean(locale)
+    CellType.STRING -> try {
+        this.stringValue.stringToBoolean(locale)
+    } catch (e: AppDataException) {
+        throw AppCellDataException(e.message, e)
+    }
     CellType.BLANK -> null
 }
 
+@Suppress("ComplexMethod")
 fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
     CellType.LONG -> this.longValue.toDouble()
     CellType.DOUBLE -> this.doubleValue
     CellType.BOOL -> if (this.booleanValue) 1.0 else 0.0
-    CellType.STRING -> this.stringValue.stringToDouble(locale)
+    CellType.STRING -> try {
+        this.stringValue.stringToDouble(locale)
+    } catch (e: AppDataException) {
+        throw AppCellDataException(e.message, e)
+    }
     CellType.BLANK -> null
 }
 
+@Suppress("ComplexMethod")
 fun Cell.readLong(locale: Locale): Long? = when (this.cellType) {
     CellType.LONG -> this.longValue
     CellType.DOUBLE -> this.doubleValue.doubleToLong()
     CellType.BOOL -> if (this.booleanValue) 1L else 0L
-    CellType.STRING -> this.stringValue.stringToLong(locale)
+    CellType.STRING -> try {
+        this.stringValue.stringToLong(locale)
+    } catch (e: AppDataException) {
+        throw AppCellDataException(e.message, e)
+    }
     CellType.BLANK -> null
 }
 

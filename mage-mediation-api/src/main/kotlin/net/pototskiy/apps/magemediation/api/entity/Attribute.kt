@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
 import net.pototskiy.apps.magemediation.api.Generated
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.config.NamedObject
 import net.pototskiy.apps.magemediation.api.entity.reader.defaultReaders
 import net.pototskiy.apps.magemediation.api.entity.writer.defaultWriters
@@ -110,13 +110,13 @@ abstract class Attribute<T : Type>(
 
         private fun validateKeyIsNotNullable() {
             if (key && nullable) {
-                throw ConfigException("Key attribute can not be nullable")
+                throw AppAttributeException("Key attribute can not be nullable")
             }
         }
 
         private fun validateKeyIsNotList() {
             if (key && (typeClass.isList() || builder != null)) {
-                throw ConfigException("Key attribute can not have list type or builder")
+                throw AppAttributeException("Key attribute can not have list type or builder")
             }
         }
     }

@@ -8,7 +8,7 @@ class CategoryClassifier : PipelineClassifierPlugin() {
             if (group["transformed_path"] == categoryPath) return Pipeline.CLASS.MATCHED
             return Pipeline.CLASS.UNMATCHED
         } catch (e: Exception) {
-            throw PluginException(e.message, e)
+            throw AppPluginException(e.message, e)
         }
     }
 

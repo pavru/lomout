@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.config.mediator
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.database.DbEntityTable
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
@@ -58,7 +58,7 @@ data class InputEntity(
         ) {
             val destAttr = Attribute.Builder(helper, name, T::class).apply(block).build()
             val origData = this.helper.typeManager.getEntityAttribute(entityType, from)
-                ?: throw ConfigException("Attribute<${entityType.name}:$from> is not defined>")
+                ?: throw AppAttributeException("Attribute<${entityType.name}:$from> is not defined>")
             attrPairs[origData] = destAttr
         }
 

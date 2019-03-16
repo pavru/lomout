@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.createLocale
 import java.io.File
 import java.util.*
@@ -36,7 +36,7 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
 
             fun build(): Pair<File, Locale> {
                 return Pair(
-                    File(path ?: throw ConfigException("File path must be defined")),
+                    File(path ?: throw AppConfigException("File path must be defined")),
                     locale.createLocale()
                 )
             }

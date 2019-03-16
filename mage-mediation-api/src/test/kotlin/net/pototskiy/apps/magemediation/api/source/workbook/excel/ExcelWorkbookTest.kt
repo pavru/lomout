@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.excel
 
+import net.pototskiy.apps.magemediation.api.AppCellException
 import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookFactory
 import net.pototskiy.apps.magemediation.api.source.workbook.WorkbookType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
@@ -121,6 +121,7 @@ internal class ExcelWorkbookTest {
             assertThat(row.getOrEmptyCell(5)).isNotNull.isInstanceOf(ExcelCell::class.java)
         }
     }
+
     @Test
     internal fun cellBasicTest() {
         WorkbookFactory.create(
@@ -143,7 +144,9 @@ internal class ExcelWorkbookTest {
             assertThat(row[5]!!.cellType).isEqualTo(CellType.DOUBLE)
             assertThat(row[5]!!.doubleValue).isEqualTo(3.0)
             assertThat(row[5]!!.address).isEqualTo(CellAddress(0, 5))
-            Assertions.assertThatThrownBy { row[6]!!.cellType }.isInstanceOf(SourceException::class.java)
+            Assertions.assertThatThrownBy { row[6]!!.cellType }
+                .isInstanceOf(AppCellException::class.java)
+                .hasMessageContaining("Unsupported cell type")
         }
     }
 
@@ -192,7 +195,9 @@ internal class ExcelWorkbookTest {
             assertThat(row[5]!!.cellType).isEqualTo(CellType.DOUBLE)
             assertThat(row[5]!!.asString()).isEqualTo("3")
             assertThat(row[5]!!.address).isEqualTo(CellAddress(0, 5))
-            Assertions.assertThatThrownBy { row[6]!!.asString() }.isInstanceOf(SourceException::class.java)
+            Assertions.assertThatThrownBy { row[6]!!.asString() }
+                .isInstanceOf(AppCellException::class.java)
+                .hasMessageContaining("Unsupported cell type")
         }
     }
 

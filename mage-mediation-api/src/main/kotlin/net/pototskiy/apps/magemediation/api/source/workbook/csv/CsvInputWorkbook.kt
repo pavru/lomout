@@ -1,8 +1,8 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.AppWorkbookException
 import net.pototskiy.apps.magemediation.api.DEFAULT_LOCALE
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.InputStreamReader
@@ -24,7 +24,7 @@ class CsvInputWorkbook(
     private var _parser: CSVParser = csvFormat.parse(reader)
 
     override fun insertSheet(sheet: String): Sheet {
-        throw SourceException("CSV input workbook does not support sheet insertion")
+        throw AppWorkbookException("CSV input workbook does not support sheet insertion")
     }
 
     val parser: CSVParser
@@ -41,6 +41,6 @@ fun checkThatItIsCsvInputWorkbook(workbook: CsvWorkbook) {
         returns() implies (workbook is CsvInputWorkbook)
     }
     if (workbook !is CsvInputWorkbook) {
-        throw SourceException("CSV workbook is not input one")
+        throw AppWorkbookException("CSV workbook is not input one")
     }
 }

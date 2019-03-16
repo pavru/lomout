@@ -1,10 +1,15 @@
 package net.pototskiy.apps.magemediation.loader
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
+import net.pototskiy.apps.magemediation.api.AppCellDataException
+import net.pototskiy.apps.magemediation.api.AppConfigException
+import net.pototskiy.apps.magemediation.api.AppDataException
+import net.pototskiy.apps.magemediation.api.AppException
+import net.pototskiy.apps.magemediation.api.AppRowException
 import net.pototskiy.apps.magemediation.api.LOADER_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.EmptyRowStrategy
 import net.pototskiy.apps.magemediation.api.config.loader.FieldSet
 import net.pototskiy.apps.magemediation.api.config.loader.Load
-import net.pototskiy.apps.magemediation.api.config.loader.LoaderException
 import net.pototskiy.apps.magemediation.api.database.DbEntity
 import net.pototskiy.apps.magemediation.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.magemediation.api.entity.Attribute
@@ -18,7 +23,6 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.apache.logging.log4j.LogManager
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -89,7 +93,7 @@ class EntityLoader(
             row.sheet.name,
             row.rowNum + 1
         )
-        if (e !is LoaderException) {
+        if (e !is AppException) {
             log.error("Internal error: {}", e.message)
             log.trace("Thread: {}", Thread.currentThread().name)
             log.trace("Exception: ", e)
@@ -137,7 +141,7 @@ class EntityLoader(
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
             if (v == null || (v is StringType && v.value.isBlank())) {
-                throw LoaderException("Attribute<${attr.name}> is key but has no value")
+                throw AppAttributeException("Attribute<${attr.name}> is key but has no value")
             }
         }
     }
@@ -158,7 +162,7 @@ class EntityLoader(
             }
             val attrCell = (data[parentAttr] as AttributeListType).value[attribute.name]
             if (attrCell == null && !attribute.nullable && attribute.valueType != AttributeListType::class) {
-                throw SourceException("Attribute<${attribute.name}> is not nullable and there is no data for it")
+                throw AppDataException("Attribute<${attribute.name}> is not nullable and there is no data for it")
             } else if (attrCell == null) {
                 data[attribute] = null
                 return
@@ -171,12 +175,12 @@ class EntityLoader(
         fields.filterNot { it.key.isNested || it.value.isSynthetic }.forEach { (field, attr) ->
             val cell = row[field.column]
                 ?: if (attr.nullable) row.getOrEmptyCell(field.column) else null
-                    ?: throw LoaderException("There is no requested cell<${field.column + 1}> in row")
+                    ?: throw AppRowException("There is no requested cell<${field.column + 1}> in row")
             testFieldRegex(field, cell)
             @Suppress("UNCHECKED_CAST")
             data[attr] = (attr.reader as AttributeReader<Type>).read(attr, cell).also {
                 if (it == null && (!attr.nullable || attr.key)) {
-                    throw SourceException("Attribute<${attr.name}> is not nullable and can not be null")
+                    throw AppDataException("Attribute<${attr.name}> is not nullable and can not be null")
                 }
             }
         }
@@ -188,7 +192,7 @@ class EntityLoader(
 
     private fun testFieldRegex(field: Field, cell: Cell) {
         if (!field.isMatchToPattern(cell.asString())) {
-            throw LoaderException("Field<${field.name}> does not match required regular expression")
+            throw AppCellDataException("Field<${field.name}> does not match required regular expression")
         }
     }
 
@@ -205,13 +209,15 @@ class EntityLoader(
         } else {
             null
         } ?: fieldSets.find { it.mainSet }
-        ?: throw LoaderException("Row field set can not be found for loading entity type<${loadConfig.entity.name}>"))
+        ?: throw AppConfigException(
+            "Row field set can not be found for loading entity type<${loadConfig.entity.name}>"
+        ))
 
     private fun testRowAgainstFieldSet(row: Row, set: FieldSet): Boolean {
         var fit = true
         for (field in set.fields.filter { field -> field.regex != null }) {
             val cell = row[field.column]
-                ?: throw LoaderException(
+                ?: throw AppRowException(
                     "Workbook<${row.sheet.workbook.name}>, " +
                             "sheet<${row.sheet.name}>, " +
                             "row<${row.rowNum + 1}> " +

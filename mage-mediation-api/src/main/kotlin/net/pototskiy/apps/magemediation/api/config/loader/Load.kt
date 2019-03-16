@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.config.loader
 
+import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.magemediation.api.UNDEFINED_ROW
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 import net.pototskiy.apps.magemediation.api.entity.addEntityAttribute
 
@@ -59,7 +59,9 @@ data class Load(
             val rowsToSkip = this.rowsToSkip
             val sources =
                 this.sources
-                    ?: throw ConfigException("Source files are not defined for entity type<${entityType.name}> loading")
+                    ?: throw AppConfigException(
+                        "Source files are not defined for entity type<${entityType.name}> loading"
+                    )
             validateFieldColumnDefinition()
             return Load(
                 headersRow,
@@ -68,7 +70,7 @@ data class Load(
                 entityType,
                 sources,
                 fieldSets
-                    ?: throw ConfigException("Field set is not defined for entity type<${entityType.name}> loading")
+                    ?: throw AppConfigException("Field set is not defined for entity type<${entityType.name}> loading")
             )
         }
 
@@ -83,7 +85,7 @@ data class Load(
         private fun validateFieldColumnDefinition() {
             var fields =
                 (fieldSets
-                    ?: throw ConfigException("Field set is not defined for entity type<${entityType.name}> loading"))
+                    ?: throw AppConfigException("Field set is not defined for entity type<${entityType.name}> loading"))
                     .map { it.fieldToAttr.toList() }
                     .flatten()
                     .toMap()
@@ -91,7 +93,7 @@ data class Load(
                 .filterNot { it.key.isNested }
                 .filterNot { it.value.isSynthetic }
             if (this.headersRow == UNDEFINED_ROW && fields.any { it.key.column == UNDEFINED_COLUMN }) {
-                throw ConfigException(
+                throw AppConfigException(
                     "Dataset has no headers row but " +
                             "fields<${fields.filter { it.key.column == UNDEFINED_COLUMN }.map { it.value.name }
                                 .joinToString(", ")}> " +

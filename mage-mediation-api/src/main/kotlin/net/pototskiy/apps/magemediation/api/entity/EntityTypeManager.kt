@@ -1,8 +1,9 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppAttributeException
+import net.pototskiy.apps.magemediation.api.AppConfigException
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import net.pototskiy.apps.magemediation.api.PublicApi
-import net.pototskiy.apps.magemediation.api.config.ConfigException
-import net.pototskiy.apps.magemediation.api.database.DatabaseException
 import net.pototskiy.apps.magemediation.api.entity.reader.defaultReaders
 import net.pototskiy.apps.magemediation.api.entity.writer.defaultWriters
 import kotlin.reflect.KClass
@@ -31,7 +32,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
         attributes.forEach { it.owner = entityType }
         if (attributes.any { it in entityType.attributes }) {
             val alreadyExists = attributes.filter { it in entityType.attributes }.joinToString(",") { it.fullName }
-            throw DatabaseException("Attributes<$alreadyExists> are already defined")
+            throw AppAttributeException("Attributes<$alreadyExists> are already defined")
         }
         this.entityAttributes[entityType] = attributes.map { it.name to it }.toMap().toMutableMap()
     }
@@ -129,10 +130,10 @@ class EntityTypeManager : EntityTypeManagerInterface {
                 auto,
                 reader
                     ?: defaultReaders[typeClass] as? AttributeReader<out T>
-                    ?: throw ConfigException("Reader must be defined for attribute<$name>"),
+                    ?: throw AppConfigException("Reader must be defined for attribute<$name>"),
                 writer
                     ?: defaultWriters[typeClass] as? AttributeWriter<out T>
-                    ?: throw ConfigException("Writer must be defined for attribute<$name"),
+                    ?: throw AppConfigException("Writer must be defined for attribute<$name"),
                 builder
             ) {}
     }
@@ -143,7 +144,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
 private fun checkThatAttributeIsNotAssigned(attributes: AttributeCollection) {
     if (attributes.any { it.isAssigned }) {
         val assigned = attributes.filter { it.isAssigned }.joinToString(",") { it.fullName }
-        throw DatabaseException("Attributes<$assigned> are already assigned to entity")
+        throw AppAttributeException("Attributes<$assigned> are already assigned to entity")
     }
 }
 
@@ -151,13 +152,13 @@ private fun checkEntityTypeHasNoAttributes(entityType: EntityType, attributes: A
     val entityAttributes = entityType.attributes
     if (attributes.any { it in entityAttributes }) {
         val alreadyExists = attributes.filter { it in entityAttributes }.joinToString(",") { it.fullName }
-        throw DatabaseException("Entity type<${entityType.name}> already has attributes<$alreadyExists>")
+        throw AppAttributeException("Entity type<${entityType.name}> already has attributes<$alreadyExists>")
     }
 }
 
 private fun checkEntityTypeIsOpen(entityType: EntityType) {
     if (!entityType.open) {
-        throw DatabaseException("It's not allowed to add attribute to entity type<${entityType.name}>")
+        throw AppEntityTypeException("It's not allowed to add attribute to entity type<${entityType.name}>")
     }
 }
 
@@ -169,4 +170,4 @@ fun EntityTypeManager.addEntityAttribute(entityType: EntityType, attribute: Attr
     this.addEntityAttributes(entityType, listOf(attribute))
 
 operator fun EntityTypeManager.get(entityType: String) = this.getEntityType(entityType)
-    ?: throw DatabaseException("Entity<$entityType> is not defined")
+    ?: throw AppEntityTypeException("Entity<$entityType> is not defined")

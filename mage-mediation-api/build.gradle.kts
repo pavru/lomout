@@ -31,10 +31,7 @@ configurations {
 val spiImplementation: Configuration by configurations.creating {
     extendsFrom(configurations.implementation.get())
 }
-tasks.withType<KotlinCompile> {
-    kotlinOptions {
-    }
-}
+
 tasks.withType(DokkaTask::class) {
     moduleName = "mage-mediation-api"
     outputFormat = "javadoc"

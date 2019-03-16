@@ -1,7 +1,7 @@
 package net.pototskiy.apps.magemediation.api.entity
 
+import net.pototskiy.apps.magemediation.api.AppEntityTypeException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
-import net.pototskiy.apps.magemediation.api.config.ConfigException
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -44,7 +44,8 @@ internal class ParentEntityTypeTest {
             ParentEntityType.Builder(helper, typeManager["entity"]).apply {
                 include("attr4")
             }
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppEntityTypeException::class.java)
+            .hasMessageContaining("Entity type<entity> has no attribute<attr4>")
     }
 
     @Test
@@ -61,6 +62,7 @@ internal class ParentEntityTypeTest {
             ParentEntityType.Builder(helper, typeManager["entity"]).apply {
                 exclude("attr4")
             }
-        }.isInstanceOf(ConfigException::class.java)
+        }.isInstanceOf(AppEntityTypeException::class.java)
+            .hasMessageContaining("Entity type<entity> has no attribute<attr4>")
     }
 }

@@ -1,9 +1,9 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.csv
 
+import net.pototskiy.apps.magemediation.api.AppSheetException
 import net.pototskiy.apps.magemediation.api.CSV_SHEET_NAME
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
 import net.pototskiy.apps.magemediation.api.source.workbook.Sheet
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import net.pototskiy.apps.magemediation.api.source.workbook.Workbook
 import org.apache.commons.csv.CSVParser
 
@@ -27,7 +27,7 @@ class CsvSheet(
             }
             index++
         }
-        throw SourceException("Index out of band")
+        throw AppSheetException("Index out of band")
     }
 
     override fun insertRow(row: Int): Row {

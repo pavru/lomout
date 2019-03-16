@@ -1,10 +1,10 @@
 package net.pototskiy.apps.magemediation.api.source.workbook.excel
 
+import net.pototskiy.apps.magemediation.api.AppCellException
 import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 import net.pototskiy.apps.magemediation.api.source.workbook.CellAddress
 import net.pototskiy.apps.magemediation.api.source.workbook.CellType
 import net.pototskiy.apps.magemediation.api.source.workbook.Row
-import net.pototskiy.apps.magemediation.api.source.workbook.SourceException
 import org.joda.time.DateTime
 import java.text.NumberFormat
 
@@ -23,7 +23,7 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
                 org.apache.poi.ss.usermodel.CellType.BLANK -> CellType.BLANK
                 org.apache.poi.ss.usermodel.CellType.BOOLEAN -> CellType.BOOL
                 else ->
-                    throw SourceException(
+                    throw AppCellException(
                         "Unsupported cell type, " +
                                 "(${row.sheet.workbook.name}:${row.sheet.name}:${address.row}:${address.column})"
                     )
@@ -62,7 +62,7 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
             org.apache.poi.ss.usermodel.CellType.STRING -> cell.stringCellValue
             org.apache.poi.ss.usermodel.CellType.BLANK -> ""
             org.apache.poi.ss.usermodel.CellType.BOOLEAN -> cell.booleanCellValue.toString()
-            else -> throw SourceException("${cellType.name} is not supported")
+            else -> throw AppCellException("${cellType.name} is not supported")
         }
     }
 }
