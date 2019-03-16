@@ -36,13 +36,20 @@ object DataLoader {
                 orderedLoads[file]?.forEach { (_, load) ->
                     val source = load.sources.find { it.file == file }!!
                     WorkbookFactory.create(file.file.toURI().toURL(), file.locale).use { workbook ->
-                        workbook.filter { source.sheet.isMatch(it.name) }.forEach {
-                            log.debug("Start loading sheet<{}> from file<{}>", it.name, file.id)
-                            EntityLoader(load, source.emptyRowStrategy, it).apply {
-                                load()
-                                this@DataLoader.processedRows.addAndGet(processedRows)
+                        if (!workbook.any { source.sheet.isMatch(it.name) }) {
+                            log.warn(
+                                "Source<{}> does not contain any sheet matched to name<{}>",
+                                source.file.id, source.sheet.definition
+                            )
+                        } else {
+                            workbook.filter { source.sheet.isMatch(it.name) }.forEach {
+                                log.debug("Start loading sheet<{}> from file<{}>", it.name, file.id)
+                                EntityLoader(load, source.emptyRowStrategy, it).apply {
+                                    load()
+                                    this@DataLoader.processedRows.addAndGet(processedRows)
+                                }
+                                log.debug("Finish loading sheet<{}> from file<{}>", it.name, file.id)
                             }
-                            log.debug("Finish loading sheet<{}> from file<{}>", it.name, file.id)
                         }
                     }
                 }

@@ -15,6 +15,7 @@ open class NestedAttributeListFormat(
             .withDelimiter(delimiter)
         if (quote != null) {
             format = format.withQuote(quote)
+            format = format.withEscape('\\')
         } else {
             format = format.withEscape('\\')
             format = format.withQuoteMode(QuoteMode.NONE)
@@ -28,6 +29,7 @@ open class NestedAttributeListFormat(
             .withDelimiter(valueDelimiter)
         if (valueQuote != null) {
             format = format.withQuote(valueQuote)
+            format = format.withEscape('\\')
         } else {
             format = format.withEscape('\\')
             format = format.withQuoteMode(QuoteMode.NONE)
