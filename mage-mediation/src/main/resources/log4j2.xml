@@ -29,6 +29,9 @@
         <Logger name="net.pototskiy.apps.magemediation.mediator" additivity="true">
             <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
         </Logger>
+        <Logger name="net.pototskiy.apps.magemediation.printer" additivity="true">
+            <SkipRepeatedFilter onMatch="ACCEPT" onMismatch="DENY"/>
+        </Logger>
         <Logger name="Exposed" level="error" additivity="false">
             <AppenderRef ref="console"/>
             <AppenderRef ref="logFile"/>

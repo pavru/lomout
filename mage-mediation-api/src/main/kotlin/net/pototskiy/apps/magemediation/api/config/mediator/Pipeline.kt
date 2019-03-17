@@ -21,6 +21,7 @@ data class Pipeline(
     @PublicApi
     fun isApplicablePipeline(vararg klass: CLASS): Boolean = dataClass.containsAll(klass.toList())
 
+    @ConfigDsl
     class Builder(vararg klass: CLASS) {
         private val dataClass = klass.toList()
         @ConfigDsl

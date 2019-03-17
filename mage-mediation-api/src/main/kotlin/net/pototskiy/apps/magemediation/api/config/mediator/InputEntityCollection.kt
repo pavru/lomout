@@ -10,8 +10,8 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
     class Builder(val helper: ConfigBuildHelper) {
         private val entities = mutableListOf<InputEntity>()
 
-        @Suppress("unused")
-        fun Builder.entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
+        @ConfigDsl
+        fun entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
             val entity = helper.typeManager.getEntityType(name)
                 ?: throw AppEntityTypeException("Entity<$name> has not been defined yet")
             entities.add(

@@ -10,13 +10,11 @@ data class MediatorConfiguration(
     class Builder(private val helper: ConfigBuildHelper) {
         private var lines = mutableListOf<ProductionLine>()
 
-        @Suppress("unused")
-        fun Builder.unionProductionLine(block: ProductionLine.Builder.() -> Unit) {
+        fun unionProductionLine(block: ProductionLine.Builder.() -> Unit) {
             lines.add(ProductionLine.Builder(helper, ProductionLine.LineType.UNION).apply(block).build())
         }
 
-        @Suppress("unused")
-        fun Builder.crossProductionLine(block: ProductionLine.Builder.() -> Unit) {
+        fun crossProductionLine(block: ProductionLine.Builder.() -> Unit) {
             lines.add(ProductionLine.Builder(helper, ProductionLine.LineType.CROSS).apply(block).build())
         }
 

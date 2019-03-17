@@ -8,6 +8,7 @@ const val CONFIG_LOG_NAME = "net.pototskiy.apps.magemediation.config"
 const val DATABASE_LOG_NAME = "net.pototskiy.apps.magemediation.database"
 const val LOADER_LOG_NAME = "net.pototskiy.apps.magemediation.loader"
 const val MEDIATOR_LOG_NAME = "net.pototskiy.apps.magemediation.mediator"
+const val PRINTER_LOG_NAME = "net.pototskiy.apps.magemediation.printer"
 const val STATUS_LOG_NAME = "net.pototskiy.apps.magemediation.status"
 const val EXPOSED_LOG_NAME = "Exposed"
 
