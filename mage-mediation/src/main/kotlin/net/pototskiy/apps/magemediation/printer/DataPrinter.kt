@@ -1,10 +1,5 @@
 package net.pototskiy.apps.magemediation.printer
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
-import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.magemediation.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.magemediation.api.STATUS_LOG_NAME
 import net.pototskiy.apps.magemediation.api.config.Config
@@ -24,25 +19,20 @@ object DataPrinter {
 
     private const val millisInSecond: Double = 1000.0
 
-    fun print(config: Config) = runBlocking {
-        val jobs = mutableListOf<Job>()
+    fun print(config: Config) {
         transaction { PipelineSets.deleteAll() }
-        val printer = config.printer ?: return@runBlocking
+        val printer = config.printer ?: return
         statusLog.info("Data printing has started")
         startTime = DateTime()
         val orderedLines = printer.lines.groupBy { it.outputFieldSets.file.file.id }
-        orderedLines.forEach { (fileID, lines) ->
-            launch(newSingleThreadContext(fileID)) {
-                lines.forEach { line ->
-                    log.debug("Start printing file<${line.outputFieldSets.file.file.file.name}>")
-                    val rows = PrinterLineExecutor(config.entityTypeManager).executeLine(line)
-                    printedRows.addAndGet(rows)
-                    log.debug("Finish printing file<${line.outputFieldSets.file.file.file.name}>")
-                }
-            }.also { jobs.add(it) }
+        orderedLines.forEach { (_, lines) ->
+            lines.forEach { line ->
+                log.debug("Start printing file<${line.outputFieldSets.file.file.file.name}>")
+                val rows = PrinterLineExecutor(config.entityTypeManager).executeLine(line)
+                printedRows.addAndGet(rows)
+                log.debug("Finish printing file<${line.outputFieldSets.file.file.file.name}>")
+            }
         }
-        @Suppress("SpreadOperator")
-        joinAll(*jobs.toTypedArray())
         val duration = Duration(startTime, DateTime()).millis.toDouble() / millisInSecond
         statusLog.info("Data printing has finished, duration: ${duration}s, rows: ${printedRows.get()}")
     }

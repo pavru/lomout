@@ -24,10 +24,11 @@ object DataLoader {
 
     @ObsoleteCoroutinesApi
     fun load(config: Config) = runBlocking {
+        val loader = config.loader ?: return@runBlocking
         statusLog.info("Data loading has started")
         startTime = DateTime()
         val jobs = mutableListOf<Job>()
-        val orderedLoads = config.loader.loads.map { load ->
+        val orderedLoads = loader.loads.map { load ->
             load.sources.map { it.file to load }
         }.flatten().groupBy { it.first }
         orderedLoads.keys.forEach { file ->

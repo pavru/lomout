@@ -38,7 +38,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import kotlin.collections.set
 
 
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "MagicNumber")
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
@@ -72,10 +72,10 @@ internal class LoaderAttributeLoadingTest {
         @Suppress("UNCHECKED_CAST")
         nameAttr = typeManager
             .getEntityAttribute(entityType, "group_name") as Attribute<StringType>
-        loads[xlsLoad] = config.loader.loads.find {
+        loads[xlsLoad] = config.loader?.loads?.find {
             it.entity.name == entityTypeName && it.sources.first().file.file.name == "test.attributes.xls"
         }!!
-        loads[csvLoad] = config.loader.loads.find {
+        loads[csvLoad] = config.loader?.loads?.find {
             it.entity.name == entityTypeName && it.sources.first().file.file.name == "test.attributes.csv"
         }!!
 

@@ -8,7 +8,8 @@ import net.pototskiy.apps.magemediation.api.entity.Type
 
 class EntityUpdater(private val entityType: EntityType) {
 
-    fun update(data: Map<AnyTypeAttribute, Type?>) {
+    fun update(data: Map<AnyTypeAttribute, Type?>): Long {
+        val processedRows: Long
         var entity = DbEntity.getEntitiesByAttributes(entityType, data, true).firstOrNull()
         val filteredData = data.filterNot { it.key.isSynthetic || it.key.valueType == AttributeListType::class }
         entity?.wasUnchanged()
@@ -19,12 +20,15 @@ class EntityUpdater(private val entityType: EntityType) {
                 filteredData.filterNot { it.value == null } as Map<AnyTypeAttribute, Type>
             )
             entity.wasCreated()
+            processedRows = 1L
         } else {
-            testAndUpdateTypedAttributes(entity, filteredData)
+            processedRows = testAndUpdateTypedAttributes(entity, filteredData)
         }
+        return processedRows
     }
 
-    private fun testAndUpdateTypedAttributes(entity: DbEntity, data: Map<AnyTypeAttribute, Type?>) {
+    private fun testAndUpdateTypedAttributes(entity: DbEntity, data: Map<AnyTypeAttribute, Type?>): Long {
+        var updatedRows = 0L
         val storeData = DbEntity.readAttributes(entity)
         data.keys.plus(storeData.keys.minus(data.keys)).filter { !it.key }.forEach { attr ->
             val value = data[attr]
@@ -32,14 +36,18 @@ class EntityUpdater(private val entityType: EntityType) {
             if (value != null && !value.isTransient && storedValue == null) {
                 entity.addAttribute(attr, data.getValue(attr)!!)
                 entity.wasUpdated(true)
+                updatedRows = 1L
             } else if (needToUpdate(value, storedValue)) {
                 entity.updateAttribute(attr, data.getValue(attr)!!)
                 entity.wasUpdated(true)
+                updatedRows = 1L
             } else if (value == null && storedValue != null) {
                 entity.removeAttribute(attr)
                 entity.wasUpdated(true)
+                updatedRows = 1L
             }
         }
+        return updatedRows
     }
 
     private fun needToUpdate(

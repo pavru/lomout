@@ -62,7 +62,7 @@ internal class DataLoadingTest {
 
         @BeforeAll
         internal fun initAll() {
-            val load = config.loader.loads.find {
+            val load = config.loader?.loads?.find {
                 it.entity.name == "onec-product" &&
                         it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                         it.sources.first().sheet.definition == "name:test-stock"
@@ -91,7 +91,7 @@ internal class DataLoadingTest {
         internal inner class SecondLoadEntityTest {
             @BeforeAll
             internal fun initAll() {
-                val load = config.loader.loads.find {
+                val load = config.loader?.loads?.find {
                     it.entity.name == "onec-product"
                             && it.sources.first().file.file.name.endsWith("test.attributes.xls")
                             && it.sources.first().sheet.definition == "name:test-stock"
@@ -142,7 +142,7 @@ internal class DataLoadingTest {
             internal inner class ThirdLoadingTest {
                 @BeforeAll
                 internal fun initAll() {
-                    val load = config.loader.loads.find {
+                    val load = config.loader?.loads?.find {
                         it.entity.name == "onec-product" &&
                                 it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                                 it.sources.first().sheet.definition == "name:test-stock"

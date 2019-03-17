@@ -9,8 +9,8 @@ import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 data class Config(
     val entityTypeManager: EntityTypeManager,
     val database: DatabaseConfig,
-    val loader: LoaderConfiguration,
-    val mediator: MediatorConfiguration,
+    val loader: LoaderConfiguration?,
+    val mediator: MediatorConfiguration?,
     val printer: PrinterConfiguration?
 ) {
     @ConfigDsl
@@ -53,11 +53,7 @@ data class Config(
 
         fun build(): Config {
             val realDatabase = database ?: DatabaseConfig.Builder().build()
-            val realLoader = loader
-                ?: throw AppConfigException("Loader section must be in configuration")
-            val realMediator = mediator
-                ?: throw AppConfigException("Mediator section must be in configuration")
-            return Config(helper.typeManager, realDatabase, realLoader, realMediator, printer)
+            return Config(helper.typeManager, realDatabase, loader, mediator, printer)
         }
 
 //        companion object : ConfigBuildHelper()

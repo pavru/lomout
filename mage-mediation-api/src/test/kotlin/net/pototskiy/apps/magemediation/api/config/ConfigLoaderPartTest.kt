@@ -31,19 +31,19 @@ internal class ConfigLoaderPartTest {
 
     @Test
     internal fun loaderFilesConfigurationTest() {
-        assertThat(config.loader.files).hasSize(9)
-        assertThat(config.loader.files.map { it.file }).containsExactlyElementsOf(files)
-        assertThat(config.loader.files.filter { it.locale == "ru_RU".createLocale() }).hasSize(1)
-        assertThat(config.loader.files.filter { it.locale != "ru_RU".createLocale() }).hasSize(8)
+        assertThat(config.loader?.files).hasSize(9)
+        assertThat(config.loader?.files?.map { it.file }).containsExactlyElementsOf(files)
+        assertThat(config.loader?.files?.filter { it.locale == "ru_RU".createLocale() }).hasSize(1)
+        assertThat(config.loader?.files?.filter { it.locale != "ru_RU".createLocale() }).hasSize(8)
     }
 
     @Test
     internal fun entitiesConfigurationTest() {
-        assertThat(config.loader.entities).hasSize(3)
-        assertThat(config.loader.entities.map { it.name }).containsExactlyElementsOf(listOf(
+        assertThat(config.loader?.entities).hasSize(3)
+        assertThat(config.loader?.entities?.map { it.name }).containsExactlyElementsOf(listOf(
             "test-entity-1", "test-entity-2", "onec-product"
         ))
-        val entity1 = config.loader.entities.find { it.name == "test-entity-1" }
+        val entity1 = config.loader?.entities?.find { it.name == "test-entity-1" }
         assertThat(entity1).isNotNull
         assertThat(entity1?.attributes).hasSize(5)
         assertThat(entity1?.attributes?.map { it.name }).containsExactlyElementsOf(listOf(
