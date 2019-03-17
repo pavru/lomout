@@ -42,15 +42,18 @@ data class InputEntity(
         var sqlFilter: SqlFilter? = null
         private val extEntityUUID = UUID.randomUUID().toString()
 
+        @ConfigDsl
         fun filter(block: SqlExpressionBuilder.(alias: Alias<DbEntityTable>) -> Op<Boolean>) {
             sqlFilter = SqlFilterWithFunction { alias: Alias<DbEntityTable> -> Op.build { block(alias) } }
         }
 
+        @ConfigDsl
         inline fun <reified P : SqlFilterPlugin> filter(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
             sqlFilter = SqlFilterWithPlugin(P::class, block as (SqlFilterPlugin.() -> Unit))
         }
 
+        @ConfigDsl
         inline fun <reified T : Type> extAttribute(
             name: String,
             from: String,

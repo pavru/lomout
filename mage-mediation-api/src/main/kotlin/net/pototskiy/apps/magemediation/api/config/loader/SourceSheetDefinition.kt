@@ -3,8 +3,8 @@ package net.pototskiy.apps.magemediation.api.config.loader
 import net.pototskiy.apps.magemediation.api.AppSheetException
 
 data class SourceSheetDefinition(
-    private val name: String? = null,
-    private val pattern: Regex? = null
+    val name: String? = null,
+    val pattern: Regex? = null
 ) {
     fun isMatch(sheet: String): Boolean {
         return when {
@@ -17,7 +17,7 @@ data class SourceSheetDefinition(
     val definition: String
         get() = when {
             this.name != null -> "name:$name"
-            this.pattern != null -> "name:Regex($pattern)"
+            this.pattern != null -> "regex:Regex($pattern)"
             else -> "name:???"
         }
 }

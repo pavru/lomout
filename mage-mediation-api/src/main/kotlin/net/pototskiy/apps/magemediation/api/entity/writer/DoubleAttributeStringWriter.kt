@@ -10,10 +10,7 @@ import net.pototskiy.apps.magemediation.api.source.workbook.Cell
 open class DoubleAttributeStringWriter : AttributeWriterPlugin<DoubleType>() {
     var locale: String = DEFAULT_LOCALE_STR
 
-    override fun write(
-        value: DoubleType?,
-        cell: Cell
-    ) {
+    override fun write(value: DoubleType?, cell: Cell) {
         value?.let { cell.setCellValue(it.value.doubleToString(locale.createLocale())) }
     }
 }

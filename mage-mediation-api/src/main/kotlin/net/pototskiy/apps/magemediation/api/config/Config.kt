@@ -3,41 +3,51 @@ package net.pototskiy.apps.magemediation.api.config
 import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.magemediation.api.config.mediator.MediatorConfiguration
+import net.pototskiy.apps.magemediation.api.config.printer.PrinterConfiguration
 import net.pototskiy.apps.magemediation.api.entity.EntityTypeManager
 
 data class Config(
     val entityTypeManager: EntityTypeManager,
     val database: DatabaseConfig,
     val loader: LoaderConfiguration,
-    val mediator: MediatorConfiguration
+    val mediator: MediatorConfiguration,
+    val printer: PrinterConfiguration?
 ) {
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var database: DatabaseConfig? = null
         private var loader: LoaderConfiguration? = null
         private var mediator: MediatorConfiguration? = null
+        private var printer: PrinterConfiguration? = null
 
         /**
          * Configure database
          */
-        @Suppress("unused")
-        fun Builder.database(block: DatabaseConfig.Builder.() -> Unit) {
+        @ConfigDsl
+        fun database(block: DatabaseConfig.Builder.() -> Unit) {
             helper.pushScope("database")
             this.database = DatabaseConfig.Builder().apply(block).build()
             helper.popScope()
         }
 
-        @Suppress("unused")
-        fun Builder.loader(block: LoaderConfiguration.Builder.() -> Unit) {
+        @ConfigDsl
+        fun loader(block: LoaderConfiguration.Builder.() -> Unit) {
             helper.pushScope("loader")
             loader = LoaderConfiguration.Builder(helper).apply(block).build()
             helper.popScope()
         }
 
-        @Suppress("unused")
-        fun Builder.mediator(block: MediatorConfiguration.Builder.() -> Unit) {
+        @ConfigDsl
+        fun mediator(block: MediatorConfiguration.Builder.() -> Unit) {
             helper.pushScope("mediator")
             mediator = MediatorConfiguration.Builder(helper).apply(block).build()
+            helper.popScope()
+        }
+
+        @ConfigDsl
+        fun printer(block: PrinterConfiguration.Builder.() -> Unit) {
+            helper.pushScope("printer")
+            this.printer = PrinterConfiguration.Builder(helper).also(block).build()
             helper.popScope()
         }
 
@@ -47,7 +57,7 @@ data class Config(
                 ?: throw AppConfigException("Loader section must be in configuration")
             val realMediator = mediator
                 ?: throw AppConfigException("Mediator section must be in configuration")
-            return Config(helper.typeManager, realDatabase, realLoader, realMediator)
+            return Config(helper.typeManager, realDatabase, realLoader, realMediator, printer)
         }
 
 //        companion object : ConfigBuildHelper()

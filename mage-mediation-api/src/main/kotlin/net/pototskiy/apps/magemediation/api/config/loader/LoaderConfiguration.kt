@@ -17,18 +17,15 @@ data class LoaderConfiguration(
         private var entities: EntityTypeCollection? = null
         private var loads = mutableListOf<Load>()
 
-        @Suppress("unused")
-        fun Builder.files(block: SourceFileCollection.Builder.() -> Unit) {
+        fun files(block: SourceFileCollection.Builder.() -> Unit) {
             files = SourceFileCollection.Builder(helper).apply(block).build()
         }
 
-        @Suppress("unused")
-        fun Builder.entities(block: EntityTypeCollection.Builder.() -> Unit) {
+        fun entities(block: EntityTypeCollection.Builder.() -> Unit) {
             this.entities = EntityTypeCollection.Builder(helper).apply(block).build()
         }
 
-        @Suppress("unused")
-        fun Builder.loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
+        fun loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
             val entity = helper.typeManager.getEntityType(entityType)
                 ?: throw AppEntityTypeException("Define entity<$entityType> before load configuration")
             loads.add(Load.Builder(helper, entity).apply(block).build())

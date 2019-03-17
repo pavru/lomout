@@ -116,7 +116,7 @@ internal class EntityLoaderAddTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(2)
-        val matches = Regex(
+        @Suppress("RegExpRedundantEscape") val matches = Regex(
             "^\\[ERROR\\].*Attribute<key> is key but has no value.*$",
             RegexOption.MULTILINE
         ).findAll(log).toList()
@@ -311,6 +311,7 @@ internal class EntityLoaderAddTest {
                             reader { _, _ ->
                                 val v = 1
                                 val c = v / v - v
+                                @Suppress("DIVISION_BY_ZERO")
                                 StringType("test${v / c}")
                             }
                         }

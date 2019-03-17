@@ -399,4 +399,42 @@ config {
             }
         }
     }
+
+    printer {
+        files {
+            val testDataDir = System.getenv("TEST_DATA_DIR")
+            file("mage-category") { path("$testDataDir/catalog_category_new.csv") }
+        }
+        printerLine {
+            input {
+                entity("import-category") {
+                    filter {
+                        with(DbEntityTable) {
+                            it[currentStatus] eq EntityStatus.UPDATED
+                        }
+                    }
+                }
+            }
+            output {
+                file { file("mage-category"); sheet("default") }
+                printHead = true
+                outputFields {
+                    main("category") {
+                        field("entity_id")
+                    }
+                }
+            }
+            pipeline {
+                classifier {
+                    Pipeline.CLASS.MATCHED
+                }
+                pipeline(Pipeline.CLASS.MATCHED) {
+
+                }
+                pipeline(Pipeline.CLASS.UNMATCHED) {
+
+                }
+            }
+        }
+    }
 }

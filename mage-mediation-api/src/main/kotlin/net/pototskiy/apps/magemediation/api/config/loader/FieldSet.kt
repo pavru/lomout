@@ -37,10 +37,10 @@ data class FieldSet(
         private val headerRow: Int?
     ) {
         private var fields = mutableMapOf<Field, Attribute<*>>()
-        @ConfigDsl
         var lastFieldName: String? = null
         private var lastField: Field? = null
 
+        @ConfigDsl
         fun field(name: String, block: Field.Builder.() -> Unit = {}): Field {
             if (lastField != null) {
                 addFiled(lastField!!, null)
@@ -69,6 +69,7 @@ data class FieldSet(
         }
 
         @Generated
+        @ConfigDsl
         inline fun <reified T : Type> attribute(
             name: String? = lastFieldName,
             block: Attribute.Builder<T>.() -> Unit
@@ -79,10 +80,13 @@ data class FieldSet(
                 T::class
             ).apply(block).build()
 
+        @ConfigDsl
         fun attribute(name: String) = AttributeWithName(name)
 
+        @ConfigDsl
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
 
+        @ConfigDsl
         infix fun Field.to(attribute: AttributeWithName) {
             val attr = helper.typeManager.getEntityAttribute(entityType, attribute.name)
                 ?: throw AppAttributeException("Attribute<$attribute> is not defined")

@@ -11,6 +11,7 @@ import net.pototskiy.apps.magemediation.api.plugable.PluginContext
 import net.pototskiy.apps.magemediation.database.initDatabase
 import net.pototskiy.apps.magemediation.loader.DataLoader
 import net.pototskiy.apps.magemediation.mediator.DataMediator
+import net.pototskiy.apps.magemediation.printer.DataPrinter
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
@@ -45,6 +46,7 @@ fun main(args: Array<String>) {
     initDatabase(CONFIG_BUILDER.config.database, CONFIG_BUILDER.config.entityTypeManager)
     DataLoader.load(CONFIG_BUILDER.config)
     DataMediator.mediate(CONFIG_BUILDER.config)
+    CONFIG_BUILDER.config.printer?.let { DataPrinter.print(CONFIG_BUILDER.config) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     statusLog.info("Application has finished")
 }
