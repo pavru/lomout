@@ -36,6 +36,7 @@ internal class PrinterBasicTest {
 
     @Test
     internal fun printerBasicTest() {
+        File("../tmp/$outputName").parentFile.mkdirs()
         val config = createConfiguration()
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
