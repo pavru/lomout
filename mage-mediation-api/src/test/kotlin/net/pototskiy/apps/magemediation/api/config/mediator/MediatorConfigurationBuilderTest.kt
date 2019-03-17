@@ -56,7 +56,7 @@ internal class MediatorConfigurationBuilderTest {
         assertThat(conf.lines).hasSize(1)
         val line = conf.lines.first()
         assertThat(line).isInstanceOf(ProductionLine::class.java)
-        assertThat(line.lineType).isEqualTo(ProductionLine.LineType.CROSS)
+        assertThat(line.lineType).isEqualTo(AbstractLine.LineType.CROSS)
         assertThat(line.inputEntities).hasSize(2)
         assertThat(line.inputEntities.map { it.entity.name }).containsExactlyElementsOf(
             listOf(

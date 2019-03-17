@@ -11,11 +11,11 @@ data class MediatorConfiguration(
         private var lines = mutableListOf<ProductionLine>()
 
         fun unionProductionLine(block: ProductionLine.Builder.() -> Unit) {
-            lines.add(ProductionLine.Builder(helper, ProductionLine.LineType.UNION).apply(block).build())
+            lines.add(ProductionLine.Builder(helper, AbstractLine.LineType.UNION).apply(block).build())
         }
 
         fun crossProductionLine(block: ProductionLine.Builder.() -> Unit) {
-            lines.add(ProductionLine.Builder(helper, ProductionLine.LineType.CROSS).apply(block).build())
+            lines.add(ProductionLine.Builder(helper, AbstractLine.LineType.CROSS).apply(block).build())
         }
 
         fun build(): MediatorConfiguration {

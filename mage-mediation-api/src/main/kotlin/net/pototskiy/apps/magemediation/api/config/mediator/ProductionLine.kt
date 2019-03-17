@@ -6,15 +6,14 @@ import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
 import net.pototskiy.apps.magemediation.api.entity.EntityType
 
-data class ProductionLine(
-    val lineType: LineType,
-    val inputEntities: InputEntityCollection,
+class ProductionLine(
+    lineType: AbstractLine.LineType,
+    inputEntities: InputEntityCollection,
     val outputEntity: EntityType,
-    val pipeline: Pipeline
-) {
-    enum class LineType { CROSS, UNION }
+    pipeline: Pipeline
+) : AbstractLine(lineType, inputEntities, pipeline) {
     @ConfigDsl
-    class Builder(private val helper: ConfigBuildHelper, private val lineType: LineType) {
+    class Builder(private val helper: ConfigBuildHelper, private val lineType: AbstractLine.LineType) {
         private var inputs: InputEntityCollection? = null
         private var output: EntityType? = null
         private var pipeline: Pipeline? = null

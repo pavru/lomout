@@ -3,14 +3,15 @@ package net.pototskiy.apps.magemediation.api.config.printer
 import net.pototskiy.apps.magemediation.api.AppConfigException
 import net.pototskiy.apps.magemediation.api.config.ConfigBuildHelper
 import net.pototskiy.apps.magemediation.api.config.ConfigDsl
+import net.pototskiy.apps.magemediation.api.config.mediator.AbstractLine
 import net.pototskiy.apps.magemediation.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.magemediation.api.config.mediator.Pipeline
 
-data class PrinterLine(
-    val inputEntities: InputEntityCollection,
+class PrinterLine(
+    inputEntities: InputEntityCollection,
     val outputFieldSets: PrinterOutput,
-    val pipeline: Pipeline
-) {
+    pipeline: Pipeline
+) : AbstractLine(LineType.UNION, inputEntities, pipeline) {
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var inputs: InputEntityCollection? = null
@@ -29,6 +30,7 @@ data class PrinterLine(
                 }
             }
         }
+
         @ConfigDsl
         fun output(block: PrinterOutput.Builder.() -> Unit) {
             this.outputs = PrinterOutput.Builder(

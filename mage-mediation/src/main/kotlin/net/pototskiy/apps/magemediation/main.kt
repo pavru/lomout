@@ -44,8 +44,8 @@ fun main(args: Array<String>) {
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
     setupPluginContext()
     initDatabase(CONFIG_BUILDER.config.database, CONFIG_BUILDER.config.entityTypeManager)
-    DataLoader.load(CONFIG_BUILDER.config)
-    DataMediator.mediate(CONFIG_BUILDER.config)
+    CONFIG_BUILDER.config.loader?.let { DataLoader.load(CONFIG_BUILDER.config) }
+    CONFIG_BUILDER.config.mediator?.let { DataMediator.mediate(CONFIG_BUILDER.config) }
     CONFIG_BUILDER.config.printer?.let { DataPrinter.print(CONFIG_BUILDER.config) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     statusLog.info("Application has finished")
