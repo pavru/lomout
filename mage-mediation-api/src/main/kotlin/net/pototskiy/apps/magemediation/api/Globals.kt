@@ -23,4 +23,5 @@ const val ENTITY_TYPE_NAME_LENGTH = 100
 const val CSV_SHEET_NAME = "default"
 
 // Standard strings
+@Suppress("unused")
 const val NOT_IMPLEMENTED = "not implemented"

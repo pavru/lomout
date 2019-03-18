@@ -1,6 +1,5 @@
 package net.pototskiy.apps.magemediation.api.entity
 
-// TODO: 18.02.2019 define parameters
 interface EntityTypeManagerInterface : EntityAttributeManagerInterface {
     fun getEntityType(name: String): EntityType?
 
