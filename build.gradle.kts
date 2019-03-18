@@ -9,7 +9,7 @@ plugins {
 buildscript {
 }
 
-group = "oooast-tools"
+group = "lomout"
 version = "1.0-SNAPSHOT"
 
 subprojects {

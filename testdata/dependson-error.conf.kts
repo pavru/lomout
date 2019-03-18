@@ -2,7 +2,7 @@
 
 config {
     database {
-        name("test")
+        name("test_lomout")
         server {
             host("localhost")
             user("root")

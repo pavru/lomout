@@ -6,4 +6,4 @@
 [![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=pavru_oooast-tools&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=pavru_oooast-tools)
 
 # oooast-tools
-Prepare data from excel, csv for Magento import
+Map Excel, CSV to Excel, CSV

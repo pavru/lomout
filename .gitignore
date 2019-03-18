@@ -1,9 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 /.idea/
-/mage-mediation/log/
-/log/magemediation.log
-/mage-mediation/tmp/
+/lomout/log/
+/log/lomout.log
+/lomout/tmp/
 /.scannerwork/
-/mage-mediation-api/log/
+/lomout-api/log/
 /tmp/

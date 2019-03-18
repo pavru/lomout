@@ -22,7 +22,7 @@ import RelationGroupNameFromGroup_plugin_conf.RelationGroupNameFromGroup
 
 config {
     database {
-        name("magemediation")
+        name("lomout")
         server {
             host("localhost")
             port(3306)
