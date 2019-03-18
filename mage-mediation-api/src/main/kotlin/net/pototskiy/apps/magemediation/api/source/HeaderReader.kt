@@ -33,7 +33,6 @@ private fun readHeaders(
 }
 
 private fun validateAllSourcesCompatible(fieldSets: List<List<Field>>) {
-    // TODO: 02.03.2019 write test for this validate
     val fieldSetSizes = fieldSets.groupBy { it.size }
     if (fieldSetSizes.keys.size > 1) {
         throw AppConfigException("Sources have different number of fields")
