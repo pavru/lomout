@@ -29,7 +29,7 @@ class ConfigHost(private val configFile: File) {
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript>()
         val scriptHost = BasicJvmScriptingHost()
-// TODO: 06.02.2019 Bug KT-29741, switch on cache after bug will be resolved
+// Bug KT-29741, switch on cache after bug will be resolved
 //        val scriptHost = BasicJvmScriptingHost(
 //            compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File("tmp/config/cache")))
 //        )

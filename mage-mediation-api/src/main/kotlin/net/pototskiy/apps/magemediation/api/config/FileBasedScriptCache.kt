@@ -12,7 +12,8 @@ import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
 import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 
-// TODO: 07.02.2019 remove suppress after bug with serialization will be resolved
+// Bug KT-29741, switch on cache after bug will be resolved
+// remove suppress after bug with serialization will be resolved
 @Suppress("unused")
 @Generated
 class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache {
