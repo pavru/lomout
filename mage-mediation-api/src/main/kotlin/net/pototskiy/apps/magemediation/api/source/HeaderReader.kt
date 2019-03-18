@@ -38,8 +38,9 @@ private fun validateAllSourcesCompatible(fieldSets: List<List<Field>>) {
     if (fieldSetSizes.keys.size > 1) {
         throw AppConfigException("Sources have different number of fields")
     }
+    val numberOfCombinations = fieldSetSizes.values.first().size
     val fieldSetNameColumn = fieldSets.flatten().groupBy { Pair(it.name, it.column) }
-    if (fieldSetNameColumn.values.any { it.size != fieldSetSizes.values.size }) {
+    if (fieldSetNameColumn.values.any { it.size != numberOfCombinations }) {
         throw AppConfigException("Sources have different fields or fields in different columns")
     }
 }

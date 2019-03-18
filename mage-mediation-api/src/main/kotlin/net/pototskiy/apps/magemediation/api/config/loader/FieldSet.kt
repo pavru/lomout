@@ -108,7 +108,7 @@ data class FieldSet(
             val collectedFields = try {
                 readFieldNamesFromSource(sources, headerRow)
             } catch (e: AppConfigException) {
-                throw AppConfigException("Can not collect headers (fields) from sources", e)
+                throw AppConfigException(e.message, e)
             }
             collectedFields.map { field ->
                 val configuredField = fields.keys.find { it == field }
