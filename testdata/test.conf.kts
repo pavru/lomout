@@ -1,6 +1,6 @@
 config {
     database {
-        name("test_magemediation")
+        name("test_lomout")
         server {
             host("localhost")
             port(3306)

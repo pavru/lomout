@@ -1,0 +1,5 @@
+[INFO ] 2019-03-15 08:41:28.226 [main        ] status   - Application has started
+[INFO ] 2019-03-15 08:41:28.230 [main        ] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\oooast-tools\config\config.conf.kts
+[ERROR] 2019-03-15 08:41:34.781 [main        ] config   - Error evaluating script (config.conf.kts:0)
+[ERROR] 2019-03-15 08:41:34.781 [main        ] config   - E:\home\alexander\Development\Web\oooast-tools\null\catalog_product.csv (The system cannot find the path specified) (config.conf.kts:293)
+[ERROR] 2019-03-15 08:41:34.782 [main        ] status   - Script can not be evaluated

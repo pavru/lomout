@@ -1,0 +1,244 @@
+[INFO ] 2019-03-18 14:50:30.383 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\conf-test.conf.kts
+[INFO ] 2019-03-18 14:50:37.865 [l-1-worker-9] status   - Configuration loading has finished
+[INFO ] 2019-03-18 14:50:37.866 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\conf-test.conf.kts
+[INFO ] 2019-03-18 14:50:39.012 [l-1-worker-9] status   - Configuration loading has finished
+[INFO ] 2019-03-18 14:50:39.014 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\conf-test.conf.kts
+[INFO ] 2019-03-18 14:50:40.189 [l-1-worker-9] status   - Configuration loading has finished
+[INFO ] 2019-03-18 14:50:43.686 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\import-error.conf.kts
+[ERROR] 2019-03-18 14:50:44.131 [l-1-worker-9] config   - Source file or directory not found: E:\home\alexander\Development\Web\lomout\testdata\absent-file.plugin.conf.kts (import-error.conf.kts:0)
+[TRACE] 2019-03-18 14:50:44.132 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:44.132 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:44.132 [l-1-worker-9] config   - Cannot find imported script file 'E:\home\alexander\Development\Web\lomout\testdata\absent-file.plugin.conf.kts'. Check your script imports (import-error.conf.kts:3)
+[TRACE] 2019-03-18 14:50:44.133 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:44.133 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:44.133 [l-1-worker-9] status   - Configuration file can not be compiled
+[INFO ] 2019-03-18 14:50:44.134 [l-1-worker-9] status   - Configuration loading has finished
+[INFO ] 2019-03-18 14:50:44.137 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\evaluate-error.conf.kts
+[ERROR] 2019-03-18 14:50:44.467 [coroutine#14] config   - Error evaluating script (evaluate-error.conf.kts:0)
+[ERROR] 2019-03-18 14:50:44.468 [coroutine#14] config   - Source file<id:file-2> is not defined (evaluate-error.conf.kts:20)
+[TRACE] 2019-03-18 14:50:44.468 [coroutine#14] config   - Error evaluating script
+java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45) ~[?:1.8.0_201]
+	at java.lang.reflect.Constructor.newInstance(Constructor.java:423) ~[?:1.8.0_201]
+	at kotlin.script.experimental.jvmhost.BasicJvmScriptEvaluator.invoke$suspendImpl(jvmScriptEvaluation.kt:78) ~[kotlin-scripting-jvm-host-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlin.script.experimental.jvmhost.BasicJvmScriptEvaluator.invoke(jvmScriptEvaluation.kt) ~[kotlin-scripting-jvm-host-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at net.pototskiy.apps.lomout.api.config.ConfigHost$evaluate$1.invokeSuspend(ConfigHost.kt:58) ~[main/:?]
+	at kotlin.coroutines.jvm.internal.BaseContinuationImpl.resumeWith(ContinuationImpl.kt:32) ~[kotlin-stdlib-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.DispatchedTask.run(Dispatched.kt:236) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.EventLoopBase.processNextEvent(EventLoop.kt:123) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.BlockingCoroutine.joinBlocking(Builders.kt:69) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking(Builders.kt:45) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.BuildersKt.runBlocking(Unknown Source) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.BuildersKt__BuildersKt.runBlocking$default(Builders.kt:35) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at kotlinx.coroutines.BuildersKt.runBlocking$default(Unknown Source) ~[kotlin-compiler-1.3.21.jar:1.3.21-release-158 (1.3.21)]
+	at net.pototskiy.apps.lomout.api.config.ConfigHost.evaluate(ConfigHost.kt:56) ~[main/:?]
+	at net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL.readConfig(ConfigurationBuilderFromDSL.kt:28) ~[main/:?]
+	at net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL.getConfig(ConfigurationBuilderFromDSL.kt:18) ~[main/:?]
+	at net.pototskiy.apps.lomout.api.config.LoadConfigurationTest.loadConfigWithEvaluateErrorTest$lomout_api(LoadConfigurationTest.kt:62) ~[test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_201]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_201]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_201]
+	at java.lang.reflect.Method.invoke(Method.java:498) ~[?:1.8.0_201]
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:628) ~[junit-platform-commons-1.4.1.jar:1.4.1]
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:117) ~[junit-jupiter-engine-5.4.1.jar:5.4.1]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$7(TestMethodTestDescriptor.java:184) ~[junit-jupiter-engine-5.4.1.jar:5.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:180) ~[junit-jupiter-engine-5.4.1.jar:5.4.1]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:127) ~[junit-jupiter-engine-5.4.1.jar:5.4.1]
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:68) ~[junit-jupiter-engine-5.4.1.jar:5.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:135) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService$ExclusiveTask.compute(ForkJoinPoolHierarchicalTestExecutorService.java:171) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService.executeNonConcurrentTasks(ForkJoinPoolHierarchicalTestExecutorService.java:141) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService.invokeAll(ForkJoinPoolHierarchicalTestExecutorService.java:121) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService$ExclusiveTask.compute(ForkJoinPoolHierarchicalTestExecutorService.java:171) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService.executeNonConcurrentTasks(ForkJoinPoolHierarchicalTestExecutorService.java:141) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService.invokeAll(ForkJoinPoolHierarchicalTestExecutorService.java:121) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$5(NodeTestTask.java:139) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$7(NodeTestTask.java:125) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:135) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$8(NodeTestTask.java:123) ~[junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:73) [junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:122) [junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:80) [junit-platform-engine-1.4.1.jar:1.4.1]
+	at org.junit.platform.engine.support.hierarchical.ForkJoinPoolHierarchicalTestExecutorService$ExclusiveTask.compute(ForkJoinPoolHierarchicalTestExecutorService.java:171) [junit-platform-engine-1.4.1.jar:1.4.1]
+	at java.util.concurrent.RecursiveAction.exec(RecursiveAction.java:189) [?:1.8.0_201]
+	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289) [?:1.8.0_201]
+	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056) [?:1.8.0_201]
+	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692) [?:1.8.0_201]
+	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157) [?:1.8.0_201]
+Caused by: net.pototskiy.apps.lomout.api.AppConfigException: Source file<id:file-2> is not defined
+	at net.pototskiy.apps.lomout.api.config.loader.SourceData$Builder.file(SourceData.kt:22) ~[main/:?]
+	at Evaluate_error_conf$1$2$3$1$1.invoke(evaluate-error.conf.kts:20) ~[?:?]
+	at Evaluate_error_conf$1$2$3$1$1.invoke(evaluate-error.conf.kts:1) ~[?:?]
+	at net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection$Builder.source(SourceDataCollection.kt:13) ~[main/:?]
+	at Evaluate_error_conf$1$2$3$1.invoke(evaluate-error.conf.kts:20) ~[?:?]
+	at Evaluate_error_conf$1$2$3$1.invoke(evaluate-error.conf.kts:1) ~[?:?]
+	at net.pototskiy.apps.lomout.api.config.loader.Load$Builder.fromSources(Load.kt:43) ~[main/:?]
+	at Evaluate_error_conf$1$2$3.invoke(evaluate-error.conf.kts:19) ~[?:?]
+	at Evaluate_error_conf$1$2$3.invoke(evaluate-error.conf.kts:1) ~[?:?]
+	at net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration$Builder.loadEntity(LoaderConfiguration.kt:31) ~[main/:?]
+	at Evaluate_error_conf$1$2.invoke(evaluate-error.conf.kts:18) ~[?:?]
+	at Evaluate_error_conf$1$2.invoke(evaluate-error.conf.kts:1) ~[?:?]
+	at net.pototskiy.apps.lomout.api.config.Config$Builder.loader(Config.kt:36) ~[main/:?]
+	at Evaluate_error_conf$1.invoke(evaluate-error.conf.kts:9) ~[?:?]
+	at Evaluate_error_conf$1.invoke(evaluate-error.conf.kts:1) ~[?:?]
+	at net.pototskiy.apps.lomout.api.config.ConfigKt.config(Config.kt:71) ~[main/:?]
+	at Evaluate_error_conf.<init>(Unknown Source) ~[?:?]
+	... 66 more
+[ERROR] 2019-03-18 14:50:44.486 [l-1-worker-9] status   - Script can not be evaluated
+[INFO ] 2019-03-18 14:50:44.490 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\compile-error.conf.kts
+[ERROR] 2019-03-18 14:50:44.679 [l-1-worker-9] config   - Expecting '"' (compile-error.conf.kts:3)
+[TRACE] 2019-03-18 14:50:44.680 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:44.680 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:44.680 [l-1-worker-9] config   - Expecting ')' (compile-error.conf.kts:3)
+[TRACE] 2019-03-18 14:50:44.680 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:44.681 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:44.681 [l-1-worker-9] status   - Configuration file can not be compiled
+[INFO ] 2019-03-18 14:50:44.681 [l-1-worker-9] status   - Configuration loading has finished
+[INFO ] 2019-03-18 14:50:44.683 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\empty-config.conf.kts
+[ERROR] 2019-03-18 14:50:44.790 [l-1-worker-9] status   - Script can not be evaluated
+[INFO ] 2019-03-18 14:50:44.792 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\dependson-error.conf.kts
+[ERROR] 2019-03-18 14:50:45.350 [l-1-worker-9] config   - Unable to resolve dependency @org.jetbrains.kotlin.script.util.DependsOn(value=test, groupId=group, artifactId=absent-file.plugin.conf.kts, version=1.0) (dependson-error.conf.kts:0)
+[TRACE] 2019-03-18 14:50:45.351 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.351 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.351 [l-1-worker-9] config   - Unable to resolve dependency @org.jetbrains.kotlin.script.util.DependsOn(value=test, groupId=group, artifactId=absent-file.plugin.conf.kts, version=1.0) (dependson-error.conf.kts:0)
+[TRACE] 2019-03-18 14:50:45.351 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.351 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.351 [l-1-worker-9] config   - Unable to resolve dependency @org.jetbrains.kotlin.script.util.DependsOn(value=test, groupId=group, artifactId=absent-file.plugin.conf.kts, version=1.0) (dependson-error.conf.kts:0)
+[TRACE] 2019-03-18 14:50:45.352 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.352 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.352 [l-1-worker-9] config   - Unresolved reference: DependsOn (dependson-error.conf.kts:1)
+[TRACE] 2019-03-18 14:50:45.353 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.353 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.353 [l-1-worker-9] config   - Unresolved reference: config (dependson-error.conf.kts:3)
+[TRACE] 2019-03-18 14:50:45.353 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.353 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.353 [l-1-worker-9] config   - Unresolved reference: database (dependson-error.conf.kts:4)
+[TRACE] 2019-03-18 14:50:45.354 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.354 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.355 [l-1-worker-9] config   - Unresolved reference: name (dependson-error.conf.kts:5)
+[TRACE] 2019-03-18 14:50:45.355 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.355 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.355 [l-1-worker-9] config   - Unresolved reference: server (dependson-error.conf.kts:6)
+[TRACE] 2019-03-18 14:50:45.356 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.356 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.356 [l-1-worker-9] config   - Unresolved reference: host (dependson-error.conf.kts:7)
+[TRACE] 2019-03-18 14:50:45.356 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.356 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.357 [l-1-worker-9] config   - Unresolved reference: user (dependson-error.conf.kts:8)
+[TRACE] 2019-03-18 14:50:45.357 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.357 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.357 [l-1-worker-9] config   - Unresolved reference: loader (dependson-error.conf.kts:11)
+[TRACE] 2019-03-18 14:50:45.357 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.358 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.358 [l-1-worker-9] config   - Unresolved reference: files (dependson-error.conf.kts:12)
+[TRACE] 2019-03-18 14:50:45.358 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.358 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.358 [l-1-worker-9] config   - Unresolved reference: file (dependson-error.conf.kts:13)
+[TRACE] 2019-03-18 14:50:45.358 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.359 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.359 [l-1-worker-9] config   - Unresolved reference: path (dependson-error.conf.kts:13)
+[TRACE] 2019-03-18 14:50:45.359 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.359 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.360 [l-1-worker-9] config   - Unresolved reference: entities (dependson-error.conf.kts:15)
+[TRACE] 2019-03-18 14:50:45.360 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.360 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.360 [l-1-worker-9] config   - Unresolved reference: entity (dependson-error.conf.kts:16)
+[TRACE] 2019-03-18 14:50:45.360 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.361 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.361 [l-1-worker-9] config   - Unresolved reference: attribute (dependson-error.conf.kts:17)
+[TRACE] 2019-03-18 14:50:45.361 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.361 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.361 [l-1-worker-9] config   - Unresolved reference: StringType (dependson-error.conf.kts:17)
+[TRACE] 2019-03-18 14:50:45.361 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.362 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.362 [l-1-worker-9] config   - Unresolved reference: key (dependson-error.conf.kts:17)
+[TRACE] 2019-03-18 14:50:45.362 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.362 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.362 [l-1-worker-9] config   - Unresolved reference: loadEntity (dependson-error.conf.kts:20)
+[TRACE] 2019-03-18 14:50:45.363 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.363 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.363 [l-1-worker-9] config   - Unresolved reference: fromSources (dependson-error.conf.kts:21)
+[TRACE] 2019-03-18 14:50:45.363 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.363 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.363 [l-1-worker-9] config   - Unresolved reference: source (dependson-error.conf.kts:22)
+[TRACE] 2019-03-18 14:50:45.364 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.364 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.364 [l-1-worker-9] config   - Unresolved reference: file (dependson-error.conf.kts:22)
+[TRACE] 2019-03-18 14:50:45.364 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.365 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.365 [l-1-worker-9] config   - Unresolved reference: sheet (dependson-error.conf.kts:22)
+[TRACE] 2019-03-18 14:50:45.365 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.365 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.365 [l-1-worker-9] config   - Unresolved reference: stopOnEmptyRow (dependson-error.conf.kts:22)
+[TRACE] 2019-03-18 14:50:45.366 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.366 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.366 [l-1-worker-9] config   - Unresolved reference: sourceFields (dependson-error.conf.kts:24)
+[TRACE] 2019-03-18 14:50:45.366 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.366 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.366 [l-1-worker-9] config   - Unresolved reference: main (dependson-error.conf.kts:25)
+[TRACE] 2019-03-18 14:50:45.367 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.367 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.367 [l-1-worker-9] config   - Unresolved reference: field (dependson-error.conf.kts:26)
+[TRACE] 2019-03-18 14:50:45.367 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.367 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.368 [l-1-worker-9] config   - Unresolved reference: column (dependson-error.conf.kts:26)
+[TRACE] 2019-03-18 14:50:45.368 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.368 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.368 [l-1-worker-9] config   - Unresolved reference: mediator (dependson-error.conf.kts:31)
+[TRACE] 2019-03-18 14:50:45.368 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.369 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.369 [l-1-worker-9] config   - Unresolved reference: unionProductionLine (dependson-error.conf.kts:32)
+[TRACE] 2019-03-18 14:50:45.369 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.369 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.370 [l-1-worker-9] config   - Unresolved reference: input (dependson-error.conf.kts:33)
+[TRACE] 2019-03-18 14:50:45.370 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.370 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.371 [l-1-worker-9] config   - Unresolved reference: entity (dependson-error.conf.kts:34)
+[TRACE] 2019-03-18 14:50:45.371 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.371 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.372 [l-1-worker-9] config   - Unresolved reference: output (dependson-error.conf.kts:36)
+[TRACE] 2019-03-18 14:50:45.372 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.372 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.373 [l-1-worker-9] config   - Unresolved reference: inheritFrom (dependson-error.conf.kts:37)
+[TRACE] 2019-03-18 14:50:45.373 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.374 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.374 [l-1-worker-9] config   - Unresolved reference: pipeline (dependson-error.conf.kts:39)
+[TRACE] 2019-03-18 14:50:45.374 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.375 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.375 [l-1-worker-9] config   - Unresolved reference: assembler (dependson-error.conf.kts:40)
+[TRACE] 2019-03-18 14:50:45.375 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.375 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.375 [l-1-worker-9] config   - Cannot infer a type for this parameter. Please specify it explicitly. (dependson-error.conf.kts:40)
+[TRACE] 2019-03-18 14:50:45.376 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.376 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.376 [l-1-worker-9] config   - Cannot infer a type for this parameter. Please specify it explicitly. (dependson-error.conf.kts:40)
+[TRACE] 2019-03-18 14:50:45.376 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.377 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.377 [l-1-worker-9] config   - Type inference failed: Not enough information to infer parameter K in fun <K, V> emptyMap(): Map<K, V>
+Please specify it explicitly.
+ (dependson-error.conf.kts:40)
+[TRACE] 2019-03-18 14:50:45.377 [l-1-worker-9] config   - Exception:
+[TRACE] 2019-03-18 14:50:45.377 [l-1-worker-9] config   - Caused:
+[ERROR] 2019-03-18 14:50:45.377 [l-1-worker-9] status   - Configuration file can not be compiled
+[INFO ] 2019-03-18 14:50:45.378 [l-1-worker-9] status   - Configuration loading has finished
+[INFO ] 2019-03-18 14:50:45.381 [l-1-worker-9] status   - Configuration loading has started from file: E:\home\alexander\Development\Web\lomout\testdata\error-free.conf.kts
+[INFO ] 2019-03-18 14:50:45.921 [l-1-worker-9] status   - Configuration loading has finished

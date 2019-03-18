@@ -1,4 +1,4 @@
-rootProject.name = "oooast-tools"
+rootProject.name = "lomout"
 rootProject.buildFileName = "build.gradle.kts"
 
 pluginManagement {
@@ -21,7 +21,7 @@ pluginManagement {
 }
 
 include(
-    ":mage-mediation-api",
-    ":mage-mediation"
+    ":lomout-api",
+    ":lomout"
 )
 

@@ -3,7 +3,7 @@
 config {
     @Suppress("RedundantExplicitType") val a: Int = 100
     database {
-        name("test")
+        name("test_lomunt")
         server {
             host("localhost")
             user("root")
