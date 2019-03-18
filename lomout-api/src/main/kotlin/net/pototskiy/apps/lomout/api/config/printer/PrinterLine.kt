@@ -51,11 +51,19 @@ class PrinterLine(
 
         @Suppress("ThrowsCount")
         fun build(): PrinterLine {
+            validatePipeline(pipeline ?: throw AppConfigException("Pipeline must be defined"))
             return PrinterLine(
                 inputs ?: throw AppConfigException("Input entities must be defined"),
                 outputs ?: throw AppConfigException("Output fields must be defined"),
                 pipeline ?: throw AppConfigException("Pipeline must be defined")
             )
+        }
+
+        private fun validatePipeline(pipeline: Pipeline) {
+            if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
+                throw AppConfigException("Pipeline with matched child must have assembler")
+            }
+            for (line in pipeline.pipelines) validatePipeline(line)
         }
     }
 }

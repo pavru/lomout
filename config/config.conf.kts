@@ -403,7 +403,7 @@ config {
     printer {
         files {
             val testDataDir = System.getenv("TEST_DATA_DIR")
-            file("mage-category") { path("$testDataDir/catalog_category_new.csv") }
+            file("mage-category") { path("../tmp/catalog_category_new.csv") }
         }
         printerLine {
             input {
@@ -429,10 +429,10 @@ config {
                     Pipeline.CLASS.MATCHED
                 }
                 pipeline(Pipeline.CLASS.MATCHED) {
-
+                    assembler { _, _ -> emptyMap() }
                 }
                 pipeline(Pipeline.CLASS.UNMATCHED) {
-
+                    assembler { _, _ -> emptyMap() }
                 }
             }
         }
