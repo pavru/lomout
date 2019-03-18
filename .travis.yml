@@ -4,28 +4,27 @@ language: java
 git:
   depth: false
 before_install:
-  - mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE
-    = 'utf8_general_ci';"
-  - mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8'
-    COLLATE = 'utf8_general_ci';"
+- mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE =
+  'utf8_general_ci';"
+- mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE
+  = 'utf8_general_ci';"
 env:
   global:
-    #  - secure: XtI2db/TNFZJT9g9Q1T1D0qbT942hdbhMC3kB0Ib3YEJOTfEFBReqyweWrQXEOXn48Uw5j6c+xeAPW1Fyfy9AljeFbAuQG+z6fcfSKkFiUDJg8IEZAh08Dw0NPsvjwOHfBsN/8oxbtQxFr0iLFPqVyZly0HMN4FAzDoxeyoyWyFOSbb2pNZOvScS63nMZlogw5d/cHZRzfnztgJmhkhihMXmcW14FVaJL4Kgm4UvfuhFNo2n0BCsdhUgbm++llrAtHCc9/zng8G3Y814M4itQqN3PwmRl5cWG8Hg+LGSpBivKGZcbirdtbkynR0WNS/6OlfSnSuMkDku7yG9R+VZYvvEYxtfWWJZVCw5UPI+SxoYtFhVdX26r2XnUDjI2YoBQYYts0gnhBJ3HgxA2TOEjVDXNOJLocD6paEFTGQJ1e6A10ylM8a2KXP6b4nCnoo7lX2dvlIDxxY35PxVxB8R7XP/yQ8Qb1Fq9OO+xHzyMfcGMDF1y+VKmD0hD9frH2DqXSm+vNx93/EJ+tnmokGHgykxSpxLgm51GPsltUp+WGqqWzIt9z/Ca5vmW/c9OFIKCTz2Cje+UrCbFKCdY0Tu9mK5vbYYCi6Ynb+tCld44NxvtrNc3BgK2BrQ34FZcNlbvCRyMjxEdJeJgHFFc69xWbIPXIvh2Y15IMgCWyFwSEU=
-    #  - secure: kqFo/9jrrv8UUTpPHIQMcUl/vUot9+9flPzTNl+pI5Stckq1QU3bgj7BPLG018O3ox8TmbuIPM/1mZk9McSOVYpZMIjT+h7zYTKYPBHv2UBP9EhUUo3br4A/uqbcaNJRwFNL0S74XV5i4RUmHQ2IFhehsy7bLDyUYnFH0xWbWOWSIZXmnrZ4KcJMQnNc/sYkw7Hp/NJbYTbAT05xYmbum0EZXQbLHGcV/GuIe0PV6rMztffSK9XV78AmWPLuehqzoD0XvkwgDeMQRN4/OFWgvtxN2njYJDH8sPh4LVXuLe1yA+L60n8NMacZXeyGfMq+vsVoqi2OqObSzkGQWusMTfT52uFnsod3Z02VamI2f0RmUpSy2UrqMQUoNXaRMjDTfKnmlG8B4ALqc+ia3AvfzVbPNNlFog9TBZLU0Y76fjE5Y0Ya1YPE8MRZ+9+SHPnhll7MA8K+jOFLEitjVSKmgclXGIkutezi1sdWikLiTHgrdPdWrXwdNj2X0tOaGyKSY3zDO9nFryILEBRg2tRdqG/GykxIPQPN4lOVM506IOIwHayZKAsJVtnOhTGXXK/YYZBhOl93QfME3VZuhHKimY4OjJZkLskt/KWZ1lS52cMruXoBWzYwNSGDCkyJLKz+ZLp5X+nY3GJAlv8asVNASEYLQqWYNRM9Wf5KbLQ0C2A=
-    - secure: IE5sx2je0UIlZ9ebvZZ8tOp35U05Q6svZhxhkv1tpEFLzi3nLGPm1cmP6seXW/P69yKmgb1YKkqWZ5HZAtbRaC3/x84D6P6tMiqmuhJGFJh3KJitNc/llOkdANFHzm+m3AVxQ+8GyUnxPT9vN5LRO3/dfD46jdzv131zRskshUkUbAtWrQQHQhW5yp9EM17URqfHVlBJm7586wtTX3cvNKrMydOwgOywWk2BVjRDO6jm5CKfUrdcAYpWqNHOsU3S6n+oNF/JtY0SqO4C8n6J/clgVXowNxDae9i0C3l8sf6j1osfoZzGXffZ5LxFUw+is5Tv3/D9kPxl7QwFuOZHUfkOnNiSXEGL+3vxe7jkemf9oCOfWKa9Fd2IQKKhLdaqZ5cVFZwbXBej1a8MB2xbXHsYAZrlf+MRhoBb7Jb6kIuG3bC7s4W1Owa/Aw1cwvCm0MUslyjKmQxd1Bl0sjC+6sBN+citjN3/3nkhQaKjQ9mdkPxw9EF97tR1faDvACSfcCa5139GCUbpwDGgFKmAQ+Ji6vRPlB34NjHuhSQ6OUQYZHH8uczueaRszAtX6eQ3S6PVVgzZYke2eanVsrlLvJrxDAXTDv6DxEe+xgjHkXhiDsRi8NmEOoQ1Z5sCLGwoYIvr9N/+B/Cqtmp14QRlOUjp/fwYaf2g/ThG12WwMs0=
+#  - secure: IE5sx2je0UIlZ9ebvZZ8tOp35U05Q6svZhxhkv1tpEFLzi3nLGPm1cmP6seXW/P69yKmgb1YKkqWZ5HZAtbRaC3/x84D6P6tMiqmuhJGFJh3KJitNc/llOkdANFHzm+m3AVxQ+8GyUnxPT9vN5LRO3/dfD46jdzv131zRskshUkUbAtWrQQHQhW5yp9EM17URqfHVlBJm7586wtTX3cvNKrMydOwgOywWk2BVjRDO6jm5CKfUrdcAYpWqNHOsU3S6n+oNF/JtY0SqO4C8n6J/clgVXowNxDae9i0C3l8sf6j1osfoZzGXffZ5LxFUw+is5Tv3/D9kPxl7QwFuOZHUfkOnNiSXEGL+3vxe7jkemf9oCOfWKa9Fd2IQKKhLdaqZ5cVFZwbXBej1a8MB2xbXHsYAZrlf+MRhoBb7Jb6kIuG3bC7s4W1Owa/Aw1cwvCm0MUslyjKmQxd1Bl0sjC+6sBN+citjN3/3nkhQaKjQ9mdkPxw9EF97tR1faDvACSfcCa5139GCUbpwDGgFKmAQ+Ji6vRPlB34NjHuhSQ6OUQYZHH8uczueaRszAtX6eQ3S6PVVgzZYke2eanVsrlLvJrxDAXTDv6DxEe+xgjHkXhiDsRi8NmEOoQ1Z5sCLGwoYIvr9N/+B/Cqtmp14QRlOUjp/fwYaf2g/ThG12WwMs0=
+  - secure: SZ0Xngwo3zcMulrjIMXrT/HGQlgO5z6CyNLprLuKJAalGUplQ6qjDW7pkfg3j5XVTWJbJSJaPAjdaQZQsxJp852yjOKgxvLcov/IyjWcQvTbcripDl57sidijUthMlo1PlRx1rr3ck7wcIgHn8aAcPx80pnY+vkZyMndsGoLoK+f5TnVPCDlhBthjO8FwRtSWaaTJ91HsrsSnZyieAIN7thPM6OIOOHUYF4kD6wiN9qpqzA7G+sjw4W95c8Axng+UUYEqgKMs+LXrUB2iKOztSuFYVxlWUvb0CWkmuEkRPPBda17ufdQJt2004Njp5nVSQ1rXuQtPapRtT3UrXC+SGj61A+VIOQwRZ/Oz8sNVCO1SGRRqa8rkEYzCt6s4yTZsfcWtpu49VgVNfYYaJqSUWpyt3S4a1mYYbqhNpedxPcYUxeZO3NM6BUCO1qDS9d1nRuAMr1FAww2s+U6DFRQyLp5xi7wOiP/Wr78vndQLS0WKAYEiPz06hyw3GXPxdshOTCvN4TYnoFGFNASBppz8Z7vmH53pQ0rIb5yXbXAhJ2+O7RUD/im9vGdxmDQUFVSn/tDbJHUFuw8T3sfcINi6lEJhY7GYttUclo46iqLsw2PGSylP255zz/ng0x1YEWJnkScFSzK4mkIz1jdphp3oolTvqlraPSU50ChOQFBGDI=
 before_cache:
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - "$HOME/.gradle/caches/"
-    - "$HOME/.gradle/wrapper/"
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
 addons:
   sonarcloud:
     organization: pavru-github
     token:
-      secure: CNlVAYt/tTGCqPWHw5RPNlySQUnJXbPp05vlZpdqx2EozpAHEBAczLjN+O3ghJrav1M/AsaAfE7/pp9BAYBmFiNKuJB5BnCVUBuncHOu1Alf7PAr5uyNiZHU2PlfleyMJHWzJCALQKL73qkBLrKG4TPjXYLw4HnX/rBoXJxIz4WuoLxw1Ty+oAMPLfpKcEndQYaK+kO9AsCQHIM3huuce4tePd20RRa5bSPFQ/Htx2kqzJ6PANA7OgKBInwgNtqprgqUKpJqCW93kJYOHlDLmBJ8Ms2cjwQPLbdOdfK/E+AchxlN1r4UX6zBAGJQBG1a1PUooH1RyRHrwAwy22mck5HQSWOCJO2JdL7obmr3TqZUrLdBMcX+wl6U+X8rxMavE22I2PUjFuPFzeP0MpeiaKxNwNAX4Bhwjs5RBhqjn8kGOuu2kov5IClPebFrVd1ByUz7UfeUzfjTUzoiUFoNaYaN3nqmt6TE65MaUY31KKS0j/ZF+IoOdWKSaXhor7VPmuquMa807OngrwpEtCpINiBcyWRYBXTnNhZr8Qol77zHUw5XMoTSvfcdX6VnF4pzuG9mq0RlYqzk0+3ZhUEFrZhXMHG+3hF6l+Iy+b35bhvh8E3p7ebP4TJNShUAM+Fzr0c2DlPFIVqx/R4nlLCYpL/tHchn6leG1TvoVdolR24=
+      secure: "Ii7rtNJivsmPK5wUb1uZ5QM6ZbqYYKwvFsVrd8w6kwo+L5STBOsga1s05hOpcWSXOVRCeM32HJ0aXsS2EpWL2Zke5+H78d+EtbPxVxmaF24LHtITE8VhjeBIa8fThbNZBQQ+SrpHJ0gIxPNLwD9yXrTYEtAeozSlV9IlnSBV7R1vuPKanZVX21Q/zIp8XbGocCgKCxQAMu0DibaoPSckF0VIjDMdADMGhgVZug0MWgm4TPBQ2KjBUd3Be4sp6XAWh8HT2Zr6sC35FfnBZ6nuGucB3heGurOoWOUG8BqeNhDqlaVNeLyhA1Ev4jLXjUJy8UQYI2Jotarntd3CZNSL6yd70R+9nnh50RfA84YARHm4TVdWXrtRA/6cmU9WVhisgFypKRTqG9APLkA32PMlDQQy/VCEaDILsIW99StfEAfgQmjP1eVyccK0dqE5tHzWFTRGqObSSVTAIkfI6JO632mJ2UfM6+P8fpheW1mx94xUhiGuwWaLgVkB0KgLvi2xpIEPHIyNAW+9g2lMvm3ziMXuNy2+YKtLy0DpxKP8BIGhcoEh8+ycLVYu1nyTo0lOtrV0m4nVXvu9POv5dDZHj4MoDa80eS3U3eyJfGakVUF5u07zNOSZicjziHkFlP7AimTOkU2gu8NaVnbzISJfkxb0UWUzTcrttiQTEmgRk1E="
 after_success:
-  - ./gradlew codeCoverageReport
-  - sonar-scanner
-  - bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/
+- "./gradlew codeCoverageReport"
+- sonar-scanner
+- bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/
