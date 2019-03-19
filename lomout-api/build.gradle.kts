@@ -15,7 +15,7 @@ plugins {
 }
 
 group = rootProject.group
-version = "1.0-SNAPSHOT"
+version = rootProject.version
 
 idea {
     module {

@@ -14,7 +14,7 @@ plugins {
 }
 
 group = rootProject.group
-version = "1.0-SNAPSHOT"
+version = rootProject.version
 
 application {
     mainClassName = "net.pototskiy.apps.lomout.MainKt"
