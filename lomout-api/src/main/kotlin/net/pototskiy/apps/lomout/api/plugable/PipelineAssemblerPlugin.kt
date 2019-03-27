@@ -6,9 +6,14 @@ import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.Type
 
 abstract class PipelineAssemblerPlugin : Plugin() {
-    abstract fun assemble(target: EntityType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?>
+    abstract fun assemble(
+        target: EntityType,
+        entities: PipelineDataCollection
+    ): Map<AnyTypeAttribute, Type?>
 }
 
 typealias PipelineAssemblerFunction =
-        PluginContextInterface.(target: EntityType, entities: PipelineDataCollection)
-        -> Map<AnyTypeAttribute, Type?>
+        PluginContextInterface.(
+            target: EntityType,
+            entities: PipelineDataCollection
+        ) -> Map<AnyTypeAttribute, Type?>
