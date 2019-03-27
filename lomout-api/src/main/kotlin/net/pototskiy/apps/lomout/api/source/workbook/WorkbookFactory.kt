@@ -9,8 +9,6 @@ import net.pototskiy.apps.lomout.api.source.workbook.excel.setFileName
 import org.apache.commons.csv.CSVFormat
 import org.apache.poi.hssf.usermodel.HSSFFormulaEvaluator
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.apache.poi.xssf.usermodel.XSSFFormulaEvaluator
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.net.URL
@@ -27,7 +25,7 @@ class WorkbookFactory {
                     wb.setFileName(File(source.file))
                     ExcelWorkbook(wb, forInput)
                 }
-                "xlsx" -> {
+                "xlsx", "xlsm" -> {
                     val wb = xssfWorkbook(forInput, source)
                     wb.setFileName(File(source.file))
                     ExcelWorkbook(wb, forInput)
@@ -46,9 +44,9 @@ class WorkbookFactory {
 
         private fun xssfWorkbook(forInput: Boolean, input: URL): org.apache.poi.ss.usermodel.Workbook =
             if (forInput) {
-                SXSSFWorkbook(XSSFWorkbook(input.openStream())).also {
+                XSSFWorkbook(input.openStream())/*.also {
                     XSSFFormulaEvaluator.evaluateAllFormulaCells(it)
-                }
+                }*/
             } else {
                 XSSFWorkbook()
             }
