@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.entity
 import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.plugable.AttributeBuilderFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeBuilderPlugin
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -13,7 +14,7 @@ sealed class AttributeBuilder<R : Type> {
                 it.apply(options)
                 it.build(entity)
             }
-            is AttributeBuilderWithFunction -> function(entity)
+            is AttributeBuilderWithFunction -> PluginContext.function(entity)
         }
     }
 }

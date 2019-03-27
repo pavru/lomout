@@ -8,4 +8,4 @@ abstract class SqlFilterPlugin : Plugin() {
     abstract fun where(alias: Alias<DbEntityTable>): Op<Boolean>
 }
 
-typealias SqlFilterFunction = (Alias<DbEntityTable>) -> Op<Boolean>
+typealias SqlFilterFunction = PluginContextInterface.(Alias<DbEntityTable>) -> Op<Boolean>

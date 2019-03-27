@@ -7,4 +7,4 @@ abstract class AttributeBuilderPlugin<R : Type> : Plugin() {
     abstract fun build(entity: DbEntity): R?
 }
 
-typealias AttributeBuilderFunction<R> = (DbEntity) -> R?
+typealias AttributeBuilderFunction<R> = PluginContextInterface.(DbEntity) -> R?

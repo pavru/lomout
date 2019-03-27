@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -13,7 +14,7 @@ sealed class AttributeReader<T : Type> {
                 it.apply(options)
                 it.read(attribute, input)
             }
-            is AttributeReaderWithFunction -> function(attribute, input)
+            is AttributeReaderWithFunction -> PluginContext.function(attribute, input)
         }
     }
 }

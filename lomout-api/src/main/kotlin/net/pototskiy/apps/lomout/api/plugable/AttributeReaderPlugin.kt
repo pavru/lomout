@@ -8,4 +8,4 @@ abstract class AttributeReaderPlugin<T : Type> : Plugin() {
     abstract fun read(attribute: Attribute<out T>, input: Cell): T?
 }
 
-typealias AttributeReaderFunction<T> = (Attribute<out T>, Cell) -> T?
+typealias AttributeReaderFunction<T> = PluginContextInterface.(Attribute<out T>, Cell) -> T?

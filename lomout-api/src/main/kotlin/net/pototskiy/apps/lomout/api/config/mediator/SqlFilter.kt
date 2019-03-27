@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.plugable.SqlFilterFunction
 import net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin
 import org.jetbrains.exposed.sql.Alias
@@ -16,7 +17,7 @@ sealed class SqlFilter {
             it.apply(options)
             it.where(alias)
         }
-        is SqlFilterWithFunction -> function(alias)
+        is SqlFilterWithFunction -> PluginContext.function(alias)
     }
 }
 
