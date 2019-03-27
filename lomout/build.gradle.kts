@@ -115,9 +115,9 @@ tasks.jar {
         attributes("Main-Class" to application.mainClassName)
     }
     dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
-    })
+//    from({
+//        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+//    })
 }
 
 repositories {

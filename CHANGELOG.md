@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+### Fixed
+- [LM-17](https://camsoft.myjetbrains.com/youtrack/issue/LM-17)
+    Dependency jars removed from lomout.jar
 ## [1.1.0] - 2019-03-27
 ### Added
 - [LM-14](https://camsoft.myjetbrains.com/youtrack/issue/LM-14)
