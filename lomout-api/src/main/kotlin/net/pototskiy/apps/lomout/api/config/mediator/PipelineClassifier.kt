@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierFunction
 import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -12,7 +13,7 @@ sealed class PipelineClassifier {
                 it.apply(options)
                 it.classify(entities)
             }
-            is PipelineClassifierWithFunction -> function(entities)
+            is PipelineClassifierWithFunction -> PluginContext.function(entities)
         }
     }
 }

@@ -5,6 +5,7 @@ import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.Type
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerFunction
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -15,7 +16,7 @@ sealed class PipelineAssembler {
                 it.apply(options)
                 it.assemble(target, entities)
             }
-            is PipelineAssemblerWithFunction -> function(target, entities)
+            is PipelineAssemblerWithFunction -> PluginContext.function(target, entities)
         }
     }
 }

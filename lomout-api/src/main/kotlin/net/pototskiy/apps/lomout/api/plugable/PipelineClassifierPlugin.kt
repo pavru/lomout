@@ -9,4 +9,4 @@ abstract class PipelineClassifierPlugin : Plugin() {
     abstract fun classify(entities: PipelineDataCollection): Pipeline.CLASS
 }
 
-typealias PipelineClassifierFunction = (entities: PipelineDataCollection) -> Pipeline.CLASS
+typealias PipelineClassifierFunction = PluginContextInterface.(entities: PipelineDataCollection) -> Pipeline.CLASS
