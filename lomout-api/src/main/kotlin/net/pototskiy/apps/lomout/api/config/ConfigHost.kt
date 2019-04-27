@@ -19,6 +19,7 @@ import kotlin.script.experimental.api.onFailure
 import kotlin.script.experimental.api.onSuccess
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
+import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
 class ConfigHost(private val configFile: File) {
@@ -28,11 +29,9 @@ class ConfigHost(private val configFile: File) {
 
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript>()
-        val scriptHost = BasicJvmScriptingHost()
-// Bug KT-29741, switch on cache after bug will be resolved
-//        val scriptHost = BasicJvmScriptingHost(
-//            compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File("tmp/config/cache")))
-//        )
+        val scriptHost = BasicJvmScriptingHost(
+            compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File("tmp/config/cache")))
+        )
         return runBlocking {
             scriptHost.compiler(configFile.toScriptSource(), compilationConfiguration)
         }.onFailure { result ->
