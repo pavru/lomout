@@ -2,9 +2,9 @@
 object Versions {
     const val kotlin = "1.3.31"
     const val dokka = "0.9.18"
-    const val exposed = "0.13.5"
+    const val exposed = "0.13.6"
     val mysql = MysqlVersions(
-        connector = "8.0.15"
+        connector = "8.0.16"
     )
     const val ivy = "2.5.0-rc1"
     const val guava = "27.0.1-jre"
@@ -15,7 +15,7 @@ object Versions {
     const val slf4j = "1.8.0-beta4"
     const val progressBar = "0.7.2"
     const val jline = "3.9.0"
-    const val poi = "4.0.1"
+    const val poi = "4.1.0"
     const val detekt = "1.0.0-RC14"
 }
 
