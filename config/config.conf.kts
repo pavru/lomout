@@ -403,7 +403,7 @@ config {
     printer {
         files {
             val testDataDir = System.getenv("TEST_DATA_DIR")
-            file("mage-category") { path("../tmp/catalog_category_new.csv") }
+            file("mage-category") { path("tmp/catalog_category_new.csv") }
         }
         printerLine {
             input {
