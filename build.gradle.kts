@@ -10,7 +10,7 @@ buildscript {
 }
 
 group = "lomout"
-version = "1.1.3"
+version = "1.1.4"
 
 subprojects {
     apply {

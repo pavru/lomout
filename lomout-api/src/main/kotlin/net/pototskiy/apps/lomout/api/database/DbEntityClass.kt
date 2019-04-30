@@ -63,21 +63,20 @@ abstract class DbEntityClass(
     }
 
     fun insertEntity(entityType: EntityType, data: Map<AnyTypeAttribute, Type>): DbEntity {
-        return transaction {
-            val entity =
-                new {
-                    this.entityType = entityType
-                    touchedInLoading = true
-                    previousStatus = EntityStatus.CREATED
-                    currentStatus = EntityStatus.CREATED
-                    created = TIMESTAMP
-                    updated = TIMESTAMP
-                    absentDays = 0
-                }
-            data.filterNot { it.key.isSynthetic || it.value.isTransient }
-                .forEach { attribute, value -> addAttribute(entity, attribute, value) }
-            entity
+        val entity = transaction {
+            new {
+                this.entityType = entityType
+                touchedInLoading = true
+                previousStatus = EntityStatus.CREATED
+                currentStatus = EntityStatus.CREATED
+                created = TIMESTAMP
+                updated = TIMESTAMP
+                absentDays = 0
+            }
         }
+        data.filterNot { it.key.isSynthetic || it.value.isTransient }
+            .forEach { (attribute, value) -> addAttribute(entity, attribute, value) }
+        return entity
     }
 
     fun resetTouchFlag(entityType: EntityType) {
