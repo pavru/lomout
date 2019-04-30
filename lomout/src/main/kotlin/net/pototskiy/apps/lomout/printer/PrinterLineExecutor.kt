@@ -19,9 +19,13 @@ class PrinterLineExecutor(entityTypeManager: EntityTypeManager) :
 
     override val logger: Logger = LogManager.getLogger(PRINTER_LOG_NAME)
     private lateinit var printer: EntityPrinter
-    override fun processResultData(data: Map<AnyTypeAttribute, Type?>): Long {
-        return printer.print(data)
-    }
+
+    override fun processResultData(data: Map<AnyTypeAttribute, Type?>): Long =
+        if (data.isEmpty()) {
+            0L
+        } else {
+            printer.print(data)
+        }
 
     override fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor = PipelineExecutor(
         entityTypeManager,
