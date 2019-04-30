@@ -12,13 +12,20 @@ object Args {
     @Parameter(
         names = ["-c", "--conf"],
         description = "specify configuration file",
-        arity = 1
+        arity = 1,
+        required = true
     )
-    var configFile: String = "config/config.conf.kts"
+    var configFile: String = ""
     @Parameter(
         names = ["-l", "--log-level"],
         description = "log level: fatal, error, warn, info, trace",
         arity = 1
     )
     var logLevel: String = "warn"
+    @Parameter(
+        names = ["-s", "--sql-log-level"],
+        description = "log level: fatal, error, warn, info, trace",
+        arity = 1
+    )
+    var sqlLogLevel: String = "error"
 }

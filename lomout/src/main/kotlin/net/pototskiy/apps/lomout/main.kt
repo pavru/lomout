@@ -33,6 +33,7 @@ fun main(args: Array<String>) {
         @Suppress("SpreadOperator")
         jCommander.parse(*args)
     } catch (e: ParameterException) {
+        jCommander.usage()
         System.exit(1)
         return
     }
@@ -46,7 +47,11 @@ fun main(args: Array<String>) {
 
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
     setupPluginContext()
-    initDatabase(CONFIG_BUILDER.config.database, CONFIG_BUILDER.config.entityTypeManager)
+    initDatabase(
+        CONFIG_BUILDER.config.database,
+        CONFIG_BUILDER.config.entityTypeManager,
+        Level.toLevel(Args.sqlLogLevel)
+    )
     PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
     CONFIG_BUILDER.config.loader?.let { DataLoader.load(CONFIG_BUILDER.config) }
     PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
