@@ -19,9 +19,12 @@ class ProductionLineExecutor(entityTypeManager: EntityTypeManager) :
     override val logger: Logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private lateinit var entityUpdater: EntityUpdater
 
-    override fun processResultData(data: Map<AnyTypeAttribute, Type?>): Long {
-        return entityUpdater.update(data)
-    }
+    override fun processResultData(data: Map<AnyTypeAttribute, Type?>): Long =
+        if (data.isEmpty()) {
+            0L
+        } else {
+            entityUpdater.update(data)
+        }
 
     override fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor {
         line as ProductionLine
