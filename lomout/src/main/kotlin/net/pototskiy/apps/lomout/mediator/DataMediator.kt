@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.mediator
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.database.PipelineSets
 import org.apache.logging.log4j.LogManager
 import org.jetbrains.exposed.sql.deleteAll
@@ -27,7 +28,12 @@ object DataMediator {
         orderedLines.forEach { (_, lines) ->
             lines.forEach {
                 log.debug("Start creating entity<{}>", it.outputEntity.name)
+                val eType = it.outputEntity
+                DbEntity.resetTouchFlag(eType)
                 val rows = ProductionLineExecutor(config.entityTypeManager).executeLine(it)
+                DbEntity.markEntitiesAsRemove(eType)
+                DbEntity.updateAbsentAge(eType)
+                DbEntity.removeOldEntities(eType, 10)
                 processedRows.addAndGet(rows)
                 log.debug("Finish creating entity<{}>", it.outputEntity.name)
             }
