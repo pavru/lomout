@@ -30,23 +30,24 @@ class EntityUpdater(private val entityType: EntityType) {
     private fun testAndUpdateTypedAttributes(entity: DbEntity, data: Map<AnyTypeAttribute, Type?>): Long {
         var updatedRows = 0L
         val storeData = DbEntity.readAttributes(entity)
-        data.keys.plus(storeData.keys.minus(data.keys)).filter { !it.key }.forEach { attr ->
-            val value = data[attr]
-            val storedValue = storeData[attr]
-            if (value != null && !value.isTransient && storedValue == null) {
-                entity.addAttribute(attr, data.getValue(attr)!!)
-                entity.wasUpdated(true)
-                updatedRows = 1L
-            } else if (needToUpdate(value, storedValue)) {
-                entity.updateAttribute(attr, data.getValue(attr)!!)
-                entity.wasUpdated(true)
-                updatedRows = 1L
-            } else if (value == null && storedValue != null) {
-                entity.removeAttribute(attr)
-                entity.wasUpdated(true)
-                updatedRows = 1L
+        data.keys.plus(storeData.keys.minus(data.keys))
+            .filter { !it.key && it.builder == null }.forEach { attr ->
+                val value = data[attr]
+                val storedValue = storeData[attr]
+                if (value != null && !value.isTransient && storedValue == null) {
+                    entity.addAttribute(attr, data.getValue(attr)!!)
+                    entity.wasUpdated(true)
+                    updatedRows = 1L
+                } else if (needToUpdate(value, storedValue)) {
+                    entity.updateAttribute(attr, data.getValue(attr)!!)
+                    entity.wasUpdated(true)
+                    updatedRows = 1L
+                } else if (value == null && storedValue != null) {
+                    entity.removeAttribute(attr)
+                    entity.wasUpdated(true)
+                    updatedRows = 1L
+                }
             }
-        }
         return updatedRows
     }
 
