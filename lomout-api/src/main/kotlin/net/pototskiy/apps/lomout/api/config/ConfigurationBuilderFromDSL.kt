@@ -8,7 +8,11 @@ import kotlin.script.experimental.api.onFailure
 import kotlin.script.experimental.api.onSuccess
 import kotlin.system.exitProcess
 
-class ConfigurationBuilderFromDSL(private val configFile: File) {
+class ConfigurationBuilderFromDSL(
+    private val configFile: File,
+    private val cacheDir: String = "tmp/config/cache",
+    private val doNotUseCache: Boolean = false
+) {
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)!!
 
     private var configCache: Config? = null
@@ -21,7 +25,7 @@ class ConfigurationBuilderFromDSL(private val configFile: File) {
     private fun readConfig(): Config {
         lateinit var evaluatedConfig: Config
         statusLog.info("Configuration loading has started from file: ${configFile.absolutePath}")
-        val configHost = ConfigHost(configFile)
+        val configHost = ConfigHost(configFile, cacheDir, doNotUseCache)
         configHost.compile().onFailure {
             logger.error("Configuration file can not be compiled")
         }.onSuccess { compileResult ->

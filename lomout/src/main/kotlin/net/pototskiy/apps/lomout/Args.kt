@@ -28,4 +28,16 @@ object Args {
         arity = 1
     )
     var sqlLogLevel: String = "error"
+    @Parameter(
+        names = ["--script-cache-dir", "-d"],
+        description = "Directory where cached script store",
+        arity = 1
+    )
+    var scriptCacheDir: String = "tmp/config/cache"
+    @Parameter(
+        names = ["--do-not-use-cache", "-n"],
+        description = "Do not use cached script",
+        arity = 0
+    )
+    var doNotUseScriptCache: Boolean = false
 }
