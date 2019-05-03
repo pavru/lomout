@@ -22,7 +22,11 @@ import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
-class ConfigHost(private val configFile: File) {
+class ConfigHost(
+    private val configFile: File,
+    private val cacheDir: String,
+    private val doNotUseCache: Boolean
+) {
     private val logger = LogManager.getLogger(CONFIG_LOG_NAME)
     private val scriptHost = BasicJvmScriptingHost()
     private var compiledScript: CompiledScript<*>? = null
@@ -30,7 +34,7 @@ class ConfigHost(private val configFile: File) {
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript>()
         val scriptHost = BasicJvmScriptingHost(
-            compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File("tmp/config/cache")))
+            compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File(cacheDir), doNotUseCache))
         )
         return runBlocking {
             scriptHost.compiler(configFile.toScriptSource(), compilationConfiguration)
@@ -54,6 +58,7 @@ class ConfigHost(private val configFile: File) {
     fun evaluate(): ResultWithDiagnostics<Config> {
         return runBlocking {
             compiledScript?.let { script ->
+
                 scriptHost.evaluator(script, ScriptEvaluationConfiguration {
                     constructorArgs(emptyArray<String>())
                     enableScriptsInstancesSharing()

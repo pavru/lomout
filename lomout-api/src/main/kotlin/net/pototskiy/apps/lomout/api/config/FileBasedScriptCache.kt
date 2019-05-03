@@ -14,12 +14,16 @@ import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 // remove suppress after bug with serialization will be resolved
 @Suppress("unused")
 @Generated
-class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache {
+class FileBasedScriptCache(
+    private val baseDir: File,
+    private val doNotUseCache: Boolean
+) : CompiledJvmScriptsCache {
 
     override fun get(
         script: SourceCode,
         scriptCompilationConfiguration: ScriptCompilationConfiguration
     ): CompiledScript<*>? {
+        if (doNotUseCache) return null
         val scriptHash = ScriptUniqueHash(script, scriptCompilationConfiguration).hash()
             ?: return null
         val file = File(baseDir, scriptHash)
@@ -31,6 +35,7 @@ class FileBasedScriptCache(private val baseDir: File) : CompiledJvmScriptsCache 
         script: SourceCode,
         scriptCompilationConfiguration: ScriptCompilationConfiguration
     ) {
+        if (doNotUseCache) return
         if (!baseDir.exists()) baseDir.mkdirs()
         val scriptHash = ScriptUniqueHash(script, scriptCompilationConfiguration).hash()
         val file = File(baseDir, scriptHash)

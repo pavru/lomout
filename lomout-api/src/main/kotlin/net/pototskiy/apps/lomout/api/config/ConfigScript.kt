@@ -86,7 +86,7 @@ private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
     if (!isClassInPath("org.jetbrains.kotlin.script.util.Import", classLoader)) {
         resolver.tryAddRepository(mavenCentral())
         deps.addAll(
-            resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.21")
+            resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.31")
                 ?: emptyList()
         )
     }

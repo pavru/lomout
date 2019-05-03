@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.config.resolver
 
+import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.LogOptions
 import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor
@@ -15,6 +16,7 @@ import org.apache.ivy.plugins.resolver.URLResolver
 import org.apache.ivy.plugins.version.MavenTimedSnapshotVersionMatcher
 import org.apache.ivy.util.DefaultMessageLogger
 import org.apache.ivy.util.Message
+import org.apache.logging.log4j.LogManager
 import org.jetbrains.kotlin.script.util.KotlinAnnotatedScriptDependenciesResolver
 import org.jetbrains.kotlin.script.util.resolvers.DirectResolver
 import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicRepositoryCoordinates
@@ -25,7 +27,7 @@ import org.jetbrains.kotlin.script.util.resolvers.experimental.MavenArtifactCoor
 import java.io.File
 
 class IvyResolver : GenericRepositoryWithBridge {
-
+    private val logger = LogManager.getLogger(CONFIG_LOG_NAME)
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
     override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
@@ -41,7 +43,14 @@ class IvyResolver : GenericRepositoryWithBridge {
                         error("Unknown set of arguments to maven resolver: $stringCoordinates")
                     }
                 }
+            logger.trace("Try to resolve artifact: {}", artifactId)
             val artifact = resolveArtifact(artifactId)
+            if (artifact.isEmpty()) {
+                logger.error("Can not resolve artifact: {}", artifactId)
+            } else {
+                logger.trace("Artifact {} is resolved to files: {}", artifactId,
+                    artifact.joinToString(",") { it.absolutePath })
+            }
             if (artifact.isEmpty()) null else artifact
         }
 

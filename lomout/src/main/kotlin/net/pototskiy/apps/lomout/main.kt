@@ -45,7 +45,11 @@ fun main(args: Array<String>) {
 
     statusLog.info("Application has started")
 
-    CONFIG_BUILDER = ConfigurationBuilderFromDSL(File(Args.configFile))
+    CONFIG_BUILDER = ConfigurationBuilderFromDSL(
+        File(Args.configFile),
+        Args.scriptCacheDir,
+        Args.doNotUseScriptCache
+    )
     setupPluginContext()
     initDatabase(
         CONFIG_BUILDER.config.database,
