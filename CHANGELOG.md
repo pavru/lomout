@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ## [1.1.5]
+### Added
+- parameter to switch off script cache usage
+- parameter for script cache location
 ### Fixed
 - [LM-27](https://camsoft.myjetbrains.com/youtrack/issue/LM-27)
     Script hash calculation now includes import directives
