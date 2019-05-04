@@ -25,7 +25,8 @@ class ConfigurationBuilderFromDSL(
     private fun readConfig(): Config {
         lateinit var evaluatedConfig: Config
         statusLog.info("Configuration loading has started from file: ${configFile.absolutePath}")
-        val configHost = ConfigHost(configFile, cacheDir, doNotUseCache)
+        val ivyFile = getIvyFile(configFile)
+        val configHost = ConfigHost(configFile, cacheDir, doNotUseCache, ivyFile)
         configHost.compile().onFailure {
             logger.error("Configuration file can not be compiled")
         }.onSuccess { compileResult ->
@@ -40,5 +41,14 @@ class ConfigurationBuilderFromDSL(
         }
         statusLog.info("Configuration loading has finished")
         return evaluatedConfig
+    }
+
+    private fun getIvyFile(configFile: File): File? {
+        val ivyFile = configFile.parentFile.resolve("ivy.xml")
+        return if (ivyFile.exists()) {
+            ivyFile
+        } else {
+            null
+        }
     }
 }

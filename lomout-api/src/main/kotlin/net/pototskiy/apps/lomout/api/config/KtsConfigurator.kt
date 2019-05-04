@@ -23,7 +23,11 @@ import kotlin.script.experimental.jvm.updateClasspath
 
 @Suppress("ReturnCount", "TooGenericExceptionCaught")
 class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
-    private val logger = LogManager.getLogger(CONFIG_LOG_NAME)
+    private val logger = try {
+        LogManager.getLogger(CONFIG_LOG_NAME)
+    } catch (e: Throwable) {
+        null
+    }
     private val resolver = FilesAndIvyResolver()
 
     override operator fun invoke(
@@ -62,14 +66,14 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
         val newConf = ScriptCompilationConfiguration(context.compilationConfiguration) {
             if (resolvedClassPath != null && resolvedClassPath.isNotEmpty()) {
                 updateClasspath(resolvedClassPath)
-                logger.trace(
+                logger?.trace(
                     "Classpath updated with: {}",
                     resolvedClassPath.joinToString(",") { it.absolutePath }
                 )
             }
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
-                logger.trace(
+                logger?.trace(
                     "${context.script.name} imports next scripts: {}",
                     importedSources.joinToString(",") { it.name ?: "" }
                 )

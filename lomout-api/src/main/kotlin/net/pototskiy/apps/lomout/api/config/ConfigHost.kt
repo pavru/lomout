@@ -25,13 +25,15 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
 class ConfigHost(
     private val configFile: File,
     private val cacheDir: String,
-    private val doNotUseCache: Boolean
+    private val doNotUseCache: Boolean,
+    private val ivyFile: File? = null
 ) {
     private val logger = LogManager.getLogger(CONFIG_LOG_NAME)
     private val scriptHost = BasicJvmScriptingHost()
     private var compiledScript: CompiledScript<*>? = null
 
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
+        ivyFile?.let { ConfigScript.ivyFile = it }
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript>()
         val scriptHost = BasicJvmScriptingHost(
             compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File(cacheDir), doNotUseCache))

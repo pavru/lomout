@@ -1,3 +1,4 @@
+@file:DependsOn("commons-validator", "commons-validator", "commons-validator", "1.6")
 @file:Import("reader/OnecGroupToLong.plugin.conf.kts")
 @file:Import("builder/GroupPathFromRelation.plugin.conf.kts")
 @file:Import("builder/CategoryPathFromRelation.plugin.conf.kts")
