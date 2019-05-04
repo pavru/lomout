@@ -27,7 +27,11 @@ import org.jetbrains.kotlin.script.util.resolvers.experimental.MavenArtifactCoor
 import java.io.File
 
 class IvyResolver : GenericRepositoryWithBridge {
-    private val logger = LogManager.getLogger(CONFIG_LOG_NAME)
+    private val logger = try {
+        LogManager.getLogger(CONFIG_LOG_NAME)
+    } catch (e: Throwable) {
+        null
+    }
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
     override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
@@ -43,12 +47,12 @@ class IvyResolver : GenericRepositoryWithBridge {
                         error("Unknown set of arguments to maven resolver: $stringCoordinates")
                     }
                 }
-            logger.trace("Try to resolve artifact: {}", artifactId)
+            logger?.trace("Try to resolve artifact: {}", artifactId)
             val artifact = resolveArtifact(artifactId)
             if (artifact.isEmpty()) {
-                logger.error("Can not resolve artifact: {}", artifactId)
+                logger?.error("Can not resolve artifact: {}", artifactId)
             } else {
-                logger.trace("Artifact {} is resolved to files: {}", artifactId,
+                logger?.trace("Artifact {} is resolved to files: {}", artifactId,
                     artifact.joinToString(",") { it.absolutePath })
             }
             if (artifact.isEmpty()) null else artifact
@@ -58,27 +62,7 @@ class IvyResolver : GenericRepositoryWithBridge {
 
     private fun resolveArtifact(artifactId: List<String>): List<File> {
 
-        if (ivyResolvers.isEmpty() || ivyResolvers.none { it.name == "central" }) {
-            ivyResolvers.add(
-                URLResolver().apply {
-                    isM2compatible = true
-                    name = "central"
-                    addArtifactPattern("https://repo1.maven.org/maven2/$DEFAULT_ARTIFACT_PATTERN")
-                }
-            )
-        }
-        val ivySettings = IvySettings().apply {
-            val resolver =
-                if (ivyResolvers.size == 1) ivyResolvers.first()
-                else ChainResolver().also {
-                    for (resolver in ivyResolvers) {
-                        it.add(resolver)
-                    }
-                }
-            addResolver(resolver)
-            setDefaultResolver(resolver.name)
-            addVersionMatcher(MavenTimedSnapshotVersionMatcher())
-        }
+        val ivySettings = ivySettings()
 
         val ivy = Ivy.newInstance(ivySettings)
 
@@ -108,6 +92,41 @@ class IvyResolver : GenericRepositoryWithBridge {
         // init resolve report
         val report = ivy.resolve(ivyFile.toURI().toURL(), resolveOptions)
 
+        return report.allArtifactsReports.map { it.localFile }
+    }
+
+    private fun ivySettings(): IvySettings {
+        if (ivyResolvers.isEmpty() || ivyResolvers.none { it.name == "central" }) {
+            ivyResolvers.add(
+                URLResolver().apply {
+                    isM2compatible = true
+                    name = "central"
+                    addArtifactPattern("https://repo1.maven.org/maven2/$DEFAULT_ARTIFACT_PATTERN")
+                }
+            )
+        }
+        return IvySettings().apply {
+            val resolver =
+                if (ivyResolvers.size == 1) ivyResolvers.first()
+                else ChainResolver().also {
+                    for (resolver in ivyResolvers) {
+                        it.add(resolver)
+                    }
+                }
+            addResolver(resolver)
+            setDefaultResolver(resolver.name)
+            addVersionMatcher(MavenTimedSnapshotVersionMatcher())
+        }
+    }
+
+    fun tryResolveExternalDependency(ivyFile: File): List<File> {
+        val ivy = Ivy.newInstance(ivySettings())
+        val resolveOptions = ResolveOptions().apply {
+            confs = arrayOf("default")
+            log = LogOptions.LOG_QUIET
+            isOutputReport = false
+        }
+        val report = ivy.resolve(ivyFile, resolveOptions)
         return report.allArtifactsReports.map { it.localFile }
     }
 

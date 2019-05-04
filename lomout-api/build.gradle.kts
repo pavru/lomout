@@ -151,7 +151,7 @@ dependencies {
 
 tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
-    from(sourceSets.main.get().allJava)
+    from(sourceSets.main.get().allSource)
 }
 
 publishing {

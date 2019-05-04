@@ -3,7 +3,6 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.config.resolver.IvyResolver
-import net.pototskiy.apps.lomout.api.config.resolver.localMaven
 import net.pototskiy.apps.lomout.api.config.resolver.mavenCentral
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
@@ -32,6 +31,9 @@ import kotlin.script.experimental.jvm.updateClasspath
 )
 abstract class ConfigScript(val args: Array<String>) {
     var evaluatedConfig: Config? = null
+    companion object {
+        var ivyFile: File? = null
+    }
 }
 
 object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
@@ -83,19 +85,24 @@ private fun isClassInPath(name: String, classLoader: ClassLoader): Boolean {
 private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
     val resolver = IvyResolver()
     val deps = mutableListOf<File>()
-    if (!isClassInPath("org.jetbrains.kotlin.script.util.Import", classLoader)) {
-        resolver.tryAddRepository(mavenCentral())
-        deps.addAll(
-            resolver.tryResolve("org.jetbrains:kotlin-script-util:1.3.31")
-                ?: emptyList()
-        )
+    fun testAndAdd(klass: String, artifacts: List<String>) {
+        if (!isClassInPath(klass, classLoader)) {
+            resolver.tryAddRepository(mavenCentral())
+            artifacts.forEach {
+                deps.addAll(resolver.tryResolve(it) ?: emptyList())
+            }
+        }
     }
-    if (!isClassInPath("net.pototskiy.apps.lomout.api.config.Config", classLoader)) {
-        resolver.tryAddRepository(localMaven())
-        deps.addAll(
-            resolver.tryResolve("lomout:lomout-api:1.0-SNAPSHOT")
-                ?: emptyList()
-        )
-    }
+    testAndAdd(
+        "org.jetbrains.kotlin.script.util.Import",
+        listOf("org.jetbrains:kotlin-script-util:1.3.31")
+    )
+    testAndAdd(
+        "net.pototskiy.apps.lomout.api.config.Config",
+        listOf("lomout:lomout-api:1.1.5")
+    )
+    ConfigScript.ivyFile
+        ?.let { deps.addAll(resolver.tryResolveExternalDependency(it)) }
+
     return deps
 }
