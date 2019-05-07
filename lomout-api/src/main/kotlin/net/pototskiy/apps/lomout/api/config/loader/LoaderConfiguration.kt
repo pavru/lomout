@@ -6,21 +6,79 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityTypeCollection
 
+/**
+ * Loader configuration class and builder
+ *
+ * @property files SourceFileCollection
+ * @property entities EntityTypeCollection
+ * @property loads LoadCollection
+ * @constructor
+ */
 data class LoaderConfiguration(
     val files: SourceFileCollection,
     val entities: EntityTypeCollection,
     val loads: LoadCollection
 ) {
+    /**
+     * Loader configuration builder class
+     *
+     * @property helper ConfigBuildHelper
+     * @property files SourceFileCollection?
+     * @property entities EntityTypeCollection?
+     * @property loads MutableList<Load>
+     * @constructor
+     */
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var files: SourceFileCollection? = null
         private var entities: EntityTypeCollection? = null
         private var loads = mutableListOf<Load>()
 
+        /**
+         * Source file configuration
+         *
+         * ```
+         * ...
+         *  files {
+         *      file("file id") { path("file path"); locale("cc_LL") }
+         *      file("file id") {
+         *          path("file path")
+         *          locale("cc_LL")
+         *      }
+         *      ...
+         *  }
+         * ...
+         * ```
+         * * [file][SourceFileCollection.Builder.file] - define file id, **mandatory**
+         * * [path][SourceFileCollection.Builder.PathBuilder.path] - define file path, **mandatory**
+         * * [locale][SourceFileCollection.Builder.PathBuilder.locale] - define file locale, optional
+         *
+         * @see SourceFileCollection
+         *
+         * @param block SourceFileCollection.Builder.() -> Unit
+         */
         fun files(block: SourceFileCollection.Builder.() -> Unit) {
             files = SourceFileCollection.Builder(helper).apply(block).build()
         }
 
+        /**
+         * Define entities that is loaded by loader
+         *
+         * ```
+         * ...
+         *  entities {
+         *      entity("type name", isOpen:Boolean) {...}
+         *      entity("type name", isOpen:Boolean) {...}
+         *      ...
+         *  }
+         * ...
+         * ```
+         * * [entity][EntityTypeCollection.Builder.entity] - entity definition, **at least one must be defined**
+         *
+         * @see EntityTypeCollection
+         *
+         * @param block EntityTypeCollection.Builder.() -> Unit
+         */
         fun entities(block: EntityTypeCollection.Builder.() -> Unit) {
             this.entities = EntityTypeCollection.Builder(helper).apply(block).build()
         }

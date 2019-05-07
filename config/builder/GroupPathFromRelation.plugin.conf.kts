@@ -11,6 +11,7 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
     var root: String = ""
 
     override fun build(entity: DbEntity): StringType? {
+        logger.info("test logger")
         val pathFromCache = pathCache[entity.id.value]?.get()
         if (pathFromCache != null) return StringType(pathFromCache)
         val eType = entityTypeManager.getEntityType(eTypeName)

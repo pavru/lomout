@@ -1,21 +1,27 @@
-package net.pototskiy.apps.lomout
+package net.pototskiy.apps.lomout.jcommander
 
 import com.beust.jcommander.Parameter
+import com.beust.jcommander.Parameters
 
-object Args {
+/**
+ * CLI main command to process config and data files
+ *
+ * @property configFile String
+ * @property logLevel String
+ * @property sqlLogLevel String
+ * @property scriptCacheDir String
+ * @property doNotUseScriptCache Boolean
+ */
+@Parameters(
+    commandNames = ["--process"],
+    commandDescription = "Process files"
+)
+class CommandMain {
     @Parameter(
-        names = ["--help"],
-        description = "show help",
-        help = true
-    )
-    var help: Boolean = false
-    @Parameter(
-        names = ["-c", "--conf"],
-        description = "specify configuration file",
-        arity = 1,
+        description = "configuration file",
         required = true
     )
-    var configFile: String = ""
+    var configFile: MutableList<String> = mutableListOf()
     @Parameter(
         names = ["-l", "--log-level"],
         description = "log level: fatal, error, warn, info, trace",

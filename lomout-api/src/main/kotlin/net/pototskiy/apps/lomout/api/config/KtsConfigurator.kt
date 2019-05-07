@@ -1,8 +1,6 @@
 package net.pototskiy.apps.lomout.api.config
 
-import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.resolver.FilesAndIvyResolver
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
@@ -23,11 +21,8 @@ import kotlin.script.experimental.jvm.updateClasspath
 
 @Suppress("ReturnCount", "TooGenericExceptionCaught")
 class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
-    private val logger = try {
-        LogManager.getLogger(CONFIG_LOG_NAME)
-    } catch (e: Throwable) {
-        null
-    }
+    private val logger = MainAndIdeLogger()
+
     private val resolver = FilesAndIvyResolver()
 
     override operator fun invoke(
@@ -66,16 +61,14 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
         val newConf = ScriptCompilationConfiguration(context.compilationConfiguration) {
             if (resolvedClassPath != null && resolvedClassPath.isNotEmpty()) {
                 updateClasspath(resolvedClassPath)
-                logger?.trace(
-                    "Classpath updated with: {}",
-                    resolvedClassPath.joinToString(",") { it.absolutePath }
+                logger.trace(
+                    "Classpath updated with: ${resolvedClassPath.joinToString(",") { it.absolutePath }}"
                 )
             }
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
-                logger?.trace(
-                    "${context.script.name} imports next scripts: {}",
-                    importedSources.joinToString(",") { it.name ?: "" }
+                logger.trace(
+                    "${context.script.name} imports next scripts: ${importedSources.joinToString(",") { it.name ?: "" }}"
                 )
             }
         }

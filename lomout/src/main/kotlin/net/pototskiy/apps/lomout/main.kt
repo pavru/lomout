@@ -12,6 +12,9 @@ import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.database.initDatabase
+import net.pototskiy.apps.lomout.jcommander.CommandHelp
+import net.pototskiy.apps.lomout.jcommander.CommandMain
+import net.pototskiy.apps.lomout.jcommander.CommandVersion
 import net.pototskiy.apps.lomout.loader.DataLoader
 import net.pototskiy.apps.lomout.mediator.DataMediator
 import net.pototskiy.apps.lomout.printer.DataPrinter
@@ -26,35 +29,41 @@ lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 @ObsoleteCoroutinesApi
 fun main(args: Array<String>) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
+    val mainCommand = CommandMain()
     val jCommander = JCommander.Builder()
-        .addObject(Args)
+        .addCommand(CommandHelp())
+        .addCommand(CommandVersion())
+        .addCommand(mainCommand)
         .build()
     try {
         @Suppress("SpreadOperator")
         jCommander.parse(*args)
     } catch (e: ParameterException) {
+        println(e.message)
         jCommander.usage()
         System.exit(1)
+    }
+    if (jCommander.parsedCommand == "--help") {
+        jCommander.usage()
+        return
+    } else if (jCommander.parsedCommand == "--version") {
+        println("LoMout v${BuildInfo.lomoutVersion}")
         return
     }
-    if (Args.help) {
-        jCommander.usage()
-        System.exit(1)
-    }
-    setLogLevel()
+    setLogLevel(mainCommand)
 
     statusLog.info("Application has started")
 
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(
-        File(Args.configFile),
-        Args.scriptCacheDir,
-        Args.doNotUseScriptCache
+        File(mainCommand.configFile.first()),
+        mainCommand.scriptCacheDir,
+        mainCommand.doNotUseScriptCache
     )
     setupPluginContext()
     initDatabase(
         CONFIG_BUILDER.config.database,
         CONFIG_BUILDER.config.entityTypeManager,
-        Level.toLevel(Args.sqlLogLevel)
+        Level.toLevel(mainCommand.sqlLogLevel)
     )
     PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
     CONFIG_BUILDER.config.loader?.let { DataLoader.load(CONFIG_BUILDER.config) }
@@ -66,10 +75,16 @@ fun main(args: Array<String>) {
     statusLog.info("Application has finished")
 }
 
-fun setLogLevel() {
-    Configurator.setLevel(ROOT_LOG_NAME, Level.toLevel(Args.logLevel))
+/**
+ * Set root log level from command line args
+ */
+fun setLogLevel(command: CommandMain) {
+    Configurator.setLevel(ROOT_LOG_NAME, Level.toLevel(command.logLevel))
 }
 
+/**
+ * Set plugin context
+ */
 fun setupPluginContext() {
     PluginContext.config = CONFIG_BUILDER.config
     PluginContext.entityTypeManager = CONFIG_BUILDER.config.entityTypeManager

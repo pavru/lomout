@@ -6,12 +6,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     `java-library`
-    kotlin("jvm") version Versions.kotlin
+    kotlin("jvm")
     idea
     id("org.jetbrains.dokka") version Versions.dokka
     `maven-publish`
     id("io.gitlab.arturbosch.detekt") version Versions.detekt
     id("jacoco")
+//    id ("org.jetbrains.intellij") version "0.4.8"
 }
 
 group = rootProject.group
@@ -24,6 +25,13 @@ idea {
     }
 }
 
+sourceSets {
+    main {
+        java {
+            srcDir("$buildDir/generated/kotlin")
+        }
+    }
+}
 configurations {
     create("spi")
 }
@@ -36,6 +44,16 @@ tasks.withType(DokkaTask::class) {
     moduleName = "lomout-api"
     outputFormat = "javadoc"
     outputDirectory = "$buildDir/javadoc"
+    samples = listOf()
+//    noJdkLink = true
+//    noStdlibLink = true
+}
+
+tasks.register<GenerateBuildClassTask>("generateBuildClass") {
+    group = "build"
+    packageName = "net.pototskiy.apps.lomout.api"
+    objectName = "BuildInfo"
+    addDependenciesOfConfigurations = listOf("implementation")
 }
 
 tasks.register<Jar>("dokkaJar") {
@@ -68,6 +86,7 @@ artifacts {
 }
 
 tasks.withType<KotlinCompile> {
+    dependsOn += tasks["generateBuildClass"]
     kotlinOptions {
         jvmTarget = "1.8"
         noReflect = false
@@ -85,11 +104,13 @@ java {
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
     minHeapSize = "1G"
-    systemProperties(mapOf(
-        "junit.jupiter.execution.parallel.enabled" to "true",
-        "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
+    systemProperties(
+        mapOf(
+            "junit.jupiter.execution.parallel.enabled" to "true",
+            "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
 //    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
-    ))
+        )
+    )
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
@@ -114,6 +135,7 @@ dependencies {
     api(kotlin("stdlib-jdk8"))
     api(kotlin("reflect"))
 
+    compileOnly(files("$projectDir/lib/util.jar"))
     implementation("org.apache.ivy", "ivy", Versions.ivy)
     // Database
     implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
@@ -131,6 +153,7 @@ dependencies {
     implementation("org.slf4j", "slf4j-api", Versions.slf4j)
     implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", Versions.log4j)
     implementation("org.apache.logging.log4j", "log4j-core", Versions.log4j)
+    implementation("org.apache.logging.log4j", "log4j-api", Versions.log4j)
     // Apache commons io
     implementation("commons-io", "commons-io", "2.6")
     // Kotlin script
@@ -139,6 +162,7 @@ dependencies {
     implementation(kotlin("script-util"))
 //    implementation(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-jvm-host"))
+//    compileOnly(files("libs/idea.jar"))
     // Test
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)

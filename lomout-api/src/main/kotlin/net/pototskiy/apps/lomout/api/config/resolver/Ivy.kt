@@ -1,13 +1,18 @@
 package net.pototskiy.apps.lomout.api.config.resolver
 
-import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
+import net.pototskiy.apps.lomout.api.config.MainAndIdeLogger
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.LogOptions
 import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor
+import org.apache.ivy.core.module.descriptor.DefaultExcludeRule
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor
+import org.apache.ivy.core.module.id.ArtifactId
+import org.apache.ivy.core.module.id.ModuleId
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import org.apache.ivy.core.resolve.ResolveOptions
 import org.apache.ivy.core.settings.IvySettings
+import org.apache.ivy.plugins.matcher.ExactOrRegexpPatternMatcher
+import org.apache.ivy.plugins.matcher.PatternMatcher
 import org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorWriter
 import org.apache.ivy.plugins.resolver.BintrayResolver
 import org.apache.ivy.plugins.resolver.ChainResolver
@@ -16,7 +21,6 @@ import org.apache.ivy.plugins.resolver.URLResolver
 import org.apache.ivy.plugins.version.MavenTimedSnapshotVersionMatcher
 import org.apache.ivy.util.DefaultMessageLogger
 import org.apache.ivy.util.Message
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.kotlin.script.util.KotlinAnnotatedScriptDependenciesResolver
 import org.jetbrains.kotlin.script.util.resolvers.DirectResolver
 import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicRepositoryCoordinates
@@ -27,14 +31,16 @@ import org.jetbrains.kotlin.script.util.resolvers.experimental.MavenArtifactCoor
 import java.io.File
 
 class IvyResolver : GenericRepositoryWithBridge {
-    private val logger = try {
-        LogManager.getLogger(CONFIG_LOG_NAME)
-    } catch (e: Throwable) {
-        null
-    }
+    private val logger = MainAndIdeLogger()
+
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
-    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
+    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = tryResolve(artifactCoordinates, emptyList())
+
+    fun tryResolve(
+        artifactCoordinates: GenericArtifactCoordinates,
+        excludes: List<Pair<String, String>> = emptyList()
+    ): Iterable<File>? =
         with(artifactCoordinates) {
             val artifactId =
                 if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
@@ -47,20 +53,24 @@ class IvyResolver : GenericRepositoryWithBridge {
                         error("Unknown set of arguments to maven resolver: $stringCoordinates")
                     }
                 }
-            logger?.trace("Try to resolve artifact: {}", artifactId)
-            val artifact = resolveArtifact(artifactId)
+            logger.trace("Try to resolve artifact: $artifactId")
+            val artifact = resolveArtifact(artifactId, excludes)
             if (artifact.isEmpty()) {
-                logger?.error("Can not resolve artifact: {}", artifactId)
+                logger.error("Can not resolve artifact: artifactId")
             } else {
-                logger?.trace("Artifact {} is resolved to files: {}", artifactId,
-                    artifact.joinToString(",") { it.absolutePath })
+                logger.trace(
+                    "Artifact $artifactId is resolved to files: ${artifact.joinToString(",") { it.absolutePath }}"
+                )
             }
             if (artifact.isEmpty()) null else artifact
         }
 
     private val ivyResolvers = arrayListOf<URLResolver>()
 
-    private fun resolveArtifact(artifactId: List<String>): List<File> {
+    private fun resolveArtifact(
+        artifactId: List<String>,
+        excludes: List<Pair<String, String>> = emptyList()
+    ): List<File> {
 
         val ivySettings = ivySettings()
 
@@ -75,13 +85,32 @@ class IvyResolver : GenericRepositoryWithBridge {
 
         val depsDescriptor = DefaultDependencyDescriptor(
             moduleDescriptor,
-            ModuleRevisionId.newInstance(artifactId[0], artifactId[1], artifactId[2]),
+            ModuleRevisionId.newInstance(
+                artifactId[0],
+                artifactId[1],
+                artifactId[2]
+            ),
             false, false, true
         )
+        depsDescriptor.addDependencyConfiguration("default", "default")
         moduleDescriptor.addDependency(depsDescriptor)
+        for (pair in excludes) {
+            val rule = DefaultExcludeRule(
+                ArtifactId(
+                    ModuleId(pair.first, pair.second),
+                    PatternMatcher.ANY_EXPRESSION,
+                    PatternMatcher.ANY_EXPRESSION,
+                    PatternMatcher.ANY_EXPRESSION
+                ),
+                ExactOrRegexpPatternMatcher(),
+                null
+            )
+            depsDescriptor.addExcludeRule("default", rule)
+        }
 
         // creates an ivy configuration file
         XmlModuleDescriptorWriter.write(moduleDescriptor, ivyFile)
+        logger.trace(ivyFile.readText())
 
         val resolveOptions = ResolveOptions().apply {
             confs = arrayOf("default")
