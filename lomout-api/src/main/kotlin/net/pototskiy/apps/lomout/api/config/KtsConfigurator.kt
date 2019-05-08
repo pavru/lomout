@@ -68,7 +68,8 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
                 logger.trace(
-                    "${context.script.name} imports next scripts: ${importedSources.joinToString(",") { it.name ?: "" }}"
+                    "${context.script.name} imports next scripts: " +
+                            importedSources.joinToString(",") { it.name ?: "" }
                 )
             }
         }

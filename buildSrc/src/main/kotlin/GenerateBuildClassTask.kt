@@ -26,6 +26,7 @@ open class GenerateBuildClassTask : DefaultTask() {
                         val excludeRules = mutableListOf<Pair<String, String>>()
                         if (dep is DefaultExternalModuleDependency) {
                             dep.excludeRules.forEach {
+                                @Suppress("USELESS_ELVIS")
                                 excludeRules.add(Pair(it.group ?: "*", it.module ?: "*"))
                             }
                         }
@@ -45,9 +46,10 @@ open class GenerateBuildClassTask : DefaultTask() {
         buildClassFile.writeText(
             """
             package $packageName
+            @Suppress("RemoveExplicitTypeArguments", "MayBeConstant", "unused")
             object $objectName {
-                val lomoutVersion = "${project.version}"
-                val kotlinVersion = "${Versions.kotlin}"
+                const val lomoutVersion = "${project.version}"
+                const val kotlinVersion = "${Versions.kotlin}"
                 val dependencies = listOf<Dependency>(${dependencies.joinToString(",")})
 
                 data class Dependency(

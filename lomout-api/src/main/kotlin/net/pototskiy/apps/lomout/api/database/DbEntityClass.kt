@@ -46,7 +46,7 @@ abstract class DbEntityClass(
         var from: ColumnSet = myTable
         var where = Op.build { myTable.entityType eq entityType }
         val dataToUse = if (onlyKeys) data.filter { it.key.key } else data
-        dataToUse.filterNot { it.value == null }.forEach { attr, value ->
+        dataToUse.filterNot { it.value == null }.forEach { (attr, value) ->
             value as Type
             val attrClass = getAttributeClassFor(attr.valueType)
             val attrTable = attrClass.table as AttributeTable<*>

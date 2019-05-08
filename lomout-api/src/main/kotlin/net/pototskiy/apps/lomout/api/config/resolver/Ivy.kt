@@ -35,24 +35,15 @@ class IvyResolver : GenericRepositoryWithBridge {
 
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
-    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? = tryResolve(artifactCoordinates, emptyList())
+    override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
+        tryResolve(artifactCoordinates, emptyList())
 
     fun tryResolve(
         artifactCoordinates: GenericArtifactCoordinates,
         excludes: List<Pair<String, String>> = emptyList()
     ): Iterable<File>? =
         with(artifactCoordinates) {
-            val artifactId =
-                if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
-                    listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
-                } else {
-                    val stringCoordinates = string
-                    if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
-                        stringCoordinates.split(':')
-                    } else {
-                        error("Unknown set of arguments to maven resolver: $stringCoordinates")
-                    }
-                }
+            val artifactId = artifactId()
             logger.trace("Try to resolve artifact: $artifactId")
             val artifact = resolveArtifact(artifactId, excludes)
             if (artifact.isEmpty()) {
@@ -64,6 +55,19 @@ class IvyResolver : GenericRepositoryWithBridge {
             }
             if (artifact.isEmpty()) null else artifact
         }
+
+    private fun GenericArtifactCoordinates.artifactId(): List<String> {
+        return if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
+            listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
+        } else {
+            val stringCoordinates = string
+            if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
+                stringCoordinates.split(':')
+            } else {
+                error("Unknown set of arguments to maven resolver: $stringCoordinates")
+            }
+        }
+    }
 
     private val ivyResolvers = arrayListOf<URLResolver>()
 

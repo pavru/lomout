@@ -26,11 +26,10 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
         get() = CellAddress(cell.rowIndex, cell.columnIndex)
     override val cellType: CellType
         get() {
-            val type = if (cell.cellType == org.apache.poi.ss.usermodel.CellType.FORMULA)
+            return when (if (cell.cellType == org.apache.poi.ss.usermodel.CellType.FORMULA)
                 cell.cachedFormulaResultType
             else
-                cell.cellType
-            return when (type) {
+                cell.cellType) {
                 org.apache.poi.ss.usermodel.CellType.NUMERIC -> CellType.DOUBLE
                 org.apache.poi.ss.usermodel.CellType.STRING -> CellType.STRING
                 org.apache.poi.ss.usermodel.CellType.BLANK -> CellType.BLANK

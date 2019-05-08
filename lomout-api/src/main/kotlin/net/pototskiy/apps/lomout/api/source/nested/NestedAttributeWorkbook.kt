@@ -26,7 +26,7 @@ class NestedAttributeWorkbook(
                 NestedAttributeRow(1, cells[1], sheet)
             )
             var column = 0
-            parser.parse(value).forEach { key, valueData ->
+            parser.parse(value).forEach { (key, valueData) ->
                 cells[0].add(column, NestedAttributeCell(CellAddress(0, column), key, rows[0]))
                 cells[1].add(column, NestedAttributeCell(CellAddress(1, column), valueData, rows[1]))
                 column++

@@ -13,6 +13,7 @@ import org.joda.time.Duration
 import java.util.concurrent.atomic.*
 
 object DataMediator {
+    const val DEFAULT_MAX_AGE = 10
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     private val log = LogManager.getLogger(PRINTER_LOG_NAME)
     private var startTime = DateTime()
@@ -33,7 +34,7 @@ object DataMediator {
                 val rows = ProductionLineExecutor(config.entityTypeManager).executeLine(it)
                 DbEntity.markEntitiesAsRemove(eType)
                 DbEntity.updateAbsentAge(eType)
-                DbEntity.removeOldEntities(eType, 10)
+                DbEntity.removeOldEntities(eType, DEFAULT_MAX_AGE)
                 processedRows.addAndGet(rows)
                 log.debug("Finish creating entity<{}>", it.outputEntity.name)
             }

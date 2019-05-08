@@ -1,3 +1,7 @@
+@file:Import("NotRemovedFilter.plugin.conf.kts")
+
+import NotRemovedFilter_plugin_conf.NotRemovedFilter
+
 config {
     database {
         name("test_db_name")
@@ -150,7 +154,24 @@ config {
     mediator {
         unionProductionLine {
             input {
-                entity("onec-product")
+                entity("onec-product") {
+                    filter {
+                        it[DbEntityTable.currentStatus] neq EntityStatus.REMOVED
+                    }
+                }
+            }
+            output("import-product") {
+                inheritFrom("onec-product")
+            }
+            pipeline {
+                assembler { _, _ -> emptyMap() }
+            }
+        }
+        unionProductionLine {
+            input {
+                entity("onec-product") {
+                    filter<NotRemovedFilter>()
+                }
             }
             output("import-product") {
                 inheritFrom("onec-product")

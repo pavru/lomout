@@ -11,11 +11,13 @@ import org.apache.logging.log4j.LogManager
  * @property ideLogger Logger?
  */
 class MainAndIdeLogger {
+    @Suppress("TooGenericExceptionCaught")
     private val mainLogger = try {
         LogManager.getLogger(CONFIG_LOG_NAME)
     } catch (e: Throwable) {
         null
     }
+    @Suppress("TooGenericExceptionCaught")
     private val ideLogger = try {
         Logger.getInstance("lomout")
     } catch (e: Throwable) {

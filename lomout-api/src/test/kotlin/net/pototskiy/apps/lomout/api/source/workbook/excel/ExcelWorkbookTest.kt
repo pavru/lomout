@@ -10,7 +10,6 @@ import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.apache.xmlbeans.XmlOptions
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.time.DateTime
@@ -51,7 +50,6 @@ internal class ExcelWorkbookTest {
         file.parentFile.mkdirs()
         file.delete()
         assertThat(file.exists()).isFalse()
-        val v =XmlOptions()
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
             val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for ((rowNum, list) in testDataForWrite.withIndex()) {

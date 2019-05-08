@@ -10,7 +10,6 @@ import kotlin.script.experimental.api.ResultValue
 import kotlin.script.experimental.api.ResultWithDiagnostics
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
-import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.SourceCode.Position
 import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.constructorArgs
@@ -91,7 +90,7 @@ class ConfigHost(
         }
     }
 
-    private fun findExceptionPosition(throwable: Throwable, sourceFile: File): SourceCode.Position? {
+    private fun findExceptionPosition(throwable: Throwable, sourceFile: File): Position? {
         val callee = throwable.stackTrace.find { it.fileName == sourceFile.name }
         return callee?.let {
             Position(it.lineNumber, 0)

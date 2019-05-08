@@ -102,7 +102,7 @@ class EntityLoader(
     }
 
     private fun plusAdditionalData(data: MutableMap<AnyTypeAttribute, Type?>) =
-        extraData.forEach { _, gData -> data.putAll(gData) }
+        extraData.forEach { (_, gData) -> data.putAll(gData) }
 
     private fun checkEmptyRow(
         row: Row,

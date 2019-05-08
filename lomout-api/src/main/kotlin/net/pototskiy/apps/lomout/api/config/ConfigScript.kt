@@ -73,10 +73,13 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
             classLoader = ConfigScriptCompilationConfiguration::class.java.classLoader,
             wholeClasspath = false
         )
-        checkAndGetExternalDeps(ConfigScriptCompilationConfiguration::class.java.classLoader)
+        checkAndGetExternalDeps()
             .takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
         this[dependencies]?.forEach { dependency ->
-            logger.trace("Script classpath (final): ${(dependency as JvmDependency).classpath.joinToString(",") { it.absolutePath }}")
+            logger.trace("Script classpath (final): " +
+                    (dependency as JvmDependency)
+                        .classpath.joinToString(",") { it.absolutePath }
+            )
         }
     }
     ide {
@@ -96,7 +99,7 @@ private fun isClassInPath(name: String, classLoader: ClassLoader): Boolean {
     }
 }
 
-private fun checkAndGetExternalDeps(classLoader: ClassLoader): List<File> {
+private fun checkAndGetExternalDeps(): List<File> {
     val logger = MainAndIdeLogger()
     logger.trace("Try to check and add external dependency")
     val resolver = IvyResolver()

@@ -7,13 +7,13 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityType
 
 class ProductionLine(
-    lineType: AbstractLine.LineType,
+    lineType: LineType,
     inputEntities: InputEntityCollection,
     val outputEntity: EntityType,
     pipeline: Pipeline
 ) : AbstractLine(lineType, inputEntities, pipeline) {
     @ConfigDsl
-    class Builder(private val helper: ConfigBuildHelper, private val lineType: AbstractLine.LineType) {
+    class Builder(private val helper: ConfigBuildHelper, private val lineType: LineType) {
         private var inputs: InputEntityCollection? = null
         private var output: EntityType? = null
         private var pipeline: Pipeline? = null

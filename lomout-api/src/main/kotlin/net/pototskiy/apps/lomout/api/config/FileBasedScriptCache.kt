@@ -19,6 +19,7 @@ class FileBasedScriptCache(
     private val doNotUseCache: Boolean
 ) : CompiledJvmScriptsCache {
 
+    @Suppress("ReturnCount")
     override fun get(
         script: SourceCode,
         scriptCompilationConfiguration: ScriptCompilationConfiguration
