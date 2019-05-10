@@ -6,6 +6,14 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.*
 
+/**
+ * Convert string value to [DateTime] (only date part) according to locale
+ *
+ * @receiver String The string to convert
+ * @param locale Locale The locale for conversion
+ * @return DateTime
+ * @throws AppDataException The string can not be converted to [DateTime]
+ */
 fun String.stringToDate(locale: Locale): DateTime {
     val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale))
     return try {
@@ -18,6 +26,14 @@ fun String.stringToDate(locale: Locale): DateTime {
     }
 }
 
+/**
+ * Convert string to [DateTime] according to pattern.
+ *
+ * @receiver String
+ * @param pattern String
+ * @return DateTime
+ * @throws AppDataException The string can not be converted to [DateTime]
+ */
 fun String.stringToDateTime(pattern: String): DateTime {
     val format = DateTimeFormat.forPattern(pattern)
     return try {
@@ -27,6 +43,14 @@ fun String.stringToDateTime(pattern: String): DateTime {
     }
 }
 
+/**
+ * Convert string to [DateTime] according to locale
+ *
+ * @receiver String The string to convert
+ * @param locale Locale The locale for conversion
+ * @return DateTime
+ * @throws AppDataException The string can be converted
+ */
 fun String.stringToDateTime(locale: Locale): DateTime {
     val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", locale))
     return try {
@@ -39,11 +63,32 @@ fun String.stringToDateTime(locale: Locale): DateTime {
     }
 }
 
+/**
+ * Convert [DateTime] (date part) to string according to locale
+ *
+ * @receiver DateTime The value to convert
+ * @param locale Locale The locale for conversion
+ * @return String
+ */
 fun DateTime.dateToString(locale: Locale): String =
     this.toString(DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale)))
 
+/**
+ * Convert [DateTime] to string according to locale
+ *
+ * @receiver DateTime The value to convert
+ * @param locale Locale The locale for conversion
+ * @return String
+ */
 @PublicApi
 fun DateTime.datetimeToString(locale: Locale): String =
     this.toString(DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", locale)))
 
+/**
+ * Convert [DateTime] to string according to pattern
+ *
+ * @receiver DateTime The value to convert
+ * @param pattern String The pattern for conversion
+ * @return String
+ */
 fun DateTime.datetimeToString(pattern: String): String = this.toString(pattern)

@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     application
-    kotlin("jvm") version Versions.kotlin
+    kotlin("jvm")
     idea
     id("jacoco")
     id("io.gitlab.arturbosch.detekt") version Versions.detekt
@@ -22,11 +22,11 @@ application {
 
 idea {
     module {
-        sourceDirs = setOf(
-            file("$projectDir/src/main/kotlin"),
-            file("$projectDir/src/main/java"),
-            file("${rootProject.projectDir}/config/."),
-            file("${rootProject.projectDir}/testdata/.")
+        sourceDirs.addAll(
+            setOf(
+                file("${rootProject.projectDir}/config/."),
+                file("${rootProject.projectDir}/testdata/.")
+            )
         )
         outputDir = file("build/classes/kotlin/main")
         testOutputDir = file("build/classes/kotlin/test")
@@ -58,6 +58,11 @@ sourceSets {
         compileClasspath += sourceSets.main.get().output
         runtimeClasspath += sourceSets.main.get().output
     }
+    main {
+        java {
+            srcDir("${project.buildDir}/generated/kotlin")
+        }
+    }
 }
 
 val configImplementation: Configuration by configurations.getting {
@@ -66,6 +71,13 @@ val configImplementation: Configuration by configurations.getting {
 
 val testdataImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
+}
+
+tasks.register<GenerateBuildClassTask>("generateBuildClass") {
+    packageName = "net.pototskiy.apps.lomout"
+    objectName = "BuildInfo"
+    addDependenciesOfConfigurations = listOf()
+    this.group = "build"
 }
 
 tasks.named<Test>("test") {
@@ -88,6 +100,7 @@ tasks.named<Test>("test") {
 }
 
 tasks.withType<KotlinCompile> {
+    dependsOn += tasks["generateBuildClass"]
     kotlinOptions {
         jvmTarget = "1.8"
         noReflect = false

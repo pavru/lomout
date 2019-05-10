@@ -12,6 +12,13 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
+/**
+ * Default reader for [BooleanListType] attribute
+ *
+ * @property locale String The value locale (en_US,ru_RU), default: system locale
+ * @property quote Char? The value quote, optional
+ * @property delimiter Char The list delimiter, default: ,
+ */
 open class BooleanListAttributeReader : AttributeReaderPlugin<BooleanListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null

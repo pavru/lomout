@@ -4,6 +4,15 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
+/**
+ * Nested attributes list parser
+ *
+ * @constructor
+ * @param quote Char? The name-value pair quote, null - no quote
+ * @param delimiter Char The name-value pair delimiter
+ * @param valueQuote Char? The value quote, null - no quote
+ * @param valueDelimiter Char The delimiter between name and value
+ */
 class NestedAttributeListParser(
     quote: Char?,
     delimiter: Char,
@@ -11,6 +20,12 @@ class NestedAttributeListParser(
     valueDelimiter: Char
 ) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
+    /**
+     * Parse list string to map of name->value
+     *
+     * @param string String The list as string
+     * @return Map<String, String> The map of name->value
+     */
     fun parse(string: String): Map<String, String> {
         val result = mutableMapOf<String, String>()
         try {

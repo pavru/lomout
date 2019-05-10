@@ -12,6 +12,12 @@ private data class WorkbookFile(
 
 private val files = Collections.synchronizedList(mutableListOf<WorkbookFile>())
 
+/**
+ * Set workbook file name
+ *
+ * @receiver Workbook
+ * @param file File
+ */
 fun Workbook.setFileName(file: File) {
     cleanFiles()
     files.removeIf { it.workbook.get() == this }
@@ -23,10 +29,23 @@ fun Workbook.setFileName(file: File) {
     )
 }
 
+/**
+ * Get file name of workbook
+ *
+ * @receiver Workbook
+ * @return String
+ */
 fun Workbook.getFileName(): String {
     cleanFiles()
     return files.find { it.workbook.get() == this }?.file?.name ?: ""
 }
+
+/**
+ * Get file of workbook
+ *
+ * @receiver Workbook
+ * @return File?
+ */
 fun Workbook.getFile(): File? {
     cleanFiles()
     return files.find { it.workbook.get() == this }?.file

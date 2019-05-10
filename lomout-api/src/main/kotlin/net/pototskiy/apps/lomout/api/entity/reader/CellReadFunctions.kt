@@ -19,6 +19,15 @@ import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 import java.util.*
 
+/**
+ * Read [DateTime] from cell, non-DateTime values are converted to [DateTime]
+ *
+ * @receiver Cell The cell to read
+ * @param attribute Attribute<*> The attribute for which value is read
+ * @param locale Locale The locale for converting
+ * @return DateTime?
+ * @throws AppCellDataException The string value can not be converted to [DateTime]
+ */
 @Suppress("ComplexMethod")
 fun Cell.readeDateTime(
     attribute: Attribute<*>,
@@ -39,6 +48,15 @@ fun Cell.readeDateTime(
     CellType.BLANK -> null
 }
 
+/**
+ * Read [DateTime] value from cell, non-[DateTime] values are converted to [DateTime]
+ *
+ * @receiver Cell The cell to read
+ * @param attribute Attribute<*> The attribute for which value is read
+ * @param pattern String The date-time pattern for converting
+ * @return DateTime?
+ * @throws AppCellDataException The string value can not be converted to [DateTime]
+ */
 fun Cell.readeDateTime(
     @Suppress("UNUSED_PARAMETER") attribute: Attribute<*>,
     pattern: String
@@ -54,6 +72,13 @@ fun Cell.readeDateTime(
     CellType.BLANK -> null
 }
 
+/**
+ * Read Boolean value from cell, non-Boolean values are converted to Boolean
+ *
+ * @receiver Cell The cell to read
+ * @param locale Locale The locale for converting
+ * @return Boolean?
+ */
 fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.LONG -> this.longValue != 0L
     CellType.DOUBLE -> this.doubleValue != 0.0
@@ -66,6 +91,13 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.BLANK -> null
 }
 
+/**
+ * Read Double value from cell, non-Double values are converted to Double
+ *
+ * @receiver Cell The cell to read
+ * @param locale Locale The locale for converting
+ * @return Double?
+ */
 @Suppress("ComplexMethod")
 fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
     CellType.LONG -> this.longValue.toDouble()
@@ -79,6 +111,13 @@ fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
     CellType.BLANK -> null
 }
 
+/**
+ * Read Long value from cell, non-Long values are converted to Long
+ *
+ * @receiver Cell The cell to read
+ * @param locale Locale The locale for converting
+ * @return Long?
+ */
 @Suppress("ComplexMethod")
 fun Cell.readLong(locale: Locale): Long? = when (this.cellType) {
     CellType.LONG -> this.longValue
@@ -92,6 +131,13 @@ fun Cell.readLong(locale: Locale): Long? = when (this.cellType) {
     CellType.BLANK -> null
 }
 
+/**
+ * Read string from cell, non-string values converted to string according to locale
+ *
+ * @receiver Cell The cell to read
+ * @param locale Locale The locale for converting
+ * @return String?
+ */
 fun Cell.readString(locale: Locale): String? = when (this.cellType) {
     CellType.LONG -> this.longValue.longToString(locale)
     CellType.DOUBLE -> this.doubleValue.doubleToString(locale)

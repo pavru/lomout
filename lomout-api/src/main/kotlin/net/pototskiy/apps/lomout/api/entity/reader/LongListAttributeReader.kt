@@ -12,6 +12,13 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
+/**
+ * Default reader for [LongListType] attribute
+ *
+ * @property locale String The value locale
+ * @property quote Char? The value quote, optional
+ * @property delimiter Char The list delimiter, defalut: ,
+ */
 open class LongListAttributeReader : AttributeReaderPlugin<LongListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null

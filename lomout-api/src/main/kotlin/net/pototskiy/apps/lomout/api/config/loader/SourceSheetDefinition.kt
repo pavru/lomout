@@ -2,10 +2,24 @@ package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppSheetException
 
+/**
+ * Source data sheet
+ *
+ * @property name The sheet name
+ * @property pattern The sheet regex pattern
+ * @property definition The sheet definition string presentation
+ * @constructor
+ */
 data class SourceSheetDefinition(
     val name: String? = null,
     val pattern: Regex? = null
 ) {
+    /**
+     * Test if sheet name match with definition
+     *
+     * @param sheet The sheet name
+     * @return Boolean
+     */
     fun isMatch(sheet: String): Boolean {
         return when {
             this.name != null -> sheet == this.name

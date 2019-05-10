@@ -7,6 +7,16 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
+/**
+ * Default writer for [BooleanListType] attribute
+ *
+ * * true -> 1
+ * * false -> 0
+ *
+ * @property locale String The value locale, ignored
+ * @property quote Char? The value quote, optional
+ * @property delimiter Char The list delimiter, default: ,
+ */
 open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BooleanListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null

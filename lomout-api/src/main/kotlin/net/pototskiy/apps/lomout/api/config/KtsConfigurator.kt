@@ -1,8 +1,6 @@
 package net.pototskiy.apps.lomout.api.config
 
-import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.resolver.FilesAndIvyResolver
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
@@ -21,15 +19,24 @@ import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.updateClasspath
 
+/**
+ * Config script configuration on annotations
+ *
+ * @property logger The logger
+ * @property resolver The dependency resolver
+ */
 @Suppress("ReturnCount", "TooGenericExceptionCaught")
 class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
-    private val logger = try {
-        LogManager.getLogger(CONFIG_LOG_NAME)
-    } catch (e: Throwable) {
-        null
-    }
+    private val logger = MainAndIdeLogger()
+
     private val resolver = FilesAndIvyResolver()
 
+    /**
+     * Main configuration function
+     *
+     * @param context The script context
+     * @return ResultWithDiagnostics<ScriptCompilationConfiguration>
+     */
     override operator fun invoke(
         context: ScriptConfigurationRefinementContext
     ): ResultWithDiagnostics<ScriptCompilationConfiguration> {
@@ -66,16 +73,15 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
         val newConf = ScriptCompilationConfiguration(context.compilationConfiguration) {
             if (resolvedClassPath != null && resolvedClassPath.isNotEmpty()) {
                 updateClasspath(resolvedClassPath)
-                logger?.trace(
-                    "Classpath updated with: {}",
-                    resolvedClassPath.joinToString(",") { it.absolutePath }
+                logger.trace(
+                    "Classpath updated with: ${resolvedClassPath.joinToString(",") { it.absolutePath }}"
                 )
             }
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
-                logger?.trace(
-                    "${context.script.name} imports next scripts: {}",
-                    importedSources.joinToString(",") { it.name ?: "" }
+                logger.trace(
+                    "${context.script.name} imports next scripts: " +
+                            importedSources.joinToString(",") { it.name ?: "" }
                 )
             }
         }

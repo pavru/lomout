@@ -7,6 +7,14 @@ import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeSheet
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default writer for [AttributeListType] attribute
+ *
+ * @property quote Char? The name-value pair quote, optional
+ * @property delimiter Char The pair list delimiter, default: ,
+ * @property valueQuote Char? The value quote, optional
+ * @property valueDelimiter Char The delimiter between name and value, default: ,
+ */
 open class AttributeListStringWriter : AttributeWriterPlugin<AttributeListType>() {
     var quote: Char? = null
     var delimiter: Char = ','

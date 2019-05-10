@@ -3,6 +3,14 @@ package net.pototskiy.apps.lomout.api.entity.values
 import java.text.ParseException
 import java.util.*
 
+/**
+ * Convert string to boolean according to locale
+ *
+ * @receiver String The boolean value as string
+ * @param locale Locale The value locale, supported: en_US, ru_RU
+ * @return Boolean
+ * @throws ParseException If string can not parsed to boolean
+ */
 fun String.stringToBoolean(locale: Locale): Boolean {
     val v = this.toLowerCase().trim()
     val booleanString = stringBooleanMap[locale]?.booleanString

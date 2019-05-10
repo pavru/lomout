@@ -1,3 +1,7 @@
+@file:Import("NotRemovedFilter.plugin.conf.kts")
+
+import NotRemovedFilter_plugin_conf.NotRemovedFilter
+
 config {
     database {
         name("test_db_name")
@@ -88,7 +92,7 @@ config {
             }
         }
         loadEntity("onec-product") {
-            fromSources { source { file("test-attributes-xls").sheet("test-stock").stopOnEmptyRow() } }
+            fromSources { source { file("test-attributes-xls"); sheet("test-stock"); stopOnEmptyRow() } }
             rowsToSkip(3)
             keepAbsentForDays(10)
             sourceFields {
@@ -117,7 +121,7 @@ config {
             }
         }
         loadEntity("onec-product") {
-            fromSources { source { file("test-attributes-csv").sheet(CSV_SHEET_NAME).stopOnEmptyRow() } }
+            fromSources { source { file("test-attributes-csv"); sheet(CSV_SHEET_NAME); stopOnEmptyRow() } }
             headersRow(2)
             rowsToSkip(3)
             keepAbsentForDays(10)
@@ -150,7 +154,24 @@ config {
     mediator {
         unionProductionLine {
             input {
-                entity("onec-product")
+                entity("onec-product") {
+                    filter {
+                        it[DbEntityTable.currentStatus] neq EntityStatus.REMOVED
+                    }
+                }
+            }
+            output("import-product") {
+                inheritFrom("onec-product")
+            }
+            pipeline {
+                assembler { _, _ -> emptyMap() }
+            }
+        }
+        unionProductionLine {
+            input {
+                entity("onec-product") {
+                    filter<NotRemovedFilter>()
+                }
             }
             output("import-product") {
                 inheritFrom("onec-product")

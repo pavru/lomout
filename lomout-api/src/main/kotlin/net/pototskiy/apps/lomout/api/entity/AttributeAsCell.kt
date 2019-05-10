@@ -8,6 +8,22 @@ import net.pototskiy.apps.lomout.api.source.workbook.Row
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
 
+/**
+ * Present attribute as workbook cell
+ *
+ * @param T : Type The attribute type
+ * @property cellValue CellValue? The cell value
+ * @property address CellAddress The cell address
+ * @property cellType CellType The cell type
+ * @property booleanValue Boolean The cell boolean value
+ * @property longValue Long The cell long value
+ * @property doubleValue Double The cell double value
+ * @property stringValue String The cell string value
+ * @property row Row The cell row
+ * @constructor
+ * @param attribute Attribute<out T> The attribute that will be presented as cell
+ * @param aValue T The value that will be assign to cell
+ */
 class AttributeAsCell<T : Type>(
     attribute: Attribute<out T>,
     aValue: T?
@@ -19,7 +35,13 @@ class AttributeAsCell<T : Type>(
         (attribute.writer as AttributeWriter<T>).write(aValue, this)
     }
 
+    /**
+     * Cell address, it always is 0,0
+     */
     override val address = CellAddress(0, 0)
+    /**
+     * Cell value type
+     */
     override val cellType: CellType
         get() = when (cellValue) {
             is CellStringValue -> CellType.STRING
@@ -29,54 +51,105 @@ class AttributeAsCell<T : Type>(
             null -> CellType.BLANK
         }
 
+    /**
+     * Cell boolean value
+     */
     override val booleanValue: Boolean
         get() = when (val v = cellValue) {
             is CellBooleanValue -> v.value
             else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
+    /**
+     * Cell long value
+     */
     override val longValue: Long
         get() = when (val v = cellValue) {
             is CellLongValue -> v.value
             else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
+    /**
+     * Cell double value
+     */
     override val doubleValue: Double
         get() = when (val v = cellValue) {
             is CellDoubleValue -> v.value
             else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
+    /**
+     * Cell string value
+     */
     override val stringValue: String
         get() = when (val v = cellValue) {
             is CellStringValue -> v.value
             else -> throw AppCellDataException(DATA_INCOMPATIBLE_MSG)
         }
+    /**
+     * Cell row
+     */
     override val row: Row
         get() = throw NotImplementedError("Attribute cell has no row")
 
+    /**
+     * Cell value as string
+     *
+     * @return String
+     */
     override fun asString(): String {
         return cellValue?.value?.toString() ?: ""
     }
 
+    /**
+     * Set cell string value
+     *
+     * @param value String
+     */
     override fun setCellValue(value: String) {
         cellValue = CellStringValue(value)
     }
 
+    /**
+     * Set cell boolean value
+     *
+     * @param value Boolean
+     */
     override fun setCellValue(value: Boolean) {
         cellValue = CellBooleanValue(value)
     }
 
+    /**
+     * Set cell long value
+     *
+     * @param value Long
+     */
     override fun setCellValue(value: Long) {
         cellValue = CellLongValue(value)
     }
 
+    /**
+     * Set cell double value
+     *
+     * @param value Double
+     */
     override fun setCellValue(value: Double) {
         cellValue = CellDoubleValue(value)
     }
 
+    /**
+     * Set cell [DateTime] value
+     *
+     * @param value DateTime
+     */
     override fun setCellValue(value: DateTime) {
         cellValue = CellDoubleValue(HSSFDateUtil.getExcelDate(value.toDate()))
     }
 
+    /**
+     * Companion object
+     */
     companion object {
+        /**
+         * Error message type is incompatible
+         */
         const val DATA_INCOMPATIBLE_MSG = "Data type is incompatible"
     }
 }

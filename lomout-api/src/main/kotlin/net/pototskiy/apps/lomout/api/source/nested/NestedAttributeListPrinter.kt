@@ -2,6 +2,15 @@ package net.pototskiy.apps.lomout.api.source.nested
 
 import java.io.StringWriter
 
+/**
+ * Nested attribute printer. Print map of attributes into string
+ *
+ * @constructor
+ * @param quote Char? The name-value pair quote, null - no quote
+ * @param delimiter Char The delimiter between name-value pairs
+ * @param valueQuote Char? The value quote, null - no quote
+ * @param valueDelimiter Char The delimiter between name and value
+ */
 class NestedAttributeListPrinter(
     quote: Char?,
     delimiter: Char,
@@ -9,6 +18,12 @@ class NestedAttributeListPrinter(
     valueDelimiter: Char
 ) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
+    /**
+     * Convert map of attributes(name->value) to string
+     *
+     * @param value Map<String, String> The attributes map
+     * @return String
+     */
     fun print(value: Map<String, String>): String {
         val values = value.map { (attr, value) ->
             StringWriter().use { writer ->

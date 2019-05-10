@@ -1,7 +1,7 @@
 package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.EmptyRowStrategy
+import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.Load
 import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
@@ -176,7 +176,7 @@ internal class DataLoadingTest {
         excelWorkbook.use { workbook ->
             val excelSheet = workbook.sheetIterator().asSequence().find { sheetDef.isMatch(it.sheetName) }!!
             val loader = EntityLoader(
-                load, EmptyRowStrategy.STOP, ExcelWorkbook(
+                load, EmptyRowBehavior.STOP, ExcelWorkbook(
                     excelWorkbook
                 )[excelSheet.sheetName]
             )

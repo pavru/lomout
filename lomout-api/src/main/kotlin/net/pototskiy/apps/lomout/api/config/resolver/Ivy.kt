@@ -1,13 +1,18 @@
 package net.pototskiy.apps.lomout.api.config.resolver
 
-import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
+import net.pototskiy.apps.lomout.api.config.MainAndIdeLogger
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.LogOptions
 import org.apache.ivy.core.module.descriptor.DefaultDependencyDescriptor
+import org.apache.ivy.core.module.descriptor.DefaultExcludeRule
 import org.apache.ivy.core.module.descriptor.DefaultModuleDescriptor
+import org.apache.ivy.core.module.id.ArtifactId
+import org.apache.ivy.core.module.id.ModuleId
 import org.apache.ivy.core.module.id.ModuleRevisionId
 import org.apache.ivy.core.resolve.ResolveOptions
 import org.apache.ivy.core.settings.IvySettings
+import org.apache.ivy.plugins.matcher.ExactOrRegexpPatternMatcher
+import org.apache.ivy.plugins.matcher.PatternMatcher
 import org.apache.ivy.plugins.parser.xml.XmlModuleDescriptorWriter
 import org.apache.ivy.plugins.resolver.BintrayResolver
 import org.apache.ivy.plugins.resolver.ChainResolver
@@ -16,7 +21,6 @@ import org.apache.ivy.plugins.resolver.URLResolver
 import org.apache.ivy.plugins.version.MavenTimedSnapshotVersionMatcher
 import org.apache.ivy.util.DefaultMessageLogger
 import org.apache.ivy.util.Message
-import org.apache.logging.log4j.LogManager
 import org.jetbrains.kotlin.script.util.KotlinAnnotatedScriptDependenciesResolver
 import org.jetbrains.kotlin.script.util.resolvers.DirectResolver
 import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicRepositoryCoordinates
@@ -26,41 +30,70 @@ import org.jetbrains.kotlin.script.util.resolvers.experimental.GenericRepository
 import org.jetbrains.kotlin.script.util.resolvers.experimental.MavenArtifactCoordinates
 import java.io.File
 
+/**
+ * Ivy dependency resolver
+ *
+ * @property logger MainAndIdeLogger
+ * @property ivyResolvers ArrayList<URLResolver>
+ */
 class IvyResolver : GenericRepositoryWithBridge {
-    private val logger = try {
-        LogManager.getLogger(CONFIG_LOG_NAME)
-    } catch (e: Throwable) {
-        null
-    }
+    private val logger = MainAndIdeLogger()
+
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
+    /**
+     * Resolve artifact
+     *
+     * @param artifactCoordinates GenericArtifactCoordinates The artifact coordinates
+     * @return Iterable<File>? Artifact files or null if can not resolve
+     */
     override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
+        tryResolve(artifactCoordinates, emptyList())
+
+    /**
+     * Resolve artifact with exclude some artifacts
+     *
+     * @param artifactCoordinates GenericArtifactCoordinates The artifact coordinates
+     * @param excludes List<Pair<String, String>> List of artifact to exclude Pair(Group, Name)
+     * @return Iterable<File>? Artifact files or null if can not resolve
+     */
+    fun tryResolve(
+        artifactCoordinates: GenericArtifactCoordinates,
+        excludes: List<Pair<String, String>> = emptyList()
+    ): Iterable<File>? =
         with(artifactCoordinates) {
-            val artifactId =
-                if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
-                    listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
-                } else {
-                    val stringCoordinates = string
-                    if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
-                        stringCoordinates.split(':')
-                    } else {
-                        error("Unknown set of arguments to maven resolver: $stringCoordinates")
-                    }
-                }
-            logger?.trace("Try to resolve artifact: {}", artifactId)
-            val artifact = resolveArtifact(artifactId)
+            val artifactId = artifactId()
+            logger.trace("Try to resolve artifact: $artifactId")
+            val artifact = resolveArtifact(artifactId, excludes)
             if (artifact.isEmpty()) {
-                logger?.error("Can not resolve artifact: {}", artifactId)
+                logger.error("Can not resolve artifact: artifactId")
             } else {
-                logger?.trace("Artifact {} is resolved to files: {}", artifactId,
-                    artifact.joinToString(",") { it.absolutePath })
+                logger.trace(
+                    "Artifact $artifactId is resolved to files: ${artifact.joinToString(",") { it.absolutePath }}"
+                )
             }
             if (artifact.isEmpty()) null else artifact
         }
 
+    private fun GenericArtifactCoordinates.artifactId(): List<String> {
+        return if (this is MavenArtifactCoordinates && (groupId.isValidParam() || artifactId.isValidParam())) {
+            listOf(groupId.orEmpty(), artifactId.orEmpty(), version.orEmpty())
+        } else {
+            val stringCoordinates = string
+            if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
+                stringCoordinates.split(':')
+            } else {
+                error("Unknown set of arguments to maven resolver: $stringCoordinates")
+            }
+        }
+    }
+
     private val ivyResolvers = arrayListOf<URLResolver>()
 
-    private fun resolveArtifact(artifactId: List<String>): List<File> {
+    private fun resolveArtifact(
+        artifactId: List<String>,
+        excludes: List<Pair<String, String>> = emptyList()
+    ): List<File> {
 
         val ivySettings = ivySettings()
 
@@ -75,13 +108,32 @@ class IvyResolver : GenericRepositoryWithBridge {
 
         val depsDescriptor = DefaultDependencyDescriptor(
             moduleDescriptor,
-            ModuleRevisionId.newInstance(artifactId[0], artifactId[1], artifactId[2]),
+            ModuleRevisionId.newInstance(
+                artifactId[0],
+                artifactId[1],
+                artifactId[2]
+            ),
             false, false, true
         )
+        depsDescriptor.addDependencyConfiguration("default", "default")
         moduleDescriptor.addDependency(depsDescriptor)
+        for (pair in excludes) {
+            val rule = DefaultExcludeRule(
+                ArtifactId(
+                    ModuleId(pair.first, pair.second),
+                    PatternMatcher.ANY_EXPRESSION,
+                    PatternMatcher.ANY_EXPRESSION,
+                    PatternMatcher.ANY_EXPRESSION
+                ),
+                ExactOrRegexpPatternMatcher(),
+                null
+            )
+            depsDescriptor.addExcludeRule("default", rule)
+        }
 
         // creates an ivy configuration file
         XmlModuleDescriptorWriter.write(moduleDescriptor, ivyFile)
+        logger.trace(ivyFile.readText())
 
         val resolveOptions = ResolveOptions().apply {
             confs = arrayOf("default")
@@ -119,6 +171,12 @@ class IvyResolver : GenericRepositoryWithBridge {
         }
     }
 
+    /**
+     * Resolve external artifact defined in ivy.xml file
+     *
+     * @param ivyFile File The ivy.xml file
+     * @return List<File> List of artifact file
+     */
     fun tryResolveExternalDependency(ivyFile: File): List<File> {
         val ivy = Ivy.newInstance(ivySettings())
         val resolveOptions = ResolveOptions().apply {
@@ -130,6 +188,12 @@ class IvyResolver : GenericRepositoryWithBridge {
         return report.allArtifactsReports.map { it.localFile }
     }
 
+    /**
+     * Add repository to resolver
+     *
+     * @param repositoryCoordinates GenericRepositoryCoordinates
+     * @return Boolean
+     */
     override fun tryAddRepository(repositoryCoordinates: GenericRepositoryCoordinates): Boolean {
         val url = repositoryCoordinates.url
         val type = repositoryCoordinates.name?.split(":")?.first()
@@ -192,7 +256,13 @@ class IvyResolver : GenericRepositoryWithBridge {
         return false
     }
 
+    /**
+     * Companion object
+     */
     companion object {
+        /**
+         * Default artifact pattern
+         */
         const val DEFAULT_ARTIFACT_PATTERN = "[organisation]/[module]/[revision]/[artifact](-[revision]).[ext]"
 
         init {
@@ -201,17 +271,30 @@ class IvyResolver : GenericRepositoryWithBridge {
     }
 }
 
+/**
+ * File and Ivy dependency resolver
+ */
 class FilesAndIvyResolver :
     KotlinAnnotatedScriptDependenciesResolver(
         emptyList(),
         arrayListOf(DirectResolver(), IvyResolver()).asIterable()
     )
 
+/**
+ * Get maven central url
+ *
+ * @return BasicRepositoryCoordinates
+ */
 fun mavenCentral() = BasicRepositoryCoordinates(
     "https://repo.maven.apache.org/maven2/",
     "maven:mavenCentral"
 )
 
+/**
+ * Get jCenter url
+ *
+ * @return BasicRepositoryCoordinates
+ */
 fun jCenter() = BasicRepositoryCoordinates(
     "https://jcenter.bintray.com/",
     "bintray:jcenter"

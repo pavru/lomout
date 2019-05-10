@@ -5,12 +5,27 @@ package net.pototskiy.apps.lomout.api
  */
 @Generated
 open class AppException : Exception {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -20,12 +35,27 @@ open class AppException : Exception {
  */
 @Generated
 open class AppDatabaseException : AppException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -35,12 +65,27 @@ open class AppDatabaseException : AppException {
  */
 @Generated
 open class AppConfigException : AppException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -50,12 +95,27 @@ open class AppConfigException : AppException {
  */
 @Generated
 open class AppEntityTypeException : AppConfigException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -65,12 +125,27 @@ open class AppEntityTypeException : AppConfigException {
  */
 @Generated
 open class AppAttributeException : AppEntityTypeException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -80,12 +155,27 @@ open class AppAttributeException : AppEntityTypeException {
  */
 @Generated
 open class AppWorkbookException : AppException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -95,12 +185,27 @@ open class AppWorkbookException : AppException {
  */
 @Generated
 open class AppSheetException : AppWorkbookException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -110,12 +215,27 @@ open class AppSheetException : AppWorkbookException {
  */
 @Generated
 open class AppRowException : AppSheetException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -125,12 +245,27 @@ open class AppRowException : AppSheetException {
  */
 @Generated
 open class AppCellException : AppRowException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -139,12 +274,27 @@ open class AppCellException : AppRowException {
  * Cell data related problems
  */
 open class AppCellDataException : AppCellException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
@@ -154,24 +304,57 @@ open class AppCellDataException : AppCellException {
  */
 @Generated
 open class AppDataException : AppException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }
 
+/**
+ * Plugin related problems, including internal plugin problem
+ */
 @Generated
 open class AppPluginException : AppException {
+    /**
+     *
+     * @constructor
+     */
     @Suppress("unused")
     constructor() : super()
 
+    /**
+     *
+     * @param message String?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?) : super(message)
 
+    /**
+     *
+     * @param message String?
+     * @param cause Throwable?
+     * @constructor
+     */
     @Suppress("unused")
     constructor(message: String?, cause: Throwable?) : super(message, cause)
 }

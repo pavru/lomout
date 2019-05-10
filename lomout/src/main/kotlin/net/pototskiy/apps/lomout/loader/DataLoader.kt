@@ -45,7 +45,7 @@ object DataLoader {
                         } else {
                             workbook.filter { source.sheet.isMatch(it.name) }.forEach {
                                 log.debug("Start loading sheet<{}> from file<{}>", it.name, file.id)
-                                EntityLoader(load, source.emptyRowStrategy, it).apply {
+                                EntityLoader(load, source.emptyRowBehavior, it).apply {
                                     load()
                                     this@DataLoader.processedRows.addAndGet(processedRows)
                                 }

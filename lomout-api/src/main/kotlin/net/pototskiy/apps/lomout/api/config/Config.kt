@@ -6,6 +6,16 @@ import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 
+/**
+ * Root element of configuration file
+ *
+ * @property entityTypeManager EntityTypeManager
+ * @property database DatabaseConfig
+ * @property loader LoaderConfiguration?
+ * @property mediator MediatorConfiguration?
+ * @property printer PrinterConfiguration?
+ * @constructor
+ */
 data class Config(
     val entityTypeManager: EntityTypeManager,
     val database: DatabaseConfig,
@@ -13,6 +23,16 @@ data class Config(
     val mediator: MediatorConfiguration?,
     val printer: PrinterConfiguration?
 ) {
+    /**
+     * Configuration root element builder class
+     *
+     * @property helper ConfigBuildHelper
+     * @property database DatabaseConfig?
+     * @property loader LoaderConfiguration?
+     * @property mediator MediatorConfiguration?
+     * @property printer PrinterConfiguration?
+     * @constructor
+     */
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var database: DatabaseConfig? = null
@@ -21,7 +41,20 @@ data class Config(
         private var printer: PrinterConfiguration? = null
 
         /**
-         * Configure database
+         * Database configuration
+         *
+         * ```
+         * ...
+         *  database {
+         *      name("lomout")
+         *      server {...}
+         *  }
+         * ...
+         * ```
+         * * name - MySql database name, **mandatory**
+         * * [server][DatabaseConfig.Builder.server] - server configuration part, mandatory
+         *
+         * @see DatabaseConfig
          */
         @ConfigDsl
         fun database(block: DatabaseConfig.Builder.() -> Unit) {
@@ -30,6 +63,32 @@ data class Config(
             helper.popScope()
         }
 
+        /**
+         * Loader configuration
+         *
+         * ```
+         * ...
+         *  loader {
+         *      files {...}
+         *      entities {
+         *          entity {...}
+         *          entity {...}
+         *          ...
+         *      }
+         *      loadEntity("entity type name") {...}
+         *      loadEntity("entity type name") {...}
+         *      ...
+         *  }
+         * ...
+         * ```
+         * * [files][LoaderConfiguration.Builder.files] - configure source files
+         * * [entities][LoaderConfiguration.Builder.entities] - configure entities that will be loaded
+         * * [loadEntity][LoaderConfiguration.Builder.loadEntity]
+         *
+         * @see LoaderConfiguration
+         *
+         * @param block LoaderConfiguration.Builder.() -> Unit
+         */
         @ConfigDsl
         fun loader(block: LoaderConfiguration.Builder.() -> Unit) {
             helper.pushScope("loader")
@@ -37,6 +96,13 @@ data class Config(
             helper.popScope()
         }
 
+        /**
+         * Mediator configuration
+         *
+         * @see MediatorConfiguration
+         *
+         * @param block MediatorConfiguration.Builder.() -> Unit
+         */
         @ConfigDsl
         fun mediator(block: MediatorConfiguration.Builder.() -> Unit) {
             helper.pushScope("mediator")
@@ -44,6 +110,13 @@ data class Config(
             helper.popScope()
         }
 
+        /**
+         * Printer configuration
+         *
+         * @see PrinterConfiguration
+         *
+         * @param block PrinterConfiguration.Builder.() -> Unit
+         */
         @ConfigDsl
         fun printer(block: PrinterConfiguration.Builder.() -> Unit) {
             helper.pushScope("printer")
@@ -51,19 +124,38 @@ data class Config(
             helper.popScope()
         }
 
+        /**
+         * Build configuration
+         *
+         * @return Config
+         */
         fun build(): Config {
             val realDatabase = database ?: DatabaseConfig.Builder().build()
             return Config(helper.typeManager, realDatabase, loader, mediator, printer)
         }
-
-//        companion object : ConfigBuildHelper()
     }
-
-//    companion object {
-//        var config: Config? = null
-//    }
 }
 
+/**
+ * Root element of configuration
+ *
+ * ```
+ * config {
+ *      database {...}
+ *      loader {...}
+ *      mediator {...}
+ *      printer {...}
+ * }
+ * ```
+ * * [database][DatabaseConfig] - **mandatory**
+ * * [loader][LoaderConfiguration] - optional
+ * * [mediator][MediatorConfiguration] - optional
+ * * [printer][PrinterConfiguration] - optional
+ *
+ * @see Config
+ * @receiver Any
+ * @param block Config.Builder.() -> Unit
+ */
 fun Any.config(block: Config.Builder.() -> Unit) {
     val script = (this as? ConfigScript)
     if (script != null) {

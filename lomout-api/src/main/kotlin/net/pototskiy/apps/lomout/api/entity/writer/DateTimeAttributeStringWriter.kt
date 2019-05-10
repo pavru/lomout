@@ -7,6 +7,12 @@ import net.pototskiy.apps.lomout.api.entity.values.datetimeToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default writer for [DateTimeType] attribute
+ *
+ * @property locale String The value locale, default: system locale
+ * @property pattern String? The datetime locale,optional(use locale)
+ */
 open class DateTimeAttributeStringWriter : AttributeWriterPlugin<DateTimeType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null

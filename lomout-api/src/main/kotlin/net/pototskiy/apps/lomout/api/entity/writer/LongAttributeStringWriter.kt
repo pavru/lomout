@@ -7,6 +7,11 @@ import net.pototskiy.apps.lomout.api.entity.values.longToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default writer for [LongType] attribute
+ *
+ * @property locale String The value locale, default: system locale
+ */
 open class LongAttributeStringWriter : AttributeWriterPlugin<LongType>() {
     var locale: String = DEFAULT_LOCALE_STR
 

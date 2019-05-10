@@ -205,4 +205,15 @@ internal class EntityTypeBaseTest {
         assertThatThrownBy { typeManager.addEntityAttribute(eType, dupAttr1) }
             .isInstanceOf(AppEntityTypeException::class.java)
     }
+
+    @Test
+    internal fun equalsTest() {
+        val type1 = typeManager.createEntityType("type1", emptyList(), false)
+        val type2 = typeManager.createEntityType("type2", emptyList(), false)
+        val type3 = typeManager.createEntityType("type1", emptyList(), false)
+        assertThat(type1 == type1).isTrue()
+        assertThat(type1 == type2).isFalse()
+        assertThat(type1 == type3).isTrue()
+        assertThat(type1 == Any()).isFalse()
+    }
 }

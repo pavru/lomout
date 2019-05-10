@@ -4,8 +4,16 @@ import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicRepositoryCo
 import java.io.File
 import javax.xml.stream.XMLInputFactory
 
+/**
+ * Local maven repository
+ */
 object LocalMavenRepository {
 
+    /**
+     * Find local maven repository
+     *
+     * @return File?
+     */
     fun findLocalMavenRepo(): File? {
         val (m2Home, m2Conf) = getMavenLocalHome()
         if (!m2Conf.exists()) return null
@@ -46,6 +54,11 @@ object LocalMavenRepository {
     }
 }
 
+/**
+ * Get local maven repository url
+ *
+ * @return BasicRepositoryCoordinates
+ */
 fun localMaven() = BasicRepositoryCoordinates(
     LocalMavenRepository.findLocalMavenRepo()?.toURI()?.toURL()?.toString() ?: "",
     "maven:localMaven"

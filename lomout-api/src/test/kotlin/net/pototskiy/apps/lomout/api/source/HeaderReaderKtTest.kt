@@ -104,7 +104,7 @@ internal class HeaderReaderKtTest {
 
     private fun createConfigurationDifferentHeadersOrder() = Config.Builder(helper).apply {
         database {
-            name("test_lomunt")
+            name("test_lomout")
             server {
                 host("localhost")
                 port(3306)

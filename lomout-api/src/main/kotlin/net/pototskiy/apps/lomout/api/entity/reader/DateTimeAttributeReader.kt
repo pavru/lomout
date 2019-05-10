@@ -7,6 +7,12 @@ import net.pototskiy.apps.lomout.api.entity.DateTimeType
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default reader for [DateTimeType] attribute
+ *
+ * @property locale String The value locale, default: system locale
+ * @property pattern String? The value pattern, optional (use locale)
+ */
 open class DateTimeAttributeReader : AttributeReaderPlugin<DateTimeType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null

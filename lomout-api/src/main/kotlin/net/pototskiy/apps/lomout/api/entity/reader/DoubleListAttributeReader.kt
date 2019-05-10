@@ -12,6 +12,13 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
+/**
+ * Default reader for [DoubleListType] attribute
+ *
+ * @property locale String The value locale, default: system locale
+ * @property quote Char? The value quote, optional
+ * @property delimiter Char The list delimiter, default: ,
+ */
 open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null

@@ -7,17 +7,59 @@ import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 
+/**
+ * Printer line
+ *
+ * @property outputFieldSets PrinterOutput
+ * @constructor
+ * @param inputEntities InputEntityCollection The input entities collection
+ * @param outputFieldSets PrinterOutput The printer line output
+ * @param pipeline Pipeline The printer line pipeline
+ */
 class PrinterLine(
     inputEntities: InputEntityCollection,
     val outputFieldSets: PrinterOutput,
     pipeline: Pipeline
 ) : AbstractLine(LineType.UNION, inputEntities, pipeline) {
+    /**
+     * Printer line builder class
+     *
+     * @property helper ConfigBuildHelper The configuration builder helper
+     * @property inputs InputEntityCollection? The input entities collection
+     * @property pipeline Pipeline? The printer line pipeline
+     * @property outputs PrinterOutput? The printer line output
+     * @constructor
+     * @param helper ConfigBuilderHelper The config builder helper
+     */
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var inputs: InputEntityCollection? = null
         private var pipeline: Pipeline? = null
         private var outputs: PrinterOutput? = null
 
+        /**
+         * Define inputs for printer line
+         *
+         * ```
+         * ...
+         *  input {
+         *      entity("entity_type") {
+         *          filter {...}
+         *          filter<FilterPluginClass> {}
+         *      }
+         *      entity("entity_type") {
+         *          filter {...}
+         *      }
+         *  }
+         * ...
+         * ```
+         * * entity - define entity for line input, **at least one entity must be defined**
+         * * entity_type - entity type name
+         *
+         * Printer line generate stream of entity from all defined inputs like SQL UNION
+         *
+         * @param block InputEntityCollection.Builder.() -> Unit
+         */
         @ConfigDsl
         fun input(block: InputEntityCollection.Builder.() -> Unit) {
             this.inputs = InputEntityCollection.Builder(helper).also(block).build()
@@ -31,6 +73,33 @@ class PrinterLine(
             }
         }
 
+        /**
+         * Define print line output
+         *
+         * ```
+         * ...
+         *  output {
+         *      file {...}
+         *      printHead = true
+         *      outputFields {
+         *          main("set name") {
+         *              field("field name")
+         *              ...
+         *          }
+         *          extra("set_name") {
+         *              field("field name")
+         *              ...
+         *          }
+         *      }
+         *  }
+         * ...
+         * ```
+         * [file][net.pototskiy.apps.lomout.api.config.loader.SourceData.Builder] - define output file, **mandatory**
+         * printHead: Boolean - print headers in first row, *optional, default: true*
+         * [outputFields][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder] - define fields to print, **mandatory**
+         *
+         * @param block PrinterOutput.Builder.() -> Unit
+         */
         @ConfigDsl
         fun output(block: PrinterOutput.Builder.() -> Unit) {
             this.outputs = PrinterOutput.Builder(
@@ -40,6 +109,51 @@ class PrinterLine(
             ).apply(block).build()
         }
 
+        /**
+         * Define printer pipeline to process entities, this is root element of pipelines tree
+         *
+         * ```
+         * ...
+         *  pipeline {
+         *      classifier {...}
+         *      classifier<ClassifierPluginClass>()
+         *      pipeline(Pipeline.CLASS.MATCHED) {
+         *          assembler { target, entities ->
+         *              // assembler code
+         *          }
+         *          assembler<AssemblerPluginClass> {
+         *              // assembler options, it depends on assembler class
+         *          }
+         *      }
+         *      pipeline(Pipeline.CLASS.UNMATCHED) {
+         *          classifier {...}
+         *          pipeline(Pipeline.CLASS.MATCHED) {
+         *              classifier {...}
+         *              pipeline(Pipeline.CLASS.MATCHED) {
+         *                  assembler {...}
+         *              }
+         *              pipeline(Pipeline.CLASS.UNMATCHED) {
+         *                  assembler {...}
+         *              }
+         *          }
+         *          pipeline(Pipeline.CLASS.UNMATCHED) {
+         *              assembler {...}
+         *          }
+         *      }
+         *  }
+         * ...
+         * ```
+         * * [classifier][Pipeline.Builder.classifier] - entity classifier, it splits input of pipeline into 2 streams:
+         *      matched entities and unmatched entities. This is *optional* component, **only one classifier is allowed
+         *      per pipeline**. If classifier is omitted all entities go to assembler.
+         * * [assembler][Pipeline.Builder.assembler] - entity assembler, it prepares target entity attribute as map.
+         *      If pipeline has not child pipeline it must have assembler.
+         * * [pipeline][Pipeline.Builder.pipeline] - child pipeline, it's parameter indicate for which entities (matched,
+         *      unmatched) pipeline must be applied
+         *
+         * @param klass Array<out CLASS>
+         * @param block Pipeline.Builder.() -> Unit
+         */
         @ConfigDsl
         @Suppress("SpreadOperator")
         fun pipeline(
@@ -49,6 +163,11 @@ class PrinterLine(
             this.pipeline = Pipeline.Builder(*klass).apply(block).build()
         }
 
+        /**
+         * Build printer line
+         *
+         * @return PrinterLine
+         */
         @Suppress("ThrowsCount")
         fun build(): PrinterLine {
             validatePipeline(pipeline ?: throw AppConfigException("Pipeline must be defined"))

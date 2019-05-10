@@ -9,10 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - parameter to switch off script cache usage
 - parameter for script cache location
-- if there is ivy.xml files in the same location as config all dependencies will be added to classpath 
+- if there is ivy.xml files in the same location as config all dependencies will be added to classpath
+- log information in idea log
+- create gradle task to generate build info class
+### Changed
+- command line parameters: now 3 commands: --help, --version and --process 
 ### Fixed
 - [LM-27](https://camsoft.myjetbrains.com/youtrack/issue/LM-27)
     Script hash calculation now includes import directives
+- [LM-30](https://camsoft.myjetbrains.com/youtrack/issue/LM307)
+    Some documentation for API added
 ## [1.1.2]
 ### Added
 - [LM-4](https://camsoft.myjetbrains.com/youtrack/issue/LM-4)

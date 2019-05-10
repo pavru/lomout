@@ -7,6 +7,11 @@ import net.pototskiy.apps.lomout.api.entity.DoubleType
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default reader for [DoubleType] attribute
+ *
+ * @property locale String The value locale: default: system locale
+ */
 open class DoubleAttributeReader : AttributeReaderPlugin<DoubleType>() {
     var locale: String = DEFAULT_LOCALE_STR
 

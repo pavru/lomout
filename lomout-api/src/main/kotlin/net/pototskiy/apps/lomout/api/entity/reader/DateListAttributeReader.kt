@@ -13,6 +13,14 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
+/**
+ * Default reader for [DateListType] attribute
+ *
+ * @property locale String The value locale
+ * @property pattern String? The value pattern, optional (use locale)
+ * @property quote Char? The value quote, optional
+ * @property delimiter Char The list delimiter, default: ,
+ */
 open class DateListAttributeReader : AttributeReaderPlugin<DateListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null

@@ -7,10 +7,22 @@ import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.FileScriptSource
 
+/**
+ * Script hash creator, including script imports
+ *
+ * @property script The script source code
+ * @property compileConfiguration ScriptCompilationConfiguration
+ * @constructor
+ */
 class ScriptUniqueHash(
     private val script: SourceCode,
     private val compileConfiguration: ScriptCompilationConfiguration
 ) {
+    /**
+     * Create script SHA-1 hash code
+     *
+     * @return String?
+     */
     fun hash(): String? {
         if (script !is FileScriptSource) {
             return null

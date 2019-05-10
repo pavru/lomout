@@ -5,6 +5,7 @@ import net.pototskiy.apps.lomout.api.config.resolver.jCenter
 import net.pototskiy.apps.lomout.api.config.resolver.localMaven
 import net.pototskiy.apps.lomout.api.config.resolver.mavenCentral
 import org.assertj.core.api.Assertions.assertThat
+import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicArtifactCoordinates
 import org.junit.jupiter.api.Test
 
 internal class IvyResolverTest {
@@ -31,7 +32,7 @@ internal class IvyResolverTest {
         assertThat(resolver.tryAddRepository(mavenCentral())).isTrue()
         var deps = resolver.tryResolve("org.jetbrains.kotlin:kotlin-stdlib:1.3.21")
         assertThat(deps).isNotEmpty
-        deps = resolver.tryResolve("org.jetbrains.exposed:exposed:0.12.2")
+        deps = resolver.tryResolve(BasicArtifactCoordinates("org.jetbrains.exposed:exposed:0.12.2"))
         assertThat(deps).isNull()
         assertThat(
             resolver.tryAddRepository(jCenter())
