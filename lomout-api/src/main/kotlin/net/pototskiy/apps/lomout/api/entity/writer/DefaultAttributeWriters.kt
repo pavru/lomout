@@ -20,6 +20,9 @@ import net.pototskiy.apps.lomout.api.entity.TextType
 import net.pototskiy.apps.lomout.api.entity.Type
 import kotlin.reflect.KClass
 
+/**
+ * Map of default writers
+ */
 val defaultWriters = mapOf<KClass<out Type>, AttributeWriter<out Type>>(
     AttributeListType::class to AttributeWriterWithPlugin(
         AttributeListStringWriter::class

@@ -2,7 +2,7 @@ package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.EmptyRowStrategy
+import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.Load
 import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
@@ -291,7 +291,7 @@ internal class LoaderAttributeLoadingTest {
         val sheetDef = load.sources.first().sheet
         WorkbookFactory.create(file.toURI().toURL(), locale).use { workbook ->
             val sheet = workbook.find { sheetDef.isMatch(it.name) }!!
-            val loader = EntityLoader(load, EmptyRowStrategy.STOP, sheet)
+            val loader = EntityLoader(load, EmptyRowBehavior.STOP, sheet)
             loader.load()
         }
         entityType = typeManager.getEntityType(entityTypeName)!!

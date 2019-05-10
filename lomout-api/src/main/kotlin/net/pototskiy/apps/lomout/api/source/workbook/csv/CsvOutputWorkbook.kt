@@ -12,12 +12,28 @@ import java.net.URL
 import java.util.*
 import kotlin.contracts.contract
 
+/**
+ * CSV workbook for output to file
+ *
+ * @property writer OutputStreamWriter
+ * @property _printer CSVPrinter
+ * @property printer CSVPrinter
+ * @constructor
+ */
 class CsvOutputWorkbook(
     private val writer: OutputStreamWriter,
     csvFormat: CSVFormat,
     workbookLocale: Locale = DEFAULT_LOCALE
 ) : CsvWorkbook(workbookLocale) {
 
+    /**
+     * Constructor
+     *
+     * @param source URL The CSV file URL
+     * @param csvFormat CSVFormat The CSV format definition
+     * @param workbookLocale Locale The CSV file locale
+     * @constructor
+     */
     constructor(source: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
             : this(FileOutputStream(source.file).writer(), csvFormat, workbookLocale) {
         this.sourceURL = source
@@ -25,6 +41,14 @@ class CsvOutputWorkbook(
 
     private var _printer: CSVPrinter = csvFormat.print(writer)
 
+    /**
+     * Insert sheet to workbook
+     *
+     * Only one sheet with name *default* can be inserted
+     *
+     * @param sheet String The sheet name, should be *default*
+     * @return Sheet The inserted sheet
+     */
     override fun insertSheet(sheet: String): Sheet {
         if (sheet != CSV_SHEET_NAME) {
             throw AppWorkbookException("CSV workbook supports only sheet with name<default>")
@@ -32,9 +56,15 @@ class CsvOutputWorkbook(
         return CsvSheet(this).also { this.sheet = it }
     }
 
+    /**
+     * CSV printer
+     */
     val printer: CSVPrinter
         get() = _printer
 
+    /**
+     * Close workbook
+     */
     override fun close() {
         sheet?.writeLastRow()
         _printer.close()
@@ -42,6 +72,12 @@ class CsvOutputWorkbook(
     }
 }
 
+/**
+ * Test workbook is instance of [CsvOutputWorkbook]
+ *
+ * @param workbook CsvWorkbook
+ * @throws AppWorkbookException If wrong type
+ */
 fun checkThatItIsCsvOutputWorkbook(workbook: CsvWorkbook) {
     contract {
         returns() implies (workbook is CsvOutputWorkbook)

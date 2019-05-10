@@ -19,12 +19,24 @@ import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.updateClasspath
 
+/**
+ * Config script configuration on annotations
+ *
+ * @property logger The logger
+ * @property resolver The dependency resolver
+ */
 @Suppress("ReturnCount", "TooGenericExceptionCaught")
 class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
     private val logger = MainAndIdeLogger()
 
     private val resolver = FilesAndIvyResolver()
 
+    /**
+     * Main configuration function
+     *
+     * @param context The script context
+     * @return ResultWithDiagnostics<ScriptCompilationConfiguration>
+     */
     override operator fun invoke(
         context: ScriptConfigurationRefinementContext
     ): ResultWithDiagnostics<ScriptCompilationConfiguration> {

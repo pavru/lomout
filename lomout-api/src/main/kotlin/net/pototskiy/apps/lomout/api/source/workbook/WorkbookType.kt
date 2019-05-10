@@ -1,5 +1,19 @@
 package net.pototskiy.apps.lomout.api.source.workbook
 
+/**
+ * Workbook types
+ */
 enum class WorkbookType {
-    EXCEL, CSV, ATTRIBUTE
+    /**
+     * Workbook represents Excel file (xls, xlsx, xlsm)
+     */
+    EXCEL,
+    /**
+     * Workbook represents CSV file
+     */
+    CSV,
+    /**
+     * Workbook use to process string with name-value pairs
+     */
+    ATTRIBUTE
 }

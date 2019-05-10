@@ -7,6 +7,11 @@ import net.pototskiy.apps.lomout.api.entity.BooleanType
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default reader for [BooleanType] attribute
+ *
+ * @property locale String The value locale, default: system locale
+ */
 open class BooleanAttributeReader : AttributeReaderPlugin<BooleanType>() {
     var locale: String = DEFAULT_LOCALE_STR
 

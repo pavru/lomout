@@ -10,11 +10,28 @@ import org.jetbrains.exposed.sql.ColumnType
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.VarCharColumnType
 
+/**
+ * Entity type column type
+ *
+ * @property entityTable DbEntityTable The entity table
+ * @constructor
+ */
 class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType() {
+    /**
+     * Get SQL type for data
+     *
+     * @return String
+     */
     override fun sqlType(): String {
         return VarCharColumnType(ENTITY_TYPE_NAME_LENGTH).sqlType()
     }
 
+    /**
+     * Convert value from DB
+     *
+     * @param value Any The DB value
+     * @return Any
+     */
     override fun valueFromDB(value: Any): Any {
         return when (value) {
             is EntityType -> value
@@ -24,6 +41,12 @@ class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType(
         }
     }
 
+    /**
+     * Convert value to DB value
+     *
+     * @param value Any?
+     * @return Any?
+     */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
             null -> if (nullable) null else throw AppDataException("Null in non-nullable column")
@@ -34,5 +57,13 @@ class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType(
     }
 }
 
+/**
+ * Register entity type column
+ *
+ * @receiver Table
+ * @param name String The column name
+ * @param entityTable DbEntityTable The exposed table
+ * @return Column<EntityType>
+ */
 fun Table.entityType(name: String, entityTable: DbEntityTable): Column<EntityType> =
     registerColumn(name, EntityTypeColumnType(entityTable))

@@ -5,11 +5,34 @@ import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 
+/**
+ * Entity type super type
+ *
+ * @constructor
+ */
 class ParentEntityType(
+    /**
+     * Parent (super) entity type
+     */
     val parent: EntityType,
+    /**
+     * Attribute collection to exclude
+     */
     val include: AttributeCollection? = null,
+    /**
+     * Attribute collection to include
+     */
     val exclude: AttributeCollection? = null
 ) {
+    /**
+     * Parent entity type builder class
+     *
+     * @property helper ConfigBuildHelper The config builder helper
+     * @property parent EntityType The parent entity
+     * @property includes MutableList<Attribute<*>> The list of attributes to include
+     * @property excludes MutableList<Attribute<*>> The list of attributes to include
+     * @constructor
+     */
     @ConfigDsl
     class Builder(
         private val helper: ConfigBuildHelper,
@@ -18,6 +41,18 @@ class ParentEntityType(
         private val includes = mutableListOf<Attribute<*>>()
         private val excludes = mutableListOf<Attribute<*>>()
 
+        /**
+         * Define attributes that should be included from parent (super) entity type, *optional*
+         *
+         * ```
+         * ...
+         *  include("attr_name", "attr_name" ...)
+         * ...
+         * ```
+         * * attr_name: String - attribute name to include from parent, **at least one must be defined**
+         *
+         * @param name Array<out String>
+         */
         @PublicApi
         fun include(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
@@ -26,6 +61,18 @@ class ParentEntityType(
             }
         }
 
+        /**
+         * Define attributes that should be excluded from parent (super) entity type, *optional*
+         *
+         * ```
+         * ...
+         *  exclude("attr_name", "attr_name" ...)
+         * ...
+         * ```
+         * * attr_name: String - attribute name to include from parent, **at least one must be defined**
+         *
+         * @param name Array<out String>
+         */
         @PublicApi
         fun exclude(vararg name: String) {
             checkThatParentHasAttributes(parent, name.toList())
@@ -34,6 +81,11 @@ class ParentEntityType(
             }
         }
 
+        /**
+         * Build parent entity type
+         *
+         * @return ParentEntityType
+         */
         fun build(): ParentEntityType = ParentEntityType(
             parent,
             if (this.includes.isEmpty()) null else AttributeCollection(this.includes),

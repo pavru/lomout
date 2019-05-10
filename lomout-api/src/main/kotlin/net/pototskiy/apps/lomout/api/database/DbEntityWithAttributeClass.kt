@@ -24,6 +24,12 @@ import java.util.Collections.*
 import kotlin.collections.set
 import kotlin.reflect.KClass
 
+/**
+ * Exposed entity class for domain entity with attributes
+ *
+ * @constructor
+ * @param attributeClasses AttributeEntityClass<*, *> Exposed entity class for attributes
+ */
 abstract class DbEntityWithAttributeClass(
     vararg attributeClasses: AttributeEntityClass<*, *>
 ) : IntEntityClass<DbEntity>(DbEntityTable, DbEntity::class.java) {
@@ -39,6 +45,12 @@ abstract class DbEntityWithAttributeClass(
     private val attributeClasses: List<AttributeEntityClass<*, *>> =
         attributeClasses.toList()
 
+    /**
+     * Get exposed entity class for attribute type
+     *
+     * @param type KClass<out Type> The attribute type
+     * @return AttributeEntityClass<*, *>
+     */
     protected fun getAttributeClassFor(type: KClass<out Type>): AttributeEntityClass<*, *> {
         val klass = attributeClassCache[type]
         if (klass != null) return klass
@@ -48,6 +60,13 @@ abstract class DbEntityWithAttributeClass(
             ?: throw AppDatabaseException("Value of type<${type::class.simpleName}> does not support sql column")
     }
 
+    /**
+     * Read DB entity attribute
+     *
+     * @param entity DbEntity The DB entity
+     * @param attribute AnyTypeAttribute The attribute
+     * @return Type?
+     */
     @PublicApi
     fun readAttribute(entity: DbEntity, attribute: AnyTypeAttribute): Type? {
         if (attribute.isSynthetic) return attribute.builder?.build(entity)
@@ -73,6 +92,12 @@ abstract class DbEntityWithAttributeClass(
         }
     }
 
+    /**
+     * Read all DB entity attributes
+     *
+     * @param entity DbEntity The DB entity
+     * @return Map<AnyTypeAttribute, Type?>
+     */
     @PublicApi
     fun readAttributes(entity: DbEntity): Map<AnyTypeAttribute, Type?> {
         val eType = entity.eType
@@ -109,6 +134,13 @@ abstract class DbEntityWithAttributeClass(
         return entity.data
     }
 
+    /**
+     * Add attribute to DB entity
+     *
+     * @param entity DbEntity The DB entity
+     * @param attribute AnyTypeAttribute The attribute
+     * @param value Type
+     */
     @PublicApi
     fun addAttribute(entity: DbEntity, attribute: AnyTypeAttribute, value: Type) {
         val eType = entity.eType
@@ -127,12 +159,25 @@ abstract class DbEntityWithAttributeClass(
             }
     }
 
+    /**
+     * Update entity attribute value
+     *
+     * @param entity DbEntity The DB entity
+     * @param attribute AnyTypeAttribute The attribute
+     * @param value Type
+     */
     @PublicApi
     fun updateAttribute(entity: DbEntity, attribute: AnyTypeAttribute, value: Type) {
         removeAttribute(entity, attribute)
         addAttribute(entity, attribute, value)
     }
 
+    /**
+     * Remove entity attribute
+     *
+     * @param entity DbEntity The DB entity
+     * @param attribute AnyTypeAttribute the attribute
+     */
     @PublicApi
     fun removeAttribute(entity: DbEntity, attribute: AnyTypeAttribute) {
         entity.eType.checkAttributeDefined(attribute)
@@ -169,6 +214,9 @@ abstract class DbEntityWithAttributeClass(
         }
     }
 
+    /**
+     * Companion object
+     */
     companion object {
         private const val maxSize = 200
         private const val initialSize = 50

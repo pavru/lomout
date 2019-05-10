@@ -3,6 +3,7 @@
 import io.gitlab.arturbosch.detekt.detekt
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.net.URL
 
 plugins {
     `java-library`
@@ -42,9 +43,14 @@ val spiImplementation: Configuration by configurations.creating {
 
 tasks.withType(DokkaTask::class) {
     moduleName = "lomout-api"
-    outputFormat = "javadoc"
+    outputFormat = "html"
     outputDirectory = "$buildDir/javadoc"
     samples = listOf()
+    jdkVersion = 8
+
+    externalDocumentationLink {
+        url = URL("https://www.joda.org/joda-time/apidocs/")
+    }
 //    noJdkLink = true
 //    noStdlibLink = true
 }

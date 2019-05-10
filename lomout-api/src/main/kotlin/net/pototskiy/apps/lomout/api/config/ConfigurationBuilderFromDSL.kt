@@ -8,6 +8,18 @@ import kotlin.script.experimental.api.onFailure
 import kotlin.script.experimental.api.onSuccess
 import kotlin.system.exitProcess
 
+/**
+ * Configuration builder from DSL file
+ *
+ * @property configFile The configuration DSL file
+ * @property cacheDir The directory to cache compiled configuration
+ * @property doNotUseCache True - no not cache script, false - cache script
+ * @property statusLog The status logger
+ * @property configCache The backing config field
+ * @property logger The configuration logger
+ * @property config The built config
+ * @constructor
+ */
 class ConfigurationBuilderFromDSL(
     private val configFile: File,
     private val cacheDir: String = "tmp/config/cache",

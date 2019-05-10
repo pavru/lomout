@@ -10,6 +10,14 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
+/**
+ * Default writer for [DateListType] attribute
+ *
+ * @property locale String The date locale, default system locale
+ * @property pattern String? The date pattern, optional
+ * @property quote Char? The value quote
+ * @property delimiter Char The list delimiter, default: ,
+ */
 open class DateListAttributeStringWriter : AttributeWriterPlugin<DateListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null

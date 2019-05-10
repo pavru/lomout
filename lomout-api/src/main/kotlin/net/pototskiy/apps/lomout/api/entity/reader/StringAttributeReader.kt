@@ -7,6 +7,11 @@ import net.pototskiy.apps.lomout.api.entity.StringType
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default reader for [StringType] attribute
+ *
+ * @property locale String The value locale, default: system locale
+ */
 open class StringAttributeReader : AttributeReaderPlugin<StringType>() {
     var locale: String = DEFAULT_LOCALE_STR
 

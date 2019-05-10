@@ -233,7 +233,7 @@ config {
 
         loadEntity("onec-group") {
             fromSources {
-                source { file("onec-data").sheet("Group").stopOnEmptyRow() }
+                source { file("onec-data"); sheet("Group"); stopOnEmptyRow() }
             }
             rowsToSkip(1)
             keepAbsentForDays(10)
@@ -250,7 +250,7 @@ config {
         }
         loadEntity("onec-group-relation") {
             keepAbsentForDays(10)
-            fromSources { source { file("onec-data").sheet("GroupSiteX").stopOnEmptyRow() } }
+            fromSources { source { file("onec-data"); sheet("GroupSiteX"); stopOnEmptyRow() } }
             sourceFields {
                 main("group-relation") {
                     field("group_code") { column(0) } to attribute("group_code")
@@ -262,7 +262,7 @@ config {
         loadEntity("onec-product") {
             rowsToSkip(4)
             keepAbsentForDays(10)
-            fromSources { source { file("onec-data").sheet("stock").stopOnEmptyRow() } }
+            fromSources { source { file("onec-data"); sheet("stock"); stopOnEmptyRow() } }
             sourceFields {
                 main("product") {
                     field("sku") { column(0); pattern("^[0-9]{4,10}$") } to attribute("sku")
@@ -289,7 +289,7 @@ config {
         loadEntity("mage-product") {
             headersRow(0)
             keepAbsentForDays(10)
-            fromSources { source { file("mage-product").sheet(Regex(".*")) } }
+            fromSources { source { file("mage-product"); sheet(Regex(".*")) } }
             sourceFields {
                 main("product") {
                     field("additional_attributes")
@@ -310,7 +310,7 @@ config {
         loadEntity("mage-category") {
             headersRow(0)
             keepAbsentForDays(10)
-            fromSources { source { file("mage-category").sheet(Regex(".*")).stopOnEmptyRow() } }
+            fromSources { source { file("mage-category"); sheet(Regex(".*")); stopOnEmptyRow() } }
             sourceFields {
                 main("category") {}
             }
@@ -318,7 +318,7 @@ config {
         loadEntity("mage-customer-group") {
             headersRow(0)
             keepAbsentForDays(10)
-            fromSources { source { file("mage-customer-group").sheet(Regex(".*")).stopOnEmptyRow() } }
+            fromSources { source { file("mage-customer-group"); sheet(Regex(".*")); stopOnEmptyRow() } }
             sourceFields {
                 main("customer-group") {}
             }
@@ -326,7 +326,7 @@ config {
         loadEntity("mage-adv-price") {
             headersRow(0)
             keepAbsentForDays(10)
-            fromSources { source { file("mage-adv-price").sheet(Regex(".*")).stopOnEmptyRow() } }
+            fromSources { source { file("mage-adv-price"); sheet(Regex(".*")); stopOnEmptyRow() } }
             sourceFields {
                 main("mage-price") {}
             }
@@ -334,7 +334,7 @@ config {
         loadEntity("mage-stock-source") {
             headersRow(0)
             keepAbsentForDays(10)
-            fromSources { source { file("mage-stock-source").sheet(Regex(".*")).stopOnEmptyRow() } }
+            fromSources { source { file("mage-stock-source"); sheet(Regex(".*")); stopOnEmptyRow() } }
             sourceFields {
                 main("stock-source") {}
             }
@@ -342,7 +342,7 @@ config {
         loadEntity("onec-group-extended") {
             headersRow(0)
             keepAbsentForDays(10)
-            fromSources { source { file("onec-extended-info").sheet("group-ext-info").stopOnEmptyRow() } }
+            fromSources { source { file("onec-extended-info"); sheet("group-ext-info"); stopOnEmptyRow() } }
             sourceFields {
                 main("group-extended") {}
             }

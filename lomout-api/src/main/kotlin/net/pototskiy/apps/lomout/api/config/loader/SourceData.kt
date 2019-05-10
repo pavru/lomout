@@ -3,45 +3,91 @@ package net.pototskiy.apps.lomout.api.config.loader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.config.EmptyRowStrategy
+import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 
+/**
+ * Source data configuration
+ *
+ * @property file SourceFileDefinition The source data file
+ * @property sheet SourceSheetDefinition The source data sheet of file
+ * @property emptyRowBehavior EmptyRowBehavior The source data empty row behavior
+ * @constructor
+ */
 data class SourceData(
     val file: SourceFileDefinition,
     val sheet: SourceSheetDefinition,
-    val emptyRowStrategy: EmptyRowStrategy
+    val emptyRowBehavior: EmptyRowBehavior
 ) {
+    /**
+     * Source data builder class
+     *
+     * @property helper ConfigBuildHelper
+     * @property file SourceFileDefinition?
+     * @property sheet SourceSheetDefinition
+     * @property emptyRowBehavior EmptyRowBehavior
+     * @constructor
+     */
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var file: SourceFileDefinition? = null
         private var sheet: SourceSheetDefinition = SourceSheetDefinition(null, Regex(".*"))
-        private var emptyRowStrategy: EmptyRowStrategy = EmptyRowStrategy.IGNORE
+        private var emptyRowBehavior: EmptyRowBehavior = EmptyRowBehavior.IGNORE
+        /**
+         * Define file of source data as reference to files block
+         *
+         * @param id String The file id
+         */
         @Suppress("unused")
-        fun Builder.file(id: String): Builder =
-            this.apply {
-                file = helper.definedSourceFiles.findRegistered(id)
-                    ?: throw AppConfigException("Source file<id:$id> is not defined")
-            }
+        fun file(id: String) {
+            file = helper.definedSourceFiles.findRegistered(id)
+                ?: throw AppConfigException("Source file<id:$id> is not defined")
+        }
 
+        /**
+         * Define source data sheet name
+         *
+         * @param sheet String The sheet name, for CSV file it must be **default**
+         */
         @Suppress("unused")
-        fun Builder.sheet(sheet: String): Builder =
-            this.apply { this.sheet = SourceSheetDefinition(name = sheet) }
+        fun sheet(sheet: String) {
+            this.sheet = SourceSheetDefinition(name = sheet)
+        }
 
+        /**
+         * Define source data sheet pattern. All sheets fit to pattern will be used.
+         *
+         * @param sheet Regex
+         */
         @Suppress("unused")
-        fun Builder.sheet(sheet: Regex): Builder =
-            this.apply { this.sheet = SourceSheetDefinition(pattern = sheet) }
+        fun sheet(sheet: Regex) {
+            this.sheet = SourceSheetDefinition(pattern = sheet)
+        }
 
+        /**
+         * Define stop behavior on empty row
+         */
         @Suppress("unused")
-        fun Builder.stopOnEmptyRow(): Builder =
-            this.apply { emptyRowStrategy = EmptyRowStrategy.STOP }
+        fun stopOnEmptyRow() {
+            emptyRowBehavior = EmptyRowBehavior.STOP
+        }
 
+        /**
+         * Define ignore behavior on empty row
+         */
         @Suppress("unused")
-        fun Builder.ignoreEmptyRows(): Builder =
-            this.apply { emptyRowStrategy = EmptyRowStrategy.IGNORE }
+        fun ignoreEmptyRows() {
+            emptyRowBehavior = EmptyRowBehavior.IGNORE
+        }
 
+        /**
+         * Build source data configuration
+         *
+         * @return SourceData
+         */
         fun build(): SourceData = SourceData(
             this.file ?: throw AppConfigException("File id is not defined"),
             this.sheet,
-            this.emptyRowStrategy
+            this.emptyRowBehavior
         )
     }
 }

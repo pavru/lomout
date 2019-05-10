@@ -30,14 +30,33 @@ import org.jetbrains.kotlin.script.util.resolvers.experimental.GenericRepository
 import org.jetbrains.kotlin.script.util.resolvers.experimental.MavenArtifactCoordinates
 import java.io.File
 
+/**
+ * Ivy dependency resolver
+ *
+ * @property logger MainAndIdeLogger
+ * @property ivyResolvers ArrayList<URLResolver>
+ */
 class IvyResolver : GenericRepositoryWithBridge {
     private val logger = MainAndIdeLogger()
 
     private fun String?.isValidParam() = this?.isNotBlank() ?: false
 
+    /**
+     * Resolve artifact
+     *
+     * @param artifactCoordinates GenericArtifactCoordinates The artifact coordinates
+     * @return Iterable<File>? Artifact files or null if can not resolve
+     */
     override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
         tryResolve(artifactCoordinates, emptyList())
 
+    /**
+     * Resolve artifact with exclude some artifacts
+     *
+     * @param artifactCoordinates GenericArtifactCoordinates The artifact coordinates
+     * @param excludes List<Pair<String, String>> List of artifact to exclude Pair(Group, Name)
+     * @return Iterable<File>? Artifact files or null if can not resolve
+     */
     fun tryResolve(
         artifactCoordinates: GenericArtifactCoordinates,
         excludes: List<Pair<String, String>> = emptyList()
@@ -152,6 +171,12 @@ class IvyResolver : GenericRepositoryWithBridge {
         }
     }
 
+    /**
+     * Resolve external artifact defined in ivy.xml file
+     *
+     * @param ivyFile File The ivy.xml file
+     * @return List<File> List of artifact file
+     */
     fun tryResolveExternalDependency(ivyFile: File): List<File> {
         val ivy = Ivy.newInstance(ivySettings())
         val resolveOptions = ResolveOptions().apply {
@@ -163,6 +188,12 @@ class IvyResolver : GenericRepositoryWithBridge {
         return report.allArtifactsReports.map { it.localFile }
     }
 
+    /**
+     * Add repository to resolver
+     *
+     * @param repositoryCoordinates GenericRepositoryCoordinates
+     * @return Boolean
+     */
     override fun tryAddRepository(repositoryCoordinates: GenericRepositoryCoordinates): Boolean {
         val url = repositoryCoordinates.url
         val type = repositoryCoordinates.name?.split(":")?.first()
@@ -225,7 +256,13 @@ class IvyResolver : GenericRepositoryWithBridge {
         return false
     }
 
+    /**
+     * Companion object
+     */
     companion object {
+        /**
+         * Default artifact pattern
+         */
         const val DEFAULT_ARTIFACT_PATTERN = "[organisation]/[module]/[revision]/[artifact](-[revision]).[ext]"
 
         init {
@@ -234,17 +271,30 @@ class IvyResolver : GenericRepositoryWithBridge {
     }
 }
 
+/**
+ * File and Ivy dependency resolver
+ */
 class FilesAndIvyResolver :
     KotlinAnnotatedScriptDependenciesResolver(
         emptyList(),
         arrayListOf(DirectResolver(), IvyResolver()).asIterable()
     )
 
+/**
+ * Get maven central url
+ *
+ * @return BasicRepositoryCoordinates
+ */
 fun mavenCentral() = BasicRepositoryCoordinates(
     "https://repo.maven.apache.org/maven2/",
     "maven:mavenCentral"
 )
 
+/**
+ * Get jCenter url
+ *
+ * @return BasicRepositoryCoordinates
+ */
 fun jCenter() = BasicRepositoryCoordinates(
     "https://jcenter.bintray.com/",
     "bintray:jcenter"

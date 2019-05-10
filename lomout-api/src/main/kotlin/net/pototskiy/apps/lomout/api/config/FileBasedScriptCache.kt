@@ -10,8 +10,13 @@ import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
 import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 
-// Bug KT-29741, switch on cache after bug will be resolved
-// remove suppress after bug with serialization will be resolved
+/**
+ * File base compiled script cache
+ *
+ * @property baseDir The cache directory
+ * @property doNotUseCache True - do not use cache, false - cache script
+ * @constructor
+ */
 @Suppress("unused")
 @Generated
 class FileBasedScriptCache(
@@ -19,6 +24,13 @@ class FileBasedScriptCache(
     private val doNotUseCache: Boolean
 ) : CompiledJvmScriptsCache {
 
+    /**
+     * Try get script from cache
+     *
+     * @param script The script source code
+     * @param scriptCompilationConfiguration ScriptCompilationConfiguration
+     * @return CompiledScript<*>?
+     */
     @Suppress("ReturnCount")
     override fun get(
         script: SourceCode,
@@ -31,6 +43,13 @@ class FileBasedScriptCache(
         return if (!file.exists()) null else file.readCompiledScript(scriptCompilationConfiguration)
     }
 
+    /**
+     * Store compiled script in cache
+     *
+     * @param compiledScript The compiled script
+     * @param script SourceCode The script source code
+     * @param scriptCompilationConfiguration ScriptCompilationConfiguration
+     */
     override fun store(
         compiledScript: CompiledScript<*>,
         script: SourceCode,

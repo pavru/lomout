@@ -7,16 +7,38 @@ import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import org.apache.commons.csv.CSVParser
 
+/**
+ * CSV workbook sheet
+ *
+ * @property backingWorkbook CsvWorkbook
+ * @property lastCreatedRow CsvRow?
+ * @property name String
+ * @property workbook Workbook
+ * @property parser CSVParser
+ * @constructor
+ */
 class CsvSheet(
     private val backingWorkbook: CsvWorkbook
 ) : Sheet {
     private var lastCreatedRow: CsvRow? = null
 
+    /**
+     * Get sheet name
+     */
     override val name: String
         get() = CSV_SHEET_NAME
+    /**
+     * Get sheet workbook
+     */
     override val workbook: Workbook
         get() = backingWorkbook
 
+    /**
+     * Get sheet row by index, zero based
+     *
+     * @param row Int
+     * @return CsvRow
+     */
     override fun get(row: Int): CsvRow {
         checkThatItIsCsvInputWorkbook(backingWorkbook)
         val iterator = backingWorkbook.parser.iterator()
@@ -30,6 +52,12 @@ class CsvSheet(
         throw AppSheetException("Index out of band")
     }
 
+    /**
+     * Insert row in sheet by index, zero based
+     *
+     * @param row Int The row index
+     * @return Row The inserted row
+     */
     override fun insertRow(row: Int): Row {
         checkThatItIsCsvOutputWorkbook(backingWorkbook)
         writeLastRow()
@@ -38,6 +66,9 @@ class CsvSheet(
         }
     }
 
+    /**
+     * Flush last sheet row to file
+     */
     fun writeLastRow() {
         checkThatItIsCsvOutputWorkbook(backingWorkbook)
         lastCreatedRow?.let { lastRow ->
@@ -45,9 +76,17 @@ class CsvSheet(
         }
     }
 
+    /**
+     * Get row iterator
+     *
+     * @return Iterator<CsvRow>
+     */
     override fun iterator(): Iterator<CsvRow> =
         CsvRowIterator(this)
 
+    /**
+     * Get CSVParser
+     */
     val parser: CSVParser
         get() {
             checkThatItIsCsvInputWorkbook(backingWorkbook)

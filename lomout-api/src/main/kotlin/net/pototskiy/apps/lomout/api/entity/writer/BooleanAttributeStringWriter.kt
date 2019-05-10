@@ -5,6 +5,14 @@ import net.pototskiy.apps.lomout.api.entity.BooleanType
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default writer for [BooleanType] attribute
+ *
+ * * true -> 1
+ * * false -> 0
+ *
+ * @property locale String The value local, ignored
+ */
 open class BooleanAttributeStringWriter : AttributeWriterPlugin<BooleanType>() {
     var locale: String = DEFAULT_LOCALE_STR
 

@@ -73,10 +73,21 @@ data class DatabaseServerConfig(
             this.password = password
         }
 
+        /**
+         * Build database configuration
+         *
+         * @return DatabaseServerConfig
+         */
         fun build(): DatabaseServerConfig =
             DatabaseServerConfig(host, port, user, password)
 
+        /**
+         * Companion object
+         */
         companion object {
+            /**
+             * Default database server port
+             */
             const val defaultPort = 3306
         }
     }

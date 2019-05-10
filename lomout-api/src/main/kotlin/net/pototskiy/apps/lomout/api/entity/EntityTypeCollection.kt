@@ -52,8 +52,13 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          * @return Boolean
          */
         fun entity(name: String, open: Boolean, block: EntityType.Builder.() -> Unit) =
-                eTypes.add(EntityType.Builder(helper, name, open).apply(block).build())
+            eTypes.add(EntityType.Builder(helper, name, open).apply(block).build())
 
+        /**
+         * Build entity type collection
+         *
+         * @return EntityTypeCollection
+         */
         fun build(): EntityTypeCollection = EntityTypeCollection(eTypes)
     }
 }

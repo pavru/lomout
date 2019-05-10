@@ -7,6 +7,15 @@ import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 
+/**
+ * Read headers from source data files
+ *
+ * If headers are read from several sources they are validate for compatibility
+ *
+ * @param sources SourceDataCollection The sources
+ * @param headerRow Int The row index of headers, zero base
+ * @return List<Field> The list of source fields are created based on headers
+ */
 fun readFieldNamesFromSource(sources: SourceDataCollection, headerRow: Int): List<Field> {
     val fieldSets = sources.map { source -> readHeaders(source, headerRow) }
     validateAllSourcesCompatible(fieldSets)

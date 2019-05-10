@@ -13,50 +13,117 @@ import net.pototskiy.apps.lomout.api.source.workbook.Row
 import org.joda.time.DateTime
 import java.text.ParseException
 
+/**
+ * CSV workbook cell
+ *
+ * @property backingAddress CellAddress
+ * @property backingValue String
+ * @property backingRow CsvRow
+ * @property address CellAddress
+ * @property cellType CellType
+ * @property booleanValue Boolean
+ * @property longValue Long
+ * @property doubleValue Double
+ * @property stringValue String
+ * @property workbookLocale Locale
+ * @property row Row
+ * @constructor
+ */
 class CsvCell(
     private val backingAddress: CellAddress,
     private var backingValue: String,
     private val backingRow: CsvRow
 ) : Cell {
+    /**
+     * Cell address
+     */
     override val address: CellAddress
         get() = backingAddress
+    /**
+     * Cell type
+     */
     override val cellType: CellType
         get() = backingValue.recognize()
+    /**
+     * Boolean value of cell
+     */
     override val booleanValue: Boolean
         get() = backingValue.trim().stringToBoolean(workbookLocale)
+    /**
+     * Long value of cell
+     */
     override val longValue: Long
         get() = backingValue.stringToLong(workbookLocale)
+    /**
+     * Double value of cell
+     */
     override val doubleValue: Double
         get() = backingValue.stringToDouble(workbookLocale)
+    /**
+     * String value of cell
+     */
     override val stringValue: String
         get() = backingValue
 
     private val workbookLocale = (backingRow.sheet.workbook as CsvWorkbook).workbookLocale
 
+    /**
+     * Get cell value as string
+     *
+     * @return String
+     */
     override fun asString(): String {
         return backingValue
     }
 
+    /**
+     * Set string cell value
+     *
+     * @param value String
+     */
     override fun setCellValue(value: String) {
         backingValue = value
     }
 
+    /**
+     * Set boolean cell value
+     *
+     * @param value Boolean
+     */
     override fun setCellValue(value: Boolean) {
         backingValue = if (value) "1" else "0"
     }
 
+    /**
+     * Set long cell value
+     *
+     * @param value Long
+     */
     override fun setCellValue(value: Long) {
         backingValue = value.longToString(workbookLocale)
     }
 
+    /**
+     * Set double cell value
+     *
+     * @param value Double
+     */
     override fun setCellValue(value: Double) {
         backingValue = value.doubleToString(workbookLocale)
     }
 
+    /**
+     * Set datetime cell value
+     *
+     * @param value DateTime
+     */
     override fun setCellValue(value: DateTime) {
         backingValue = value.datetimeToString(workbookLocale)
     }
 
+    /**
+     * Cell [Row]
+     */
     override val row: Row
         get() = backingRow
 

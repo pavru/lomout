@@ -8,6 +8,17 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.addEntityAttribute
 
+/**
+ * Define entity load configuration
+ *
+ * @property headersRow The header row number
+ * @property rowsToSkip The number of rows before start loading
+ * @property maxAbsentDays The days to store entity that is removed from source data
+ * @property entity The entity type
+ * @property sources Source for loading
+ * @property fieldSets Field sets of sources
+ * @constructor
+ */
 data class Load(
     val headersRow: Int,
     val rowsToSkip: Int,
@@ -16,6 +27,18 @@ data class Load(
     val sources: SourceDataCollection,
     val fieldSets: FieldSetCollection
 ) {
+    /**
+     * Entity loading configuration builder class
+     *
+     * @property helper The config build helper
+     * @property entityType The entity type
+     * @property headersRow The number of header row
+     * @property rowsToSkip The number of rows to skip before start loading
+     * @property maxAbsentDays The day to keep removed entities
+     * @property sources The loading sources
+     * @property fieldSets Field sets of source
+     * @constructor
+     */
     @ConfigDsl
     class Builder(
         private val helper: ConfigBuildHelper,
@@ -27,22 +50,71 @@ data class Load(
         private var sources: SourceDataCollection? = null
         private var fieldSets: FieldSetCollection? = null
 
+        /**
+         * Configure header row number, *optional, default: no header*
+         *
+         * @param row The row naumber? zero based
+         */
         fun headersRow(row: Int) {
             headersRow = row
         }
 
+        /**
+         * Configure number of rows to skip, *optional, default: 0*. If source has headr row this row will be skipped
+         *
+         * @param rows The number of rows (including header row)
+         */
         fun rowsToSkip(rows: Int) {
             this.rowsToSkip = rows
         }
 
+        /**
+         * Configure how long to keep removed entity in DB
+         *
+         * @param days Days to keep
+         */
         fun keepAbsentForDays(days: Int) {
             this.maxAbsentDays = days
         }
 
+        /**
+         * Configure sources to load entities
+         *
+         * ```
+         * ...
+         *  fromSources {
+         *      source { file(...); sheet(...) }
+         *      source { file(...); sheet(...) }
+         *      ...
+         *  }
+         * ...
+         * ```
+         * * source - **at least one source must be defined**
+         *
+         * @param block SourceDataCollection.Builder.() -> Unit
+         */
         fun fromSources(block: SourceDataCollection.Builder.() -> Unit) {
             this.sources = SourceDataCollection.Builder(helper).apply(block).build()
         }
 
+        /**
+         * Define source field sets
+         *
+         * ```
+         * ...
+         *  sourceFields {
+         *      main("name") {...}
+         *      extra("name) {...}
+         *      extra("name) {...}
+         *      ...
+         *  }
+         * ...
+         * ```
+         * * main - define main field set, **mandatory**, only one is allowed
+         * * extra - define extra field set, *optional*
+         *
+         * @param block FieldSetCollection.Builder.() -> Unit
+         */
         fun sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
             fieldSets = FieldSetCollection.Builder(
                 helper,
@@ -53,6 +125,11 @@ data class Load(
             ).apply(block).build()
         }
 
+        /**
+         * Build entity loading configuration
+         *
+         * @return Load
+         */
         fun build(): Load {
             refineEntityAttributes()
             val headersRow = this.headersRow
@@ -102,7 +179,13 @@ data class Load(
             }
         }
 
+        /**
+         * Companion object
+         */
         companion object {
+            /**
+             * Default days to keep
+             */
             const val defaultAbsentDays = 5
         }
     }

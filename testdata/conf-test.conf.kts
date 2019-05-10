@@ -92,7 +92,7 @@ config {
             }
         }
         loadEntity("onec-product") {
-            fromSources { source { file("test-attributes-xls").sheet("test-stock").stopOnEmptyRow() } }
+            fromSources { source { file("test-attributes-xls"); sheet("test-stock"); stopOnEmptyRow() } }
             rowsToSkip(3)
             keepAbsentForDays(10)
             sourceFields {
@@ -121,7 +121,7 @@ config {
             }
         }
         loadEntity("onec-product") {
-            fromSources { source { file("test-attributes-csv").sheet(CSV_SHEET_NAME).stopOnEmptyRow() } }
+            fromSources { source { file("test-attributes-csv"); sheet(CSV_SHEET_NAME); stopOnEmptyRow() } }
             headersRow(2)
             rowsToSkip(3)
             keepAbsentForDays(10)

@@ -9,6 +9,12 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
+/**
+ * Default reader for [StringListType] attribute
+ *
+ * @property quote Char? The value quote, optional
+ * @property delimiter Char The list delimiter: default: ,
+ */
 open class StringListAttributeReader : AttributeReaderPlugin<StringListType>() {
     var quote: Char? = null
     var delimiter: Char = ','

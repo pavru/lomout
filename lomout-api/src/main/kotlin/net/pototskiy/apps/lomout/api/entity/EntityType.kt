@@ -182,14 +182,22 @@ abstract class EntityType(
             attributes.add(Attribute.Builder(helper, name, T::class).apply(block).build())
 
         /**
-         * Inherit attributes from super entity type
+         * Inherit attributes from super entity type, *optional*
          *
          * ```
          * ...
          *  inheritFrom("name") {
+         *      exclude("attr_name", "attr_name" ...)
+         *      include("attr_name", "attr_name" ...)
          *  }
          * ...
          * ```
+         * * [inheritFrom][ParentEntityType.Builder] - inherit attributes from super entity type, *optional*
+         * * name: String - entity type name to inherit attributes
+         * * [exclude][ParentEntityType.Builder.exclude] - list of attributes to exclude
+         * * [include][ParentEntityType.Builder.include] - list of attribute to include
+         *
+         *
          * @param name String
          * @param block ParentEntityType.Builder.() -> Unit
          */
@@ -199,6 +207,11 @@ abstract class EntityType(
             inheritances.add(ParentEntityType.Builder(helper, eType).apply(block).build())
         }
 
+        /**
+         * Build entity
+         *
+         * @return EntityType
+         */
         fun build(): EntityType {
             return helper.typeManager.createEntityType(entityType, inheritances, open).also {
                 helper.typeManager.initialAttributeSetup(it, AttributeCollection(attributes))
@@ -207,4 +220,11 @@ abstract class EntityType(
     }
 }
 
+/**
+ * Get entity attribute by name
+ *
+ * @receiver EntityType The entity type to get attribute
+ * @param attribute String The attribute name
+ * @return Attribute<*>
+ */
 operator fun EntityType.get(attribute: String) = this.getAttribute(attribute)

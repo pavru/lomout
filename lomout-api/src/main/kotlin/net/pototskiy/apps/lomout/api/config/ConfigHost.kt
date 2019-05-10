@@ -21,6 +21,18 @@ import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 
+/**
+ * Config script host
+ *
+ * @property configFile The config DSL file
+ * @property cacheDir The compiled config script cache directory
+ * @property doNotUseCache True - do not cache script, false - cache script
+ * @property ivyFile The ivy.xml file with additional dependencies
+ * @property logger The configuration logger
+ * @property scriptHost BasicJvmScriptingHost
+ * @property compiledScript CompiledScript<*>?
+ * @constructor
+ */
 class ConfigHost(
     private val configFile: File,
     private val cacheDir: String,
@@ -31,6 +43,11 @@ class ConfigHost(
     private val scriptHost = BasicJvmScriptingHost()
     private var compiledScript: CompiledScript<*>? = null
 
+    /**
+     * Compile config script
+     *
+     * @return ResultWithDiagnostics<CompiledScript<*>>
+     */
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
         ivyFile?.let { ConfigScript.ivyFile = it }
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript>()
@@ -56,6 +73,11 @@ class ConfigHost(
         }
     }
 
+    /**
+     * Evaluate config script
+     *
+     * @return ResultWithDiagnostics<Config>
+     */
     fun evaluate(): ResultWithDiagnostics<Config> {
         return runBlocking {
             compiledScript?.let { script ->

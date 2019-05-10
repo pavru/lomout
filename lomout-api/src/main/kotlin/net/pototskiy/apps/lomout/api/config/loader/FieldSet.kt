@@ -18,6 +18,15 @@ import net.pototskiy.apps.lomout.api.source.readFieldNamesFromSource
 import kotlin.collections.set
 import kotlin.contracts.contract
 
+/**
+ * Field set
+ *
+ * @property name String The set name
+ * @property mainSet Boolean The flag of main set
+ * @property fieldToAttr FieldAttributeMap The field to attribute map
+ * @property fields FieldCollection The fields collection
+ * @constructor
+ */
 data class FieldSet(
     val name: String,
     val mainSet: Boolean,
@@ -25,6 +34,21 @@ data class FieldSet(
 ) {
     val fields: FieldCollection = fieldToAttr.fields
 
+    /**
+     * Field set builder class
+     *
+     * @property helper The config build helper
+     * @property entityType The entity type name
+     * @property name The field set name
+     * @property mainSet The flag of main set
+     * @property withSourceHeaders The flag that sources has headers
+     * @property sources The sources
+     * @property headerRow The header row number
+     * @property fields The field to attribute map
+     * @property lastFieldName The last defined field name, **do not use in DSL**
+     * @property lastField The last defined field
+     * @constructor
+     */
     @Suppress("TooManyFunctions")
     @ConfigDsl
     class Builder(
@@ -40,6 +64,26 @@ data class FieldSet(
         var lastFieldName: String? = null
         private var lastField: Field? = null
 
+        /**
+         * Define field.
+         *
+         * Fields of source without headers must have column definition.
+         * Pattern is used to validate field value and determinate which field set must be used for row.
+         *
+         * ```
+         * ...
+         *  field("name") {
+         *      column(2)
+         *      pattern(".*")
+         *      pattern(Regex(".*"))
+         *  }
+         * ...
+         * ```
+         *
+         * @param name The field name
+         * @param block Field.Builder.() -> Unit
+         * @return Field
+         */
         @ConfigDsl
         fun field(name: String, block: Field.Builder.() -> Unit = {}): Field {
             if (lastField != null) {
@@ -68,6 +112,24 @@ data class FieldSet(
             this.lastField = null
         }
 
+        /**
+         * Define attribute which is used for field
+         *
+         * If name is omitted field name is used for attribute
+         *
+         * ```
+         * ...
+         *  field("name") to attribute {
+         *      nullable()
+         *      reader {...}
+         *  }
+         * ...
+         * ```
+         *
+         * @param name The attribute name
+         * @param block Attribute.Builder<T>.() -> Unit
+         * @return Attribute<*>
+         */
         @Generated
         @ConfigDsl
         inline fun <reified T : Type> attribute(
@@ -80,12 +142,36 @@ data class FieldSet(
                 T::class
             ).apply(block).build()
 
+        /**
+         * Reference to attribute that is used for field
+         *
+         * ```
+         * ...
+         *  field("name") to attribute("name")
+         * ...
+         * ```
+         *
+         * @param name The attribute name
+         * @return AttributeWithName
+         */
         @ConfigDsl
         fun attribute(name: String) = AttributeWithName(name)
 
+        /**
+         * Operation to map field to attribute
+         *
+         * @receiver Field
+         * @param attribute The The field related attribute
+         */
         @ConfigDsl
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
 
+        /**
+         * Operation to map field to attribute
+         *
+         * @receiver Field
+         * @param attribute AttributeWithName
+         */
         @ConfigDsl
         infix fun Field.to(attribute: AttributeWithName) {
             val attr = helper.typeManager.getEntityAttribute(entityType, attribute.name)
@@ -93,6 +179,11 @@ data class FieldSet(
             addFiled(this, attr)
         }
 
+        /**
+         * Build field set
+         *
+         * @return FieldSet
+         */
         fun build(): FieldSet {
             if (lastField != null) addFiled(lastField!!, null)
             val name = this.name
@@ -152,6 +243,12 @@ data class FieldSet(
         }
     }
 
+    /**
+     * Helper class for attribute with name
+     *
+     * @property name String The attribute name
+     * @constructor
+     */
     data class AttributeWithName(val name: String)
 }
 

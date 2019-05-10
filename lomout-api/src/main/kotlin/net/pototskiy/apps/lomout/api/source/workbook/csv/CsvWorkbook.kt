@@ -66,10 +66,21 @@ abstract class CsvWorkbook(
         }
     }
 
+    /**
+     * Test if workbook has sheet with given name
+     *
+     * @param sheet String The sheet name to test
+     * @return Boolean
+     */
     override fun hasSheet(sheet: String): Boolean {
         return sheet == CSV_SHEET_NAME
     }
 
+    /**
+     * Get workbook sheet iterator
+     *
+     * @return Iterator<CsvSheet>
+     */
     override fun iterator(): Iterator<CsvSheet> =
         CsvSheetIterator(this)
 }

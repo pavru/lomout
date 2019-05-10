@@ -20,6 +20,9 @@ import net.pototskiy.apps.lomout.api.entity.TextType
 import net.pototskiy.apps.lomout.api.entity.Type
 import kotlin.reflect.KClass
 
+/**
+ * Map of default readers
+ */
 val defaultReaders = mapOf<KClass<out Type>, AttributeReader<out Type>>(
     AttributeListType::class to AttributeReaderWithPlugin(
         AttributeListReader::class

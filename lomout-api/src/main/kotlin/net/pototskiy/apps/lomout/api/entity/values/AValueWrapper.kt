@@ -21,6 +21,14 @@ import net.pototskiy.apps.lomout.api.entity.Type
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.joda.time.DateTime
 
+/**
+ * Wrap Any kotlin value to [Type].
+ *
+ * @param attribute AnyTypeAttribute The attribute for which value is wrapped
+ * @param value Any? The value to wrap
+ * @return Type? The wrapped value
+ * @throws AppDataException The value can not be wrapped to [Type]
+ */
 @Suppress("ComplexMethod")
 fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
     if (value == null) return null

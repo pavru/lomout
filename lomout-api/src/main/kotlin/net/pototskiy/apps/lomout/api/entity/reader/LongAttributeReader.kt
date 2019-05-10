@@ -7,6 +7,11 @@ import net.pototskiy.apps.lomout.api.entity.LongType
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
+/**
+ * Default reader for [LongType] attribute
+ *
+ * @property locale String The value locale
+ */
 open class LongAttributeReader : AttributeReaderPlugin<LongType>() {
     var locale: String = DEFAULT_LOCALE_STR
 

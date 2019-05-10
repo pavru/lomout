@@ -83,12 +83,46 @@ data class LoaderConfiguration(
             this.entities = EntityTypeCollection.Builder(helper).apply(block).build()
         }
 
+        /**
+         * Entity load entity configuration
+         *
+         * ```
+         * ...
+         *  loadEntity("type name") {
+         *      fromSources {
+         *          source { file(...); sheet(...); stopOnEmptyRow() }
+         *          source { file(...); sheet(...); stopOnEmptyRow() }
+         *          ...
+         *      }
+         *      rowsToSkip(number of rows)
+         *      keepAbsentForDays(days)
+         *      sourceFields {
+         *          main("name") {...}
+         *          extra("name") {...}
+         *      }
+         *  }
+         * ...
+         * ```
+         * * fromSources - sources collection to load data from, **at least one source must be defined**
+         * * rowsToSkip - number of rows (including header row) to skip before start loading, *optional*
+         * * keepAbsentForDays - how long to keep entities that are absent in source data, entities will be
+         *      marked as removed
+         * * sourceFields - define source data fields
+         *
+         * @param entityType The entity type name
+         * @param block Load.Builder.() -> Unit
+         */
         fun loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
             val entity = helper.typeManager.getEntityType(entityType)
                 ?: throw AppEntityTypeException("Define entity<$entityType> before load configuration")
             loads.add(Load.Builder(helper, entity).apply(block).build())
         }
 
+        /**
+         * Build loader configuration
+         *
+         * @return LoaderConfiguration
+         */
         fun build(): LoaderConfiguration {
             val files = this.files ?: throw AppConfigException("Files is not defined in loader section")
             return LoaderConfiguration(

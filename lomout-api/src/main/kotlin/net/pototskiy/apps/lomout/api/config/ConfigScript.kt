@@ -29,6 +29,13 @@ import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
 
+/**
+ * Config script definition for Kotlin script host
+ *
+ * @property args Array<String>
+ * @property evaluatedConfig Config?
+ * @constructor
+ */
 @Suppress("DEPRECATION")
 @KotlinScript(
     displayName = "LoMout config script",
@@ -38,11 +45,20 @@ import kotlin.script.experimental.jvm.updateClasspath
 abstract class ConfigScript(val args: Array<String>) {
     var evaluatedConfig: Config? = null
 
+    /**
+     * Companion object
+     */
     companion object {
+        /**
+         * Ivy.xml file with additional script dependencies
+         */
         var ivyFile: File? = null
     }
 }
 
+/**
+ * Config script compilation configuration
+ */
 object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     displayName("LoMout config script")
     fileExtension("conf.kts")

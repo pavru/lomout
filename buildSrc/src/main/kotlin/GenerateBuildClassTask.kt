@@ -46,12 +46,33 @@ open class GenerateBuildClassTask : DefaultTask() {
         buildClassFile.writeText(
             """
             package $packageName
+            /**
+             * Build information class
+             */
             @Suppress("RemoveExplicitTypeArguments", "MayBeConstant", "unused")
             object $objectName {
+                /**
+                 * LoMout version
+                 */
                 const val lomoutVersion = "${project.version}"
+                /**
+                 * Kotlin lib version
+                 */
                 const val kotlinVersion = "${Versions.kotlin}"
+                /**
+                 * Project dependency
+                 */
                 val dependencies = listOf<Dependency>(${dependencies.joinToString(",")})
 
+                /**
+                 * Dependency data class
+                 *
+                 * @property configuration The configuration name
+                 * @property group The group name
+                 * @property name The artifact name
+                 * @property version The version
+                 * @property excludeRules The dependency exclude rules
+                 */
                 data class Dependency(
                     val configuration: String,
                     val group: String,
@@ -59,12 +80,17 @@ open class GenerateBuildClassTask : DefaultTask() {
                     val version: String,
                     val excludeRules: List<ExcludeRule> = emptyList()
                 )
+                /**
+                 * Dependency exclude rule
+                 *
+                 * @property group The group name
+                 * @property name The artifact name
+                 */
                 data class ExcludeRule(
                     val group: String = "*",
                     val name: String = "*"
                 )
             }
-
         """.trimIndent()
         )
     }

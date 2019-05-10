@@ -9,7 +9,17 @@ import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
+/**
+ * Abstract pipeline assembler
+ */
 sealed class PipelineAssembler {
+    /**
+     * Assembler function
+     *
+     * @param target EntityType The target entity type
+     * @param entities PipelineDataCollection The pipeline input entities
+     * @return Map<AnyTypeAttribute, Type?> The target entity attributes
+     */
     fun assemble(target: EntityType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?> {
         return when (this) {
             is PipelineAssemblerWithPlugin -> pluginClass.createInstance().let {
@@ -21,11 +31,24 @@ sealed class PipelineAssembler {
     }
 }
 
+/**
+ * Pipeline assembler with plugin
+ *
+ * @property pluginClass KClass<out PipelineAssemblerPlugin> The assembler plugin class
+ * @property options PipelineAssemblerPlugin.() -> Unit The plugin options
+ * @constructor
+ */
 class PipelineAssemblerWithPlugin(
     val pluginClass: KClass<out PipelineAssemblerPlugin>,
     val options: PipelineAssemblerPlugin.() -> Unit = {}
 ) : PipelineAssembler()
 
+/**
+ * Pipeline assembler with inline function
+ *
+ * @property function [PipelineAssemblerFunction] The assembler function
+ * @constructor
+ */
 class PipelineAssemblerWithFunction(
     val function: PipelineAssemblerFunction
 ) : PipelineAssembler()

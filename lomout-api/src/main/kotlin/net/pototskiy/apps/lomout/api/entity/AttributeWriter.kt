@@ -7,7 +7,18 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
+/**
+ * Abstract attribute writer
+ *
+ * @param T : Type The value to write type
+ */
 sealed class AttributeWriter<T : Type> {
+    /**
+     * Writer function
+     *
+     * @param value T? The value to write
+     * @param cell Cell The cell to write
+     */
     fun write(value: T?, cell: Cell) {
         return when (this) {
             is AttributeWriterWithPlugin -> pluginClass.createInstance().let {
@@ -19,11 +30,26 @@ sealed class AttributeWriter<T : Type> {
     }
 }
 
+/**
+ * Attribute writer with plugin
+ *
+ * @param T Type The value to write type
+ * @property pluginClass KClass<out AttributeWriterPlugin<T>> The plugin class
+ * @property options [AttributeWriterPlugin<T>.()] Function1<AttributeWriterPlugin<T>, Unit> The plugin options
+ * @constructor
+ */
 open class AttributeWriterWithPlugin<T : Type>(
     val pluginClass: KClass<out AttributeWriterPlugin<T>>,
     val options: AttributeWriterPlugin<T>.() -> Unit = {}
 ) : AttributeWriter<T>()
 
+/**
+ * Attribute writer with function
+ *
+ * @param T : Type The value type to write
+ * @property function [AttributeWriterFunction] The writer function
+ * @constructor
+ */
 open class AttributeWriterWithFunction<T : Type>(
     val function: AttributeWriterFunction<T>
 ) : AttributeWriter<T>()

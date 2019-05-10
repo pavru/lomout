@@ -14,8 +14,24 @@ import java.io.File
 import java.net.URL
 import java.util.*
 
+/**
+ * Source data workbook factory
+ *
+ * Create workbook from source file with respect to file extension
+ */
 class WorkbookFactory {
+    /**
+     * Companion object
+     */
     companion object {
+        /**
+         * Create CSV or Excel workbook from file
+         *
+         * @param source URL The source file URL
+         * @param workbookLocale Locale The source file locale
+         * @param forInput Boolean The flag that workbook will be used for reading
+         * @return Workbook The created workbook
+         */
         fun create(source: URL, workbookLocale: Locale = DEFAULT_LOCALE, forInput: Boolean = true): Workbook {
             val fileName = File(source.file).name
             val file = File(fileName)

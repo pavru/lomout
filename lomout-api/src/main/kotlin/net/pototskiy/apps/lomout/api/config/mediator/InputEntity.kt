@@ -19,12 +19,27 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import java.util.*
 import kotlin.collections.set
 
+/**
+ * Pipeline input entity
+ *
+ * @property entity EntityType The entity type
+ * @property entityExtension EntityType? The input extension entity type
+ * @property filter SqlFilter? The SQL filter to select entities
+ * @property extAttrMaps AttrMapCollection The map of extended attribute
+ * @constructor
+ */
 data class InputEntity(
     val entity: EntityType,
     val entityExtension: EntityType?,
     val filter: SqlFilter?,
     val extAttrMaps: AttrMapCollection
 ) {
+    /**
+     * Get all extended attributes
+     *
+     * @param entity DbEntity The DB entity
+     * @return Map<AnyTypeAttribute, Type?>
+     */
     fun extendedAttributes(entity: DbEntity): Map<AnyTypeAttribute, Type?> {
         return extAttrMaps.keys.map { attr ->
             @Suppress("UNCHECKED_CAST")
@@ -33,6 +48,16 @@ data class InputEntity(
         }.toMap()
     }
 
+    /**
+     * Pipeline input entity definition builder class
+     *
+     * @property helper ConfigBuildHelper The config build helper
+     * @property entityType EntityType The base entity type
+     * @property attrPairs MutableMap<Attribute<*>, Attribute<*>> The map of extended attribute
+     * @property sqlFilter SqlFilter? The SQL filter to select entities
+     * @property extEntityUUID String The unique id to generate extended entity type name
+     * @constructor
+     */
     @ConfigDsl
     class Builder(
         val helper: ConfigBuildHelper,
@@ -42,17 +67,60 @@ data class InputEntity(
         var sqlFilter: SqlFilter? = null
         private val extEntityUUID = UUID.randomUUID().toString()
 
+        /**
+         * Inline definition of SQL filter to select entities
+         *
+         * ```
+         * ...
+         *  filter {
+         *      it[DbEntityTable.currentStatus] new EntityStatus.REMOVED
+         *  }
+         * ...
+         * ```
+         *
+         * @param block SqlExpressionBuilder.(alias: Alias<DbEntityTable>) -> Op<Boolean>
+         */
         @ConfigDsl
         fun filter(block: SqlExpressionBuilder.(alias: Alias<DbEntityTable>) -> Op<Boolean>) {
             sqlFilter = SqlFilterWithFunction { alias: Alias<DbEntityTable> -> Op.build { block(alias) } }
         }
 
+        /**
+         * Define SQL filter with plugin
+         *
+         * ```
+         * ...
+         *  filter<FilterPluginClass>()
+         * ...
+         * ```
+         * [FilterPluginClass][net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin] - filter plugin class,
+         *      **mandatory**
+         *
+         * @param block P.() -> Unit
+         */
         @ConfigDsl
         inline fun <reified P : SqlFilterPlugin> filter(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
             sqlFilter = SqlFilterWithPlugin(P::class, block as (SqlFilterPlugin.() -> Unit))
         }
 
+        /**
+         * Define extended attribute of input entity
+         *
+         * ```
+         * ...
+         *  extAttribute<Type>("ext name", "base name") {
+         *      reader {...}
+         *      writer {...}
+         *  }
+         * ...
+         * ```
+         *
+         * @param T : Type The extended attribute type
+         * @param name String The name of extended attribute
+         * @param from String The name of base attribute
+         * @param block Attribute.Builder<T>.() -> Unit
+         */
         @ConfigDsl
         inline fun <reified T : Type> extAttribute(
             name: String,
@@ -67,6 +135,11 @@ data class InputEntity(
 
         private fun extendedName(type: String): String = "$type${"$$"}ext${"$$"}$extEntityUUID"
 
+        /**
+         * Build input entity definition
+         *
+         * @return InputEntity
+         */
         fun build(): InputEntity {
             val extEntity = if (attrPairs.isEmpty()) {
                 null

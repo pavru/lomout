@@ -5,7 +5,7 @@ import net.pototskiy.apps.lomout.api.AppCellDataException
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.AppRowException
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.EmptyRowStrategy
+import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.FieldSet
 import net.pototskiy.apps.lomout.api.config.loader.Load
 import net.pototskiy.apps.lomout.api.database.DbEntity
@@ -28,7 +28,7 @@ import kotlin.collections.set
 
 class EntityLoader(
     private val loadConfig: Load,
-    private val emptyRowStrategy: EmptyRowStrategy,
+    private val emptyRowBehavior: EmptyRowBehavior,
     private val sheet: Sheet
 ) {
 
@@ -54,7 +54,7 @@ class EntityLoader(
         loop@ for (row in sheet) {
             processedRows++
             if (row.rowNum == loadConfig.headersRow || row.rowNum < loadConfig.rowsToSkip) continue
-            when (checkEmptyRow(row, emptyRowStrategy)) {
+            when (checkEmptyRow(row, emptyRowBehavior)) {
                 EmptyRowTestResult.STOP -> break@loop
                 EmptyRowTestResult.SKIP -> continue@loop
                 EmptyRowTestResult.PROCESS -> { // assemble row }
@@ -106,11 +106,11 @@ class EntityLoader(
 
     private fun checkEmptyRow(
         row: Row,
-        emptyRowStrategy: EmptyRowStrategy
+        emptyRowBehavior: EmptyRowBehavior
     ): EmptyRowTestResult {
         return if (row.countCell() == 0 || row.all { it == null || it.cellType == CellType.BLANK }) {
-            when (emptyRowStrategy) {
-                EmptyRowStrategy.STOP -> {
+            when (emptyRowBehavior) {
+                EmptyRowBehavior.STOP -> {
                     log.info(
                         "Workbook processing is stopped according configuration({}:{}:{})",
                         row.sheet.workbook.name,
@@ -119,7 +119,7 @@ class EntityLoader(
                     )
                     EmptyRowTestResult.STOP
                 }
-                EmptyRowStrategy.IGNORE -> {
+                EmptyRowBehavior.IGNORE -> {
                     log.info(
                         "Empty row is skipped according configuration({}:{}:{})",
                         row.sheet.workbook.name,

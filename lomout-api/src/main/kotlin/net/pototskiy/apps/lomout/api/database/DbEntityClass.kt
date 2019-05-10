@@ -23,6 +23,13 @@ import org.jetbrains.exposed.sql.update
 import org.joda.time.DateTime
 import org.joda.time.Duration
 
+/**
+ * Exposed entity class for domain entity
+ *
+ * @property myTable DbEntityTable
+ * @constructor
+ * @param attributeClasses AttributeEntityClass<*, *> The attribute exposed entity classes
+ */
 @Suppress("SpreadOperator")
 abstract class DbEntityClass(
     vararg attributeClasses: AttributeEntityClass<*, *>
@@ -30,14 +37,37 @@ abstract class DbEntityClass(
 
     private val myTable by lazy { super.table as DbEntityTable }
 
+    /**
+     * Load entities from DB
+     *
+     * @param entityType EntityType The entity type
+     * @param withAttributes Boolean True load with attributes
+     * @return List<DbEntity>
+     */
     fun getEntities(entityType: EntityType, withAttributes: Boolean = false): List<DbEntity> =
         transaction { find { myTable.entityType eq entityType }.toList() }.also { list ->
             if (withAttributes) list.forEach { it.readAttributes() }
         }
 
+    /**
+     * Load entities from DB by attribute value
+     *
+     * @param entityType EntityType The entity type
+     * @param attribute AnyTypeAttribute The attribute to search entity
+     * @param value Type The attribute value
+     * @return List<DbEntity>
+     */
     fun getByAttribute(entityType: EntityType, attribute: AnyTypeAttribute, value: Type): List<DbEntity> =
         getEntitiesByAttributes(entityType, mapOf(attribute to value))
 
+    /**
+     * Load entities from DB by attributes value
+     *
+     * @param entityType EntityType The entity type
+     * @param data Map<AnyTypeAttribute, Type?> The attribute-value pairs
+     * @param onlyKeys Boolean True - use only key attributes
+     * @return List<DbEntity>
+     */
     fun getEntitiesByAttributes(
         entityType: EntityType,
         data: Map<AnyTypeAttribute, Type?>,
@@ -62,6 +92,13 @@ abstract class DbEntityClass(
             .toList()
     }
 
+    /**
+     * Insert entity to DB
+     *
+     * @param entityType EntityType The entity type
+     * @param data Map<AnyTypeAttribute, Type> The attribute values
+     * @return DbEntity
+     */
     fun insertEntity(entityType: EntityType, data: Map<AnyTypeAttribute, Type>): DbEntity {
         val entity = transaction {
             new {
@@ -79,6 +116,11 @@ abstract class DbEntityClass(
         return entity
     }
 
+    /**
+     * Reset change flag of entity
+     *
+     * @param entityType EntityType
+     */
     fun resetTouchFlag(entityType: EntityType) {
         transaction {
             table.update({ getClassWhereClause(entityType) }) {
@@ -91,6 +133,11 @@ abstract class DbEntityClass(
         myTable.entityType eq entityType
     }
 
+    /**
+     * Change entity current status to *REMOVED*
+     *
+     * @param entityType EntityType
+     */
     fun markEntitiesAsRemove(entityType: EntityType) {
         transaction {
             table.update({
@@ -106,6 +153,12 @@ abstract class DbEntityClass(
         }
     }
 
+    /**
+     * Remove entities from DB. Only entities that absent more than max absent days are removed.
+     *
+     * @param entityType EntityType The entity type
+     * @param maxAge Int The maximum day of absent
+     */
     fun removeOldEntities(entityType: EntityType, maxAge: Int) {
         transaction {
             find {
@@ -119,6 +172,11 @@ abstract class DbEntityClass(
         }
     }
 
+    /**
+     * Recalculate and update entity absent days
+     *
+     * @param entityType EntityType The entity type
+     */
     fun updateAbsentAge(entityType: EntityType) {
         transaction {
             find {
@@ -131,6 +189,13 @@ abstract class DbEntityClass(
     }
 }
 
+/**
+ * Build equal expression for where clause
+ *
+ * @param column Column<*> The column to compare
+ * @param value Type The value to compare
+ * @return Expression<Boolean>
+ */
 @Suppress("UNCHECKED_CAST")
 fun equalsBuild(column: Column<*>, value: Type): Expression<Boolean> =
     when (column.columnType) {
