@@ -59,7 +59,7 @@ fun main(args: Array<String>) {
         mainCommand.scriptCacheDir,
         mainCommand.doNotUseScriptCache
     )
-    setupPluginContext()
+    setupPluginContext(File(mainCommand.configFile.first()))
     initDatabase(
         CONFIG_BUILDER.config.database,
         CONFIG_BUILDER.config.entityTypeManager,
@@ -85,7 +85,8 @@ fun setLogLevel(command: CommandMain) {
 /**
  * Set plugin context
  */
-fun setupPluginContext() {
+fun setupPluginContext(scriptFile: File) {
     PluginContext.config = CONFIG_BUILDER.config
     PluginContext.entityTypeManager = CONFIG_BUILDER.config.entityTypeManager
+    PluginContext.scriptFile = scriptFile
 }
