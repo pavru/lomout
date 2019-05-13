@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.plugable
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import org.apache.logging.log4j.Logger
+import java.io.File
 
 /**
  * Plugin context
@@ -24,4 +25,8 @@ interface PluginContextInterface {
      * Context logger
      */
     var logger: Logger
+    /**
+     * Main script file
+     */
+    var scriptFile: File
 }

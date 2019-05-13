@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - if there is ivy.xml files in the same location as config all dependencies will be added to classpath
 - log information in idea log
 - create gradle task to generate build info class
+- [LM-32](https://camsoft.myjetbrains.com/youtrack/issue/LM-32) plugin context now has script file info
 ### Changed
 - command line parameters: now 3 commands: --help, --version and --process 
 ### Fixed
