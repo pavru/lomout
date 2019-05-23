@@ -12,7 +12,7 @@ class ExcelCellIterator(row: org.apache.poi.ss.usermodel.Row) : Iterator<ExcelCe
     private val iterator = row.iterator()
 
     /**
-     * Check if sheet has next row
+     * Check if sheet has a next row
      *
      * @return Boolean
      */

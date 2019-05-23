@@ -11,29 +11,26 @@ import net.pototskiy.apps.lomout.api.entity.EntityType
  *
  * @property outputEntity EntityType The output entity type
  * @constructor
- * @param lineType LineType The production line type
  * @param inputEntities InputEntityCollection The input configuration
  * @param outputEntity EntityType The output entity type
  * @param pipeline Pipeline The root pipeline
  */
 class ProductionLine(
-    lineType: LineType,
     inputEntities: InputEntityCollection,
     val outputEntity: EntityType,
     pipeline: Pipeline
-) : AbstractLine(lineType, inputEntities, pipeline) {
+) : AbstractLine(inputEntities, pipeline) {
     /**
      * Production line configuration builder class
      *
      * @property helper ConfigBuildHelper The config build helper
-     * @property lineType LineType The production line type
      * @property inputs InputEntityCollection? The input entities definition
      * @property output EntityType? The output entity type
      * @property pipeline Pipeline? The root pipeline
      * @constructor
      */
     @ConfigDsl
-    class Builder(private val helper: ConfigBuildHelper, private val lineType: LineType) {
+    class Builder(private val helper: ConfigBuildHelper) {
         private var inputs: InputEntityCollection? = null
         private var output: EntityType? = null
         private var pipeline: Pipeline? = null
@@ -59,7 +56,7 @@ class ProductionLine(
          * ```
          * * [entity][InputEntityCollection.Builder.entity] - define input entity, **at least one must be defined**
          *
-         * @param block InputEntityCollection.Builder.() -> Unit
+         * @param block The pipeline input definition
          */
         fun input(block: InputEntityCollection.Builder.() -> Unit) {
             inputs = InputEntityCollection.Builder(helper).apply(block).build()
@@ -104,7 +101,7 @@ class ProductionLine(
          * ```
          *
          * @param name String The entity type name
-         * @param block EntityType.Builder.() -> Unit
+         * @param block The pipeline output definition
          */
         @PublicApi
         fun output(name: String, block: EntityType.Builder.() -> Unit) {
@@ -139,7 +136,6 @@ class ProductionLine(
                     ?: throw AppConfigException("Production line must have start pipeline")
             )
             return ProductionLine(
-                lineType,
                 inputs ?: throw AppConfigException("At least one input entity must be defined"),
                 output ?: throw AppConfigException("Output entity must be defined"),
                 pipeline!!
@@ -148,7 +144,7 @@ class ProductionLine(
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw AppConfigException("Pipeline with matched child must have assembler")
+                throw AppConfigException("Pipeline with the matched child must have assembler")
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }

@@ -20,13 +20,13 @@ import org.joda.time.DateTime
 import java.util.*
 
 /**
- * Read [DateTime] from cell, non-DateTime values are converted to [DateTime]
+ * Read [DateTime] from the cell. Convert non-DateTime values to [DateTime].
  *
  * @receiver Cell The cell to read
- * @param attribute Attribute<*> The attribute for which value is read
- * @param locale Locale The locale for converting
- * @return DateTime?
- * @throws AppCellDataException The string value can not be converted to [DateTime]
+ * @param attribute The destination attribute
+ * @param locale The locale for converting
+ * @return Read value
+ * @throws AppCellDataException The string value cannot be converted to [DateTime]
  */
 @Suppress("ComplexMethod")
 fun Cell.readeDateTime(
@@ -49,13 +49,13 @@ fun Cell.readeDateTime(
 }
 
 /**
- * Read [DateTime] value from cell, non-[DateTime] values are converted to [DateTime]
+ * Read [DateTime] value from the cell. Convert non-[DateTime] values to [DateTime].
  *
- * @receiver Cell The cell to read
- * @param attribute Attribute<*> The attribute for which value is read
- * @param pattern String The date-time pattern for converting
- * @return DateTime?
- * @throws AppCellDataException The string value can not be converted to [DateTime]
+ * @receiver The cell to read
+ * @param attribute The destination attribute
+ * @param pattern The date-time pattern for converting
+ * @return Read value
+ * @throws AppCellDataException The string value cannot be converted to [DateTime]
  */
 fun Cell.readeDateTime(
     @Suppress("UNUSED_PARAMETER") attribute: Attribute<*>,
@@ -73,11 +73,11 @@ fun Cell.readeDateTime(
 }
 
 /**
- * Read Boolean value from cell, non-Boolean values are converted to Boolean
+ * Read Boolean value from the cell. Convert non-Boolean values to Boolean.
  *
- * @receiver Cell The cell to read
- * @param locale Locale The locale for converting
- * @return Boolean?
+ * @receiver The cell to read
+ * @param locale The locale for converting
+ * @return The value
  */
 fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.LONG -> this.longValue != 0L
@@ -92,11 +92,11 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
 }
 
 /**
- * Read Double value from cell, non-Double values are converted to Double
+ * Read Double value from the cell. Convert non-Double values to Double.
  *
- * @receiver Cell The cell to read
- * @param locale Locale The locale for converting
- * @return Double?
+ * @receiver The cell to read
+ * @param locale The locale for converting
+ * @return The value
  */
 @Suppress("ComplexMethod")
 fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
@@ -112,7 +112,7 @@ fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
 }
 
 /**
- * Read Long value from cell, non-Long values are converted to Long
+ * Read Long value from the cell. Convert non-Long values to Long when necessary.
  *
  * @receiver Cell The cell to read
  * @param locale Locale The locale for converting
@@ -132,7 +132,7 @@ fun Cell.readLong(locale: Locale): Long? = when (this.cellType) {
 }
 
 /**
- * Read string from cell, non-string values converted to string according to locale
+ * Read string from the cell, non-string values converted to string according to locale
  *
  * @receiver Cell The cell to read
  * @param locale Locale The locale for converting

@@ -20,7 +20,7 @@ internal class EntityTypeTest {
         assertThatThrownBy {
             builder.inheritFrom("test2")
         }.isInstanceOf(AppEntityTypeException::class.java)
-            .hasMessageContaining("Entity type<test2> does not defined")
+            .hasMessageContaining("Entity type<test2> is not defined")
     }
 
     @Test

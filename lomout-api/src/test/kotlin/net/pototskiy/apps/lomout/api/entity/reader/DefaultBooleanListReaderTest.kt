@@ -90,6 +90,7 @@ internal class DefaultBooleanListReaderTest {
     @Test
     internal fun readStringRuRuCorrectCellTest() {
         val readerRuRU = BooleanListAttributeReader().apply { locale = "ru_RU" }
+        @Suppress("GraziInspection")
         xlsTestDataCell.setCellValue("иСтина,Ложь, ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerRuRU.read(attr, inputCell)?.value).isEqualTo(

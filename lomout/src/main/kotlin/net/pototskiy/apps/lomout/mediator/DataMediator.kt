@@ -13,7 +13,7 @@ import org.joda.time.Duration
 import java.util.concurrent.atomic.*
 
 object DataMediator {
-    const val DEFAULT_MAX_AGE = 10
+    private const val DEFAULT_MAX_AGE = 10
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     private val log = LogManager.getLogger(PRINTER_LOG_NAME)
     private var startTime = DateTime()

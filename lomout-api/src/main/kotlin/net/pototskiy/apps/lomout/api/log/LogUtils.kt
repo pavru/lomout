@@ -17,7 +17,7 @@ private val severityToLevel = mapOf(
 /**
  * Convert config script compilation and evaluation message severity to log level
  *
- * @receiver ScriptDiagnostic.Severity The message severity
- * @return Level The related log level
+ * @receiver The message severity
+ * @return The related log level
  */
 fun ScriptDiagnostic.Severity.toLogLevel(): Level = severityToLevel.getValue(this)

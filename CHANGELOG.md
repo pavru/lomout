@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - create gradle task to generate build info class
 - [LM-32](https://camsoft.myjetbrains.com/youtrack/issue/LM-32) plugin context now has script file info
 ### Changed
+- change classifier parameters and output. Now classifier gets just ID of entity
 - command line parameters: now 3 commands: --help, --version and --process 
 ### Fixed
 - [LM-27](https://camsoft.myjetbrains.com/youtrack/issue/LM-27)

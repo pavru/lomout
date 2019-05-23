@@ -48,12 +48,12 @@ abstract class CsvWorkbook(
         if (sheet == CSV_SHEET_NAME) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
-            throw AppSheetException("CSV file supports only one sheet with name: \"default\"")
+            throw AppSheetException("CSV file supports only one sheet with the name: \"default\"")
         }
     }
 
     /**
-     * Get sheet by index
+     * Get sheet by the index
      *
      * @param sheet Int The sheet index, zero based
      * @return CsvSheet
@@ -62,12 +62,12 @@ abstract class CsvWorkbook(
         if (sheet == 0) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
-            throw AppSheetException("CSV file support only one sheet with index: 0")
+            throw AppSheetException("CSV file support only one sheet with the index: 0")
         }
     }
 
     /**
-     * Test if workbook has sheet with given name
+     * Test if workbook has a sheet with given name
      *
      * @param sheet String The sheet name to test
      * @return Boolean

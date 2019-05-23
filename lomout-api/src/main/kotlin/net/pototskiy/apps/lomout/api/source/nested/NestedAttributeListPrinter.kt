@@ -19,7 +19,7 @@ class NestedAttributeListPrinter(
 ) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
     /**
-     * Convert map of attributes(name->value) to string
+     * Convert map of attributes(name→value) to string
      *
      * @param value Map<String, String> The attributes map
      * @return String

@@ -33,7 +33,7 @@ data class SourceData(
         private var sheet: SourceSheetDefinition = SourceSheetDefinition(null, Regex(".*"))
         private var emptyRowBehavior: EmptyRowBehavior = EmptyRowBehavior.IGNORE
         /**
-         * Define file of source data as reference to files block
+         * Define the file of source data as reference to files block
          *
          * @param id String The file id
          */

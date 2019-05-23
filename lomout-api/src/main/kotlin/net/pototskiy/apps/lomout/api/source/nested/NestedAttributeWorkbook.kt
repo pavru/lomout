@@ -69,7 +69,7 @@ class NestedAttributeWorkbook(
         }
 
     /**
-     * Insert sheet into workbook
+     * Insert sheet into the workbook
      *
      * @param sheet String
      * @return Sheet
@@ -96,7 +96,7 @@ class NestedAttributeWorkbook(
     override fun get(sheet: String): Sheet = NestedAttributeSheet(this)
 
     /**
-     * Get sheet by index, always return the same sheet
+     * Get sheet by the index, always return the same sheet
      *
      * @param sheet Int The sheet index, zero based
      * @return Sheet
@@ -104,7 +104,7 @@ class NestedAttributeWorkbook(
     override fun get(sheet: Int): Sheet = NestedAttributeSheet(this)
 
     /**
-     * Test if workbook has sheet with given name, always true
+     * Test if workbook has a sheet with given name, it's always true
      *
      * @param sheet String The sheet name
      * @return Boolean

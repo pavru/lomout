@@ -11,8 +11,8 @@ import kotlin.reflect.KClass
 /**
  * Entity type manager
  *
- * It should be use to create entity type, entity type attributes. It also use to find entity type
- * by name and it's attribute.
+ * It should be used to create entity type, entity type attributes. It also is used to find entity type
+ * by the name, and it's an attribute.
  *
  * @property entityAttributes MutableMap<EntityType, MutableMap<String, Attribute<*>>>
  * @property entities MutableMap<String, EntityType>
@@ -35,9 +35,9 @@ class EntityTypeManager : EntityTypeManagerInterface {
     /**
      * Create entity type name
      *
-     * @param name String The entity type name
-     * @param supers List<ParentEntityType> The entity type parent (super) types
-     * @param open Boolean Open flag, true - attributes can be added later
+     * @param name The entity type name
+     * @param supers The entity type parent (super) types
+     * @param open Open flag, true — attributes can be added later
      * @return EntityType
      */
     override fun createEntityType(
@@ -55,8 +55,8 @@ class EntityTypeManager : EntityTypeManagerInterface {
     /**
      * Initial setup of entity type attributes
      *
-     * @param entityType EntityType The entity type
-     * @param attributes AttributeCollection The attributes collection
+     * @param entityType The entity type
+     * @param attributes Attributes collection
      */
     override fun initialAttributeSetup(entityType: EntityType, attributes: AttributeCollection) {
         attributes.forEach { it.owner = entityType }
@@ -111,9 +111,9 @@ class EntityTypeManager : EntityTypeManagerInterface {
     /**
      * Add attributes to existing entity type. Only open entity allows this operation.
      *
-     * @param entityType EntityType The entity type
-     * @param attributes AttributeCollection The attributes collection
-     * @throws AppEntityTypeException The entity type is close or try to add existing attribute
+     * @param entityType The entity type
+     * @param attributes Attributes collection
+     * @throws AppEntityTypeException The entity type is close or try to add an existing attribute
      */
     override fun addEntityAttributes(entityType: EntityType, attributes: AttributeCollection) {
         checkThatAttributeIsNotAssigned(attributes)
@@ -135,12 +135,12 @@ class EntityTypeManager : EntityTypeManagerInterface {
     }
 
     /**
-     * Create entity attribute without assign to entity.
+     * Create entity attribute without assigning to entity.
      *
-     * @param T Type The attribute type
-     * @param name String The attribute name
-     * @param typeClass KClass<out T> The class of attribute type
-     * @param block EntityAttributeManagerInterface.Builder<T>.() -> Unit The attribute builder
+     * @param T The attribute type
+     * @param name The attribute name
+     * @param typeClass The class of attribute type
+     * @param block The attribute builder
      * @return Attribute<T>
      */
     override fun <T : Type> createAttribute(
@@ -152,13 +152,13 @@ class EntityTypeManager : EntityTypeManagerInterface {
     /**
      * Attribute builder class
      *
-     * @param T : Type The attribute type
-     * @property key Boolean Key attribute
-     * @property nullable Boolean Nullable attribute
-     * @property auto Boolean Automatically created attribute
-     * @property reader AttributeReader<out T>? The attribute reader
-     * @property writer AttributeWriter<out T>? The attribute writer
-     * @property builder AttributeBuilder<out T>? The attribute builder
+     * @param T The attribute type
+     * @property key Key attribute
+     * @property nullable Nullable attribute
+     * @property auto An automatically created attribute
+     * @property reader The attribute reader
+     * @property writer The attribute writer
+     * @property builder The attribute builder
      * @constructor
      * @param name String The attribute name
      * @param typeClass KClass<out T> The attribute type class
@@ -175,7 +175,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
         private var builder: AttributeBuilder<out T>? = null
 
         /**
-         * Mark attribute as key one
+         * Mark the attribute as key one
          *
          * @param key Boolean?
          */
@@ -184,7 +184,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
         }
 
         /**
-         * Mark attribute as nullable one
+         * Mark the attribute as nullable one
          *
          * @param nullable Boolean?
          */
@@ -193,7 +193,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
         }
 
         /**
-         * Mark attribute as automatically created
+         * Mark the attribute as automatically created
          *
          * @param auto Boolean?
          */
@@ -243,10 +243,10 @@ class EntityTypeManager : EntityTypeManagerInterface {
                 auto,
                 reader
                     ?: defaultReaders[typeClass] as? AttributeReader<out T>
-                    ?: throw AppConfigException("Reader must be defined for attribute<$name>"),
+                    ?: throw AppConfigException("Reader must be defined for the attribute<$name>"),
                 writer
                     ?: defaultWriters[typeClass] as? AttributeWriter<out T>
-                    ?: throw AppConfigException("Writer must be defined for attribute<$name"),
+                    ?: throw AppConfigException("Writer must be defined for the attribute<$name"),
                 builder
             ) {}
     }
@@ -271,7 +271,7 @@ private fun checkEntityTypeHasNoAttributes(entityType: EntityType, attributes: A
 
 private fun checkEntityTypeIsOpen(entityType: EntityType) {
     if (!entityType.open) {
-        throw AppEntityTypeException("It's not allowed to add attribute to entity type<${entityType.name}>")
+        throw AppEntityTypeException("It's not allowed to add the attribute to entity type<${entityType.name}>")
     }
 }
 
@@ -286,7 +286,7 @@ fun EntityTypeManager.addEntityAttributes(entityType: EntityType, attributes: Li
     this.addEntityAttributes(entityType, AttributeCollection(attributes))
 
 /**
- * Add attribute to entity type
+ * Add the attribute to entity type
  *
  * @receiver EntityTypeManager
  * @param entityType EntityType

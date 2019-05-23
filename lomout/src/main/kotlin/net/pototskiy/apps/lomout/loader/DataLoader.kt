@@ -44,12 +44,12 @@ object DataLoader {
                             )
                         } else {
                             workbook.filter { source.sheet.isMatch(it.name) }.forEach {
-                                log.debug("Start loading sheet<{}> from file<{}>", it.name, file.id)
+                                log.debug("Start loading sheet<{}> from the file<{}>", it.name, file.id)
                                 EntityLoader(load, source.emptyRowBehavior, it).apply {
                                     load()
                                     this@DataLoader.processedRows.addAndGet(processedRows)
                                 }
-                                log.debug("Finish loading sheet<{}> from file<{}>", it.name, file.id)
+                                log.debug("Finish loading sheet<{}> from the file<{}>", it.name, file.id)
                             }
                         }
                     }

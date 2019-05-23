@@ -14,7 +14,7 @@ import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
  * File base compiled script cache
  *
  * @property baseDir The cache directory
- * @property doNotUseCache True - do not use cache, false - cache script
+ * @property doNotUseCache True — do not use cache, false — cache script
  * @constructor
  */
 @Suppress("unused")
@@ -25,7 +25,7 @@ class FileBasedScriptCache(
 ) : CompiledJvmScriptsCache {
 
     /**
-     * Try get script from cache
+     * Try get script from the cache
      *
      * @param script The script source code
      * @param scriptCompilationConfiguration ScriptCompilationConfiguration
@@ -44,7 +44,7 @@ class FileBasedScriptCache(
     }
 
     /**
-     * Store compiled script in cache
+     * Store compiled script in the cache
      *
      * @param compiledScript The compiled script
      * @param script SourceCode The script source code

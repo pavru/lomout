@@ -18,6 +18,6 @@ internal class StringToBooleanKtTest {
         assertThat("ложь".stringToBoolean("ru_RU".createLocale())).isFalse()
         assertThatThrownBy { "true".stringToBoolean("ru_RU".createLocale()) }
             .isInstanceOf(ParseException::class.java)
-            .hasMessageContaining("Value<true> can not converted to boolean")
+            .hasMessageContaining("Value<true> cannot be converted to boolean")
     }
 }

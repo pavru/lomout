@@ -9,10 +9,10 @@ import org.jetbrains.exposed.sql.TextColumnType
 /**
  * Exposed abstract attribute table
  *
- * @param V : Comparable<V> The type of attribute
+ * @param V The type of attribute
  * @constructor
- * @param table String The table name
- * @param owner IntIdTable The table of attributes owner
+ * @param table The table name
+ * @param owner The table of attributes owner
  * @param valueColumnType The SQL value column type
  */
 abstract class AttributeTable<V : Comparable<V>>(
@@ -25,7 +25,7 @@ abstract class AttributeTable<V : Comparable<V>>(
      */
     val owner = reference("owner", owner, ReferenceOption.CASCADE)
     /**
-     * The attribute value index in list type, -1 not lits type value
+     * The attribute value index in list type, -1 not list type value
      */
     val index = integer("index")
     /**

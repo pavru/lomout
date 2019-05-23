@@ -2,7 +2,7 @@
 
 plugins {
     id("com.github.ben-manes.versions") version "0.21.0"
-    id("org.sonarqube") version "2.7"
+    id("org.sonarqube") version "2.7.1"
     jacoco
     kotlin("jvm") version Versions.kotlin
 }

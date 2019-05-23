@@ -53,7 +53,7 @@ internal class EntityLoaderAddTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
-        @Suppress("RegExpRedundantEscape")
+        @Suppress("RegExpRedundantEscape", "GraziInspection")
         val matches = Regex(
             "^\\[ERROR\\].*There is no requested cell<3> in row.*$",
             RegexOption.MULTILINE
@@ -94,7 +94,7 @@ internal class EntityLoaderAddTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
-        @Suppress("RegExpRedundantEscape")
+        @Suppress("RegExpRedundantEscape", "GraziInspection")
         val matches = Regex(
             "^\\[ERROR\\].*Field<data> does not match required regular expression.*$",
             RegexOption.MULTILINE
@@ -116,7 +116,7 @@ internal class EntityLoaderAddTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(2)
-        @Suppress("RegExpRedundantEscape") val matches = Regex(
+        @Suppress("RegExpRedundantEscape", "GraziInspection") val matches = Regex(
             "^\\[ERROR\\].*Attribute<key> is key but has no value.*$",
             RegexOption.MULTILINE
         ).findAll(log).toList()
@@ -163,7 +163,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }
@@ -216,7 +216,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }
@@ -271,7 +271,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }
@@ -331,7 +331,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }
@@ -384,7 +384,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }
@@ -441,7 +441,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }

@@ -5,15 +5,17 @@ import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.config.mediator.PipelineDataCollection
+import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
+import net.pototskiy.apps.lomout.api.database.EntityLongs
 import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.DoubleType
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.LongType
 import net.pototskiy.apps.lomout.api.entity.StringType
 import net.pototskiy.apps.lomout.api.entity.get
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import net.pototskiy.apps.lomout.database.initDatabase
 import net.pototskiy.apps.lomout.loader.DataLoader
@@ -21,7 +23,11 @@ import net.pototskiy.apps.lomout.mediator.DataMediator
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.alias
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -38,6 +44,11 @@ internal class PrinterBasicTest {
     internal fun printerBasicTest() {
         File("../tmp/$outputName").parentFile.mkdirs()
         val config = createConfiguration()
+
+        PluginContext.config = config
+        PluginContext.entityTypeManager = config.entityTypeManager
+        PluginContext.scriptFile = File("no-file.conf.kts")
+
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
         initDatabase(config.database, typeManager)
@@ -129,7 +140,7 @@ internal class PrinterBasicTest {
             }
         }
         mediator {
-            crossProductionLine {
+            productionLine {
                 input {
                     entity("entity1") {
                         filter {
@@ -163,11 +174,59 @@ internal class PrinterBasicTest {
                     }
                 }
                 pipeline {
-                    classifier { entities: PipelineDataCollection ->
-                        if (entities[0]["sku"]?.value == entities[1]["sku"]?.value) {
-                            Pipeline.CLASS.MATCHED
+                    classifier { element ->
+                        val entityOneAlias = DbEntityTable.alias("entityOne")
+                        val entityTwoAlias = DbEntityTable.alias("entityTwo")
+                        val skuOneAlias = EntityLongs.alias("skuOne")
+                        val skuTwoAlias = EntityLongs.alias("skuTwo")
+                        val entityOneType = entityTypeManager["entity1"]
+                        val entityTwoType = entityTypeManager["entity2"]
+                        val partnerEntityType = when (element.ids[0].type) {
+                            entityOneType -> entityTwoType
+                            else -> entityOneType
+                        }
+
+                        val v = transaction {
+                            entityOneAlias
+                                .join(
+                                    skuOneAlias,
+                                    JoinType.INNER,
+                                    entityOneAlias[DbEntityTable.id],
+                                    skuOneAlias[EntityLongs.owner],
+                                    additionalConstraint = { skuOneAlias[EntityLongs.code] eq "sku" })
+                                .join(
+                                    skuTwoAlias,
+                                    JoinType.INNER,
+                                    skuOneAlias[EntityLongs.value],
+                                    skuTwoAlias[EntityLongs.value],
+                                    additionalConstraint = { skuTwoAlias[EntityLongs.code] eq "sku" }
+                                )
+                                .join(entityTwoAlias,
+                                    JoinType.INNER,
+                                    skuTwoAlias[EntityLongs.owner],
+                                    entityTwoAlias[DbEntityTable.id],
+                                    additionalConstraint = { entityTwoAlias[DbEntityTable.entityType] eq partnerEntityType }
+                                )
+                                .slice(entityOneAlias[DbEntityTable.id], entityTwoAlias[DbEntityTable.id])
+                                .select {
+                                    (entityOneAlias[DbEntityTable.id] eq element.ids[0].id) and
+                                            (entityOneAlias[DbEntityTable.id] neq entityTwoAlias[DbEntityTable.id])
+                                }
+                                .toList()
+                                .map {
+                                    listOf(
+                                        it[entityOneAlias[DbEntityTable.id]],
+                                        it[entityTwoAlias[DbEntityTable.id]]
+                                    )
+                                }
+                        }
+                        // finish test case for pipeline data collection
+                        if (v.isNotEmpty() && element.ids[0].type == entityOneType) {
+                            element.match(ClassifierElement.ElementID(entityTwoType, v[0][1]))
+                        } else if (v.isNotEmpty()) {
+                            element.skip()
                         } else {
-                            Pipeline.CLASS.UNMATCHED
+                            element.mismatch()
                         }
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
@@ -181,11 +240,12 @@ internal class PrinterBasicTest {
                         }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
-                        classifier { entities ->
+                        classifier {
+                            val entities = it.entities
                             if (entities[0].entity.entityType.name == "entity2") {
-                                Pipeline.CLASS.MATCHED
+                                it.match()
                             } else {
-                                Pipeline.CLASS.UNMATCHED
+                                it.mismatch()
                             }
                         }
                         assembler { target, entities ->
@@ -225,7 +285,7 @@ internal class PrinterBasicTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, entities ->
                         entities.first().data
                     }

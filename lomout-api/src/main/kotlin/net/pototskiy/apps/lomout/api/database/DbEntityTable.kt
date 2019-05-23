@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package net.pototskiy.apps.lomout.api.database
 
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
@@ -41,7 +43,18 @@ object DbEntityTable : IntIdTable("entity") {
      */
     val removed = datetime("removed").nullable().index()
     /**
-     * Absent (in source) days
+     * Absent (in a source) days
      */
     val absentDays = integer("absent_days").index()
 }
+
+val EntityTab = DbEntityTable
+val EntityIdCol = DbEntityTable.id
+val EntityTypeCol = DbEntityTable.entityType
+val EntityTouchedCol = DbEntityTable.touchedInLoading
+val EntityPStatusCol = DbEntityTable.previousStatus
+val EntityCStatusCol = DbEntityTable.currentStatus
+val EntityCreatedCol = DbEntityTable.created
+val EntityUpdatedCol = DbEntityTable.updated
+val EntityRemovedCol = DbEntityTable.removed
+val EntityAbsentCol = DbEntityTable.absentDays

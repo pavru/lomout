@@ -16,6 +16,7 @@ internal class IvyResolverTest {
             val resolver = IvyResolver()
             assertThat(resolver.tryAddRepository(localMaven())).isTrue()
             assertThat(resolver.tryAddRepository(jCenter())).isTrue()
+            @Suppress("GraziInspection")
             val deps = resolver.tryResolve("lomout:lomout-api:1.0-SNAPSHOT")
             assertThat(deps).isNotEmpty
             assertThat(deps?.filter {

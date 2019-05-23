@@ -6,8 +6,8 @@ import java.util.*
 /**
  * Convent string presentation of locale to Local object
  *
- * @receiver String The locale in form ll_CC where CC - country code,
- *  ll - language code
+ * @receiver String The locale in form ll_CC where CC — country code,
+ *  ll — language code
  * @return Locale
  */
 fun String.createLocale(): Locale {

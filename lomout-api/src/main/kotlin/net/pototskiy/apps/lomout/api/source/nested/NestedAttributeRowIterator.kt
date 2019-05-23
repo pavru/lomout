@@ -10,7 +10,7 @@ package net.pototskiy.apps.lomout.api.source.nested
 class NestedAttributeRowIterator(private val sheet: NestedAttributeSheet) : Iterator<NestedAttributeRow> {
     private var index = 0
     /**
-     * Test if sheet has next row
+     * Test if sheet has a next row
      * @return Boolean
      */
     override fun hasNext(): Boolean = index < 1

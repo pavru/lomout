@@ -41,7 +41,7 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
      */
     var currentStatus by DbEntityTable.currentStatus
     /**
-     * Timestamp when entity was created
+     * Timestamp for entity creation
      */
     var created by DbEntityTable.created
     /**
@@ -92,7 +92,7 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
     /**
      * Update entity update status
      *
-     * @param onlyCurrent Boolean true - update only current status, false - update current and previous status
+     * @param onlyCurrent Boolean true — update only current status, false — update current and previous status
      */
     fun wasUpdated(onlyCurrent: Boolean = false) = transaction {
         touchedInLoading = true
@@ -109,7 +109,7 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
     /**
      * Update entity unchanged status
      *
-     * @param onlyCurrent Boolean true - update only current status, false - update current and previous status
+     * @param onlyCurrent Boolean true — update only current status, false — update current and previous status
      */
     fun wasUnchanged(onlyCurrent: Boolean = false) = transaction {
         touchedInLoading = true
@@ -149,7 +149,7 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
         removeAttribute(this, attribute)
 
     /**
-     * Read attribute value from DB
+     * Read attribute value from the DB
      *
      * @param attribute AnyTypeAttribute
      * @return Type?
@@ -158,7 +158,7 @@ class DbEntity(id: EntityID<Int>) : IntEntity(id) {
         readAttribute(this, attribute)
 
     /**
-     * Read all attributes values from DB
+     * Read all attributes values from the DB
      *
      * @return Map<Attribute<out Type>, Type?>
      */

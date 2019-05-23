@@ -12,9 +12,9 @@ abstract class PipelineAssemblerPlugin : Plugin() {
     /**
      * Assembler function
      *
-     * @param target EntityType The target entity type
-     * @param entities PipelineDataCollection The pipeline entity collection
-     * @return Map<AnyTypeAttribute, Type?> The attribute->value map for target entity
+     * @param target The target entity type
+     * @param entities The pipeline entity collection
+     * @return The attribute→value map for target entity
      */
     abstract fun assemble(
         target: EntityType,

@@ -30,10 +30,10 @@ class CsvRow(
     }
 
     /**
-     * Get cell by index or create empty cell
+     * Get cell by the index or create empty cell
      *
-     * @param column Int The column index
-     * @return Cell The cell from row or empty cell
+     * @param column The column index
+     * @return The cell from row or empty cell
      */
     override fun getOrEmptyCell(column: Int): Cell = get(column)
         ?: CsvCell(
@@ -55,10 +55,10 @@ class CsvRow(
         get() = backingRow
 
     /**
-     * Get cell by index or null
+     * Get cell by the index or null
      *
-     * @param column Int The column index
-     * @return CsvCell? The row cell or null if it does not exist
+     * @param column The column index
+     * @return The row cell or null if it does not exist
      */
     override fun get(column: Int): CsvCell? =
         if (column < cells.size) {
@@ -68,7 +68,7 @@ class CsvRow(
         }
 
     /**
-     * Insert cell to row by index
+     * Insert cell to row by the index
      *
      * @param column Int The cell index, zero based
      * @return Cell The inserted cell

@@ -18,7 +18,7 @@ class NestedAttributeSheet(
     private val backingWorkbook: NestedAttributeWorkbook
 ) : Sheet {
     /**
-     * Insert row into sheet by index
+     * Insert row into sheet by the index
      *
      * @param row Int, The row index, zero based, only 0 and 1 are allowed
      * @return Row The inserted row
@@ -45,7 +45,7 @@ class NestedAttributeSheet(
         get() = backingWorkbook
 
     /**
-     * Get row by index
+     * Get row by the index
      *
      * @param row Int The row index, only 0 and 1 is allowed
      * @return Row

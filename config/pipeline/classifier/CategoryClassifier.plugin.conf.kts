@@ -1,12 +1,15 @@
+import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
+
 class CategoryClassifier : PipelineClassifierPlugin() {
-    override fun classify(entities: PipelineDataCollection): Pipeline.CLASS {
+    override fun classify(element: ClassifierElement): ClassifierElement {
         try {
+            val entities = element.entities
             val group = entities["onec-group"]
             val category = entities["mage-category"]
             val categoryPath = category["__path"]
-            if (categoryPath?.value in rootMageCategories) return Pipeline.CLASS.UNMATCHED
-            if (group["transformed_path"] == categoryPath) return Pipeline.CLASS.MATCHED
-            return Pipeline.CLASS.UNMATCHED
+            if (categoryPath?.value in rootMageCategories) return element.mismatch()
+            if (group["transformed_path"] == categoryPath) return element.match()
+            return element.mismatch()
         } catch (e: Exception) {
             throw AppPluginException(e.message, e)
         }

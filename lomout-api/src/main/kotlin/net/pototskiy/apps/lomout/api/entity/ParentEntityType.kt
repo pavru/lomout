@@ -49,7 +49,7 @@ class ParentEntityType(
          *  include("attr_name", "attr_name" ...)
          * ...
          * ```
-         * * attr_name: String - attribute name to include from parent, **at least one must be defined**
+         * * attr_name: String - attribute name to include from the parent, **at least one must be defined**
          *
          * @param name Array<out String>
          */
@@ -69,7 +69,7 @@ class ParentEntityType(
          *  exclude("attr_name", "attr_name" ...)
          * ...
          * ```
-         * * attr_name: String - attribute name to include from parent, **at least one must be defined**
+         * * attr_name: String - attribute name to include from the parent, **at least one must be defined**
          *
          * @param name Array<out String>
          */

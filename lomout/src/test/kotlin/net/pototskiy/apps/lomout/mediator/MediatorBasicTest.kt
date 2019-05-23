@@ -1,14 +1,16 @@
 package net.pototskiy.apps.lomout.mediator
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.config.mediator.PipelineDataCollection
+import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
+import net.pototskiy.apps.lomout.api.database.EntityLongs
 import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.DoubleType
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
@@ -16,18 +18,24 @@ import net.pototskiy.apps.lomout.api.entity.LongType
 import net.pototskiy.apps.lomout.api.entity.StringType
 import net.pototskiy.apps.lomout.api.entity.get
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
+import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.database.initDatabase
 import net.pototskiy.apps.lomout.loader.DataLoader
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
+import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.alias
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
+import java.io.File
 
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
@@ -39,11 +47,16 @@ internal class MediatorBasicTest {
     @Test
     internal fun complexBasicTest() {
         val config = createConfiguration()
+        PluginContext.config = config
+        PluginContext.entityTypeManager = config.entityTypeManager
+        PluginContext.scriptFile = File("no-file.conf.kts")
+
         System.setProperty("mediation.line.cache.size", "4")
         initDatabase(config.database, typeManager)
         transaction { DbEntityTable.deleteAll() }
         DataLoader.load(config)
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
+        Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
         DataMediator.mediate(config)
         val entities = DbEntity.getEntities(typeManager["import-data"], true)
         val entities1 = DbEntity.getEntities(typeManager["entity1"], true)
@@ -148,7 +161,7 @@ internal class MediatorBasicTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     input {
                         entity("entity1") {
                             filter {
@@ -180,7 +193,53 @@ internal class MediatorBasicTest {
                         attribute<DoubleType>("corrected_amount")
                     }
                     pipeline {
-                        classifier { entities: PipelineDataCollection ->
+                        classifier { element ->
+                            val entityOneAlias = DbEntityTable.alias("entityOne")
+                            val entityTwoAlias = DbEntityTable.alias("entityTwo")
+                            val skuOneAlias = EntityLongs.alias("skuOne")
+                            val skuTwoAlias = EntityLongs.alias("skuTwo")
+                            val entityOneType = entityTypeManager["entity1"]
+                            val entityTwoType = entityTypeManager["entity2"]
+                            val partnerEntityType = when (element.ids[0].type) {
+                                entityOneType -> entityTwoType
+                                else -> entityOneType
+                            }
+
+                            val v = transaction {
+                                entityOneAlias
+                                    .join(
+                                        skuOneAlias,
+                                        JoinType.INNER,
+                                        entityOneAlias[DbEntityTable.id],
+                                        skuOneAlias[EntityLongs.owner],
+                                        additionalConstraint = { skuOneAlias[EntityLongs.code] eq "sku" })
+                                    .join(
+                                        skuTwoAlias,
+                                        JoinType.INNER,
+                                        skuOneAlias[EntityLongs.value],
+                                        skuTwoAlias[EntityLongs.value],
+                                        additionalConstraint = { skuTwoAlias[EntityLongs.code] eq "sku" }
+                                    )
+                                    .join(entityTwoAlias,
+                                        JoinType.INNER,
+                                        skuTwoAlias[EntityLongs.owner],
+                                        entityTwoAlias[DbEntityTable.id],
+                                        additionalConstraint = { entityTwoAlias[DbEntityTable.entityType] eq partnerEntityType }
+                                    )
+                                    .slice(entityOneAlias[DbEntityTable.id], entityTwoAlias[DbEntityTable.id])
+                                    .select {
+                                        (entityOneAlias[DbEntityTable.id] eq element.ids[0].id) and
+                                                (entityOneAlias[DbEntityTable.id] neq entityTwoAlias[DbEntityTable.id])
+                                    }
+                                    .toList()
+                                    .map {
+                                        listOf(
+                                            it[entityOneAlias[DbEntityTable.id]],
+                                            it[entityTwoAlias[DbEntityTable.id]]
+                                        )
+                                    }
+                            }
+                            val entities = element.entities
                             // start test case for pipeline data collection
                             val flag1 = try {
                                 entities["unknown"]
@@ -191,10 +250,12 @@ internal class MediatorBasicTest {
                             val flag2 = entities.getEntityOrNull("unknown") == null &&
                                     entities.getEntityOrNull("entity1") != null
                             // finish test case for pipeline data collection
-                            if (entities[0]["sku"]?.value == entities[1]["sku"]?.value && flag1 && flag2) {
-                                Pipeline.CLASS.MATCHED
+                            if (v.isNotEmpty() && element.ids[0].type == entityOneType && flag1 && flag2) {
+                                element.match(ClassifierElement.ElementID(entityTwoType, v[0][1]))
+                            } else if (v.isNotEmpty()) {
+                                element.skip()
                             } else {
-                                Pipeline.CLASS.UNMATCHED
+                                element.mismatch()
                             }
                         }
                         pipeline(Pipeline.CLASS.MATCHED) {
@@ -208,11 +269,12 @@ internal class MediatorBasicTest {
                             }
                         }
                         pipeline(Pipeline.CLASS.UNMATCHED) {
-                            classifier { entities ->
+                            classifier {
+                                val entities = it.entities
                                 if (entities[0].entity.entityType.name == "entity2") {
-                                    Pipeline.CLASS.MATCHED
+                                    it.match()
                                 } else {
-                                    Pipeline.CLASS.UNMATCHED
+                                    it.mismatch()
                                 }
                             }
                             assembler { target, entities ->
@@ -226,7 +288,7 @@ internal class MediatorBasicTest {
                         }
                     }
                 }
-                unionProductionLine {
+                productionLine {
                     input {
                         entity("entity1") {
                             filter {
@@ -258,11 +320,12 @@ internal class MediatorBasicTest {
                         attribute<DoubleType>("corrected_amount")
                     }
                     pipeline {
-                        classifier { entities: PipelineDataCollection ->
+                        classifier {
+                            val entities = it.entities
                             if (entities[0]["sku"]?.value in listOf(21L, 22L, 1L, 2L)) {
-                                Pipeline.CLASS.MATCHED
+                                it.match()
                             } else {
-                                Pipeline.CLASS.UNMATCHED
+                                it.mismatch()
                             }
                         }
                         assembler { target, entities ->

@@ -7,13 +7,13 @@ import kotlin.reflect.KClass
  */
 interface EntityAttributeManagerInterface {
     /**
-     * Create attribute
+     * Create an attribute
      *
-     * @param T Type The attribute type
-     * @param name String The attribute name
-     * @param typeClass KClass<out T> The attribute type class
-     * @param block Builder<T>.() -> Unit The attribute builder
-     * @return Attribute<T>
+     * @param T The attribute type
+     * @param name The attribute name
+     * @param typeClass The attribute type class
+     * @param block The attribute builder
+     * @return The attribute
      */
     fun <T : Type> createAttribute(
         name: String,
@@ -41,9 +41,9 @@ interface EntityAttributeManagerInterface {
     /**
      * Attribute builder class
      *
-     * @param T : Type The attribute class
-     * @property name String The attribute name
-     * @property typeClass KClass<out T> The attribute type class
+     * @param T The attribute class
+     * @property name The attribute name
+     * @property typeClass The attribute type class
      * @constructor
      */
     abstract class Builder<T : Type>(
@@ -65,7 +65,7 @@ interface EntityAttributeManagerInterface {
         abstract fun nullable(nullable: Boolean?)
 
         /**
-         * Mark attribute as auto created one
+         * Mark the attribute as auto created one
          *
          * @param auto Boolean?
          */

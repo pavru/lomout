@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 /**
  * Exposed entity to save attribute values
  *
- * @param V : Comparable<V> Attribute value type
+ * @param V The attribute value type
  * @constructor
  */
 abstract class AttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity(id) {
@@ -21,7 +21,7 @@ abstract class AttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity
         set(value) = (klass.table as AttributeTable<V>).owner.setValue(this, ::owner, value)
         get() = (klass.table as AttributeTable<V>).owner.getValue(this, ::owner)
     /**
-     * Index of value in list type attribute, -1 - not list type
+     * Index of value in list type attribute, -1 — not list type
      */
     @Suppress("UNCHECKED_CAST")
     var index: Int
@@ -61,7 +61,7 @@ abstract class AttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity
     fun setValueWithTypeCheck(value: Type) {
         val klass = this::class.supertypes[0].arguments[0].type?.classifier
         if (!value.isSingle() || (klass is KClass<*> && !klass.isInstance(value.value))) {
-            throw AppDataException("Value can not be assigned to attribute, types are incompatible")
+            throw AppDataException("Value cannot be assigned to attribute, types are incompatible")
         }
         @Suppress("UNCHECKED_CAST")
         this.value = value.value as V

@@ -24,10 +24,10 @@ import org.joda.time.DateTime
 /**
  * Wrap Any kotlin value to [Type].
  *
- * @param attribute AnyTypeAttribute The attribute for which value is wrapped
- * @param value Any? The value to wrap
- * @return Type? The wrapped value
- * @throws AppDataException The value can not be wrapped to [Type]
+ * @param attribute The destination attribute
+ * @param value The value to wrap
+ * @return The wrapped value
+ * @throws AppDataException The value cannot be wrapped to [Type]
  */
 @Suppress("ComplexMethod")
 fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
@@ -64,5 +64,5 @@ fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
         }
         AttributeListType::class -> (value as? Map<String, Cell>)?.let { AttributeListType(it) }
         else -> throw AppDataException("Unexpected type<${attribute.valueType.simpleName}>")
-    } ?: throw AppDataException("Can not wrap value to ${attribute.valueType.simpleName}")
+    } ?: throw AppDataException("Cannot wrap value to ${attribute.valueType.simpleName}")
 }

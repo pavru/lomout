@@ -7,11 +7,11 @@ import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
 /**
  * Excel workbook source file
  *
- * @param T : org.apache.poi.ss.usermodel.Workbook
- * @property workbook T
- * @property forInput Boolean
- * @property name String
- * @property type WorkbookType
+ * @param T Workbook implementation type
+ * @property workbook POI workbook
+ * @property forInput Read only workbook
+ * @property name Workbook name
+ * @property type Workbook type
  * @constructor
  */
 class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
@@ -33,7 +33,7 @@ class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
         ExcelSheet(workbook.getSheet(sheet))
 
     /**
-     * Get workbook sheet by index
+     * Get workbook sheet by the index
      *
      * @param sheet Int The sheet index, zero based
      * @return ExcelSheet Sheet
@@ -42,10 +42,10 @@ class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
         ExcelSheet(workbook.getSheetAt(sheet))
 
     /**
-     * Check if workbook has sheet
+     * Check if workbook has a sheet
      *
      * @param sheet String The sheet name
-     * @return Boolean true - sheet exists, false - no sheet in workbook
+     * @return Boolean true — sheet exists, false — no sheet in the workbook
      */
     override fun hasSheet(sheet: String): Boolean {
         return this.any { it.name == sheet }
@@ -72,9 +72,9 @@ class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
     }
 
     /**
-     * Insert new sheet into excel workbook
+     * Insert a new sheet into the workbook
      *
-     * @param sheet String
+     * @param sheet The sheet name
      * @return Sheet
      */
     override fun insertSheet(sheet: String): Sheet {

@@ -29,7 +29,7 @@ class ExcelSheet(private val sheet: org.apache.poi.ss.usermodel.Sheet) : Sheet {
         get() = ExcelWorkbook(sheet.workbook)
 
     /**
-     * Get sheet row by index
+     * Get sheet row by the index
      *
      * @param row Int The row number (index)
      * @return ExcelRow? The row or null

@@ -38,7 +38,7 @@ abstract class DbEntityClass(
     private val myTable by lazy { super.table as DbEntityTable }
 
     /**
-     * Load entities from DB
+     * Load entities from the DB
      *
      * @param entityType EntityType The entity type
      * @param withAttributes Boolean True load with attributes
@@ -65,7 +65,7 @@ abstract class DbEntityClass(
      *
      * @param entityType EntityType The entity type
      * @param data Map<AnyTypeAttribute, Type?> The attribute-value pairs
-     * @param onlyKeys Boolean True - use only key attributes
+     * @param onlyKeys Boolean True — use only key attributes
      * @return List<DbEntity>
      */
     fun getEntitiesByAttributes(
@@ -154,7 +154,7 @@ abstract class DbEntityClass(
     }
 
     /**
-     * Remove entities from DB. Only entities that absent more than max absent days are removed.
+     * Remove entities from the DB. Only entities that absent more than max absent days will be removed.
      *
      * @param entityType EntityType The entity type
      * @param maxAge Int The maximum day of absent
@@ -205,6 +205,6 @@ fun equalsBuild(column: Column<*>, value: Type): Expression<Boolean> =
         is BooleanColumnType -> Op.build { (column as Column<Boolean>) eq (value.value as Boolean) }
         is DateColumnType -> Op.build { (column as Column<DateTime>) eq (value.value as DateTime) }
         else -> throw AppDatabaseException(
-            "Can not build equals operator for column type ${column.columnType.sqlType()}"
+            "Cannot build equals operator for column type ${column.columnType.sqlType()}"
         )
     }

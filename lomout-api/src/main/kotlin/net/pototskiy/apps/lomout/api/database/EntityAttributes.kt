@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package net.pototskiy.apps.lomout.api.database
 
 import org.jetbrains.exposed.dao.EntityID
@@ -19,6 +21,12 @@ object EntityVarchars : AttributeTable<String>(
     DbEntityTable,
     VarCharColumnType(VARCHAR_LENGTH)
 )
+
+val StringAttrTab = EntityVarchars
+val StringAttrId = EntityVarchars.id
+val StringAttrOwner = EntityVarchars.owner
+val StringAttrCode = EntityVarchars.code
+val StringAttrValue = EntityVarchars.value
 
 /**
  * String, StringList attribute Exposed entity
@@ -44,6 +52,12 @@ object EntityLongs : AttributeTable<Long>(
     LongColumnType()
 )
 
+val LongAttrTab = EntityLongs
+val LongAttrId = EntityLongs.id
+val LongAttrOwner = EntityLongs.owner
+val LongAttrCode = EntityLongs.code
+val LongAttrValue = EntityLongs.value
+
 /**
  * Long, LongList attribute Exposed entity
  *
@@ -65,6 +79,12 @@ object EntityDoubles : AttributeTable<Double>(
     DbEntityTable,
     DoubleColumnType()
 )
+
+val DoubleAttrTab = EntityDoubles
+val DoubleAttrId = EntityDoubles.id
+val DoubleAttrOwner = EntityDoubles.owner
+val DoubleAttrCode = EntityDoubles.code
+val DoubleAttrValue = EntityDoubles.value
 
 /**
  * Double, DoubleList attribute Exposed entity
@@ -90,6 +110,12 @@ object EntityBooleans : AttributeTable<Boolean>(
     BooleanColumnType()
 )
 
+val BooleanAttrTab = EntityBooleans
+val BooleanAttrId = EntityBooleans.id
+val BooleanAttrOwner = EntityBooleans.owner
+val BooleanAttrCode = EntityBooleans.code
+val BooleanAttrValue = EntityBooleans.value
+
 /**
  * Boolean, BooleanList Exposed entity
  *
@@ -114,6 +140,12 @@ object EntityDateTimes : AttributeTable<DateTime>(
     DateColumnType(true)
 )
 
+val DateTimeAttrTab = EntityDateTimes
+val DateTimeAttrId = EntityDateTimes.id
+val DateTimeAttrOwner = EntityDateTimes.owner
+val DateTimeAttrCode = EntityDateTimes.code
+val DateTimeAttrValue = EntityDateTimes.value
+
 /**
  * DateTime, DateTimeList Exposed entity
  *
@@ -137,6 +169,12 @@ object EntityTexts : AttributeTable<String>(
     DbEntityTable,
     TextColumnType()
 )
+
+val TextAttrTab = EntityTexts
+val TextAttrId = EntityTexts.id
+val TextAttrOwner = EntityTexts.owner
+val TextAttrCode = EntityTexts.code
+val TextAttrValue = EntityTexts.value
 
 /**
  * Text attribute Exposed entity

@@ -10,7 +10,7 @@ import kotlin.reflect.full.createInstance
 /**
  * Abstract attribute writer
  *
- * @param T : Type The value to write type
+ * @param T The value to write type
  */
 sealed class AttributeWriter<T : Type> {
     /**
@@ -31,7 +31,7 @@ sealed class AttributeWriter<T : Type> {
 }
 
 /**
- * Attribute writer with plugin
+ * Attribute writer with a plugin
  *
  * @param T Type The value to write type
  * @property pluginClass KClass<out AttributeWriterPlugin<T>> The plugin class
@@ -46,8 +46,8 @@ open class AttributeWriterWithPlugin<T : Type>(
 /**
  * Attribute writer with function
  *
- * @param T : Type The value type to write
- * @property function [AttributeWriterFunction] The writer function
+ * @param T The value type to write
+ * @property function The writer function
  * @constructor
  */
 open class AttributeWriterWithFunction<T : Type>(

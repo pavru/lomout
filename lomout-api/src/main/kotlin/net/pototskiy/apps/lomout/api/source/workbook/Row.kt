@@ -24,7 +24,7 @@ interface Row : Iterable<Cell?> {
     fun countCell(): Int
 
     /**
-     * Get cell by index
+     * Get cell by the index
      *
      * @param column Int The cell index(column), zero base
      * @return Cell?
@@ -32,7 +32,7 @@ interface Row : Iterable<Cell?> {
     operator fun get(column: Int): Cell?
 
     /**
-     * Insert cell in row by index
+     * Insert cell in row by the index
      *
      * @param column Int The cell index(column), zero based
      * @return Cell The inserted cell

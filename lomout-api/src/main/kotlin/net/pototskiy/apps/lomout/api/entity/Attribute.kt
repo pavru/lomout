@@ -18,20 +18,20 @@ import kotlin.reflect.KClass
 /**
  * Entity attribute
  *
- * @param T : Type The attribute type
- * @property name String The attribute name
- * @property valueType KClass<out T> The class of attribute type
- * @property key Boolean Key attribute indicator
- * @property nullable Boolean Nullable attribute indicator
- * @property auto Boolean The attribute create automatically from source analysis
- * @property reader AttributeReader<out T> The attribute reader
- * @property writer AttributeWriter<out T> The attribute write
- * @property builder AttributeBuilder<out T>? The attribute builder
- * @property manager EntityAttributeManagerInterface The owner entity type manager
- * @property owner EntityType The owner entity type
- * @property isAssigned Boolean Is assigned to entity type
- * @property fullName String The attribute full name type_name:attr_name
- * @property isSynthetic Boolean Is synthetic attribute, has builder
+ * @param T The attribute type
+ * @property name The attribute name
+ * @property valueType The class of attribute type
+ * @property key Key attribute indicator
+ * @property nullable Nullable attribute indicator
+ * @property auto The attribute create automatically from source analysis
+ * @property reader The attribute reader
+ * @property writer The attribute write
+ * @property builder The attribute builder
+ * @property manager The owner entity type manager
+ * @property owner The owner entity type
+ * @property isAssigned Is assigned to entity type
+ * @property fullName The attribute full name type_name:attr_name
+ * @property isSynthetic Is a synthetic attribute, has the builder
  * @constructor
  */
 abstract class Attribute<T : Type>(
@@ -99,15 +99,15 @@ abstract class Attribute<T : Type>(
     /**
      * Attribute builder class
      *
-     * @param T : Type The attribute type
-     * @property helper ConfigBuildHelper The config builder helper
-     * @property name String The attribute name
-     * @property typeClass KClass<out T> The class of attribute type
-     * @property key Boolean Key attribute indicator
-     * @property nullable Boolean Nullable attribute indicator
-     * @property builder AttributeBuilder<out T>? The attribute builder
-     * @property reader AttributeReader<out T>? The attribute reader
-     * @property writer AttributeWriter<out T>? The attribute writer
+     * @param T The attribute type
+     * @property helper The config builder helper
+     * @property name The attribute name
+     * @property typeClass The class of attribute type
+     * @property key Key attribute indicator
+     * @property nullable Nullable attribute indicator
+     * @property builder The attribute builder
+     * @property reader The attribute reader
+     * @property writer The attribute writer
      * @constructor
      */
     @Suppress("TooManyFunctions")
@@ -141,7 +141,7 @@ abstract class Attribute<T : Type>(
          *  key()
          * ...
          * ```
-         * * key() - mark attribute as key one, *optional*, **but at least one attribute must be key one**
+         * * key() — mark attribute as key one, *optional*, **but at least one attribute must be key one**
          *
          */
         fun key() = this.let { key = true }
@@ -154,12 +154,12 @@ abstract class Attribute<T : Type>(
          *  nullable()
          * ...
          * ```
-         * * nullable() - mark attribute as nullable, *optional*
+         * * nullable() — mark attribute as nullable, *optional*
          */
         fun nullable() = this.let { nullable = true }
 
         /**
-         * Inline builder function, only one builder is allowed
+         * Inline builder function, attribute can have only one builder
          *
          * ```
          * ...
@@ -177,7 +177,7 @@ abstract class Attribute<T : Type>(
         }
 
         /**
-         * Attribute builder with plugin, only one builder is allowed
+         * Attribute builder with a plugin, attribute can have only one builder
          *
          * ```
          * ...
@@ -186,10 +186,10 @@ abstract class Attribute<T : Type>(
          *  }
          * ...
          * ```
-         * * [BuilderPluginClass][AttributeBuilderPlugin] - builder plugin class, **mandatory**
+         * * [BuilderPluginClass][AttributeBuilderPlugin] — builder plugin class, **mandatory**
          *
-         * @param P AttributeBuilderPlugin The builder plugin
-         * @param block P.() -> Unit
+         * @param P The builder plugin
+         * @param block
          */
         @JvmName("builder__plugin")
         @Generated
@@ -199,7 +199,7 @@ abstract class Attribute<T : Type>(
         }
 
         /**
-         * Inline attribute reader, only one reader is allowed
+         * Inline attribute reader, attribute can have only one reader
          *
          * ```
          * ...
@@ -208,8 +208,8 @@ abstract class Attribute<T : Type>(
          *  }
          * ...
          * ```
-         * * [attribute][Attribute] - attribute for which value is read
-         * * [cell][net.pototskiy.apps.lomout.api.source.workbook.Cell] - cell to read value
+         * * [attribute][Attribute] — destination attribute for the reader
+         * * [cell][net.pototskiy.apps.lomout.api.source.workbook.Cell] — cell to read value
          *
          * @see AttributeReaderFunction
          * @param block AttributeReaderFunction<T>
@@ -219,7 +219,7 @@ abstract class Attribute<T : Type>(
         }
 
         /**
-         * Attribute reader with plugin, only one reader is allowed
+         * Attribute reader with a plugin, attribute can have only one reader
          *
          * ```
          * ...
@@ -228,9 +228,9 @@ abstract class Attribute<T : Type>(
          *  }
          * ...
          * ```
-         * * [AttributeReaderPlugin][AttributeReaderPlugin] - reader plugin class, **mandatory**
+         * * [AttributeReaderPlugin][AttributeReaderPlugin] — reader plugin class, **mandatory**
          *
-         * @param block P.() -> Unit
+         * @param block
          */
         @Generated
         inline fun <reified P : AttributeReaderPlugin<T>> reader(noinline block: P.() -> Unit = {}) {
@@ -239,7 +239,7 @@ abstract class Attribute<T : Type>(
         }
 
         /**
-         * Inline attribute writer function, only one writer is allowed
+         * Inline attribute writer function, attribute can have only one writer
          *
          * ```
          * ...
@@ -248,8 +248,8 @@ abstract class Attribute<T : Type>(
          *  }
          * ...
          * ```
-         * * [value][Type] - value to write to the cell
-         * * [cell][net.pototskiy.apps.lomout.api.source.workbook.Cell] - cell to write value
+         * * [value][Type] — value to write to the cell
+         * * [cell][net.pototskiy.apps.lomout.api.source.workbook.Cell] — cell to write value
          *
          * @see AttributeWriterFunction
          * @param block AttributeWriterFunction<T>
@@ -259,7 +259,7 @@ abstract class Attribute<T : Type>(
         }
 
         /**
-         * Attribute writer with plugin, only one writer is allowed
+         * Attribute writer with a plugin, attribute can have only one writer
          *
          * ```
          * ...
@@ -268,9 +268,9 @@ abstract class Attribute<T : Type>(
          *  }
          * ...
          * ```
-         * * [WriterPluginClass][AttributeWriterPlugin] - writer plugin class, **mandatory**
+         * * [WriterPluginClass][AttributeWriterPlugin] — writer plugin class, **mandatory**
          *
-         * @param block P.() -> Unit
+         * @param block The writer options
          */
         @Generated
         inline fun <reified P : AttributeWriterPlugin<T>> writer(noinline block: P.() -> Unit = {}) {
@@ -299,13 +299,13 @@ abstract class Attribute<T : Type>(
 
         private fun validateKeyIsNotNullable() {
             if (key && nullable) {
-                throw AppAttributeException("Key attribute can not be nullable")
+                throw AppAttributeException("Key attribute cannot be nullable")
             }
         }
 
         private fun validateKeyIsNotList() {
             if (key && (typeClass.isList() || builder != null)) {
-                throw AppAttributeException("Key attribute can not have list type or builder")
+                throw AppAttributeException("Key attribute cannot have list type or builder")
             }
         }
     }

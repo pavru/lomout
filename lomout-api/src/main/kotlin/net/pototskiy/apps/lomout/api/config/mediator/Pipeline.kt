@@ -2,6 +2,9 @@ package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
+import net.pototskiy.apps.lomout.api.config.pipeline.PipelineClassifier
+import net.pototskiy.apps.lomout.api.config.pipeline.PipelineClassifierWithFunction
+import net.pototskiy.apps.lomout.api.config.pipeline.PipelineClassifierWithPlugin
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerFunction
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
 import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierFunction
@@ -11,11 +14,11 @@ import java.util.*
 /**
  * Pipeline configuration
  *
- * @property dataClass List<CLASS> The pipeline class, which entities are accepted
- * @property classifier PipelineClassifier The pipeline classifier
- * @property pipelines List<Pipeline> The child pipelines
- * @property assembler PipelineAssembler? The pipeline assembler
- * @property pipelineID String The internal unique pipeline id
+ * @property dataClass The pipeline class, which entities are accepted
+ * @property classifier The pipeline classifier
+ * @property pipelines The child pipelines
+ * @property assembler The pipeline assembler
+ * @property pipelineID The internal unique pipeline id
  * @constructor
  */
 data class Pipeline(
@@ -27,7 +30,7 @@ data class Pipeline(
     /**
      * Internal unique pipeline id
      */
-    val pipelineID = UUID.randomUUID().toString()
+    private val pipelineID = UUID.randomUUID().toString()
 
     /**
      * Pipeline class
@@ -95,7 +98,7 @@ data class Pipeline(
         }
 
         /**
-         * Pipeline classifier with plugin
+         * Pipeline classifier with a plugin
          *
          * ```
          * ...
@@ -107,7 +110,7 @@ data class Pipeline(
          * [ClassifierPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin] - classifier
          *      plugin class
          *
-         * @param block P.() -> Unit
+         * @param block The classifier options
          */
         @JvmName("classifier__plugin")
         inline fun <reified P : PipelineClassifierPlugin> classifier(noinline block: P.() -> Unit = {}) {
@@ -137,7 +140,7 @@ data class Pipeline(
         }
 
         /**
-         * Pipeline assembler with plugin
+         * Pipeline assembler with a plugin
          *
          * ```
          * ...
@@ -149,7 +152,7 @@ data class Pipeline(
          * * [AssemblerPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin] - assembler
          *      plugin class, **mandatory**
          *
-         * @param block P.() -> Unit
+         * @param block The assembler options
          */
         @JvmName("assembler__plugin")
         inline fun <reified P : PipelineAssemblerPlugin> assembler(noinline block: P.() -> Unit = {}) {
@@ -185,7 +188,7 @@ data class Pipeline(
         fun build(): Pipeline {
             return Pipeline(
                 dataClass,
-                classifier ?: PipelineClassifierWithFunction { CLASS.MATCHED },
+                classifier ?: PipelineClassifierWithFunction { it.match() },
                 pipelines,
                 assembler
             )

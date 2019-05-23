@@ -2,7 +2,7 @@
 object Versions {
     const val kotlin = "1.3.31"
     const val dokka = "0.9.18"
-    const val exposed = "0.13.6"
+    const val exposed = "0.13.7"
     val mysql = MysqlVersions(
         connector = "8.0.16"
     )

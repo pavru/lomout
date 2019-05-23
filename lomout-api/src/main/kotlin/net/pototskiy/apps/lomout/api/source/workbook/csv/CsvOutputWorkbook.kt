@@ -46,12 +46,12 @@ class CsvOutputWorkbook(
      *
      * Only one sheet with name *default* can be inserted
      *
-     * @param sheet String The sheet name, should be *default*
-     * @return Sheet The inserted sheet
+     * @param sheet The sheet name, must be *default*
+     * @return The inserted sheet
      */
     override fun insertSheet(sheet: String): Sheet {
         if (sheet != CSV_SHEET_NAME) {
-            throw AppWorkbookException("CSV workbook supports only sheet with name<default>")
+            throw AppWorkbookException("CSV workbook supports only sheet with the name<default>")
         }
         return CsvSheet(this).also { this.sheet = it }
     }
@@ -76,13 +76,13 @@ class CsvOutputWorkbook(
  * Test workbook is instance of [CsvOutputWorkbook]
  *
  * @param workbook CsvWorkbook
- * @throws AppWorkbookException If wrong type
+ * @throws AppWorkbookException Wrong workbook type
  */
 fun checkThatItIsCsvOutputWorkbook(workbook: CsvWorkbook) {
     contract {
         returns() implies (workbook is CsvOutputWorkbook)
     }
     if (workbook !is CsvOutputWorkbook) {
-        throw AppWorkbookException("CSV workbook is not output one")
+        throw AppWorkbookException("CSV workbook is in read only mode")
     }
 }

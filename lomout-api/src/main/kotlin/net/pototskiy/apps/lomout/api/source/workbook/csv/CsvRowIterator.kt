@@ -17,13 +17,14 @@ class CsvRowIterator(private val sheet: CsvSheet) : Iterator<CsvRow> {
     private var index = 0
 
     /**
-     * Test sheet has next row
+     * Test if sheet has a next row
+     *
      * @return Boolean
      */
     override fun hasNext(): Boolean = iterator.hasNext()
 
     /**
-     * Get sheet nex row
+     * Get sheet next row
      *
      * @return CsvRow
      */

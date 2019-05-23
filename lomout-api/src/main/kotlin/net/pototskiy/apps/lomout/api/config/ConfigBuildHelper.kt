@@ -27,7 +27,7 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
     fun pushScope(name: String) = scopeStack.push(name)!!
 
     /**
-     * Pop scope from stack
+     * Pop scope from a stack
      *
      * @return String
      */
@@ -53,7 +53,7 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
     /**
      * Config object registrar
      *
-     * @param T : NamedObject
+     * @param T The registrar object type
      * @property register MutableMap<String, MutableList<T>>
      */
     inner class ConfigObjectRegistrar<T : NamedObject> {
@@ -72,7 +72,7 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
         fun register(entity: T) {
             val scope = currentScope()
             if (register[scope]?.any { it.name == entity.name } == true)
-                throw AppConfigException("Object is already defined in scope<$scope>")
+                throw AppConfigException("The scope<$scope> already has the object")
             register.getOrPut(scope) { mutableListOf() }.add(entity)
         }
 
@@ -80,7 +80,7 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
          * Find registered object by name.
          *
          * @param name The object name
-         * @param globalSearch true - search in all scopes, false - search only in current scope
+         * @param globalSearch true — search in all scopes, false — search only in current scope
          * @return T?
          */
         fun findRegistered(name: String, globalSearch: Boolean = false): T? {

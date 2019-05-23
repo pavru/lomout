@@ -23,12 +23,12 @@ fun Double.floorToLong(): Long = floor(this).toLong()
  *
  * @receiver Double
  * @return Long
- * @throws TypeCastException If double value fraction part is not zero
+ * @throws TypeCastException Double value fraction part is not zero
  */
 fun Double.doubleToLong(): Long {
     return if (this.fraction == 0.0) {
         this.floorToLong()
     } else {
-        throw TypeCastException("Double value<$this> has non zero fraction and can not converted to Long")
+        throw TypeCastException("Double value<$this> has non-zero fraction and cannot be converted to Long")
     }
 }

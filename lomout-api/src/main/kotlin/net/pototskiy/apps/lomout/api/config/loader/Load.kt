@@ -53,14 +53,14 @@ data class Load(
         /**
          * Configure header row number, *optional, default: no header*
          *
-         * @param row The row naumber? zero based
+         * @param row The row number, zero based
          */
         fun headersRow(row: Int) {
             headersRow = row
         }
 
         /**
-         * Configure number of rows to skip, *optional, default: 0*. If source has headr row this row will be skipped
+         * Configure number of rows to skip, *optional, default: 0*, if source has heard row this row will be skipped
          *
          * @param rows The number of rows (including header row)
          */
@@ -69,7 +69,7 @@ data class Load(
         }
 
         /**
-         * Configure how long to keep removed entity in DB
+         * Configure how long to keep removed entity in the DB
          *
          * @param days Days to keep
          */
@@ -89,9 +89,9 @@ data class Load(
          *  }
          * ...
          * ```
-         * * source - **at least one source must be defined**
+         * * source — **at least one source must be defined**
          *
-         * @param block SourceDataCollection.Builder.() -> Unit
+         * @param block Sources configuration
          */
         fun fromSources(block: SourceDataCollection.Builder.() -> Unit) {
             this.sources = SourceDataCollection.Builder(helper).apply(block).build()
@@ -113,7 +113,7 @@ data class Load(
          * * main - define main field set, **mandatory**, only one is allowed
          * * extra - define extra field set, *optional*
          *
-         * @param block FieldSetCollection.Builder.() -> Unit
+         * @param block Source fields definition
          */
         fun sourceFields(block: FieldSetCollection.Builder.() -> Unit) {
             fieldSets = FieldSetCollection.Builder(

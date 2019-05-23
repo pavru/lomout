@@ -21,10 +21,10 @@ import kotlin.contracts.contract
 /**
  * Field set
  *
- * @property name String The set name
- * @property mainSet Boolean The flag of main set
- * @property fieldToAttr FieldAttributeMap The field to attribute map
- * @property fields FieldCollection The fields collection
+ * @property name The set name
+ * @property mainSet The flag of main set
+ * @property fieldToAttr The field to attribute map
+ * @property fields Fields collection
  * @constructor
  */
 data class FieldSet(
@@ -65,10 +65,10 @@ data class FieldSet(
         private var lastField: Field? = null
 
         /**
-         * Define field.
+         * Define a field.
          *
          * Fields of source without headers must have column definition.
-         * Pattern is used to validate field value and determinate which field set must be used for row.
+         * Pattern to validate field value and determinate, which field set must be used for row.
          *
          * ```
          * ...
@@ -81,7 +81,7 @@ data class FieldSet(
          * ```
          *
          * @param name The field name
-         * @param block Field.Builder.() -> Unit
+         * @param block The field definition
          * @return Field
          */
         @ConfigDsl
@@ -113,9 +113,9 @@ data class FieldSet(
         }
 
         /**
-         * Define attribute which is used for field
+         * Define an attribute for field
          *
-         * If name is omitted field name is used for attribute
+         * Attribute name equals to field name it's not specified
          *
          * ```
          * ...
@@ -127,8 +127,8 @@ data class FieldSet(
          * ```
          *
          * @param name The attribute name
-         * @param block Attribute.Builder<T>.() -> Unit
-         * @return Attribute<*>
+         * @param block The attribute definition
+         * @return Attribute
          */
         @Generated
         @ConfigDsl
@@ -143,7 +143,7 @@ data class FieldSet(
             ).apply(block).build()
 
         /**
-         * Reference to attribute that is used for field
+         * Reference to attribute that is used for the field
          *
          * ```
          * ...
@@ -161,7 +161,7 @@ data class FieldSet(
          * Operation to map field to attribute
          *
          * @receiver Field
-         * @param attribute The The field related attribute
+         * @param attribute The field related attribute
          */
         @ConfigDsl
         infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
@@ -244,7 +244,7 @@ data class FieldSet(
     }
 
     /**
-     * Helper class for attribute with name
+     * Helper class for the attribute with the name
      *
      * @property name String The attribute name
      * @constructor

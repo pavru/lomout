@@ -32,10 +32,10 @@ sealed class PipelineAssembler {
 }
 
 /**
- * Pipeline assembler with plugin
+ * Pipeline assembler with a plugin
  *
  * @property pluginClass KClass<out PipelineAssemblerPlugin> The assembler plugin class
- * @property options PipelineAssemblerPlugin.() -> Unit The plugin options
+ * @property options The plugin options
  * @constructor
  */
 class PipelineAssemblerWithPlugin(

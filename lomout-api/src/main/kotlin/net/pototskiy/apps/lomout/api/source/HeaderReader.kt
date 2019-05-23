@@ -10,7 +10,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 /**
  * Read headers from source data files
  *
- * If headers are read from several sources they are validate for compatibility
+ * If headers are read from several sources they will be validated for compatibility
  *
  * @param sources SourceDataCollection The sources
  * @param headerRow Int The row index of headers, zero base
@@ -31,8 +31,8 @@ private fun readHeaders(
             sheet[headerRow]?.mapIndexed { c, cell ->
                 if (cell == null || cell.cellType != CellType.STRING) {
                     throw AppConfigException(
-                        "Header row in source<${workbook.name}:${sheet.name}> " +
-                                "has no cell or cell has not string type in column ${c + 1}"
+                        "Header row in the source<${workbook.name}:${sheet.name}> " +
+                                "has no cell or cell is not string type in column ${c + 1}"
                     )
                 }
                 Field(cell.stringValue, c, null, null)

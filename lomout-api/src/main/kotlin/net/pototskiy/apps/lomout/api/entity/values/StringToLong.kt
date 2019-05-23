@@ -19,7 +19,7 @@ fun String.stringToLong(locale: Locale): Long {
     }
     val position = ParsePosition(0)
     val value = format.parse(this.trim(), position)
-        ?: throw ParseException("String can not be parsed to long", position.index)
+        ?: throw ParseException("String cannot be parsed to long", position.index)
     if (position.index != this.trim().length) {
         throw ParseException("String contains extra characters", position.index)
     }

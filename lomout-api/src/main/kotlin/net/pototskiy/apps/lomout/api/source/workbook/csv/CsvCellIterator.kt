@@ -12,7 +12,7 @@ class CsvCellIterator(private val row: CsvRow) : Iterator<CsvCell?> {
     private var index = 0
 
     /**
-     * Test row has nex cell
+     * Test row has next cell
      *
      * @return Boolean
      */

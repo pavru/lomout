@@ -130,7 +130,7 @@ internal class AttributeBuilderTest {
                 nullable()
             }.build()
         }.isInstanceOf(AppAttributeException::class.java)
-            .hasMessageContaining("Key attribute can not be nullable")
+            .hasMessageContaining("Key attribute cannot be nullable")
     }
 
     @Test
@@ -140,7 +140,7 @@ internal class AttributeBuilderTest {
                 key()
             }.build()
         }.isInstanceOf(AppAttributeException::class.java)
-            .hasMessageContaining("Key attribute can not have list type or builder")
+            .hasMessageContaining("Key attribute cannot have list type or builder")
         assertThatThrownBy {
             Attribute.Builder(helper, "test", LongListType::class).apply {
                 key()
@@ -149,7 +149,7 @@ internal class AttributeBuilderTest {
                 }
             }.build()
         }.isInstanceOf(AppAttributeException::class.java)
-            .hasMessageContaining("Key attribute can not have list type or builder")
+            .hasMessageContaining("Key attribute cannot have list type or builder")
         assertThatThrownBy {
             Attribute.Builder(helper, "test", LongType::class).apply {
                 key()
@@ -158,7 +158,7 @@ internal class AttributeBuilderTest {
                 }
             }.build()
         }.isInstanceOf(AppAttributeException::class.java)
-            .hasMessageContaining("Key attribute can not have list type or builder")
+            .hasMessageContaining("Key attribute cannot have list type or builder")
     }
 
     private fun createCsvCell(value: String): CsvCell {

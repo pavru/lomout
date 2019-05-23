@@ -90,7 +90,7 @@ data class Field(
          *  column(number)
          * ...
          * ```
-         * * number - field column number, zero based
+         * * number — field column number, zero based
          *
          * @param column Int
          */
@@ -106,7 +106,7 @@ data class Field(
          *  pattern(regex)
          * ...
          * ```
-         * * regex - regular expression string
+         * * regex — regular expression string
          *
          * @param regex String
          */
@@ -122,7 +122,7 @@ data class Field(
          *  parent(name)
          * ...
          * ```
-         * * name - name of parent field, must be defined before
+         * * name — name of parent field, must be defined before
          *
          * @param parent String
          */

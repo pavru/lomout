@@ -10,13 +10,13 @@ import kotlin.reflect.full.createInstance
 /**
  * Abstract attribute reader
  *
- * @param T : Type The reader return type
+ * @param T The reader return type
  */
 sealed class AttributeReader<T : Type> {
     /**
      * Reader function
      *
-     * @param attribute Attribute<out T> The attribute for which value is read
+     * @param attribute The destination attribute
      * @param input Cell The cell to read value
      * @return T?
      */
@@ -32,9 +32,9 @@ sealed class AttributeReader<T : Type> {
 }
 
 /**
- * Attribute reader with plugin
+ * Attribute reader with a plugin
  *
- * @param T : Type The reader return type
+ * @param T The reader return type
  * @constructor
  */
 open class AttributeReaderWithPlugin<T : Type>(
@@ -51,7 +51,7 @@ open class AttributeReaderWithPlugin<T : Type>(
 /**
  * Attribute reader with function
  *
- * @param T : Type The reader return type
+ * @param T The reader return type
  * @constructor
  */
 open class AttributeReaderWithFunction<T : Type>(

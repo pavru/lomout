@@ -112,7 +112,7 @@ class EntityLoader(
             when (emptyRowBehavior) {
                 EmptyRowBehavior.STOP -> {
                     log.info(
-                        "Workbook processing is stopped according configuration({}:{}:{})",
+                        "Stop workbook processing according to configuration:{})",
                         row.sheet.workbook.name,
                         row.sheet.name,
                         row.rowNum + 1
@@ -121,7 +121,7 @@ class EntityLoader(
                 }
                 EmptyRowBehavior.IGNORE -> {
                     log.info(
-                        "Empty row is skipped according configuration({}:{}:{})",
+                        "Skip empty row according to configuration({}:{}:{})",
                         row.sheet.workbook.name,
                         row.sheet.name,
                         row.rowNum + 1
@@ -181,7 +181,7 @@ class EntityLoader(
             @Suppress("UNCHECKED_CAST")
             data[attr] = (attr.reader as AttributeReader<Type>).read(attr, cell).also {
                 if (it == null && (!attr.nullable || attr.key)) {
-                    throw AppCellDataException("Attribute<${attr.name}> is not nullable and can not be null")
+                    throw AppCellDataException("Attribute<${attr.name}> is not nullable and cannot be null")
                 }
             }
         }

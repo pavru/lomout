@@ -38,7 +38,7 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
         private val fieldSets = mutableListOf<FieldSet>()
 
         /**
-         * Define main field set, **only one main set is allowed**
+         * Define main field set, **field set can have only one main set**
          *
          * ```
          * ...
@@ -51,8 +51,8 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
          * ...
          * ```
          *
-         * @param name String The field set name
-         * @param block FieldSet.Builder.() -> Unit
+         * @param name The field set name
+         * @param block The main set definition
          * @return Boolean
          */
         @ConfigDsl
@@ -83,8 +83,8 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
          * ...
          * ```
          *
-         * @param name String The field set
-         * @param block FieldSet.Builder.() -> Unit
+         * @param name The field set
+         * @param block The extra field set definition
          * @return Boolean
          */
         @ConfigDsl

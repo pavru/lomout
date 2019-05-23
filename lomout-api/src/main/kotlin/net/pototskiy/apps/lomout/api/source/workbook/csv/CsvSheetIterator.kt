@@ -10,7 +10,7 @@ package net.pototskiy.apps.lomout.api.source.workbook.csv
 class CsvSheetIterator(private val workbook: CsvWorkbook) : Iterator<CsvSheet> {
     private var index = 0
     /**
-     * Test if workbook has next sheet
+     * Test if workbook has a next sheet
      *
      * @return Boolean
      */

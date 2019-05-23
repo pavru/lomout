@@ -17,7 +17,7 @@ interface Sheet : Iterable<Row> {
     val workbook: Workbook
 
     /**
-     * Get row by index
+     * Get row by the index
      *
      * @param row Int The row index, zero based
      * @return Row?
@@ -25,7 +25,7 @@ interface Sheet : Iterable<Row> {
     operator fun get(row: Int): Row?
 
     /**
-     * Insert row into sheet by index
+     * Insert row into sheet by the index
      *
      * @param row Int The row index, zero based
      * @return Row

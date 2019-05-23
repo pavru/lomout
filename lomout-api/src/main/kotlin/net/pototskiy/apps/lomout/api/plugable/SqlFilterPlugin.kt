@@ -18,6 +18,6 @@ abstract class SqlFilterPlugin : Plugin() {
 }
 
 /**
- * Function type for inline SQL filters
+ * Function type for an inline SQL filter
  */
 typealias SqlFilterFunction = PluginContextInterface.(Alias<DbEntityTable>) -> Op<Boolean>

@@ -51,8 +51,8 @@ data class Config(
          *  }
          * ...
          * ```
-         * * name - MySql database name, **mandatory**
-         * * [server][DatabaseConfig.Builder.server] - server configuration part, mandatory
+         * * name — MySql database name, **mandatory**
+         * * [server][DatabaseConfig.Builder.server] — server configuration part, mandatory
          *
          * @see DatabaseConfig
          */
@@ -81,13 +81,13 @@ data class Config(
          *  }
          * ...
          * ```
-         * * [files][LoaderConfiguration.Builder.files] - configure source files
-         * * [entities][LoaderConfiguration.Builder.entities] - configure entities that will be loaded
+         * * [files][LoaderConfiguration.Builder.files] — configure source files
+         * * [entities][LoaderConfiguration.Builder.entities] — configure entities that will be loaded
          * * [loadEntity][LoaderConfiguration.Builder.loadEntity]
          *
          * @see LoaderConfiguration
          *
-         * @param block LoaderConfiguration.Builder.() -> Unit
+         * @param block The loader configuration
          */
         @ConfigDsl
         fun loader(block: LoaderConfiguration.Builder.() -> Unit) {
@@ -101,7 +101,7 @@ data class Config(
          *
          * @see MediatorConfiguration
          *
-         * @param block MediatorConfiguration.Builder.() -> Unit
+         * @param block The mediator configuration
          */
         @ConfigDsl
         fun mediator(block: MediatorConfiguration.Builder.() -> Unit) {
@@ -115,7 +115,7 @@ data class Config(
          *
          * @see PrinterConfiguration
          *
-         * @param block PrinterConfiguration.Builder.() -> Unit
+         * @param block The printer configuration
          */
         @ConfigDsl
         fun printer(block: PrinterConfiguration.Builder.() -> Unit) {
@@ -147,14 +147,14 @@ data class Config(
  *      printer {...}
  * }
  * ```
- * * [database][DatabaseConfig] - **mandatory**
- * * [loader][LoaderConfiguration] - optional
- * * [mediator][MediatorConfiguration] - optional
- * * [printer][PrinterConfiguration] - optional
+ * * [database][DatabaseConfig] — **mandatory**
+ * * [loader][LoaderConfiguration] — optional
+ * * [mediator][MediatorConfiguration] — optional
+ * * [printer][PrinterConfiguration] — optional
  *
  * @see Config
  * @receiver Any
- * @param block Config.Builder.() -> Unit
+ * @param block The configuration
  */
 fun Any.config(block: Config.Builder.() -> Unit) {
     val script = (this as? ConfigScript)

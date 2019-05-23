@@ -22,8 +22,8 @@ open class AppException : Exception {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -52,8 +52,8 @@ open class AppDatabaseException : AppException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -82,8 +82,8 @@ open class AppConfigException : AppException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -112,8 +112,8 @@ open class AppEntityTypeException : AppConfigException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -142,8 +142,8 @@ open class AppAttributeException : AppEntityTypeException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -172,8 +172,8 @@ open class AppWorkbookException : AppException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -202,8 +202,8 @@ open class AppSheetException : AppWorkbookException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -232,8 +232,8 @@ open class AppRowException : AppSheetException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -262,8 +262,8 @@ open class AppCellException : AppRowException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -291,8 +291,8 @@ open class AppCellDataException : AppCellException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -300,7 +300,7 @@ open class AppCellDataException : AppCellException {
 }
 
 /**
- * Data/Values (not in cell) related problems
+ * Data/Values (not in the cell) related problems
  */
 @Generated
 open class AppDataException : AppException {
@@ -321,8 +321,8 @@ open class AppDataException : AppException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")
@@ -351,8 +351,8 @@ open class AppPluginException : AppException {
 
     /**
      *
-     * @param message String?
-     * @param cause Throwable?
+     * @param message The message
+     * @param cause The cause
      * @constructor
      */
     @Suppress("unused")

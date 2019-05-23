@@ -53,7 +53,7 @@ data class PrinterOutput(
          * * file - reference to file define in files block, **mandatory**
          * * sheet - sheet name to print result data, **mandatory**
          *
-         * @param block SourceData.Builder.() -> Unit
+         * @param block The file definition
          */
         @ConfigDsl
         fun file(block: SourceData.Builder.() -> Unit) {
@@ -88,7 +88,7 @@ data class PrinterOutput(
          * * [extra][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder.extra] - extra field
          *      set, *optional, 0 or several extra set are allowed*
          *
-         * @param block FieldSetCollection.Builder.() -> Unit
+         * @param block Output fields definition
          */
         @ConfigDsl
         fun outputFields(block: FieldSetCollection.Builder.() -> Unit) {

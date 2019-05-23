@@ -14,7 +14,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Sheet
  */
 class ExcelRow(private val row: org.apache.poi.ss.usermodel.Row) : Row {
     /**
-     * Insert new cell in row
+     * Insert a new cell in row
      *
      * @param column Int
      * @return Cell
@@ -24,7 +24,7 @@ class ExcelRow(private val row: org.apache.poi.ss.usermodel.Row) : Row {
     }
 
     /**
-     * Get cell by index, or create empty if it does not exist
+     * Get cell by the index, or create empty if it does not exist
      *
      * @param column Int
      * @return Cell

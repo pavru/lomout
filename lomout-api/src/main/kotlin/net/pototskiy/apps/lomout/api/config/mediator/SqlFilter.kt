@@ -31,7 +31,7 @@ sealed class SqlFilter {
 }
 
 /**
- * Pipeline input SQL filer with plugin
+ * Pipeline input SQL filer with a plugin
  *
  * @property pluginClass KClass<out SqlFilterPlugin> Filter plugin class
  * @property options SqlFilterPlugin.() The filter options

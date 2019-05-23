@@ -50,7 +50,7 @@ internal class DataLoadingTest {
     }
 
     @Test
-    @DisplayName("There is no any loaded entity")
+    @DisplayName("There is no loaded entity")
     internal fun thereIsNoAnyLoadedEntity() {
         assertThat(DbEntity.getEntities(entityType).count()).isZero()
     }
@@ -119,7 +119,7 @@ internal class DataLoadingTest {
             }
 
             @Test
-            @DisplayName("One entities should be in state CREATED/UPDATED")
+            @DisplayName("One entity should be in state CREATED/UPDATED")
             internal fun createdUpdatedStateTest() {
                 assertThat(DbEntity.getEntities(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED

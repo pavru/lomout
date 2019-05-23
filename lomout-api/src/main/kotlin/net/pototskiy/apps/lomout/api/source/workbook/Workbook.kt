@@ -27,7 +27,7 @@ interface Workbook : Iterable<Sheet>, Closeable {
     operator fun get(sheet: String): Sheet
 
     /**
-     * Get sheet by index
+     * Get sheet by the index
      *
      * @param sheet Int The sheet index, zero based
      * @return Sheet
@@ -35,7 +35,7 @@ interface Workbook : Iterable<Sheet>, Closeable {
     operator fun get(sheet: Int): Sheet
 
     /**
-     * Insert sheet into workbook
+     * Insert sheet into the workbook
      *
      * @param sheet String The sheet name to insert
      * @return Sheet The inserted sheet
@@ -43,7 +43,7 @@ interface Workbook : Iterable<Sheet>, Closeable {
     fun insertSheet(sheet: String): Sheet
 
     /**
-     * Test if workbook has sheet with given name
+     * Test if workbook has a sheet with given name
      *
      * @param sheet String The sheet name
      * @return Boolean

@@ -6,10 +6,10 @@ import java.util.*
 /**
  * Convert string to boolean according to locale
  *
- * @receiver String The boolean value as string
- * @param locale Locale The value locale, supported: en_US, ru_RU
- * @return Boolean
- * @throws ParseException If string can not parsed to boolean
+ * @receiver The boolean value as string
+ * @param locale The value locale, supported: en_US, ru_RU
+ * @return Value
+ * @throws ParseException String cannot be parsed to boolean
  */
 fun String.stringToBoolean(locale: Locale): Boolean {
     val v = this.toLowerCase().trim()
@@ -20,7 +20,7 @@ fun String.stringToBoolean(locale: Locale): Boolean {
     return if (v in booleanString)
         v in booleanTrueString
     else
-        throw ParseException("Value<$this> can not converted to boolean", 0)
+        throw ParseException("Value<$this> cannot be converted to boolean", 0)
 }
 
 private val stringBooleanMap = mapOf(

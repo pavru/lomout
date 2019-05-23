@@ -1,11 +1,13 @@
+import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
+
 class EntityTypeClassifier : PipelineClassifierPlugin() {
     var typeList: List<String> = emptyList()
 
-    override fun classify(entities: PipelineDataCollection): Pipeline.CLASS {
-        return if (entities.any { it.entity.eType.name in typeList }) {
-            Pipeline.CLASS.MATCHED
+    override fun classify(element: ClassifierElement): ClassifierElement {
+        return if (element.entities.any { it.entity.eType.name in typeList }) {
+            element.match()
         } else {
-            Pipeline.CLASS.UNMATCHED
+            element.mismatch()
         }
     }
 }

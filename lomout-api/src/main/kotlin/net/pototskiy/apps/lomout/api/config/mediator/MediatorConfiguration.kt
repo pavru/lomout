@@ -24,30 +24,7 @@ data class MediatorConfiguration(
         private var lines = mutableListOf<ProductionLine>()
 
         /**
-         * Define union production line
-         *
-         * ```
-         * ...
-         *  unionProductionLine {
-         *      input {...}
-         *      output {...}
-         *      pipeline {...}
-         *  }
-         * ...
-         * ```
-         * * [input][ProductionLine.Builder.input] - define input entities, **mandatory**
-         * * [output][ProductionLine.Builder.output] - define new output entity or reference to existing, **mandatory**
-         * * [pipeline][ProductionLine.Builder.pipeline] - define root pipeline of production line, **mandatory**
-         *
-         * @see AbstractLine.LineType
-         * @param block ProductionLine.Builder.() -> Unit
-         */
-        fun unionProductionLine(block: ProductionLine.Builder.() -> Unit) {
-            lines.add(ProductionLine.Builder(helper, AbstractLine.LineType.UNION).apply(block).build())
-        }
-
-        /**
-         * Define cross production line
+         * Define production line
          *
          * ```
          * ...
@@ -62,11 +39,10 @@ data class MediatorConfiguration(
          * * [output][ProductionLine.Builder.output] - define new output entity or reference to existing, **mandatory**
          * * [pipeline][ProductionLine.Builder.pipeline] - define root pipeline of production line, **mandatory**
          *
-         * @see AbstractLine.LineType
-         * @param block ProductionLine.Builder.() -> Unit
+         * @param block The production line definition
          */
-        fun crossProductionLine(block: ProductionLine.Builder.() -> Unit) {
-            lines.add(ProductionLine.Builder(helper, AbstractLine.LineType.CROSS).apply(block).build())
+        fun productionLine(block: ProductionLine.Builder.() -> Unit) {
+            lines.add(ProductionLine.Builder(helper).apply(block).build())
         }
 
         /**
