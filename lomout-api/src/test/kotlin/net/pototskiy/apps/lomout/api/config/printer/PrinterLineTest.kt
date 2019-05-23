@@ -36,7 +36,7 @@ internal class PrinterLineTest {
         assertThatThrownBy {
             createPrinterLine()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Pipeline with matched child must have assembler")
+            .hasMessageContaining("Pipeline with the matched child must have assembler")
     }
 
     private fun createPrinterLine(): PrinterLine = PrinterLine.Builder(helper).apply {
@@ -60,7 +60,7 @@ internal class PrinterLineTest {
         }
         pipeline {
             classifier {
-                Pipeline.CLASS.MATCHED
+                it.match()
             }
             pipeline(Pipeline.CLASS.MATCHED) {
 

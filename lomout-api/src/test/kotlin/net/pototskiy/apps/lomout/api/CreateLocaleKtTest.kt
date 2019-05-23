@@ -10,7 +10,7 @@ import java.util.*
 internal class CreateLocaleKtTest {
     @Test
     internal fun tryToCreateIncorrectLocaleTest() {
-        @Suppress("SpellCheckingInspection")
+        @Suppress("SpellCheckingInspection", "GraziInspection")
         assertThat("xxxx".createLocale()).isEqualTo(Locale.getDefault())
     }
 }

@@ -274,7 +274,7 @@ config {
                     field("machine_vendor") { column(6) }
                     field("machine") { column(7) }
                     // TODO: 07.01.2019 in production should be open
-                    //field("machine_unit") { column(0) }
+                    //field("machine_unit") {column(0)}
                     field("weight") { column(9) }
                 }
                 extra("group") {
@@ -350,7 +350,7 @@ config {
     }
 
     mediator {
-        crossProductionLine {
+        productionLine {
             output("import-category") {
                 inheritFrom("mage-category") /*{
                     exclude("__path")
@@ -427,7 +427,7 @@ config {
             }
             pipeline {
                 classifier {
-                    Pipeline.CLASS.MATCHED
+                    it.match()
                 }
                 pipeline(Pipeline.CLASS.MATCHED) {
                     assembler { _, _ -> emptyMap() }

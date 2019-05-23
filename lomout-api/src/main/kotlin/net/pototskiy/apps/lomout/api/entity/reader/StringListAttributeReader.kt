@@ -13,7 +13,7 @@ import org.apache.commons.csv.CSVFormat
  * Default reader for [StringListType] attribute
  *
  * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter: default: ,
+ * @property delimiter Char The list delimiter: default:,
  */
 open class StringListAttributeReader : AttributeReaderPlugin<StringListType>() {
     var quote: Char? = null

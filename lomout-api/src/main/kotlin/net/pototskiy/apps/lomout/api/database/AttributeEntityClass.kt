@@ -5,10 +5,10 @@ import org.jetbrains.exposed.dao.IntEntityClass
 /**
  * Exposed attribute entity class
  *
- * @param V : Comparable<V> The attribute type
- * @param E : AttributeEntity<V> The exposed attribute entity
+ * @param V The attribute type
+ * @param E The exposed attribute entity
  * @constructor
- * @param table AttributeTable<V> The attribute table
+ * @param table The attribute table
  * @param entityClass The exposed attribute entity class
  */
 abstract class AttributeEntityClass<V : Comparable<V>, out E : AttributeEntity<V>>(

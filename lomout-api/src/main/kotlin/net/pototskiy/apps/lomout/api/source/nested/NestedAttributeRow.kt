@@ -24,7 +24,7 @@ class NestedAttributeRow(
     private val backingSheet: NestedAttributeSheet
 ) : Row {
     /**
-     * Insert cell into row, by index
+     * Insert cell into row, by the index
      *
      * @param column Int The row index, zero based
      * @return Cell
@@ -36,7 +36,7 @@ class NestedAttributeRow(
     }
 
     /**
-     * Get cell by index, return empty cell it does exist in row
+     * Get cell by the index, return empty cell it does exist in row
      *
      * @param column Int The cell index(column)
      * @return Cell
@@ -62,7 +62,7 @@ class NestedAttributeRow(
     override fun countCell(): Int = backingData.count()
 
     /**
-     * Get row cell by index
+     * Get row cell by the index
      *
      * @param column Int The cell index(column), zero based
      * @return Cell

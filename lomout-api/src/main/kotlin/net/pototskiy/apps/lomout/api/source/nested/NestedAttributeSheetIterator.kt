@@ -11,7 +11,7 @@ class NestedAttributeSheetIterator(private val workbook: NestedAttributeWorkbook
     private var index = 0
 
     /**
-     * Test if workbook has next sheet
+     * Test if workbook has a next sheet
      *
      * @return Boolean
      */

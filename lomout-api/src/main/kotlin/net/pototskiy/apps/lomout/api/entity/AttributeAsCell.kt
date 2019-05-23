@@ -11,18 +11,18 @@ import org.joda.time.DateTime
 /**
  * Present attribute as workbook cell
  *
- * @param T : Type The attribute type
- * @property cellValue CellValue? The cell value
- * @property address CellAddress The cell address
- * @property cellType CellType The cell type
- * @property booleanValue Boolean The cell boolean value
- * @property longValue Long The cell long value
- * @property doubleValue Double The cell double value
- * @property stringValue String The cell string value
- * @property row Row The cell row
+ * @param T The attribute type
+ * @property cellValue The cell value
+ * @property address The cell address
+ * @property cellType The cell type
+ * @property booleanValue The cell boolean value
+ * @property longValue The cell long value
+ * @property doubleValue The cell double value
+ * @property stringValue The cell string value
+ * @property row The cell row
  * @constructor
- * @param attribute Attribute<out T> The attribute that will be presented as cell
- * @param aValue T The value that will be assign to cell
+ * @param attribute The attribute that will be presented as cell
+ * @param aValue The value that will be assigned to cell
  */
 class AttributeAsCell<T : Type>(
     attribute: Attribute<out T>,
@@ -36,7 +36,7 @@ class AttributeAsCell<T : Type>(
     }
 
     /**
-     * Cell address, it always is 0,0
+     * Cell address, it is always 0,0
      */
     override val address = CellAddress(0, 0)
     /**

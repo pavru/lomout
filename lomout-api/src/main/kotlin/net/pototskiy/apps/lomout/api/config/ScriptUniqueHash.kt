@@ -39,6 +39,7 @@ class ScriptUniqueHash(
     private fun updateHashWithTextImports(script: FileScriptSource, digestWrapper: MessageDigest) {
         val scriptDir = script.file.parentFile
         digestWrapper.update(script.text.toByteArray())
+        @Suppress("GraziInspection")
         val importPattern = Regex("^@file:Import\\s*\\(\\s*\"([^\"]*)\"\\s*\\)")
         script.text.lines()
             .filter { it.matches(importPattern) }

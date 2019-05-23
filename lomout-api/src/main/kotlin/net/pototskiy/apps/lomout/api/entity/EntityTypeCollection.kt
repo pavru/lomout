@@ -36,19 +36,19 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          *  }
          * ...
          * ```
-         * * name - entity type name, must be unique, **mandatory**
-         * * isOpen - true - it's allowed to add attribute from source file automatically,
-         *  false - only declared attributes is allowed for entity type, optional
-         * * [inheritFrom][EntityType.Builder.inheritFrom] - inherit attribute from another entity type, optional
-         * * [attribute][EntityType.Builder.attribute] - entity type attribute definition,
+         * * name — entity type name, must be unique, **mandatory**
+         * * isOpen — true — it's allowed to add the attribute from source file automatically,
+         *      false — allow only declared attributes for entity type, optional
+         * * [inheritFrom][EntityType.Builder.inheritFrom] — inherit attributes from another entity type, optional
+         * * [attribute][EntityType.Builder.attribute] — entity type attribute definition,
          *  **at least one must be defined**
          *
          * @see EntityType
          * @see EntityType.Builder
          *
-         * @param name String
-         * @param open Boolean
-         * @param block EntityType.Builder.() -> Unit
+         * @param name Entity type name
+         * @param open Entity allows adding attributes after creation
+         * @param block The entity configuration
          * @return Boolean
          */
         fun entity(name: String, open: Boolean, block: EntityType.Builder.() -> Unit) =

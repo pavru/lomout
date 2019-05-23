@@ -9,10 +9,10 @@ import java.util.*
 /**
  * Convert string value to [DateTime] (only date part) according to locale
  *
- * @receiver String The string to convert
- * @param locale Locale The locale for conversion
- * @return DateTime
- * @throws AppDataException The string can not be converted to [DateTime]
+ * @receiver The string to convert
+ * @param locale The locale for conversion
+ * @return Value
+ * @throws AppDataException The string cannot be converted to [DateTime]
  */
 fun String.stringToDate(locale: Locale): DateTime {
     val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale))
@@ -20,7 +20,7 @@ fun String.stringToDate(locale: Locale): DateTime {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
         throw AppDataException(
-            "String can not be converted to date with locale<$locale>.",
+            "String cannot be converted to date with the locale<$locale>.",
             e
         )
     }
@@ -32,14 +32,14 @@ fun String.stringToDate(locale: Locale): DateTime {
  * @receiver String
  * @param pattern String
  * @return DateTime
- * @throws AppDataException The string can not be converted to [DateTime]
+ * @throws AppDataException The string cannot be converted to [DateTime]
  */
 fun String.stringToDateTime(pattern: String): DateTime {
     val format = DateTimeFormat.forPattern(pattern)
     return try {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
-        throw AppDataException("String can not be converted to date with pattern<$pattern>.", e)
+        throw AppDataException("String cannot be converted to date with the pattern<$pattern>.", e)
     }
 }
 
@@ -57,7 +57,7 @@ fun String.stringToDateTime(locale: Locale): DateTime {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
         throw AppDataException(
-            "String can not be converted to date-time with locale<$locale>.",
+            "String cannot be converted to date-time with the locale<$locale>.",
             e
         )
     }

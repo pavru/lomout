@@ -6,7 +6,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 /**
  * Base class for any attribute writer plugins
  *
- * @param T : Type The attribute value to write to cell
+ * @param T The attribute value to write to cell
  */
 abstract class AttributeWriterPlugin<T : Type> : Plugin() {
     /**

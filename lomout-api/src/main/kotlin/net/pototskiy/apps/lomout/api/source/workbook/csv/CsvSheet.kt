@@ -34,7 +34,7 @@ class CsvSheet(
         get() = backingWorkbook
 
     /**
-     * Get sheet row by index, zero based
+     * Get sheet row by the index, zero based
      *
      * @param row Int
      * @return CsvRow
@@ -53,7 +53,7 @@ class CsvSheet(
     }
 
     /**
-     * Insert row in sheet by index, zero based
+     * Insert row in sheet by the index, zero based
      *
      * @param row Int The row index
      * @return Row The inserted row

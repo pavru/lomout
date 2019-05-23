@@ -116,7 +116,7 @@ internal class DefaultDateReaderTest {
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppCellDataException::class.java)
-            .hasMessageContaining("String can not be converted to date with locale")
+            .hasMessageContaining("String cannot be converted to date with the locale")
         xlsTestDataCell.setCellValue(
             expected.toString(
                 DateTimeFormat.forPattern(
@@ -127,7 +127,7 @@ internal class DefaultDateReaderTest {
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }
             .isInstanceOf(AppCellDataException::class.java)
-            .hasMessageContaining("String can not be converted to date with locale")
+            .hasMessageContaining("String cannot be converted to date with the locale")
         assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(expected)
     }
 
@@ -141,7 +141,7 @@ internal class DefaultDateReaderTest {
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppCellDataException::class.java)
-            .hasMessageContaining("String can not be converted to date with pattern")
+            .hasMessageContaining("String cannot be converted to date with the pattern")
         xlsTestDataCell.setCellValue(expected.toString(DateTimeFormat.forPattern("d.M.YY")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)

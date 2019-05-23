@@ -28,6 +28,7 @@ internal class CsvWorkbookTest {
     @BeforeEach
     internal fun setUp() {
         val baseFile = File("${System.getenv("TEST_DATA_DIR")}/csv-workbook-test.csv")
+        @Suppress("GraziInspection")
         file = File("../tmp/${UUID.randomUUID()}.csv")
         baseFile.copyTo(file)
     }

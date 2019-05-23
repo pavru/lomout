@@ -42,7 +42,7 @@ import kotlin.script.experimental.jvm.updateClasspath
     fileExtension = ".*\\.conf\\.kts",
     compilationConfiguration = ConfigScriptCompilationConfiguration::class
 )
-abstract class ConfigScript(val args: Array<String>) {
+abstract class ConfigScript(private val args: Array<String>) {
     var evaluatedConfig: Config? = null
 
     /**
@@ -71,6 +71,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
         "net.pototskiy.apps.lomout.api.config.mediator.*",
         "net.pototskiy.apps.lomout.api.plugable.*",
         "net.pototskiy.apps.lomout.api.entity.*",
+        "net.pototskiy.apps.lomout.api.config.pipeline.*",
         "net.pototskiy.apps.lomout.api.entity.values.*",
         "net.pototskiy.apps.lomout.api.entity.reader.*",
         "net.pototskiy.apps.lomout.api.entity.writer.*",

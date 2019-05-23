@@ -25,8 +25,8 @@ interface EntityTypeManagerInterface : EntityAttributeManagerInterface {
     /**
      * Initial entity type attributes setup
      *
-     * @param entityType EntityType The entity type
-     * @param attributes AttributeCollection The attributes collection
+     * @param entityType The entity type
+     * @param attributes Attributes collection
      */
     fun initialAttributeSetup(entityType: EntityType, attributes: AttributeCollection)
 

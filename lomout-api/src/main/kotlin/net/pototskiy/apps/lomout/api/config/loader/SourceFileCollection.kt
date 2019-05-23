@@ -37,14 +37,14 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
          *  }
          * ...
          * ```
-         * * file - define file with id
+         * * file - define the file with id
          * * [path][PathBuilder.path] - define file path, **mandatory**
          * * [locale][PathBuilder.locale] - define file locale, optional
          *
          * @see PathBuilder
          *
          * @param id String The file unique id
-         * @param block PathBuilder.() -> Unit
+         * @param block The file definition
          */
         fun file(id: String, block: PathBuilder.() -> Unit) {
             val (file, locale) = PathBuilder().apply(block).build()

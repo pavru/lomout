@@ -21,10 +21,10 @@ class NestedAttributeListParser(
 ) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
 
     /**
-     * Parse list string to map of name->value
+     * Parse list string to map of name→value
      *
      * @param string String The list as string
-     * @return Map<String, String> The map of name->value
+     * @return Map<String, String> The map of name→value
      */
     fun parse(string: String): Map<String, String> {
         val result = mutableMapOf<String, String>()

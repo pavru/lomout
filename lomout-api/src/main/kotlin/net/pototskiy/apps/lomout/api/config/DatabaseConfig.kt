@@ -51,10 +51,10 @@ data class DatabaseConfig(
          *  }
          * ...
          * ```
-         * * [host][DatabaseServerConfig.Builder.host] - The database host name, default: *localhost*
-         * * [port][DatabaseServerConfig.Builder.port] - The database server port, default: *3306*
-         * * [user][DatabaseServerConfig.Builder.user] - The database user name, default: *root*
-         * * password - The database user password, default: *root*
+         * * [host][DatabaseServerConfig.Builder.host] — The database host name, default: *localhost*
+         * * [port][DatabaseServerConfig.Builder.port] — The database server port, default: *3306*
+         * * [user][DatabaseServerConfig.Builder.user] — The database user name, default: *root*
+         * * password — The database user password, default: *root*
          *
          * @see DatabaseServerConfig
          *

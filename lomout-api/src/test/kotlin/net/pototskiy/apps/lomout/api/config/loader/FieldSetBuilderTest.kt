@@ -204,7 +204,7 @@ internal class FieldSetBuilderTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }

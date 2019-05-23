@@ -13,7 +13,7 @@ enum class WorkbookType {
      */
     CSV,
     /**
-     * Workbook use to process string with name-value pairs
+     * Workbook to process string with name-value pairs
      */
     ATTRIBUTE
 }

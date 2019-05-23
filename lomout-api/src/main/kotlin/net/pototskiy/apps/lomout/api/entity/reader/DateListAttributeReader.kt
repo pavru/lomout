@@ -19,7 +19,7 @@ import org.apache.commons.csv.CSVFormat
  * @property locale String The value locale
  * @property pattern String? The value pattern, optional (use locale)
  * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, default: ,
+ * @property delimiter Char The list delimiter, default:,
  */
 open class DateListAttributeReader : AttributeReaderPlugin<DateListType>() {
     var locale: String = DEFAULT_LOCALE_STR

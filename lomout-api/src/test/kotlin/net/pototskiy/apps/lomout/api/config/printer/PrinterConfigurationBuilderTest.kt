@@ -2,7 +2,6 @@ package net.pototskiy.apps.lomout.api.config.printer
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
@@ -76,7 +75,7 @@ internal class PrinterConfigurationBuilderTest {
         assertThatThrownBy {
             createConfigurationWithExtAttr()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Input entity of printer line can not have extended attributes")
+            .hasMessageContaining("Input entity of printer line cannot have extended attributes")
     }
 
     @Test
@@ -165,7 +164,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -189,7 +188,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -226,7 +225,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -250,7 +249,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -287,7 +286,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -311,7 +310,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -347,7 +346,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -371,7 +370,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -385,7 +384,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -409,7 +408,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -432,7 +431,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -456,7 +455,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -523,7 +522,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -547,7 +546,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -574,7 +573,7 @@ internal class PrinterConfigurationBuilderTest {
                     printHead = true
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -598,7 +597,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -634,7 +633,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
@@ -658,7 +657,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { Pipeline.CLASS.MATCHED }
+                    classifier { it.match() }
                     assembler { _, _ -> emptyMap() }
                 }
             }

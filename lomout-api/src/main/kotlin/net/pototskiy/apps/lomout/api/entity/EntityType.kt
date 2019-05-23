@@ -45,19 +45,19 @@ abstract class EntityType(
     }
 
     /**
-     * Get attribute by name, throw exception if attribute is not found
+     * Get attribute by name.
      *
-     * @param name String The attribute name
-     * @return Attribute<*> The attribute
+     * @param name The attribute name
+     * @return The attribute
      * @throws AppAttributeException Attribute has not found
      */
     fun getAttribute(name: String): Attribute<*> = manager.getEntityAttribute(this, name)
         ?: throw AppAttributeException("Attribute<$name> is not defined in entity<$this.name>")
 
     /**
-     * Check if attribute is defined for entity type, with exception it's not
+     * Check if entity type has the attribute, with exception it's not
      *
-     * @param attribute Attribute<*> The attribute to check
+     * @param attribute The attribute to check
      * @throws AppAttributeException Attribute not defined for entity type
      */
     fun checkAttributeDefined(attribute: Attribute<*>) {
@@ -67,10 +67,10 @@ abstract class EntityType(
     }
 
     /**
-     * Check if attribute is defined for entity type
+     * Check if entity type has the attribute
      *
      * @param attribute Attribute<*>
-     * @return Boolean true - defined, false - not defined
+     * @return Boolean true — defined, false — not defined
      */
     @PublicApi
     fun isAttributeDefined(attribute: Attribute<*>) = attributes.any { it.name == attribute.name }
@@ -125,7 +125,7 @@ abstract class EntityType(
         private val open: Boolean
     ) {
         /**
-         * Attribute list, **do not use in configuration**
+         * Attribute list, **do not use in the configuration**
          */
         val attributes = mutableListOf<Attribute<*>>()
         private val inheritances = mutableListOf<ParentEntityType>()
@@ -159,24 +159,24 @@ abstract class EntityType(
          *  }
          * ...
          * ```
-         * * [Type][Type] - attribute value type, **mandatory**
-         * * name - unique attribute name, scope is entity type, **mandatory**
-         * * [key()][Attribute.Builder.key] - mark attribute as key, **at least one attribute must be marked as key**
-         * * [nullable()][Attribute.Builder.nullable] - mark that attribute can has null value
-         * * [builder][Attribute.Builder.builder] - builder plugin of function for attribute that is not in source,
+         * * [Type][Type] — attribute value type, **mandatory**
+         * * name — unique attribute name, scope is entity type, **mandatory**
+         * * [key()][Attribute.Builder.key] — mark attribute as key, **at least one attribute must be marked as key**
+         * * [nullable()][Attribute.Builder.nullable] — mark that attribute can have null value
+         * * [builder][Attribute.Builder.builder] — builder plugin of function for the attribute that is not in the source,
          *  but can be built from another attributes, **only one builder can be defined**
-         * * [reader][Attribute.Builder.reader] - plugin or function that is used to read attribute value from
-         *  source cell, optional, if it's omitted default type reader is used
-         * * [writer][Attribute.Builder.writer] - plugin or function to write attribute value to cell, optional,
-         *  if it's omitted default type writer is used
+         * * [reader][Attribute.Builder.reader] — plugin or function that is used to read attribute value from
+         *  source cell, optional, if it's omitted default reader will be used
+         * * [writer][Attribute.Builder.writer] — plugin or function to write attribute value to cell, optional,
+         *  if it's omitted default type writer will be used
          *
          * @see Attribute
          * @see Attribute.Builder
          * @see Type
          *
-         * @param name String
-         * @param block Attribute.Builder<T>.() -> Unit
-         * @return Boolean true - attribute added
+         * @param name The attribute name
+         * @param block The attribute configuration
+         * @return true — attribute added
          */
         inline fun <reified T : Type> attribute(name: String, block: Attribute.Builder<T>.() -> Unit = {}) =
             attributes.add(Attribute.Builder(helper, name, T::class).apply(block).build())
@@ -192,18 +192,18 @@ abstract class EntityType(
          *  }
          * ...
          * ```
-         * * [inheritFrom][ParentEntityType.Builder] - inherit attributes from super entity type, *optional*
-         * * name: String - entity type name to inherit attributes
-         * * [exclude][ParentEntityType.Builder.exclude] - list of attributes to exclude
-         * * [include][ParentEntityType.Builder.include] - list of attribute to include
+         * * [inheritFrom][ParentEntityType.Builder] — inherit attributes from super entity type, *optional*
+         * * name: String — entity type name to inherit attributes
+         * * [exclude][ParentEntityType.Builder.exclude] — list of attributes to exclude
+         * * [include][ParentEntityType.Builder.include] — list of attribute to include
          *
          *
-         * @param name String
-         * @param block ParentEntityType.Builder.() -> Unit
+         * @param name The entity type name
+         * @param block The inheritance configuration
          */
         fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
             val eType = helper.typeManager.getEntityType(name)
-                ?: throw AppEntityTypeException("Entity type<$name> does not defined")
+                ?: throw AppEntityTypeException("Entity type<$name> is not defined")
             inheritances.add(ParentEntityType.Builder(helper, eType).apply(block).build())
         }
 

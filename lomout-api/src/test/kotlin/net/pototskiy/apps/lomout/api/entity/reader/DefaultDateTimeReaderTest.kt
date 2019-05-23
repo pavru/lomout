@@ -99,7 +99,7 @@ internal class DefaultDateTimeReaderTest {
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppCellDataException::class.java)
-            .hasMessageContaining("String can not be converted to date-time with locale")
+            .hasMessageContaining("String cannot be converted to date-time with the locale")
         xlsTestDataCell.setCellValue(
             expected.toString(
                 DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", "ru_RU".createLocale()))
@@ -120,7 +120,7 @@ internal class DefaultDateTimeReaderTest {
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppCellDataException::class.java)
-            .hasMessageContaining("String can not be converted to date with pattern")
+            .hasMessageContaining("String cannot be converted to date with the pattern")
         xlsTestDataCell.setCellValue(expected.toString(DateTimeFormat.forPattern("d.M.YY h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)

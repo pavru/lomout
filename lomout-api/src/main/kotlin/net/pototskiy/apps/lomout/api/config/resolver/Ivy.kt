@@ -45,7 +45,7 @@ class IvyResolver : GenericRepositoryWithBridge {
      * Resolve artifact
      *
      * @param artifactCoordinates GenericArtifactCoordinates The artifact coordinates
-     * @return Iterable<File>? Artifact files or null if can not resolve
+     * @return Iterable<File>? Artifact files or null if cannot resolve
      */
     override fun tryResolve(artifactCoordinates: GenericArtifactCoordinates): Iterable<File>? =
         tryResolve(artifactCoordinates, emptyList())
@@ -55,7 +55,7 @@ class IvyResolver : GenericRepositoryWithBridge {
      *
      * @param artifactCoordinates GenericArtifactCoordinates The artifact coordinates
      * @param excludes List<Pair<String, String>> List of artifact to exclude Pair(Group, Name)
-     * @return Iterable<File>? Artifact files or null if can not resolve
+     * @return Iterable<File>? Artifact files or null if cannot resolve
      */
     fun tryResolve(
         artifactCoordinates: GenericArtifactCoordinates,
@@ -66,7 +66,7 @@ class IvyResolver : GenericRepositoryWithBridge {
             logger.trace("Try to resolve artifact: $artifactId")
             val artifact = resolveArtifact(artifactId, excludes)
             if (artifact.isEmpty()) {
-                logger.error("Can not resolve artifact: artifactId")
+                logger.error("Cannot resolve artifact: artifactId")
             } else {
                 logger.trace(
                     "Artifact $artifactId is resolved to files: ${artifact.joinToString(",") { it.absolutePath }}"
@@ -172,7 +172,7 @@ class IvyResolver : GenericRepositoryWithBridge {
     }
 
     /**
-     * Resolve external artifact defined in ivy.xml file
+     * Resolve an external artifact defined in the ivy.xml file
      *
      * @param ivyFile File The ivy.xml file
      * @return List<File> List of artifact file
@@ -189,7 +189,7 @@ class IvyResolver : GenericRepositoryWithBridge {
     }
 
     /**
-     * Add repository to resolver
+     * Add a repository to resolver
      *
      * @param repositoryCoordinates GenericRepositoryCoordinates
      * @return Boolean
@@ -263,7 +263,7 @@ class IvyResolver : GenericRepositoryWithBridge {
         /**
          * Default artifact pattern
          */
-        const val DEFAULT_ARTIFACT_PATTERN = "[organisation]/[module]/[revision]/[artifact](-[revision]).[ext]"
+        const val DEFAULT_ARTIFACT_PATTERN = "[organization]/[module]/[revision]/[artifact](-[revision]).[ext]"
 
         init {
             Message.setDefaultLogger(DefaultMessageLogger(1))
@@ -295,6 +295,7 @@ fun mavenCentral() = BasicRepositoryCoordinates(
  *
  * @return BasicRepositoryCoordinates
  */
+@Suppress("GraziInspection")
 fun jCenter() = BasicRepositoryCoordinates(
     "https://jcenter.bintray.com/",
     "bintray:jcenter"

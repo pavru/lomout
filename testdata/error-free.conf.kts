@@ -30,7 +30,7 @@ config {
         }
     }
     mediator {
-        unionProductionLine {
+        productionLine {
             input {
                 entity("test")
             }

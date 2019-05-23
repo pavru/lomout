@@ -27,7 +27,7 @@ class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType(
     }
 
     /**
-     * Convert value from DB
+     * Convert value from the DB
      *
      * @param value Any The DB value
      * @return Any

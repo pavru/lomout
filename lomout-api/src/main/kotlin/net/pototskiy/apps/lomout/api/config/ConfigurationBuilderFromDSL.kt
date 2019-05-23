@@ -13,7 +13,7 @@ import kotlin.system.exitProcess
  *
  * @property configFile The configuration DSL file
  * @property cacheDir The directory to cache compiled configuration
- * @property doNotUseCache True - no not cache script, false - cache script
+ * @property doNotUseCache True — no not cache script, false — cache script
  * @property statusLog The status logger
  * @property configCache The backing config field
  * @property logger The configuration logger
@@ -40,10 +40,10 @@ class ConfigurationBuilderFromDSL(
         val ivyFile = getIvyFile(configFile)
         val configHost = ConfigHost(configFile, cacheDir, doNotUseCache, ivyFile)
         configHost.compile().onFailure {
-            logger.error("Configuration file can not be compiled")
+            logger.error("Configuration file cannot be compiled")
         }.onSuccess { compileResult ->
             configHost.evaluate().onFailure {
-                logger.error("Script can not be evaluated")
+                logger.error("Script cannot be evaluated")
                 exitProcess(1)
             }.onSuccess { evaluationResult ->
                 evaluatedConfig = evaluationResult

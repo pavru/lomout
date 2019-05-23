@@ -17,7 +17,7 @@ import org.apache.commons.csv.CSVFormat
  *
  * @property locale String The value locale
  * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, defalut: ,
+ * @property delimiter Char The list delimiter, default:,
  */
 open class LongListAttributeReader : AttributeReaderPlugin<LongListType>() {
     var locale: String = DEFAULT_LOCALE_STR

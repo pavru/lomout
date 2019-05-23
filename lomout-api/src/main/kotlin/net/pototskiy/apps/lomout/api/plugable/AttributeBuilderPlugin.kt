@@ -6,7 +6,7 @@ import net.pototskiy.apps.lomout.api.entity.Type
 /**
  * Base class for any attribute builder plugins
  *
- * @param R : Type The type builder return
+ * @param R The type builder return
  */
 abstract class AttributeBuilderPlugin<R : Type> : Plugin() {
     /**

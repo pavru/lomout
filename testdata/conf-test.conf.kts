@@ -152,7 +152,7 @@ config {
         }
     }
     mediator {
-        unionProductionLine {
+        productionLine {
             input {
                 entity("onec-product") {
                     filter {
@@ -167,7 +167,7 @@ config {
                 assembler { _, _ -> emptyMap() }
             }
         }
-        unionProductionLine {
+        productionLine {
             input {
                 entity("onec-product") {
                     filter<NotRemovedFilter>()

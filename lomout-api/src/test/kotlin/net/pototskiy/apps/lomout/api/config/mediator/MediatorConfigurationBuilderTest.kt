@@ -56,7 +56,6 @@ internal class MediatorConfigurationBuilderTest {
         assertThat(conf.lines).hasSize(1)
         val line = conf.lines.first()
         assertThat(line).isInstanceOf(ProductionLine::class.java)
-        assertThat(line.lineType).isEqualTo(AbstractLine.LineType.CROSS)
         assertThat(line.inputEntities).hasSize(2)
         assertThat(line.inputEntities.map { it.entity.name }).containsExactlyElementsOf(
             listOf(
@@ -126,12 +125,12 @@ internal class MediatorConfigurationBuilderTest {
     internal fun noAssemblerTest() {
         assertThatThrownBy { createConfNoAssembler() }
             .isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Pipeline with matched child must have assembler")
+            .hasMessageContaining("Pipeline with the matched child must have assembler")
     }
 
     private fun createConf(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
-            crossProductionLine {
+            productionLine {
                 output("import-output-1") {
                     attribute<StringType>("outAttr1")
                     attribute<LongType>("outAttr2")
@@ -160,13 +159,13 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier {
-                        Pipeline.CLASS.MATCHED
+                        it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { _, _ -> emptyMap() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
-                        classifier { Pipeline.CLASS.MATCHED }
+                        classifier { it.match() }
                         assembler { _, _ -> emptyMap() }
                     }
                 }
@@ -176,7 +175,7 @@ internal class MediatorConfigurationBuilderTest {
 
     private fun createConfInputNotExists(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
-            crossProductionLine {
+            productionLine {
                 output("import-output-1") {
                     attribute<StringType>("outAttr1")
                     attribute<LongType>("outAttr2")
@@ -205,13 +204,13 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier {
-                        Pipeline.CLASS.MATCHED
+                        it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { _, _ -> emptyMap() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
-                        classifier { Pipeline.CLASS.MATCHED }
+                        classifier { it.match() }
                         assembler { _, _ -> emptyMap() }
                     }
                 }
@@ -221,20 +220,20 @@ internal class MediatorConfigurationBuilderTest {
 
     private fun createConfEmptyInput(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
-            crossProductionLine {
+            productionLine {
                 output("import-output-1") {
                     attribute<StringType>("outAttr1")
                     attribute<LongType>("outAttr2")
                 }
                 pipeline {
                     classifier {
-                        Pipeline.CLASS.MATCHED
+                        it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { _, _ -> emptyMap() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
-                        classifier { Pipeline.CLASS.MATCHED }
+                        classifier { it.match() }
                         assembler { _, _ -> emptyMap() }
                     }
                 }
@@ -244,7 +243,7 @@ internal class MediatorConfigurationBuilderTest {
 
     private fun createConfOutputDefined(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
-            crossProductionLine {
+            productionLine {
                 output("import-output-9")
                 input {
                     entity("input-entity-1") {
@@ -270,13 +269,13 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier {
-                        Pipeline.CLASS.MATCHED
+                        it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { _, _ -> emptyMap() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
-                        classifier { Pipeline.CLASS.MATCHED }
+                        classifier { it.match() }
                         assembler { _, _ -> emptyMap() }
                     }
                 }
@@ -286,7 +285,7 @@ internal class MediatorConfigurationBuilderTest {
 
     private fun createConfNoPipeline(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
-            crossProductionLine {
+            productionLine {
                 output("import-output-1") {
                     attribute<StringType>("outAttr1")
                     attribute<LongType>("outAttr2")
@@ -319,7 +318,7 @@ internal class MediatorConfigurationBuilderTest {
 
     private fun createConfNoAssembler(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
-            crossProductionLine {
+            productionLine {
                 output("import-output-1") {
                     attribute<StringType>("outAttr1")
                     attribute<LongType>("outAttr2")
@@ -348,13 +347,13 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier {
-                        Pipeline.CLASS.MATCHED
+                        it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { _, _ -> emptyMap() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
-                        classifier { Pipeline.CLASS.MATCHED }
+                        classifier { it.match() }
                         pipeline(Pipeline.CLASS.UNMATCHED) {}
                         assembler { _, _ -> emptyMap() }
                     }

@@ -135,11 +135,11 @@ abstract class DbEntityWithAttributeClass(
     }
 
     /**
-     * Add attribute to DB entity
+     * Add the attribute to DB entity
      *
-     * @param entity DbEntity The DB entity
-     * @param attribute AnyTypeAttribute The attribute
-     * @param value Type
+     * @param entity The DB entity
+     * @param attribute The attribute
+     * @param value The attribute value
      */
     @PublicApi
     fun addAttribute(entity: DbEntity, attribute: AnyTypeAttribute, value: Type) {
@@ -147,13 +147,13 @@ abstract class DbEntityWithAttributeClass(
         eType.checkAttributeDefined(attribute)
         val attrClass = getAttributeClassFor(attribute.valueType)
         if (value.isTypeOf<MapType<*, *>>()) {
-            throw AppDatabaseException("MapType is not supported for persistent attribute")
+            throw AppDatabaseException("MapType is not supported for the persistent attribute")
         }
         (if (!value.isTypeOf<ListType<*>>()) value.toList() else (value as ListType<*>))
             .forEachIndexed { position, data ->
                 when (data) {
-                    null -> logger.error("Null value can not be assigned to attribute, attribute should be removed")
-                    !is Type -> logger.error("Only value of type Type is supported")
+                    null -> logger.error("Null value cannot be assigned to attribute, attribute should be removed")
+                    !is Type -> logger.error("Value supports only Type class")
                     else -> writeAttributeToDb(attrClass, entity, attribute, position, data)
                 }
             }
@@ -206,7 +206,7 @@ abstract class DbEntityWithAttributeClass(
                     this.setValueWithTypeCheck(data)
                 } catch (e: AppDatabaseException) {
                     throw AppDatabaseException(
-                        "Value can not be assigned to attribute<${attribute.name}>, types are incompatible",
+                        "Value cannot be assigned to attribute<${attribute.name}>, types are incompatible",
                         e
                     )
                 }

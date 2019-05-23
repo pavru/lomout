@@ -37,7 +37,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, false)).isEqualTo(BooleanType(false))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to BooleanType")
+            .hasMessageContaining("Cannot wrap value to BooleanType")
     }
 
     @Test
@@ -47,7 +47,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, 123L)).isEqualTo(LongType(123L))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to LongType")
+            .hasMessageContaining("Cannot wrap value to LongType")
     }
 
     @Test
@@ -57,7 +57,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, 12.3)).isEqualTo(DoubleType(12.3))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to DoubleType")
+            .hasMessageContaining("Cannot wrap value to DoubleType")
     }
 
     @Test
@@ -67,7 +67,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, "12.3")).isEqualTo(StringType("12.3"))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to StringType")
+            .hasMessageContaining("Cannot wrap value to StringType")
     }
 
     @Test
@@ -79,7 +79,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, now2)).isEqualTo(DateType(now2))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to DateType")
+            .hasMessageContaining("Cannot wrap value to DateType")
     }
 
     @Test
@@ -91,7 +91,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, now2)).isEqualTo(DateTimeType(now2))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to DateTimeType")
+            .hasMessageContaining("Cannot wrap value to DateTimeType")
     }
 
     @Test
@@ -101,7 +101,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, "12.3")).isEqualTo(TextType("12.3"))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to TextType")
+            .hasMessageContaining("Cannot wrap value to TextType")
     }
 
     @Test
@@ -114,7 +114,7 @@ internal class AValueWrapperKtTest {
         assertThat(wrapAValue(attr, listOf("12.3"))).isEqualTo(TextListType(listOf(TextType("12.3"))))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to TextListType")
+            .hasMessageContaining("Cannot wrap value to TextListType")
     }
 
     class NewType : LongType(1, false)
@@ -138,7 +138,7 @@ internal class AValueWrapperKtTest {
             .isEqualTo(BooleanListType(listOf(BooleanType(true), BooleanType(false))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to BooleanListType")
+            .hasMessageContaining("Cannot wrap value to BooleanListType")
     }
 
     @Test
@@ -148,7 +148,7 @@ internal class AValueWrapperKtTest {
             .isEqualTo(LongListType(listOf(LongType(111L), LongType(123L))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to LongListType")
+            .hasMessageContaining("Cannot wrap value to LongListType")
     }
 
     @Test
@@ -158,7 +158,7 @@ internal class AValueWrapperKtTest {
             .isEqualTo(DoubleListType(listOf(DoubleType(11.1), DoubleType(12.3))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to DoubleListType")
+            .hasMessageContaining("Cannot wrap value to DoubleListType")
     }
 
     @Test
@@ -168,7 +168,7 @@ internal class AValueWrapperKtTest {
             .isEqualTo(StringListType(listOf(StringType("11.1"), StringType("12.3"))))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to StringListType")
+            .hasMessageContaining("Cannot wrap value to StringListType")
     }
 
     @Test
@@ -180,7 +180,7 @@ internal class AValueWrapperKtTest {
             .isEqualTo(DateListType(listOf(DateType(now1), DateType(now2))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to DateListType")
+            .hasMessageContaining("Cannot wrap value to DateListType")
     }
 
     @Test
@@ -192,7 +192,7 @@ internal class AValueWrapperKtTest {
             .isEqualTo(DateTimeListType(listOf(DateTimeType(now1), DateTimeType(now2))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to DateTimeListType")
+            .hasMessageContaining("Cannot wrap value to DateTimeListType")
     }
 
     @Test
@@ -208,6 +208,6 @@ internal class AValueWrapperKtTest {
             .isEqualTo(AttributeListType(attrMap))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Can not wrap value to AttributeListType")
+            .hasMessageContaining("Cannot wrap value to AttributeListType")
     }
 }

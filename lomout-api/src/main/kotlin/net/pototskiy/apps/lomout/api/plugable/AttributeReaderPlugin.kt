@@ -7,7 +7,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 /**
  * Base class for any attribute reader plugins
  *
- * @param T : Type The value type to return
+ * @param T The value type to return
  */
 abstract class AttributeReaderPlugin<T : Type> : Plugin() {
     /**

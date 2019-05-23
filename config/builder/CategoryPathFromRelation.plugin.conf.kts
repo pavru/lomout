@@ -1,6 +1,3 @@
-//@file:Repository("","jcenter","https://jcenter.bintray.com/")
-//@file:DependsOn("org.jetbrains.exposed:exposed:0.12.2")
-
 import org.apache.commons.collections4.map.LRUMap
 import java.lang.ref.WeakReference
 import java.util.Collections.*

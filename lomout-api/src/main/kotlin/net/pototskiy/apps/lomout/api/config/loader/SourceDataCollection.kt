@@ -35,7 +35,7 @@ data class SourceDataCollection(private val sourceData: List<SourceData>) : List
          * ```
          *
          * @receiver Builder
-         * @param block SourceData.Builder.() -> Unit
+         * @param block The source definition
          * @return Boolean
          */
         @Suppress("unused")

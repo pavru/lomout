@@ -20,7 +20,7 @@ class PrinterLine(
     inputEntities: InputEntityCollection,
     val outputFieldSets: PrinterOutput,
     pipeline: Pipeline
-) : AbstractLine(LineType.UNION, inputEntities, pipeline) {
+) : AbstractLine(inputEntities, pipeline) {
     /**
      * Printer line builder class
      *
@@ -58,7 +58,7 @@ class PrinterLine(
          *
          * Printer line generate stream of entity from all defined inputs like SQL UNION
          *
-         * @param block InputEntityCollection.Builder.() -> Unit
+         * @param block The pipeline input definition
          */
         @ConfigDsl
         fun input(block: InputEntityCollection.Builder.() -> Unit) {
@@ -68,7 +68,7 @@ class PrinterLine(
                     throw AppConfigException("One and only one input entity is allowed for printer line")
                 }
                 if (it.first().extAttrMaps.isNotEmpty()) {
-                    throw AppConfigException("Input entity of printer line can not have extended attributes")
+                    throw AppConfigException("Input entity of printer line cannot have extended attributes")
                 }
             }
         }
@@ -110,7 +110,7 @@ class PrinterLine(
         }
 
         /**
-         * Define printer pipeline to process entities, this is root element of pipelines tree
+         * Define printer pipeline to process entities, this is root element of the pipeline tree
          *
          * ```
          * ...
@@ -148,7 +148,7 @@ class PrinterLine(
          *      per pipeline**. If classifier is omitted all entities go to assembler.
          * * [assembler][Pipeline.Builder.assembler] - entity assembler, it prepares target entity attribute as map.
          *      If pipeline has not child pipeline it must have assembler.
-         * * [pipeline][Pipeline.Builder.pipeline] - child pipeline, it's parameter indicate for which entities (matched,
+         * * [pipeline][Pipeline.Builder.pipeline] - child pipeline, parameter indicates for which entities (matched,
          *      unmatched) pipeline must be applied
          *
          * @param klass Array<out CLASS>
@@ -180,7 +180,7 @@ class PrinterLine(
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw AppConfigException("Pipeline with matched child must have assembler")
+                throw AppConfigException("Pipeline with the matched child must have assembler")
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }

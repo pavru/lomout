@@ -109,7 +109,7 @@ internal class NestedFieldLoadingTest {
                 }
             }
             mediator {
-                crossProductionLine {
+                productionLine {
                     output("output") {
                         inheritFrom("entity")
                     }

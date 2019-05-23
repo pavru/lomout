@@ -49,20 +49,20 @@ data class LoaderConfiguration(
          *  }
          * ...
          * ```
-         * * [file][SourceFileCollection.Builder.file] - define file id, **mandatory**
-         * * [path][SourceFileCollection.Builder.PathBuilder.path] - define file path, **mandatory**
-         * * [locale][SourceFileCollection.Builder.PathBuilder.locale] - define file locale, optional
+         * * [file][SourceFileCollection.Builder.file] — define file id, **mandatory**
+         * * [path][SourceFileCollection.Builder.PathBuilder.path] — define file path, **mandatory**
+         * * [locale][SourceFileCollection.Builder.PathBuilder.locale] — define file locale, optional
          *
          * @see SourceFileCollection
          *
-         * @param block SourceFileCollection.Builder.() -> Unit
+         * @param block Files definition
          */
         fun files(block: SourceFileCollection.Builder.() -> Unit) {
             files = SourceFileCollection.Builder(helper).apply(block).build()
         }
 
         /**
-         * Define entities that is loaded by loader
+         * Define entities that is loaded by the loader
          *
          * ```
          * ...
@@ -73,11 +73,11 @@ data class LoaderConfiguration(
          *  }
          * ...
          * ```
-         * * [entity][EntityTypeCollection.Builder.entity] - entity definition, **at least one must be defined**
+         * * [entity][EntityTypeCollection.Builder.entity] — entity definition, **at least one must be defined**
          *
          * @see EntityTypeCollection
          *
-         * @param block EntityTypeCollection.Builder.() -> Unit
+         * @param block Entities definition
          */
         fun entities(block: EntityTypeCollection.Builder.() -> Unit) {
             this.entities = EntityTypeCollection.Builder(helper).apply(block).build()
@@ -110,7 +110,7 @@ data class LoaderConfiguration(
          * * sourceFields - define source data fields
          *
          * @param entityType The entity type name
-         * @param block Load.Builder.() -> Unit
+         * @param block The entity loading instruction
          */
         fun loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
             val entity = helper.typeManager.getEntityType(entityType)

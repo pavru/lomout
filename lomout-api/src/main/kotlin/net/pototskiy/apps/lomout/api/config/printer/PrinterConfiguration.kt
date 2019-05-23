@@ -30,7 +30,7 @@ data class PrinterConfiguration(
         private var lines = mutableListOf<PrinterLine>()
 
         /**
-         * Define printer files like in loader
+         * Define printer files like in the loader
          *
          * ```
          * ...
@@ -50,7 +50,7 @@ data class PrinterConfiguration(
          *
          * @see SourceFileCollection
          *
-         * @param block SourceFileCollection.Builder.() -> Unit
+         * @param block Files definition
          */
         @ConfigDsl
         fun files(block: SourceFileCollection.Builder.() -> Unit) {

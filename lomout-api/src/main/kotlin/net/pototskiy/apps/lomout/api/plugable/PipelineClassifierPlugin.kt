@@ -1,8 +1,7 @@
 package net.pototskiy.apps.lomout.api.plugable
 
 import net.pototskiy.apps.lomout.api.PublicApi
-import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.config.mediator.PipelineDataCollection
+import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 
 /**
  * Base class for any pipeline classifiers
@@ -12,13 +11,13 @@ abstract class PipelineClassifierPlugin : Plugin() {
     /**
      * Classifier function
      *
-     * @param entities PipelineDataCollection The pipeline entity collection
-     * @return Pipeline.CLASS
+     * @param element ClassifierElement The element to classify
+     * @return ClassifierElement
      */
-    abstract fun classify(entities: PipelineDataCollection): Pipeline.CLASS
+    abstract fun classify(element: ClassifierElement): ClassifierElement
 }
 
 /**
  * Function type for inline pipeline classifier
  */
-typealias PipelineClassifierFunction = PluginContextInterface.(entities: PipelineDataCollection) -> Pipeline.CLASS
+typealias PipelineClassifierFunction = PluginContextInterface.(element: ClassifierElement) -> ClassifierElement

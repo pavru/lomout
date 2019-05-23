@@ -29,6 +29,7 @@ internal class TextAttributeStringWriterTest {
     @BeforeEach
     internal fun setUp() {
         typeManager = EntityTypeManager()
+        @Suppress("GraziInspection")
         file = File("../tmp/${UUID.randomUUID()}.xls")
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
         cell = workbook.insertSheet("test").insertRow(0).insertCell(0)

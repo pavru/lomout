@@ -26,8 +26,8 @@ internal class ExcelWorkbookTest {
         assertThat(file.exists()).isFalse()
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
             val sheet = workbook.insertSheet(CSV_SHEET_NAME)
-            for ((rowNum, list) in testDataForWrite.withIndex()) {
-                val row = sheet.insertRow(rowNum)
+            for ((rowNumber, list) in testDataForWrite.withIndex()) {
+                val row = sheet.insertRow(rowNumber)
                 list.forEachIndexed { c, v ->
                     row.insertCell(c).setCellValue(v)
                 }
@@ -37,8 +37,8 @@ internal class ExcelWorkbookTest {
         file.inputStream().use { reader ->
             HSSFWorkbook(reader).use { wb ->
                 val sheet = wb.getSheet(CSV_SHEET_NAME)
-                for ((rowNum, row) in sheet.withIndex()) {
-                    assertThat(row.map { it.stringCellValue }).containsExactlyElementsOf(testDataForWrite[rowNum])
+                for ((rowNumber, row) in sheet.withIndex()) {
+                    assertThat(row.map { it.stringCellValue }).containsExactlyElementsOf(testDataForWrite[rowNumber])
                 }
             }
         }
@@ -52,8 +52,8 @@ internal class ExcelWorkbookTest {
         assertThat(file.exists()).isFalse()
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
             val sheet = workbook.insertSheet(CSV_SHEET_NAME)
-            for ((rowNum, list) in testDataForWrite.withIndex()) {
-                val row = sheet.insertRow(rowNum)
+            for ((rowNumber, list) in testDataForWrite.withIndex()) {
+                val row = sheet.insertRow(rowNumber)
                 list.forEachIndexed { c, v ->
                     row.insertCell(c).setCellValue(v)
                 }
@@ -63,8 +63,8 @@ internal class ExcelWorkbookTest {
         file.inputStream().use { reader ->
             XSSFWorkbook(reader).use { wb ->
                 val sheet = wb.getSheet(CSV_SHEET_NAME)
-                for ((rowNum, row) in sheet.withIndex()) {
-                    assertThat(row.map { it.stringCellValue }).containsExactlyElementsOf(testDataForWrite[rowNum])
+                for ((rowNumber, row) in sheet.withIndex()) {
+                    assertThat(row.map { it.stringCellValue }).containsExactlyElementsOf(testDataForWrite[rowNumber])
                 }
             }
         }

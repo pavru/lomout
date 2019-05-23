@@ -78,7 +78,7 @@ data class InputEntity(
          * ...
          * ```
          *
-         * @param block SqlExpressionBuilder.(alias: Alias<DbEntityTable>) -> Op<Boolean>
+         * @param block The filter code
          */
         @ConfigDsl
         fun filter(block: SqlExpressionBuilder.(alias: Alias<DbEntityTable>) -> Op<Boolean>) {
@@ -86,17 +86,17 @@ data class InputEntity(
         }
 
         /**
-         * Define SQL filter with plugin
+         * Define SQL filter with a plugin
          *
          * ```
          * ...
          *  filter<FilterPluginClass>()
          * ...
          * ```
-         * [FilterPluginClass][net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin] - filter plugin class,
+         * [FilterPluginClass][net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin] — filter plugin class,
          *      **mandatory**
          *
-         * @param block P.() -> Unit
+         * @param block The filter options
          */
         @ConfigDsl
         inline fun <reified P : SqlFilterPlugin> filter(noinline block: P.() -> Unit = {}) {
@@ -105,7 +105,7 @@ data class InputEntity(
         }
 
         /**
-         * Define extended attribute of input entity
+         * Define an extended attribute of input entity
          *
          * ```
          * ...
@@ -116,10 +116,10 @@ data class InputEntity(
          * ...
          * ```
          *
-         * @param T : Type The extended attribute type
-         * @param name String The name of extended attribute
-         * @param from String The name of base attribute
-         * @param block Attribute.Builder<T>.() -> Unit
+         * @param T The extended attribute type
+         * @param name The name of extended attribute
+         * @param from The name of base attribute
+         * @param block The extended attribute definition
          */
         @ConfigDsl
         inline fun <reified T : Type> extAttribute(

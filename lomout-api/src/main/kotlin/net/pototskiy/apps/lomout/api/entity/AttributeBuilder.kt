@@ -10,7 +10,7 @@ import kotlin.reflect.full.createInstance
 /**
  * Abstract attribute builder
  *
- * @param R : Type The type builder return
+ * @param R The type builder return
  */
 sealed class AttributeBuilder<R : Type> {
     /**
@@ -31,11 +31,11 @@ sealed class AttributeBuilder<R : Type> {
 }
 
 /**
- * Attribute builder with plugin
+ * Attribute builder with a plugin
  *
- * @param R : Type The builder return type
- * @property pluginClass KClass<out AttributeBuilderPlugin<R>> The plugin class
- * @property options [AttributeBuilderPlugin<R>.()] Function1<AttributeBuilderPlugin<R>, Unit> The plugin options
+ * @param R The builder return type
+ * @property pluginClass The plugin class
+ * @property options The plugin options
  * @constructor
  */
 class AttributeBuilderWithPlugin<R : Type>(
@@ -46,8 +46,8 @@ class AttributeBuilderWithPlugin<R : Type>(
 /**
  * Attribute builder with function
  *
- * @param R : Type The builder return type
- * @property function [AttributeBuilderFunction] Function2<PluginContextInterface, DbEntity, R?> The builder function
+ * @param R The builder return type
+ * @property function The builder function
  * @constructor
  */
 class AttributeBuilderWithFunction<R : Type>(

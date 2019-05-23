@@ -14,7 +14,7 @@ import java.io.ByteArrayOutputStream
  *
  * @property locale String The value locale
  * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, default: ,
+ * @property delimiter Char The list delimiter, default:,
  */
 open class DoubleListAttributeStringWriter : AttributeWriterPlugin<DoubleListType>() {
     var locale: String = DEFAULT_LOCALE_STR

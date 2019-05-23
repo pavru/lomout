@@ -12,7 +12,7 @@ class ExcelSheetIterator(workbook: org.apache.poi.ss.usermodel.Workbook) : Itera
     private val iterator = workbook.iterator()
 
     /**
-     * Check if workbook has next sheet
+     * Check if workbook has a next sheet
      *
      * @return Boolean
      */

@@ -31,7 +31,7 @@ fun initDatabase(
         statusLog.info("DB dialect: ${db.dialect.name}")
         DbSchema.createSchema(entityTypeManager)
     } catch (e: Exception) {
-        statusLog.error("Can not init DB", e)
+        statusLog.error("Cannot init DB", e)
         System.exit(1)
     }
     statusLog.info("Database has finished to check and init")

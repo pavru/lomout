@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.contracts.contract
 
 /**
- * CSV workbook to read data from file
+ * CSV workbook to read data from a file
  *
  * @property reader InputStreamReader
  * @property _parser CSVParser
@@ -68,13 +68,13 @@ class CsvInputWorkbook(
  * Test if workbook is instance of [CsvInputWorkbook]
  *
  * @param workbook CsvWorkbook
- * @throws AppWorkbookException If wrong type
+ * @throws AppWorkbookException Wrong workbook type
  */
 fun checkThatItIsCsvInputWorkbook(workbook: CsvWorkbook) {
     contract {
         returns() implies (workbook is CsvInputWorkbook)
     }
     if (workbook !is CsvInputWorkbook) {
-        throw AppWorkbookException("CSV workbook is not input one")
+        throw AppWorkbookException("CSV workbook is in read only mode")
     }
 }

@@ -136,7 +136,7 @@ config {
         }
     }
     mediator {
-        unionProductionLine {
+        productionLine {
             input {
                 entity("onec-product")
             }

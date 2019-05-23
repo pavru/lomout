@@ -36,14 +36,14 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
          *  }
          * ...
          * ```
-         * * filter - SQL filter for entities, usually used for filter entity by status, *optional*,
+         * * filter — SQL filter for entities, usually used for filter entity by status, *optional*,
          *      **only one filter definition is allowed**
-         * * [FilterPluginClass][net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin] - filter plugin class
-         * * extAttribute(...) - define extend attribute that is function of regular attribute, this attribute
+         * * [FilterPluginClass][net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin] — filter plugin class
+         * * extAttribute(...) — define an extended attribute that is function of regular attribute, this attribute
          *      accessible only in pipelines
          *
          * @param name String
-         * @param block InputEntity.Builder.() -> Unit
+         * @param block The entity definition
          */
         @ConfigDsl
         fun entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {

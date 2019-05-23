@@ -5,7 +5,7 @@ import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import org.apache.logging.log4j.LogManager
 
 /**
- * Logger for script tools, log messages into app or ide log
+ * Logger for script tools, log messages into the application or ide log
  *
  * @property mainLogger Logger?
  * @property ideLogger Logger?
@@ -73,8 +73,8 @@ class MainAndIdeLogger {
     /**
      * Debug level log message
      *
-     * @param message String
-     * @param throwable Throwable?
+     * @param message The message
+     * @param throwable The cause
      */
     fun debug(message: String, throwable: Throwable? = null) {
         mainLogger?.debug(message, throwable)

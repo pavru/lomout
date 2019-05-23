@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream
  * @property locale String The value locale, default: system locale
  * @property pattern String? The datetime pattern, optional(use locale)
  * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, default: ,
+ * @property delimiter Char The list delimiter, default:,
  */
 open class DateTimeListAttributeStringWriter : AttributeWriterPlugin<DateTimeListType>() {
     var locale: String = DEFAULT_LOCALE_STR

@@ -17,7 +17,7 @@ internal class LoadConfigurationTest {
     private val errorFreeConf = "${System.getenv("TEST_DATA_DIR")}/error-free.conf.kts"
     private val emptyConf = "${System.getenv("TEST_DATA_DIR")}/empty-config.conf.kts"
     private val importErrorConf = "${System.getenv("TEST_DATA_DIR")}/import-error.conf.kts"
-    @Suppress("SpellCheckingInspection")
+    @Suppress("SpellCheckingInspection", "GraziInspection")
     private val depenedsOnErrorConf = "${System.getenv("TEST_DATA_DIR")}/dependson-error.conf.kts"
 
     @BeforeEach
@@ -50,8 +50,8 @@ internal class LoadConfigurationTest {
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
-        @Suppress("RegExpRedundantEscape")
-        assertThat(log.contains(Regex("^\\[ERROR\\] .* - Script can not be evaluated$"))).isTrue()
+        @Suppress("RegExpRedundantEscape", "GraziInspection")
+        assertThat(log.contains(Regex("^\\[ERROR\\] .* - Script cannot be evaluated$"))).isTrue()
     }
 
     @Suppress("TooGenericExceptionCaught")

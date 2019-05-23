@@ -1,4 +1,4 @@
-package net.pototskiy.apps.lomout.api.config.mediator
+package net.pototskiy.apps.lomout.api.config.pipeline
 
 import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierFunction
 import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin
@@ -13,25 +13,25 @@ sealed class PipelineClassifier {
     /**
      * Classifier function
      *
-     * @param entities PipelineDataCollection The pipeline input entities
-     * @return Pipeline.CLASS
+     * @param element ClassifierElement Element to classify
+     * @return ClassifierElement
      */
-    fun classify(entities: PipelineDataCollection): Pipeline.CLASS {
+    fun classify(element: ClassifierElement): ClassifierElement {
         return when (this) {
             is PipelineClassifierWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)
-                it.classify(entities)
+                it.classify(element)
             }
-            is PipelineClassifierWithFunction -> PluginContext.function(entities)
+            is PipelineClassifierWithFunction -> PluginContext.function(element)
         }
     }
 }
 
 /**
- * Pipeline classifier with plugin
+ * Pipeline classifier with a plugin
  *
- * @property pluginClass KClass<out PipelineClassifierPlugin> The classifier plugin class
- * @property options PipelineClassifierPlugin.() -> Unit The classifier options
+ * @property pluginClass The classifier plugin class
+ * @property options The classifier options
  * @constructor
  */
 class PipelineClassifierWithPlugin(
@@ -42,7 +42,7 @@ class PipelineClassifierWithPlugin(
 /**
  * Pipeline classifier with function
  *
- * @property function PipelineClassifierFunction The classifier function
+ * @property function The classifier function
  * @constructor
  */
 class PipelineClassifierWithFunction(val function: PipelineClassifierFunction) : PipelineClassifier()

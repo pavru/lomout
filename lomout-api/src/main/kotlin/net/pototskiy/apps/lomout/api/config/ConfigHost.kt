@@ -26,7 +26,7 @@ import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromT
  *
  * @property configFile The config DSL file
  * @property cacheDir The compiled config script cache directory
- * @property doNotUseCache True - do not cache script, false - cache script
+ * @property doNotUseCache True — do not cache script, false — cache script
  * @property ivyFile The ivy.xml file with additional dependencies
  * @property logger The configuration logger
  * @property scriptHost BasicJvmScriptingHost

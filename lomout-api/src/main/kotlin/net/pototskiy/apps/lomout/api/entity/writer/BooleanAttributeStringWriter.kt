@@ -8,8 +8,8 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 /**
  * Default writer for [BooleanType] attribute
  *
- * * true -> 1
- * * false -> 0
+ * * true → 1
+ * * false → 0
  *
  * @property locale String The value local, ignored
  */

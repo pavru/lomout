@@ -8,29 +8,16 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.config.mediator.PipelineData
 import net.pototskiy.apps.lomout.api.config.mediator.PipelineDataCollection
-import net.pototskiy.apps.lomout.api.database.DbEntity
+import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.Type
-import net.pototskiy.apps.lomout.database.BooleanConst
-import net.pototskiy.apps.lomout.database.PipelineSets
-import net.pototskiy.apps.lomout.database.StringConst
 import org.apache.commons.collections4.map.LRUMap
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.batchInsert
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 
 class PipelineExecutor(
     private val entityTypeManager: EntityTypeManager,
@@ -42,103 +29,47 @@ class PipelineExecutor(
 
     private val jobs = mutableListOf<Job>()
 
-    suspend fun execute(inputData: Channel<PipelineDataCollection>): ReceiveChannel<Map<AnyTypeAttribute, Type?>> =
+    suspend fun execute(inputData: Channel<ClassifierElement>): ReceiveChannel<Map<AnyTypeAttribute, Type?>> =
         GlobalScope.produce {
-            val matchedData: Channel<PipelineDataCollection> = Channel()
+            val matchedData: Channel<ClassifierElement> = Channel()
             val nextMatchedPipe = pipeline.pipelines.find {
                 it.isApplicablePipeline(Pipeline.CLASS.MATCHED)
             }?.let { PipelineExecutor(entityTypeManager, it, inputEntities, targetEntity, entityCache) }
-
             jobs.add(launch { nextMatchedPipe?.execute(matchedData)?.consumeEach { send(it) } })
 
-            inputData.consumeEach { data ->
-                val klass = pipeline.classifier.classify(data)
-                if (klass == Pipeline.CLASS.MATCHED) {
-                    if (nextMatchedPipe != null) {
-                        addToSet(nextMatchedPipe.pipeline.pipelineID, data)
-                        matchedData.send(data)
-                    } else {
-                        val assembler = pipeline.assembler!!
-                        send(assembler.assemble(targetEntity, data))
-                    }
-                    markAsMatched(data)
-                }
-            }
-            matchedData.close()
-
-            val unMatchedData: Channel<PipelineDataCollection> = Channel()
+            val unMatchedData: Channel<ClassifierElement> = Channel()
             val nextUnMatchedPipe = pipeline.pipelines.find {
                 it.isApplicablePipeline(Pipeline.CLASS.UNMATCHED)
             }?.let { PipelineExecutor(entityTypeManager, it, inputEntities, targetEntity, entityCache) }
             jobs.add(launch { nextUnMatchedPipe?.execute(unMatchedData)?.consumeEach { send(it) } })
-            if (nextUnMatchedPipe != null) {
-                createChildUmMatchedSet(nextUnMatchedPipe)
-                produce<PipelineDataCollection> {
-                    val from = PipelineSets
-                    val where = Op.build {
-                        (PipelineSets.setID eq pipeline.pipelineID) and
-                                (PipelineSets.isMatched neq true)
+
+            inputData.consumeEach { data ->
+                when (val element = pipeline.classifier.classify(data)) {
+                    is ClassifierElement.Matched -> {
+                        if (nextMatchedPipe != null) {
+                            matchedData.send(element)
+                        } else {
+                            val assembler = pipeline.assembler!!
+                            send(
+                                assembler.assemble(
+                                    targetEntity,
+                                    PipelineDataCollection(element.entities)
+                                )
+                            )
+                        }
                     }
-                    rowSequence(from, where, listOf(PipelineSets.entityID)) {
-                        readEntity(it[PipelineSets.entityID])
-                    }.forEach { data ->
-                        unMatchedData.send(PipelineDataCollection(listOf(data)))
+                    is ClassifierElement.Skipped -> {
+                        // just drop element
                     }
-                }.consumeEach { unMatchedData.send(it) }
+                    else -> if (nextUnMatchedPipe != null) {
+                        unMatchedData.send(element)
+                    }
+                }
             }
+            matchedData.close()
             unMatchedData.close()
+
             @Suppress("SpreadOperator")
             joinAll(*jobs.toTypedArray())
         }
-
-    private fun createChildUmMatchedSet(nextUnMatchedPipe: PipelineExecutor) = transaction {
-        PipelineSets.insert(
-            PipelineSets
-                .slice(
-                    StringConst(nextUnMatchedPipe.pipeline.pipelineID),
-                    PipelineSets.entityID,
-                    BooleanConst(false)
-                )
-                .select {
-                    with(PipelineSets) {
-                        (setID eq pipeline.pipelineID) and (isMatched neq true)
-                    }
-                }
-        )
-    }
-
-    private fun readEntity(id: EntityID<Int>): PipelineData {
-        var pipelineData = entityCache[id.value]
-        if (pipelineData == null) {
-            val entity = transaction { DbEntity.findById(id) }
-                ?: throw AppDataException("Matched entity<id:${id.value}> can not be found")
-            entity.readAttributes()
-            val inputEntity = inputEntities.find { it.entity.name == entity.eType.name }
-                ?: throw AppEntityTypeException("Unexpected input entity<${entity.eType.name}")
-            pipelineData = PipelineData(entityTypeManager, entity, inputEntity)
-            entityCache[entity.id.value] = pipelineData
-        }
-        return pipelineData
-    }
-
-    private fun addToSet(setID: String, data: PipelineDataCollection) = transaction {
-        val alreadyInSet = PipelineSets
-            .slice(PipelineSets.entityID)
-            .select {
-                (PipelineSets.setID eq setID) and
-                        (PipelineSets.entityID inList data.map { it.entity.id })
-            }.map { it[PipelineSets.entityID] }.toList()
-        PipelineSets.batchInsert(data.map { it.entity.id }.minus(alreadyInSet)) { id ->
-            this[PipelineSets.setID] = setID
-            this[PipelineSets.entityID] = id
-            this[PipelineSets.isMatched] = false
-        }
-    }
-
-    private fun markAsMatched(data: PipelineDataCollection) = transaction {
-        PipelineSets.update({
-            (PipelineSets.setID eq pipeline.pipelineID) and
-                    (PipelineSets.entityID inList data.map { it.entity.id })
-        }) { it[isMatched] = true }
-    }
 }

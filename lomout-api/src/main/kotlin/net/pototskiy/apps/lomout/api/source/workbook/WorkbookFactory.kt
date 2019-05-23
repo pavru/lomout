@@ -25,12 +25,12 @@ class WorkbookFactory {
      */
     companion object {
         /**
-         * Create CSV or Excel workbook from file
+         * Create CSV or Excel workbook from the file
          *
-         * @param source URL The source file URL
-         * @param workbookLocale Locale The source file locale
-         * @param forInput Boolean The flag that workbook will be used for reading
-         * @return Workbook The created workbook
+         * @param source The source file URL
+         * @param workbookLocale The source file locale
+         * @param forInput The flag that workbook will be used for reading
+         * @return The created workbook
          */
         fun create(source: URL, workbookLocale: Locale = DEFAULT_LOCALE, forInput: Boolean = true): Workbook {
             val fileName = File(source.file).name
@@ -60,9 +60,7 @@ class WorkbookFactory {
 
         private fun xssfWorkbook(forInput: Boolean, input: URL): org.apache.poi.ss.usermodel.Workbook =
             if (forInput) {
-                XSSFWorkbook(input.openStream())/*.also {
-                    XSSFFormulaEvaluator.evaluateAllFormulaCells(it)
-                }*/
+                XSSFWorkbook(input.openStream())
             } else {
                 XSSFWorkbook()
             }
