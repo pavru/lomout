@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.*
 
 object DataLoader {
     private const val millisInSecond = 1000.0
-    private var startTime = DateTime()
     private val processedRows = AtomicLong(0)
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
@@ -26,7 +25,7 @@ object DataLoader {
     fun load(config: Config) = runBlocking {
         val loader = config.loader ?: return@runBlocking
         statusLog.info("Data loading has started")
-        startTime = DateTime()
+        val startTime = DateTime()
         val jobs = mutableListOf<Job>()
         val orderedLoads = loader.loads.map { load ->
             load.sources.map { it.file to load }

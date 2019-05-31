@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.*
 
 object DataPrinter {
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
-    private var startTime = DateTime()
     private val printedRows = AtomicLong(0L)
     private val log = LogManager.getLogger(PRINTER_LOG_NAME)
 
@@ -23,7 +22,7 @@ object DataPrinter {
         transaction { PipelineSets.deleteAll() }
         val printer = config.printer ?: return
         statusLog.info("Data printing has started")
-        startTime = DateTime()
+        val startTime = DateTime()
         val orderedLines = printer.lines.groupBy { it.outputFieldSets.file.file.id }
         orderedLines.forEach { (_, lines) ->
             lines.forEach { line ->
