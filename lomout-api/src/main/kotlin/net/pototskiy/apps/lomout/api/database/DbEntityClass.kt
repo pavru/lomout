@@ -83,7 +83,7 @@ abstract class DbEntityClass(
             val alias = attrTable.alias("${attr.name}_table")
             from = from.innerJoin(alias, { table.id }, { alias[attrTable.owner] })
             where = where.and(Op.build { alias[attrTable.code] eq attr.name })
-            where = where.and(equalsBuild(alias[attrTable.value], value))
+            where = where.and(buildEquals(alias[attrTable.value], value))
         }
         from
             .slice(table.columns)
@@ -197,7 +197,7 @@ abstract class DbEntityClass(
  * @return Expression<Boolean>
  */
 @Suppress("UNCHECKED_CAST")
-fun equalsBuild(column: Column<*>, value: Type): Expression<Boolean> =
+fun buildEquals(column: Column<*>, value: Type): Expression<Boolean> =
     when (column.columnType) {
         is VarCharColumnType -> Op.build { (column as Column<String>) eq (value.value as String) }
         is LongColumnType -> Op.build { (column as Column<Long>) eq (value.value as Long) }

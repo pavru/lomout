@@ -16,7 +16,6 @@ object DataMediator {
     private const val DEFAULT_MAX_AGE = 10
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     private val log = LogManager.getLogger(PRINTER_LOG_NAME)
-    private var startTime = DateTime()
     private val processedRows = AtomicLong(0L)
     private const val millisInSecond: Double = 1000.0
 
@@ -24,7 +23,7 @@ object DataMediator {
         transaction { PipelineSets.deleteAll() }
         val mediator = config.mediator ?: return
         statusLog.info("Data mediating has started")
-        startTime = DateTime()
+        val startTime = DateTime()
         val orderedLines = mediator.lines.groupBy { it.outputEntity.name }
         orderedLines.forEach { (_, lines) ->
             lines.forEach {

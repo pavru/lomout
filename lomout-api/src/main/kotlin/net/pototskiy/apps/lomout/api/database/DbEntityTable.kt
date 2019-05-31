@@ -48,13 +48,43 @@ object DbEntityTable : IntIdTable("entity") {
     val absentDays = integer("absent_days").index()
 }
 
+/**
+ * [DbEntityTable] synonym
+ */
 val EntityTab = DbEntityTable
+/**
+ * [DbEntityTable.id] synonym
+ */
 val EntityIdCol = DbEntityTable.id
+/**
+ * [DbEntityTable.entityType] synonym
+ */
 val EntityTypeCol = DbEntityTable.entityType
+/**
+ * [DbEntityTable.touchedInLoading] synonym
+ */
 val EntityTouchedCol = DbEntityTable.touchedInLoading
+/**
+ * [DbEntityTable.previousStatus] synonym
+ */
 val EntityPStatusCol = DbEntityTable.previousStatus
+/**
+ * [DbEntityTable.currentStatus]
+ */
 val EntityCStatusCol = DbEntityTable.currentStatus
+/**
+ * [DbEntityTable.created] synonym
+ */
 val EntityCreatedCol = DbEntityTable.created
+/**
+ * [DbEntityTable.updated] synonym
+ */
 val EntityUpdatedCol = DbEntityTable.updated
+/**
+ * [DbEntityTable.removed] synonym
+ */
 val EntityRemovedCol = DbEntityTable.removed
+/**
+ * [DbEntityTable.absentDays] synonym
+ */
 val EntityAbsentCol = DbEntityTable.absentDays
