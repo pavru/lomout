@@ -14,7 +14,8 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 open class DoubleAttributeReader : AttributeReaderPlugin<DoubleType>() {
     var locale: String = DEFAULT_LOCALE_STR
+    var groupingUsed: Boolean = false
 
     override fun read(attribute: Attribute<out DoubleType>, input: Cell): DoubleType? =
-        input.readDouble(locale.createLocale())?.let { DoubleType(it) }
+        input.readDouble(locale.createLocale(), groupingUsed)?.let { DoubleType(it) }
 }

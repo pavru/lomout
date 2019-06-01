@@ -27,8 +27,6 @@ class ConfigurationBuilderFromDSL(
     private val cacheDir: String = "tmp/config/cache",
     private val doNotUseCache: Boolean = false
 ) {
-    private val millisInSecond = 1000.0
-
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)!!
 
     private var configCache: Config? = null
@@ -56,7 +54,7 @@ class ConfigurationBuilderFromDSL(
             }
             compileResult.asSuccess()
         }
-        val duration = Duration(startTime, DateTime()).millis.toDouble() / millisInSecond
+        val duration = Duration(startTime, DateTime()).millis.toDouble() / MILLIS_IN_SECOND
         statusLog.info("Configuration loading has finished, duration: ${duration}s")
         return evaluatedConfig
     }
@@ -68,5 +66,8 @@ class ConfigurationBuilderFromDSL(
         } else {
             null
         }
+    }
+    companion object {
+        private const val MILLIS_IN_SECOND = 1000.0
     }
 }

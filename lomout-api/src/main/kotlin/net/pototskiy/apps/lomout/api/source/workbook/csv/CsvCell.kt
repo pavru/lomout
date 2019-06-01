@@ -35,6 +35,10 @@ class CsvCell(
     private val backingRow: CsvRow
 ) : Cell {
     /**
+     * In case of dell is number this flag indicates is it grouping.
+     */
+    private var isNumberGroupingUsed = false
+    /**
      * Cell address
      */
     override val address: CellAddress
@@ -53,12 +57,12 @@ class CsvCell(
      * Long value of cell
      */
     override val longValue: Long
-        get() = backingValue.stringToLong(workbookLocale)
+        get() = backingValue.stringToLong(workbookLocale, isNumberGroupingUsed)
     /**
      * Double value of cell
      */
     override val doubleValue: Double
-        get() = backingValue.stringToDouble(workbookLocale)
+        get() = backingValue.stringToDouble(workbookLocale, isNumberGroupingUsed)
     /**
      * String value of cell
      */
@@ -148,19 +152,33 @@ class CsvCell(
 
     private fun String.tryDouble(): Boolean {
         return try {
-            this.stringToDouble(workbookLocale)
+            this.stringToDouble(workbookLocale, false)
+            isNumberGroupingUsed = false
             true
         } catch (e: ParseException) {
-            false
+            try {
+                this.stringToDouble(workbookLocale, true)
+                isNumberGroupingUsed = true
+                true
+            } catch (e: ParseException) {
+                false
+            }
         }
     }
 
     private fun String.tryLong(): Boolean {
         return try {
-            this.stringToLong(workbookLocale)
+            this.stringToLong(workbookLocale, false)
+            isNumberGroupingUsed = false
             true
         } catch (e: ParseException) {
-            false
+            try {
+                this.stringToLong(workbookLocale, true)
+                isNumberGroupingUsed = true
+                true
+            } catch (e: ParseException) {
+                false
+            }
         }
     }
 }

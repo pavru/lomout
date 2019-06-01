@@ -13,8 +13,10 @@ import java.util.*
  * @return Double?
  * @throws java.text.ParseException
  */
-fun String.stringToDouble(locale: Locale): Double {
-    val format = NumberFormat.getNumberInstance(locale)
+fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
+    val format = NumberFormat.getInstance(locale).apply {
+        isGroupingUsed = groupingUsed
+    }
     val position = ParsePosition(0)
     val value = format.parse(this.trim(), position)
         ?: throw ParseException("String cannot be parsed to double", position.index)

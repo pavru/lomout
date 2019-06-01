@@ -171,7 +171,7 @@ internal class MediatorBasicTest {
                             }
                             extAttribute<DoubleType>("corrected_amount", "amount") {
                                 reader { _, cell ->
-                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale()) * 11.0)
+                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale(), false) * 11.0)
                                 }
                             }
                         }
@@ -183,7 +183,7 @@ internal class MediatorBasicTest {
                             }
                             extAttribute<DoubleType>("corrected_amount", "amount") {
                                 reader { _, cell ->
-                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale()) * 13.0)
+                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale(), false) * 13.0)
                                 }
                             }
                         }
@@ -298,7 +298,7 @@ internal class MediatorBasicTest {
                             }
                             extAttribute<DoubleType>("corrected_amount", "amount") {
                                 reader { _, cell ->
-                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale()) * 11.0)
+                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale(), false) * 11.0)
                                 }
                             }
                         }
@@ -310,7 +310,7 @@ internal class MediatorBasicTest {
                             }
                             extAttribute<DoubleType>("corrected_amount", "amount") {
                                 reader { _, cell ->
-                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale()) * 13.0)
+                                    DoubleType(cell.stringValue.stringToDouble("en_US".createLocale(), false) * 13.0)
                                 }
                             }
                         }

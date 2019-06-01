@@ -13,9 +13,10 @@ import java.util.*
  * @return Long
  * @throws java.text.ParseException
  */
-fun String.stringToLong(locale: Locale): Long {
+fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
     val format = NumberFormat.getIntegerInstance(locale).apply {
         isParseIntegerOnly = true
+        isGroupingUsed = groupingUsed
     }
     val position = ParsePosition(0)
     val value = format.parse(this.trim(), position)

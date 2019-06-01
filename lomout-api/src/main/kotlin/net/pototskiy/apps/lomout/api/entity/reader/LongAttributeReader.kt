@@ -14,7 +14,8 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 open class LongAttributeReader : AttributeReaderPlugin<LongType>() {
     var locale: String = DEFAULT_LOCALE_STR
+    var groupingUsed = false
 
     override fun read(attribute: Attribute<out LongType>, input: Cell): LongType? =
-        input.readLong(locale.createLocale())?.let { LongType(it) }
+        input.readLong(locale.createLocale(), groupingUsed)?.let { LongType(it) }
 }
