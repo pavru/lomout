@@ -156,13 +156,7 @@ class CsvCell(
             isNumberGroupingUsed = false
             true
         } catch (e: ParseException) {
-            try {
-                this.stringToDouble(workbookLocale, true)
-                isNumberGroupingUsed = true
-                true
-            } catch (e: ParseException) {
-                false
-            }
+            false
         }
     }
 
@@ -172,13 +166,7 @@ class CsvCell(
             isNumberGroupingUsed = false
             true
         } catch (e: ParseException) {
-            try {
-                this.stringToLong(workbookLocale, true)
-                isNumberGroupingUsed = true
-                true
-            } catch (e: ParseException) {
-                false
-            }
+            false
         }
     }
 }
