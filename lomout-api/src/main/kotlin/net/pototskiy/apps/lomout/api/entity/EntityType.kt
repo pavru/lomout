@@ -163,8 +163,9 @@ abstract class EntityType(
          * * name — unique attribute name, scope is entity type, **mandatory**
          * * [key()][Attribute.Builder.key] — mark attribute as key, **at least one attribute must be marked as key**
          * * [nullable()][Attribute.Builder.nullable] — mark that attribute can have null value
-         * * [builder][Attribute.Builder.builder] — builder plugin of function for the attribute that is not in the source,
-         *  but can be built from another attributes, **only one builder can be defined**
+         * * [builder][Attribute.Builder.builder] — builder plugin of function for the attribute
+         *      that is not in the source, but can be built from another attributes,
+         *      **only one builder can be defined**
          * * [reader][Attribute.Builder.reader] — plugin or function that is used to read attribute value from
          *  source cell, optional, if it's omitted default reader will be used
          * * [writer][Attribute.Builder.writer] — plugin or function to write attribute value to cell, optional,

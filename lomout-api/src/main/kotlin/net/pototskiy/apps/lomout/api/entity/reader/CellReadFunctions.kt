@@ -99,12 +99,12 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
  * @return The value
  */
 @Suppress("ComplexMethod")
-fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
+fun Cell.readDouble(locale: Locale, groupingUsed: Boolean): Double? = when (this.cellType) {
     CellType.LONG -> this.longValue.toDouble()
     CellType.DOUBLE -> this.doubleValue
     CellType.BOOL -> if (this.booleanValue) 1.0 else 0.0
     CellType.STRING -> try {
-        this.stringValue.stringToDouble(locale)
+        this.stringValue.stringToDouble(locale, groupingUsed)
     } catch (e: AppDataException) {
         throw AppCellDataException(e.message, e)
     }
@@ -119,12 +119,12 @@ fun Cell.readDouble(locale: Locale): Double? = when (this.cellType) {
  * @return Long?
  */
 @Suppress("ComplexMethod")
-fun Cell.readLong(locale: Locale): Long? = when (this.cellType) {
+fun Cell.readLong(locale: Locale, groupingUsed: Boolean): Long? = when (this.cellType) {
     CellType.LONG -> this.longValue
     CellType.DOUBLE -> this.doubleValue.doubleToLong()
     CellType.BOOL -> if (this.booleanValue) 1L else 0L
     CellType.STRING -> try {
-        this.stringValue.stringToLong(locale)
+        this.stringValue.stringToLong(locale, groupingUsed)
     } catch (e: AppDataException) {
         throw AppCellDataException(e.message, e)
     }

@@ -46,7 +46,7 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                     }.toMap()
                 )
             }
-            CellType.BLANK -> return null
+            CellType.BLANK -> null
             else -> throw AppCellDataException(
                 "Reading attribute list from cell type<${input.cellType}> " +
                         "is not supported, attribute<${attribute.name}:${attribute.valueType.simpleName}>"

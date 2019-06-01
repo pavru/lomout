@@ -22,6 +22,7 @@ import org.apache.commons.csv.CSVFormat
 open class LongListAttributeReader : AttributeReaderPlugin<LongListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null
+    var groupingUsed: Boolean = false
     var delimiter: Char = ','
 
     override fun read(attribute: Attribute<out LongListType>, input: Cell): LongListType? = when (input.cellType) {
@@ -34,7 +35,7 @@ open class LongListAttributeReader : AttributeReaderPlugin<LongListType>() {
                     .parse(reader)
                     .records
                     .map { it.toList() }.flatten()
-                    .map { LongType(it.stringToLong(locale.createLocale())) }
+                    .map { LongType(it.stringToLong(locale.createLocale(), groupingUsed)) }
             }
             LongListType(listValue)
         }

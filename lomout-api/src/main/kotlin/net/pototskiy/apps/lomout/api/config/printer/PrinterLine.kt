@@ -94,9 +94,11 @@ class PrinterLine(
          *  }
          * ...
          * ```
-         * [file][net.pototskiy.apps.lomout.api.config.loader.SourceData.Builder] - define output file, **mandatory**
-         * printHead: Boolean - print headers in first row, *optional, default: true*
-         * [outputFields][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder] - define fields to print, **mandatory**
+         * * [file][net.pototskiy.apps.lomout.api.config.loader.SourceData.Builder] —
+         *      define output file, **mandatory**
+         * * printHead: Boolean — print headers in first row, *optional, default: true*
+         * * [outputFields][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder] —
+         *      define fields to print, **mandatory**
          *
          * @param block PrinterOutput.Builder.() -> Unit
          */

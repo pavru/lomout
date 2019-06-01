@@ -23,6 +23,7 @@ open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null
     var delimiter: Char = ','
+    var groupingUsed: Boolean = false
 
     override fun read(attribute: Attribute<out DoubleListType>, input: Cell): DoubleListType? =
         when (input.cellType) {
@@ -35,7 +36,7 @@ open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
                         .parse(reader)
                         .records
                         .map { it.toList() }.flatten()
-                        .map { DoubleType(it.stringToDouble(locale.createLocale())) }
+                        .map { DoubleType(it.stringToDouble(locale.createLocale(), groupingUsed)) }
                 }
                 DoubleListType(listValue)
             }
