@@ -4,7 +4,6 @@ import net.pototskiy.apps.lomout.api.AppCellDataException
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
 import net.pototskiy.apps.lomout.api.entity.AttributeListType
-import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -20,11 +19,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
-internal class DefaultAttributeListReaderTest {
+internal class LM35DefaultAttributeListReaderTest {
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
@@ -53,20 +51,15 @@ internal class DefaultAttributeListReaderTest {
     }
 
     @Test
-    internal fun readeAttributeListTest() {
+    internal fun readeAttributeListFromBlankTest() {
         val reader = AttributeListReader().apply {
             delimiter = ','
             quote = null
             valueDelimiter = '='
             valueQuote = '\''
         }
-        xlsTestDataCell.setCellValue("attr1='value1',attr2='value2'")
-        val list = reader.read(attr, inputCell)?.value
-        assertThat(list).isNotNull
-        assertThat(list?.keys)
-            .hasSize(2).containsExactlyElementsOf(listOf("attr1", "attr2"))
-        assertThat(list?.values?.map { it.asString() })
-            .hasSize(2).containsExactlyElementsOf(listOf("value1", "value2"))
+        xlsTestDataCell.setBlank()
+        assertThat(reader.read(attr, inputCell)).isNull()
     }
 
     @Test
@@ -79,39 +72,5 @@ internal class DefaultAttributeListReaderTest {
         }
         xlsTestDataCell.setCellValue(1.1)
         assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)
-    }
-
-    @Test
-    internal fun readeAttributeListUnsuccessfulTest() {
-        val reader = AttributeListReader().apply {
-            delimiter = ','
-            quote = null
-            valueDelimiter = '='
-            valueQuote = '\''
-        }
-        xlsTestDataCell.setCellValue("")
-        assertThat(reader.read(attr, inputCell)).isNull()
-        xlsTestDataCell.setCellValue("attr1,attr2")
-        assertThat(reader.read(attr, inputCell)).hasSize(2)
-        assertThat(reader.read(attr, inputCell)!!.map { (key, value) ->
-            key to value.stringValue
-        }.toMap()).containsAllEntriesOf(mapOf("attr1" to "", "attr2" to ""))
-    }
-
-    @Test
-    internal fun defaultDateReader() {
-        @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[AttributeListType::class]
-        assertThat(reader).isNotNull
-        assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
-        reader as AttributeReaderWithPlugin
-        assertThat(reader.pluginClass).isEqualTo(AttributeListReader::class)
-        val v = reader.pluginClass.createInstance() as AttributeListReader
-        @Suppress("UNCHECKED_CAST")
-        v.apply(reader.options as (AttributeListReader.() -> Unit))
-        assertThat(v.quote).isNull()
-        assertThat(v.delimiter).isEqualTo(',')
-        assertThat(v.valueDelimiter).isEqualTo('=')
-        assertThat(v.valueQuote).isEqualTo('"')
     }
 }
