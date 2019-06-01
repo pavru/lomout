@@ -25,6 +25,7 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
     override fun read(attribute: Attribute<out AttributeListType>, input: Cell): AttributeListType? {
         return when (input.cellType) {
             CellType.STRING -> {
+                if (input.stringValue.isBlank()) return null
                 val attrs = NestedAttributeWorkbook(
                     quote,
                     delimiter,
@@ -45,6 +46,7 @@ open class AttributeListReader : AttributeReaderPlugin<AttributeListType>() {
                     }.toMap()
                 )
             }
+            CellType.BLANK -> return null
             else -> throw AppCellDataException(
                 "Reading attribute list from cell type<${input.cellType}> " +
                         "is not supported, attribute<${attribute.name}:${attribute.valueType.simpleName}>"
