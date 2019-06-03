@@ -6,6 +6,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Printer line
@@ -53,8 +54,8 @@ class PrinterLine(
          *  }
          * ...
          * ```
-         * * entity - define entity for line input, **at least one entity must be defined**
-         * * entity_type - entity type name
+         * * entity — define entity for line input, **at least one entity must be defined**
+         * * entity_type — entity type name
          *
          * Printer line generate stream of entity from all defined inputs like SQL UNION
          *
@@ -65,10 +66,16 @@ class PrinterLine(
             this.inputs = InputEntityCollection.Builder(helper).also(block).build()
             this.inputs?.let {
                 if (it.size != 1) {
-                    throw AppConfigException("One and only one input entity is allowed for printer line")
+                    throw AppConfigException(
+                        unknownPlace(),
+                        "One and only one input entity is allowed for printer line."
+                    )
                 }
                 if (it.first().extAttrMaps.isNotEmpty()) {
-                    throw AppConfigException("Input entity of printer line cannot have extended attributes")
+                    throw AppConfigException(
+                        unknownPlace(),
+                        "Input entity of printer line cannot have extended attributes."
+                    )
                 }
             }
         }
@@ -100,14 +107,14 @@ class PrinterLine(
          * * [outputFields][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder] —
          *      define fields to print, **mandatory**
          *
-         * @param block PrinterOutput.Builder.() -> Unit
+         * @param block The output definition
          */
         @ConfigDsl
         fun output(block: PrinterOutput.Builder.() -> Unit) {
             this.outputs = PrinterOutput.Builder(
                 helper,
                 inputs?.first()?.entity
-                    ?: throw AppConfigException("Input must be defined before output")
+                    ?: throw AppConfigException(unknownPlace(), "Input must be defined before output.")
             ).apply(block).build()
         }
 
@@ -145,16 +152,16 @@ class PrinterLine(
          *  }
          * ...
          * ```
-         * * [classifier][Pipeline.Builder.classifier] - entity classifier, it splits input of pipeline into 2 streams:
+         * * [classifier][Pipeline.Builder.classifier] — entity classifier, it splits input of pipeline into 2 streams:
          *      matched entities and unmatched entities. This is *optional* component, **only one classifier is allowed
          *      per pipeline**. If classifier is omitted all entities go to assembler.
-         * * [assembler][Pipeline.Builder.assembler] - entity assembler, it prepares target entity attribute as map.
+         * * [assembler][Pipeline.Builder.assembler] — entity assembler, it prepares target entity attribute as map.
          *      If pipeline has not child pipeline it must have assembler.
-         * * [pipeline][Pipeline.Builder.pipeline] - child pipeline, parameter indicates for which entities (matched,
+         * * [pipeline][Pipeline.Builder.pipeline] — child pipeline, parameter indicates for which entities (matched,
          *      unmatched) pipeline must be applied
          *
          * @param klass Array<out CLASS>
-         * @param block Pipeline.Builder.() -> Unit
+         * @param block The pipeline definition
          */
         @ConfigDsl
         @Suppress("SpreadOperator")
@@ -172,17 +179,17 @@ class PrinterLine(
          */
         @Suppress("ThrowsCount")
         fun build(): PrinterLine {
-            validatePipeline(pipeline ?: throw AppConfigException("Pipeline must be defined"))
+            validatePipeline(pipeline ?: throw AppConfigException(unknownPlace(), "Pipeline must be defined."))
             return PrinterLine(
-                inputs ?: throw AppConfigException("Input entities must be defined"),
-                outputs ?: throw AppConfigException("Output fields must be defined"),
-                pipeline ?: throw AppConfigException("Pipeline must be defined")
+                inputs ?: throw AppConfigException(unknownPlace(), "Input entities must be defined."),
+                outputs ?: throw AppConfigException(unknownPlace(), "Output fields must be defined."),
+                pipeline ?: throw AppConfigException(unknownPlace(), "Pipeline must be defined.")
             )
         }
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw AppConfigException("Pipeline with the matched child must have assembler")
+                throw AppConfigException(unknownPlace(), "Pipeline with the matched child must have assembler.")
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }

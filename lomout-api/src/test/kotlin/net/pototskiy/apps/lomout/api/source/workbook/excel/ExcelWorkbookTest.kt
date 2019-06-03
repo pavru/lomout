@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.source.workbook.excel
 
-import net.pototskiy.apps.lomout.api.AppCellException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
@@ -145,7 +145,7 @@ internal class ExcelWorkbookTest {
             assertThat(row[5]!!.doubleValue).isEqualTo(3.0)
             assertThat(row[5]!!.address).isEqualTo(CellAddress(0, 5))
             Assertions.assertThatThrownBy { row[6]!!.cellType }
-                .isInstanceOf(AppCellException::class.java)
+                .isInstanceOf(AppDataException::class.java)
                 .hasMessageContaining("Unsupported cell type")
         }
     }
@@ -196,7 +196,7 @@ internal class ExcelWorkbookTest {
             assertThat(row[5]!!.asString()).isEqualTo("3")
             assertThat(row[5]!!.address).isEqualTo(CellAddress(0, 5))
             Assertions.assertThatThrownBy { row[6]!!.asString() }
-                .isInstanceOf(AppCellException::class.java)
+                .isInstanceOf(AppDataException::class.java)
                 .hasMessageContaining("Unsupported cell type")
         }
     }

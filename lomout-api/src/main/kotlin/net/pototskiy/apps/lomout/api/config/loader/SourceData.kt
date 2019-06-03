@@ -4,6 +4,9 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
+import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
+import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithPattern
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Source data configuration
@@ -30,7 +33,7 @@ data class SourceData(
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var file: SourceFileDefinition? = null
-        private var sheet: SourceSheetDefinition = SourceSheetDefinition(null, Regex(".*"))
+        private var sheet: SourceSheetDefinition = SourceSheetDefinitionWithPattern(Regex(".*"))
         private var emptyRowBehavior: EmptyRowBehavior = EmptyRowBehavior.IGNORE
         /**
          * Define the file of source data as reference to files block
@@ -40,7 +43,7 @@ data class SourceData(
         @Suppress("unused")
         fun file(id: String) {
             file = helper.definedSourceFiles.findRegistered(id)
-                ?: throw AppConfigException("Source file<id:$id> is not defined")
+                ?: throw AppConfigException(unknownPlace(), "Source file '$id' is not defined.")
         }
 
         /**
@@ -50,7 +53,7 @@ data class SourceData(
          */
         @Suppress("unused")
         fun sheet(sheet: String) {
-            this.sheet = SourceSheetDefinition(name = sheet)
+            this.sheet = SourceSheetDefinitionWithName(sheet)
         }
 
         /**
@@ -60,7 +63,7 @@ data class SourceData(
          */
         @Suppress("unused")
         fun sheet(sheet: Regex) {
-            this.sheet = SourceSheetDefinition(pattern = sheet)
+            this.sheet = SourceSheetDefinitionWithPattern(sheet)
         }
 
         /**
@@ -85,7 +88,7 @@ data class SourceData(
          * @return SourceData
          */
         fun build(): SourceData = SourceData(
-            this.file ?: throw AppConfigException("File id is not defined"),
+            this.file ?: throw AppConfigException(unknownPlace(), "File id is not defined."),
             this.sheet,
             this.emptyRowBehavior
         )

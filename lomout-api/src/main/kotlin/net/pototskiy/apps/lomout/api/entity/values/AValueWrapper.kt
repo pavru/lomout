@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.badData
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.AttributeListType
 import net.pototskiy.apps.lomout.api.entity.BooleanListType
@@ -18,6 +19,7 @@ import net.pototskiy.apps.lomout.api.entity.StringType
 import net.pototskiy.apps.lomout.api.entity.TextListType
 import net.pototskiy.apps.lomout.api.entity.TextType
 import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.joda.time.DateTime
 
@@ -63,6 +65,9 @@ fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
             TextListType(list.map { TextType(it) })
         }
         AttributeListType::class -> (value as? Map<String, Cell>)?.let { AttributeListType(it) }
-        else -> throw AppDataException("Unexpected type<${attribute.valueType.simpleName}>")
-    } ?: throw AppDataException("Cannot wrap value to ${attribute.valueType.simpleName}")
+        else -> throw AppDataException(
+            badData(value) + attribute,
+            "Unexpected type."
+        )
+    } ?: throw AppDataException(badData(value) + attribute, "Cannot wrap value.")
 }

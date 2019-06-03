@@ -1,7 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.DateType
 import net.pototskiy.apps.lomout.api.entity.isTypeOf
@@ -13,10 +13,12 @@ import net.pototskiy.apps.lomout.api.entity.values.stringToDate
 import net.pototskiy.apps.lomout.api.entity.values.stringToDateTime
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
+import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import org.joda.time.DateTime
+import java.text.ParseException
 import java.util.*
 
 /**
@@ -26,7 +28,7 @@ import java.util.*
  * @param attribute The destination attribute
  * @param locale The locale for converting
  * @return Read value
- * @throws AppCellDataException The string value cannot be converted to [DateTime]
+ * @throws AppDataException The string value cannot be converted to [DateTime]
  */
 @Suppress("ComplexMethod")
 fun Cell.readeDateTime(
@@ -36,15 +38,16 @@ fun Cell.readeDateTime(
     CellType.LONG -> DateTime(Date(this.longValue))
     CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
     CellType.BOOL -> null
-    CellType.STRING -> try {
-        if (attribute.valueType.isTypeOf<DateType>()) {
-            this.stringValue.stringToDate(locale)
-        } else {
-            this.stringValue.stringToDateTime(locale)
+    CellType.STRING ->
+        try {
+            if (attribute.valueType.isTypeOf<DateType>()) {
+                this.stringValue.stringToDate(locale)
+            } else {
+                this.stringValue.stringToDateTime(locale)
+            }
+        } catch (e: AppDataException) {
+            throw AppDataException(e.place + this + attribute, e.message, e)
         }
-    } catch (e: AppDataException) {
-        throw AppCellDataException(e.message, e)
-    }
     CellType.BLANK -> null
 }
 
@@ -55,7 +58,7 @@ fun Cell.readeDateTime(
  * @param attribute The destination attribute
  * @param pattern The date-time pattern for converting
  * @return Read value
- * @throws AppCellDataException The string value cannot be converted to [DateTime]
+ * @throws AppDataException The string value cannot be converted to [DateTime]
  */
 fun Cell.readeDateTime(
     @Suppress("UNUSED_PARAMETER") attribute: Attribute<*>,
@@ -64,11 +67,12 @@ fun Cell.readeDateTime(
     CellType.LONG -> DateTime(Date(this.longValue))
     CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
     CellType.BOOL -> null
-    CellType.STRING -> try {
-        this.stringValue.stringToDateTime(pattern)
-    } catch (e: AppDataException) {
-        throw AppCellDataException(e.message, e)
-    }
+    CellType.STRING ->
+        try {
+            this.stringValue.stringToDateTime(pattern)
+        } catch (e: AppDataException) {
+            throw AppDataException(e.place + this + attribute, e.message, e)
+        }
     CellType.BLANK -> null
 }
 
@@ -86,7 +90,7 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.STRING -> try {
         this.stringValue.stringToBoolean(locale)
     } catch (e: AppDataException) {
-        throw AppCellDataException(e.message, e)
+        throw AppDataException(e.place + this, e.message, e)
     }
     CellType.BLANK -> null
 }
@@ -105,8 +109,8 @@ fun Cell.readDouble(locale: Locale, groupingUsed: Boolean): Double? = when (this
     CellType.BOOL -> if (this.booleanValue) 1.0 else 0.0
     CellType.STRING -> try {
         this.stringValue.stringToDouble(locale, groupingUsed)
-    } catch (e: AppDataException) {
-        throw AppCellDataException(e.message, e)
+    } catch (e: ParseException) {
+        throw AppDataException(badPlace(this), e.message, e)
     }
     CellType.BLANK -> null
 }
@@ -125,8 +129,8 @@ fun Cell.readLong(locale: Locale, groupingUsed: Boolean): Long? = when (this.cel
     CellType.BOOL -> if (this.booleanValue) 1L else 0L
     CellType.STRING -> try {
         this.stringValue.stringToLong(locale, groupingUsed)
-    } catch (e: AppDataException) {
-        throw AppCellDataException(e.message, e)
+    } catch (e: ParseException) {
+        throw AppDataException(badPlace(this), e.message, e)
     }
     CellType.BLANK -> null
 }

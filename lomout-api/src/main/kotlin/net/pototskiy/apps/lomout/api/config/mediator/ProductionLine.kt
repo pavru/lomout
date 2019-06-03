@@ -5,6 +5,7 @@ import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityType
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Mediator production line configuration
@@ -54,7 +55,7 @@ class ProductionLine(
          *  }
          * ...
          * ```
-         * * [entity][InputEntityCollection.Builder.entity] - define input entity, **at least one must be defined**
+         * * [entity][InputEntityCollection.Builder.entity] — define input entity, **at least one must be defined**
          *
          * @param block The pipeline input definition
          */
@@ -76,7 +77,7 @@ class ProductionLine(
          * ```
          *
          * @param klass Array<out CLASS>
-         * @param block Pipeline.Builder.() -> Unit
+         * @param block The pipeline definition
          */
         fun pipeline(
             vararg klass: Pipeline.CLASS = arrayOf(Pipeline.CLASS.MATCHED, Pipeline.CLASS.UNMATCHED),
@@ -133,18 +134,18 @@ class ProductionLine(
         fun build(): ProductionLine {
             validatePipeline(
                 pipeline
-                    ?: throw AppConfigException("Production line must have start pipeline")
+                    ?: throw AppConfigException(unknownPlace(), "Production line must have start pipeline.")
             )
             return ProductionLine(
-                inputs ?: throw AppConfigException("At least one input entity must be defined"),
-                output ?: throw AppConfigException("Output entity must be defined"),
+                inputs ?: throw AppConfigException(unknownPlace(), "At least one input entity must be defined."),
+                output ?: throw AppConfigException(unknownPlace(), "Output entity must be defined."),
                 pipeline!!
             )
         }
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw AppConfigException("Pipeline with the matched child must have assembler")
+                throw AppConfigException(unknownPlace(), "Pipeline with the matched child must have assembler.")
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }

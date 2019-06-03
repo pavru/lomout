@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.entity.values
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.PublicApi
+import net.pototskiy.apps.lomout.api.badData
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.util.*
@@ -20,7 +21,8 @@ fun String.stringToDate(locale: Locale): DateTime {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
         throw AppDataException(
-            "String cannot be converted to date with the locale<$locale>.",
+            badData(this),
+            "String cannot be converted to date with the locale '$locale'.",
             e
         )
     }
@@ -39,7 +41,7 @@ fun String.stringToDateTime(pattern: String): DateTime {
     return try {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
-        throw AppDataException("String cannot be converted to date with the pattern<$pattern>.", e)
+        throw AppDataException(badData(this), "String cannot be converted to date with the pattern '$pattern'.", e)
     }
 }
 
@@ -57,7 +59,8 @@ fun String.stringToDateTime(locale: Locale): DateTime {
         format.parseDateTime(this.trim())
     } catch (e: IllegalArgumentException) {
         throw AppDataException(
-            "String cannot be converted to date-time with the locale<$locale>.",
+            badData(this),
+            "String cannot be converted to date-time with the locale '$locale'.",
             e
         )
     }

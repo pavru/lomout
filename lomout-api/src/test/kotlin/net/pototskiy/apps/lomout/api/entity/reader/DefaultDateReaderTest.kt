@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.Attribute
@@ -115,8 +115,8 @@ internal class DefaultDateReaderTest {
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
-            .isInstanceOf(AppCellDataException::class.java)
-            .hasMessageContaining("String cannot be converted to date with the locale")
+            .isInstanceOf(AppDataException::class.java)
+            .hasMessageContaining("String cannot be converted to date with the locale 'ru_RU'.")
         xlsTestDataCell.setCellValue(
             expected.toString(
                 DateTimeFormat.forPattern(
@@ -126,7 +126,7 @@ internal class DefaultDateReaderTest {
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }
-            .isInstanceOf(AppCellDataException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String cannot be converted to date with the locale")
         assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(expected)
     }
@@ -140,11 +140,11 @@ internal class DefaultDateReaderTest {
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
-            .isInstanceOf(AppCellDataException::class.java)
+            .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String cannot be converted to date with the pattern")
         xlsTestDataCell.setCellValue(expected.toString(DateTimeFormat.forPattern("d.M.YY")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)
+        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
         assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(expected)
     }
 

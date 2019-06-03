@@ -4,6 +4,7 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
+import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 
 /**
@@ -162,5 +163,5 @@ fun Any.config(block: Config.Builder.() -> Unit) {
         val helper = ConfigBuildHelper(EntityTypeManager())
         script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
-        throw AppConfigException("Wrong config script object type")
+        throw AppConfigException(unknownPlace(), "Wrong config script object type.")
 }

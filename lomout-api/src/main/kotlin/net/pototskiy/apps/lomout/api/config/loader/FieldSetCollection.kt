@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.config.loader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
+import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.EntityType
 
 /**
@@ -108,7 +109,7 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
          */
         fun build(): FieldSetCollection {
             if (!fieldSets.any { it.mainSet }) {
-                throw AppConfigException("Field set collection must contain main set")
+                throw AppConfigException(unknownPlace(), "Field set collection must contain main set.")
             }
             return FieldSetCollection(fieldSets)
         }

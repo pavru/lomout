@@ -17,16 +17,16 @@ internal class LM36StringToLongKtTest {
         assertThatThrownBy {
             "1.2".stringToLong(Locale("en_US"), false)
         }.isInstanceOf(ParseException::class.java)
-            .hasMessage("String contains extra characters")
+            .hasMessage("String contains extra characters.")
         assertThatThrownBy {
             "1,2".stringToLong(Locale("en_US"), false)
         }.isInstanceOf(ParseException::class.java)
-            .hasMessage("String contains extra characters")
+            .hasMessage("String contains extra characters.")
         assertThat("1,2".stringToLong(Locale("en_US"), true)).isEqualTo(12L)
         assertThat("1${160.toChar()}2".stringToLong(Locale("ru"), true)).isEqualTo(12L)
         assertThatThrownBy {
             "abc".stringToLong(Locale.US, true)
         }.isInstanceOf(ParseException::class.java)
-            .hasMessage("String cannot be parsed to long")
+            .hasMessage("String cannot be parsed to long.")
     }
 }

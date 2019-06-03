@@ -16,9 +16,9 @@ import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
  * @property name String
  * @property type WorkbookType
  * @constructor
- * @param quote Char? The name-value pair quote, null - no quote
+ * @param quote Char? The name-value pair quote, null — no quote
  * @param delimiter Char The name-value pairs delimiter
- * @param valueQuote Char? The value quote, null - no quote
+ * @param valueQuote Char? The value quote, null — no quote
  * @param valueDelimiter Char The name-value delimiter
  * @param attributeName String The owner attribute
  */

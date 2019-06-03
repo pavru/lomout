@@ -29,6 +29,6 @@ fun Double.doubleToLong(): Long {
     return if (this.fraction == 0.0) {
         this.floorToLong()
     } else {
-        throw TypeCastException("Double value<$this> has non-zero fraction and cannot be converted to Long")
+        throw TypeCastException("Double value '$this' has non-zero fraction and cannot be converted to Long.")
     }
 }

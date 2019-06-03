@@ -1,5 +1,3 @@
-import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
-
 class CategoryClassifier : PipelineClassifierPlugin() {
     override fun classify(element: ClassifierElement): ClassifierElement {
         try {
@@ -11,7 +9,7 @@ class CategoryClassifier : PipelineClassifierPlugin() {
             if (group["transformed_path"] == categoryPath) return element.match()
             return element.mismatch()
         } catch (e: Exception) {
-            throw AppPluginException(e.message, e)
+            throw AppDataException(unknownPlace(), e.message, e)
         }
     }
 

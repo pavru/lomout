@@ -5,6 +5,7 @@ import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.createLocale
+import net.pototskiy.apps.lomout.api.unknownPlace
 import java.io.File
 import java.util.*
 
@@ -37,9 +38,9 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
          *  }
          * ...
          * ```
-         * * file - define the file with id
-         * * [path][PathBuilder.path] - define file path, **mandatory**
-         * * [locale][PathBuilder.locale] - define file locale, optional
+         * * file — define the file with id
+         * * [path][PathBuilder.path] — define file path, **mandatory**
+         * * [locale][PathBuilder.locale] — define file locale, optional
          *
          * @see PathBuilder
          *
@@ -95,7 +96,7 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
              */
             fun build(): Pair<File, Locale> {
                 return Pair(
-                    File(path ?: throw AppConfigException("File path must be defined")),
+                    File(path ?: throw AppConfigException(unknownPlace(), "File path must be defined.")),
                     locale.createLocale()
                 )
             }

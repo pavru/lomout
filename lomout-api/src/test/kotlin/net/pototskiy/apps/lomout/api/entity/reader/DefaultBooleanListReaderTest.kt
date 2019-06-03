@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
@@ -62,7 +62,7 @@ internal class DefaultBooleanListReaderTest {
         val reader = BooleanListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)
+        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test

@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppAttributeException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.Generated
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
@@ -13,6 +13,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReaderFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
+import net.pototskiy.apps.lomout.api.unknownPlace
 import kotlin.reflect.KClass
 
 /**
@@ -299,13 +300,13 @@ abstract class Attribute<T : Type>(
 
         private fun validateKeyIsNotNullable() {
             if (key && nullable) {
-                throw AppAttributeException("Key attribute cannot be nullable")
+                throw AppConfigException(unknownPlace(), "Key attribute cannot be nullable.")
             }
         }
 
         private fun validateKeyIsNotList() {
             if (key && (typeClass.isList() || builder != null)) {
-                throw AppAttributeException("Key attribute cannot have list type or builder")
+                throw AppConfigException(unknownPlace(), "Key attribute cannot have list type or builder.")
             }
         }
     }

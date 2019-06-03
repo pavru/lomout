@@ -1,10 +1,10 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityTypeCollection
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Loader configuration class and builder
@@ -103,18 +103,18 @@ data class LoaderConfiguration(
          *  }
          * ...
          * ```
-         * * fromSources - sources collection to load data from, **at least one source must be defined**
-         * * rowsToSkip - number of rows (including header row) to skip before start loading, *optional*
-         * * keepAbsentForDays - how long to keep entities that are absent in source data, entities will be
+         * * fromSources — sources collection to load data from, **at least one source must be defined**
+         * * rowsToSkip — number of rows (including header row) to skip before start loading, *optional*
+         * * keepAbsentForDays — how long to keep entities that are absent in source data, entities will be
          *      marked as removed
-         * * sourceFields - define source data fields
+         * * sourceFields — define source data fields
          *
          * @param entityType The entity type name
          * @param block The entity loading instruction
          */
         fun loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
             val entity = helper.typeManager.getEntityType(entityType)
-                ?: throw AppEntityTypeException("Define entity<$entityType> before load configuration")
+                ?: throw AppConfigException(unknownPlace(), "Entity is not defined.")
             loads.add(Load.Builder(helper, entity).apply(block).build())
         }
 
@@ -124,10 +124,11 @@ data class LoaderConfiguration(
          * @return LoaderConfiguration
          */
         fun build(): LoaderConfiguration {
-            val files = this.files ?: throw AppConfigException("Files is not defined in loader section")
+            val files =
+                this.files ?: throw AppConfigException(unknownPlace(), "Files is not defined in loader section.")
             return LoaderConfiguration(
                 files,
-                entities ?: throw AppEntityTypeException("At least one entity must be defined"),
+                entities ?: throw AppConfigException(unknownPlace(), "At least one entity must be defined."),
                 LoadCollection(loads)
             )
         }

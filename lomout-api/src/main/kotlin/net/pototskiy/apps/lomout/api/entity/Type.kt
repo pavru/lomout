@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.entity
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.Generated
 import net.pototskiy.apps.lomout.api.PublicApi
+import net.pototskiy.apps.lomout.api.badData
 import net.pototskiy.apps.lomout.api.entity.Type.Companion.TYPE_NOT_SUPPORT_SQL
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.jetbrains.exposed.sql.BooleanColumnType
@@ -62,9 +63,9 @@ sealed class Type {
      */
     fun sqlType(): KClass<out IColumnType> {
         when {
-            isTransient -> throw AppDataException(TYPE_NOT_SUPPORT_SQL)
+            isTransient -> throw AppDataException(badData(this), TYPE_NOT_SUPPORT_SQL)
             this.sqlType != NoSqlColumn::class -> return this.sqlType
-            else -> throw AppDataException(TYPE_NOT_SUPPORT_SQL)
+            else -> throw AppDataException(badData(value), TYPE_NOT_SUPPORT_SQL)
         }
     }
 
@@ -105,7 +106,7 @@ sealed class Type {
         /**
          * Error message for unsupported types
          */
-        const val TYPE_NOT_SUPPORT_SQL = "Type does not support sql column type"
+        const val TYPE_NOT_SUPPORT_SQL = "Type does not support sql column type."
     }
 }
 
@@ -162,7 +163,7 @@ fun KClass<out Type>.sqlType(): KClass<out IColumnType> {
             return type as KClass<out IColumnType>
         }
     }
-    throw AppDataException(TYPE_NOT_SUPPORT_SQL)
+    throw AppDataException(badData(this), TYPE_NOT_SUPPORT_SQL)
 }
 
 /**
@@ -251,6 +252,7 @@ open class LongType(
      * Related SQL type
      */
     override val sqlType: KClass<LongColumnType> = LongColumnType::class
+
     /**
      * To string
      *
@@ -283,6 +285,7 @@ class DoubleType(
      * Related SQL type
      */
     override val sqlType: KClass<DoubleColumnType> = DoubleColumnType::class
+
     /**
      * To string
      *
@@ -315,6 +318,7 @@ class StringType(
      * Related SQL type
      */
     override val sqlType: KClass<VarCharColumnType> = VarCharColumnType::class
+
     /**
      * To string
      *
@@ -347,6 +351,7 @@ class DateType(
      * Related SQL type
      */
     override val sqlType: KClass<DateColumnType> = DateColumnType::class
+
     /**
      * To string
      *
@@ -371,6 +376,7 @@ class DateTimeType(
      * Related SQL type
      */
     override val sqlType: KClass<DateColumnType> = DateColumnType::class
+
     /**
      * To string
      *
@@ -395,6 +401,7 @@ class TextType(
      * Related SQL type
      */
     override val sqlType: KClass<TextColumnType> = TextColumnType::class
+
     /**
      * To string
      *
@@ -569,7 +576,7 @@ fun Type.toList(): ListType<*> {
         is TextListType,
         is DateListType,
         is DateTimeListType,
-        is AttributeListType -> throw AppDataException("Value already is list")
+        is AttributeListType -> throw AppDataException(badData(this), "Value already is list.")
         is BooleanType -> BooleanListType(listOf(this))
         is LongType -> LongListType(listOf(this))
         is DoubleType -> DoubleListType(listOf(this))

@@ -1,7 +1,6 @@
 package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.database.EntityStatus
@@ -103,8 +102,8 @@ internal class MediatorConfigurationBuilderTest {
     @Test
     internal fun checkInputEntityDefinedTest() {
         assertThatThrownBy { createConfInputNotExists() }
-            .isInstanceOf(AppEntityTypeException::class.java)
-            .hasMessageContaining("Entity<input-entity-3> has not been defined yet")
+            .isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Entity has not been defined yet.")
     }
 
     @Test

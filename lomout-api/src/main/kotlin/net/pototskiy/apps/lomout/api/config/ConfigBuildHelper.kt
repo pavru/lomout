@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileDefinition
+import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import java.util.*
@@ -72,7 +73,7 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
         fun register(entity: T) {
             val scope = currentScope()
             if (register[scope]?.any { it.name == entity.name } == true)
-                throw AppConfigException("The scope<$scope> already has the object")
+                throw AppConfigException(unknownPlace(), "The scope '$scope' already has the object.")
             register.getOrPut(scope) { mutableListOf() }.add(entity)
         }
 

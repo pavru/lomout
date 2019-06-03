@@ -87,19 +87,22 @@ class ConfigHost(
                     enableScriptsInstancesSharing()
                 }).onFailure { result ->
                     result.reports.forEach { diagnostic ->
-                        logMessage(
-                            diagnostic.severity,
-                            diagnostic.message,
-                            File(diagnostic.sourcePath).name,
-                            diagnostic.location?.start?.line ?: 0
-                        )
-                        ((diagnostic.exception?.cause) ?: diagnostic.exception)?.let {
-                            val position = findExceptionPosition(it, File(diagnostic.sourcePath))
+                        if (diagnostic.exception != null || diagnostic.exception?.cause != null) {
+                            ((diagnostic.exception?.cause) ?: diagnostic.exception)?.let {
+                                val position = findExceptionPosition(it, File(diagnostic.sourcePath))
+                                logMessage(
+                                    diagnostic.severity,
+                                    it.message ?: "",
+                                    File(diagnostic.sourcePath).name,
+                                    position?.line ?: 0
+                                )
+                            }
+                        } else {
                             logMessage(
                                 diagnostic.severity,
-                                it.message ?: "",
+                                diagnostic.message,
                                 File(diagnostic.sourcePath).name,
-                                position?.line ?: 0
+                                diagnostic.location?.start?.line ?: 0
                             )
                         }
                         logger.trace(diagnostic.message, diagnostic.exception)

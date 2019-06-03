@@ -22,10 +22,25 @@ object EntityVarchars : AttributeTable<String>(
     VarCharColumnType(VARCHAR_LENGTH)
 )
 
+/**
+ * Alias for EntityVarchars
+ */
 val StringAttrTab = EntityVarchars
+/**
+ * Alias for EntityVarchars.id
+ */
 val StringAttrId = EntityVarchars.id
+/**
+ * Alias for EntityVarchars.owner
+ */
 val StringAttrOwner = EntityVarchars.owner
+/**
+ * Alias for EntityVarchars.code
+ */
 val StringAttrCode = EntityVarchars.code
+/**
+ * Alias for EntityVarchars.value
+ */
 val StringAttrValue = EntityVarchars.value
 
 /**
@@ -52,10 +67,25 @@ object EntityLongs : AttributeTable<Long>(
     LongColumnType()
 )
 
+/**
+ * Alias for EntityLongs
+ */
 val LongAttrTab = EntityLongs
+/**
+ * Alias for EntityLongs.id
+ */
 val LongAttrId = EntityLongs.id
+/**
+ * Alias for EntityLongs.owner
+ */
 val LongAttrOwner = EntityLongs.owner
+/**
+ * Alias for EntityLongs.code
+ */
 val LongAttrCode = EntityLongs.code
+/**
+ * Alias for EntityLongs.value
+ */
 val LongAttrValue = EntityLongs.value
 
 /**
@@ -80,10 +110,25 @@ object EntityDoubles : AttributeTable<Double>(
     DoubleColumnType()
 )
 
+/**
+ * Alias for EntityDoubles
+ */
 val DoubleAttrTab = EntityDoubles
+/**
+ * Alias for EntityDoubles.id
+ */
 val DoubleAttrId = EntityDoubles.id
+/**
+ * Alias for EntityDoubles.owner
+ */
 val DoubleAttrOwner = EntityDoubles.owner
+/**
+ * Alias for EntityDoubles.code
+ */
 val DoubleAttrCode = EntityDoubles.code
+/**
+ * Alias for EntityDoubles.value
+ */
 val DoubleAttrValue = EntityDoubles.value
 
 /**
@@ -110,10 +155,25 @@ object EntityBooleans : AttributeTable<Boolean>(
     BooleanColumnType()
 )
 
+/**
+ * Alias for EntityBooleans
+ */
 val BooleanAttrTab = EntityBooleans
+/**
+ * Alias for EntityBooleans.id
+ */
 val BooleanAttrId = EntityBooleans.id
+/**
+ * Alias for EntityBooleans.owner
+ */
 val BooleanAttrOwner = EntityBooleans.owner
+/**
+ * Alias for EntityBooleans.code
+ */
 val BooleanAttrCode = EntityBooleans.code
+/**
+ * Alias for EntityBooleans.value
+ */
 val BooleanAttrValue = EntityBooleans.value
 
 /**
@@ -140,10 +200,25 @@ object EntityDateTimes : AttributeTable<DateTime>(
     DateColumnType(true)
 )
 
+/**
+ * Alias for EntityDateTimes
+ */
 val DateTimeAttrTab = EntityDateTimes
+/**
+ * Alias for EntityDateTimes.id
+ */
 val DateTimeAttrId = EntityDateTimes.id
+/**
+ * Alias for EntityDateTimes.owner
+ */
 val DateTimeAttrOwner = EntityDateTimes.owner
+/**
+ * Alias for EntityDateTimes.code
+ */
 val DateTimeAttrCode = EntityDateTimes.code
+/**
+ * Alias for EntityDateTimes.value
+ */
 val DateTimeAttrValue = EntityDateTimes.value
 
 /**
@@ -170,10 +245,25 @@ object EntityTexts : AttributeTable<String>(
     TextColumnType()
 )
 
+/**
+ * Alias for EntityTexts
+ */
 val TextAttrTab = EntityTexts
+/**
+ * Alias for EntityTexts.id
+ */
 val TextAttrId = EntityTexts.id
+/**
+ * Alias for EntityTexts.owner
+ */
 val TextAttrOwner = EntityTexts.owner
+/**
+ * Alias for EntityTexts.code
+ */
 val TextAttrCode = EntityTexts.code
+/**
+ * Alias for EntityTexts.value
+ */
 val TextAttrValue = EntityTexts.value
 
 /**

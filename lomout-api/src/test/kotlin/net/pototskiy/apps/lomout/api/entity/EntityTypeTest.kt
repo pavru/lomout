@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy
@@ -15,17 +15,17 @@ internal class EntityTypeTest {
 
     @Test
     fun inheritAbsentTypeTest() {
-        val builder = EntityType.Builder(helper,"test1", false)
+        val builder = EntityType.Builder(helper, "test1", false)
         assertThat(builder.entityType).isEqualTo("test1")
         assertThatThrownBy {
             builder.inheritFrom("test2")
-        }.isInstanceOf(AppEntityTypeException::class.java)
-            .hasMessageContaining("Entity type<test2> is not defined")
+        }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Entity type 'test2' is not defined.")
     }
 
     @Test
     internal fun createAttributeTest() {
-        val builder = EntityType.Builder(helper,"test1", false)
+        val builder = EntityType.Builder(helper, "test1", false)
         assertThat(builder.attributes).hasSize(0)
         builder.attribute<StringType>("attr1")
         assertThat(builder.attributes).hasSize(1)

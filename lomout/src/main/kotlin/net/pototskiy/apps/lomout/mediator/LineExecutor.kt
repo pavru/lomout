@@ -7,8 +7,8 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.AppException
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.mediator.PipelineData
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
@@ -17,6 +17,7 @@ import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.EntityIdCol
 import net.pototskiy.apps.lomout.api.database.EntityTab
 import net.pototskiy.apps.lomout.api.database.EntityTypeCol
+import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.Type
@@ -77,10 +78,10 @@ abstract class LineExecutor(
         var pipelineData = pipelineDataCache[id.value]
         if (pipelineData == null) {
             val entity = transaction { DbEntity.findById(id) }
-                ?: throw AppDataException("Matched entity<id:${id.value}> cannot be found")
+                ?: throw AppDataException(unknownPlace(), "Matched entity id '${id.value}' cannot be found.")
             entity.readAttributes()
             val inputEntity = line.inputEntities.find { it.entity.name == entity.eType.name }
-                ?: throw AppEntityTypeException("Unexpected input entity<${entity.eType.name}")
+                ?: throw AppDataException(badPlace(entity.eType), "Unexpected input entity.")
             pipelineData = PipelineData(entityTypeManager, entity, inputEntity)
             pipelineDataCache[entity.id.value] = pipelineData
         }

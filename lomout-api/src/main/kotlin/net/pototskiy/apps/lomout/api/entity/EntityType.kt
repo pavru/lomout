@@ -1,11 +1,12 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppAttributeException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.PublicApi
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.NamedObject
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Entity type configuration
@@ -49,20 +50,20 @@ abstract class EntityType(
      *
      * @param name The attribute name
      * @return The attribute
-     * @throws AppAttributeException Attribute has not found
+     * @throws AppConfigException Attribute has not found
      */
     fun getAttribute(name: String): Attribute<*> = manager.getEntityAttribute(this, name)
-        ?: throw AppAttributeException("Attribute<$name> is not defined in entity<$this.name>")
+        ?: throw AppConfigException(badPlace(this), "Attribute '$name' is not defined.")
 
     /**
      * Check if entity type has the attribute, with exception it's not
      *
      * @param attribute The attribute to check
-     * @throws AppAttributeException Attribute not defined for entity type
+     * @throws AppConfigException Attribute not defined for entity type
      */
     fun checkAttributeDefined(attribute: Attribute<*>) {
         if (!isAttributeDefined(attribute)) {
-            throw AppAttributeException("Attribute<${attribute.name}> is not defined for entity<$this.name>")
+            throw AppConfigException(badPlace(attribute), "Attribute is not defined for entity '$this.name'.")
         }
     }
 
@@ -204,7 +205,7 @@ abstract class EntityType(
          */
         fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
             val eType = helper.typeManager.getEntityType(name)
-                ?: throw AppEntityTypeException("Entity type<$name> is not defined")
+                ?: throw AppConfigException(unknownPlace(), "Entity type '$name' is not defined.")
             inheritances.add(ParentEntityType.Builder(helper, eType).apply(block).build())
         }
 

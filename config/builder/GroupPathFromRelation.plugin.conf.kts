@@ -12,10 +12,16 @@ class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
         val pathFromCache = pathCache[entity.id.value]?.get()
         if (pathFromCache != null) return StringType(pathFromCache)
         val eType = entityTypeManager.getEntityType(eTypeName)
-            ?: throw AppPluginException("There is no group relations information, entity<$eTypeName>")
+            ?: throw AppConfigException(
+                badPlace(entity.entityType),
+                "There is no group relations information."
+            )
         val path = mutableListOf<String>()
         val groupCode = entity.data[groupCodeAttr]
-            ?: throw AppPluginException("OneC group<id:${entity.id}> has not group code attribute")
+            ?: throw AppConfigException(
+                badPlace(entity.entityType),
+                "OneC group id '${entity.id}' has not group code attribute."
+            )
         var relationEntity = DbEntity
             .getByAttribute(eType, codeAttr, groupCode)
             .firstOrNull()

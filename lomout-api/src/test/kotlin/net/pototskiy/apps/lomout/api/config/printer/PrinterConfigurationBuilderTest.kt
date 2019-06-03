@@ -47,6 +47,7 @@ internal class PrinterConfigurationBuilderTest {
         assertThat(config).isNotNull
         assertThat(config.files).hasSize(2)
         assertThat(config.lines).hasSize(2)
+        @Suppress("RedundantWith")
         with(config.lines[0]) {
             assertThat(inputEntities).hasSize(1)
             assertThat(inputEntities[0].extAttrMaps).hasSize(0)

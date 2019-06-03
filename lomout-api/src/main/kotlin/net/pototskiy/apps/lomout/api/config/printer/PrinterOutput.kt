@@ -7,7 +7,9 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection
 import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
+import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.entity.EntityType
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Printer line output definition
@@ -50,16 +52,16 @@ data class PrinterOutput(
          *  file { file("file id"); sheet("sheet name") }
          * ...
          * ```
-         * * file - reference to file define in files block, **mandatory**
-         * * sheet - sheet name to print result data, **mandatory**
+         * * file — reference to file define in files block, **mandatory**
+         * * sheet — sheet name to print result data, **mandatory**
          *
          * @param block The file definition
          */
         @ConfigDsl
         fun file(block: SourceData.Builder.() -> Unit) {
             this.file = SourceData.Builder(helper).apply(block).build()
-            if (this.file?.sheet?.name == null) {
-                throw AppConfigException("Sheet name, not regex must be used in output")
+            if (this.file?.sheet !is SourceSheetDefinitionWithName) {
+                throw AppConfigException(unknownPlace(), "Sheet name, not regex must be used in output.")
             }
         }
 
@@ -83,9 +85,9 @@ data class PrinterOutput(
          *  }
          * ...
          * ```
-         * * [main][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder.main] - main field set
+         * * [main][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder.main] — main field set
          *      for output, **mandatory, only one main set is allowed**
-         * * [extra][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder.extra] - extra field
+         * * [extra][net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection.Builder.extra] — extra field
          *      set, *optional, 0 or several extra set are allowed*
          *
          * @param block Output fields definition
@@ -108,9 +110,9 @@ data class PrinterOutput(
          */
         fun build(): PrinterOutput {
             return PrinterOutput(
-                file ?: throw AppConfigException("Output file must be defined"),
+                file ?: throw AppConfigException(unknownPlace(), "Output file must be defined."),
                 printHead,
-                fieldSets ?: throw AppConfigException("Field sets must be defined")
+                fieldSets ?: throw AppConfigException(unknownPlace(), "Field sets must be defined.")
             )
         }
     }

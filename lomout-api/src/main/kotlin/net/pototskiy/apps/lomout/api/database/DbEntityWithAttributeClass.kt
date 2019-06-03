@@ -57,7 +57,7 @@ abstract class DbEntityWithAttributeClass(
         return attributeClasses.find {
             type.sqlType().isInstance((it.table as AttributeTable<*>).value.columnType)
         }?.also { attributeClassCache[type] = it }
-            ?: throw AppDatabaseException("Value of type<${type::class.simpleName}> does not support sql column")
+            ?: throw AppDatabaseException("Value of type '${type::class.simpleName}' does not support sql column.")
     }
 
     /**
@@ -147,7 +147,7 @@ abstract class DbEntityWithAttributeClass(
         eType.checkAttributeDefined(attribute)
         val attrClass = getAttributeClassFor(attribute.valueType)
         if (value.isTypeOf<MapType<*, *>>()) {
-            throw AppDatabaseException("MapType is not supported for the persistent attribute")
+            throw AppDatabaseException("MapType is not supported for the persistent attribute.")
         }
         (if (!value.isTypeOf<ListType<*>>()) value.toList() else (value as ListType<*>))
             .forEachIndexed { position, data ->
@@ -206,7 +206,7 @@ abstract class DbEntityWithAttributeClass(
                     this.setValueWithTypeCheck(data)
                 } catch (e: AppDatabaseException) {
                     throw AppDatabaseException(
-                        "Value cannot be assigned to attribute<${attribute.name}>, types are incompatible",
+                        "Value cannot be assigned to attribute '${attribute.name}', types are incompatible.",
                         e
                     )
                 }

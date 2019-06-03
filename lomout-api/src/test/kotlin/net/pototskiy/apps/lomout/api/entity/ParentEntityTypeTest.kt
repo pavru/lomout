@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -44,8 +44,8 @@ internal class ParentEntityTypeTest {
             ParentEntityType.Builder(helper, typeManager["entity"]).apply {
                 include("attr4")
             }
-        }.isInstanceOf(AppEntityTypeException::class.java)
-            .hasMessageContaining("Entity type<entity> has no attribute<attr4>")
+        }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Entity type 'entity' has no attributes 'attr4'.")
     }
 
     @Test
@@ -62,7 +62,7 @@ internal class ParentEntityTypeTest {
             ParentEntityType.Builder(helper, typeManager["entity"]).apply {
                 exclude("attr4")
             }
-        }.isInstanceOf(AppEntityTypeException::class.java)
-            .hasMessageContaining("Entity type<entity> has no attribute<attr4>")
+        }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Entity type 'entity' has no attributes 'attr4'")
     }
 }

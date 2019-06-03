@@ -1,11 +1,11 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppAttributeException
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.PublicApi
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
 import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
+import net.pototskiy.apps.lomout.api.unknownPlace
 import kotlin.reflect.KClass
 
 /**
@@ -62,7 +62,7 @@ class EntityTypeManager : EntityTypeManagerInterface {
         attributes.forEach { it.owner = entityType }
         if (attributes.any { it in entityType.attributes }) {
             val alreadyExists = attributes.filter { it in entityType.attributes }.joinToString(",") { it.fullName }
-            throw AppAttributeException("Attributes<$alreadyExists> are already defined")
+            throw AppConfigException(badPlace(entityType), "Attributes '$alreadyExists' are already defined.")
         }
         this.entityAttributes[entityType] = attributes.map { it.name to it }.toMap().toMutableMap()
     }
@@ -113,7 +113,6 @@ class EntityTypeManager : EntityTypeManagerInterface {
      *
      * @param entityType The entity type
      * @param attributes Attributes collection
-     * @throws AppEntityTypeException The entity type is close or try to add an existing attribute
      */
     override fun addEntityAttributes(entityType: EntityType, attributes: AttributeCollection) {
         checkThatAttributeIsNotAssigned(attributes)
@@ -243,10 +242,10 @@ class EntityTypeManager : EntityTypeManagerInterface {
                 auto,
                 reader
                     ?: defaultReaders[typeClass] as? AttributeReader<out T>
-                    ?: throw AppConfigException("Reader must be defined for the attribute<$name>"),
+                    ?: throw AppConfigException(unknownPlace(), "Reader must be defined for the attribute '$name'."),
                 writer
                     ?: defaultWriters[typeClass] as? AttributeWriter<out T>
-                    ?: throw AppConfigException("Writer must be defined for the attribute<$name"),
+                    ?: throw AppConfigException(unknownPlace(), "Writer must be defined for the attribute '$name'."),
                 builder
             ) {}
     }
@@ -256,22 +255,26 @@ class EntityTypeManager : EntityTypeManagerInterface {
 
 private fun checkThatAttributeIsNotAssigned(attributes: AttributeCollection) {
     if (attributes.any { it.isAssigned }) {
-        val assigned = attributes.filter { it.isAssigned }.joinToString(",") { it.fullName }
-        throw AppAttributeException("Attributes<$assigned> are already assigned to entity")
+        throw AppConfigException(
+            badPlace(attributes.first { it.isAssigned }),
+            "Attribute is already assigned to entity."
+        )
     }
 }
 
 private fun checkEntityTypeHasNoAttributes(entityType: EntityType, attributes: AttributeCollection) {
     val entityAttributes = entityType.attributes
     if (attributes.any { it in entityAttributes }) {
-        val alreadyExists = attributes.filter { it in entityAttributes }.joinToString(",") { it.fullName }
-        throw AppAttributeException("Entity type<${entityType.name}> already has attributes<$alreadyExists>")
+        throw AppConfigException(
+            badPlace(entityType),
+            "Entity type already has attributes '${attributes.first { it in entityAttributes }}'."
+        )
     }
 }
 
 private fun checkEntityTypeIsOpen(entityType: EntityType) {
     if (!entityType.open) {
-        throw AppEntityTypeException("It's not allowed to add the attribute to entity type<${entityType.name}>")
+        throw AppConfigException(badPlace(entityType), "Entity type is close, it's not possible to add an attribute.")
     }
 }
 
@@ -304,4 +307,4 @@ fun EntityTypeManager.addEntityAttribute(entityType: EntityType, attribute: Attr
  * @return EntityType
  */
 operator fun EntityTypeManager.get(entityType: String) = this.getEntityType(entityType)
-    ?: throw AppEntityTypeException("Entity<$entityType> is not defined")
+    ?: throw AppConfigException(unknownPlace(), "Entity type '$entityType' is not defined.")

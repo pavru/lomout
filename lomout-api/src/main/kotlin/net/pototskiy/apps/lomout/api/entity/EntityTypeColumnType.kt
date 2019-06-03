@@ -1,9 +1,9 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDatabaseException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.ENTITY_TYPE_NAME_LENGTH
+import net.pototskiy.apps.lomout.api.badData
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
@@ -36,8 +36,8 @@ class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType(
         return when (value) {
             is EntityType -> value
             is String -> entityTable.entityTypeManager.getEntityType(value)
-                ?: throw AppEntityTypeException("Undefined entity type<$value>")
-            else -> throw AppDatabaseException("Unexpected value: $value of ${value::class.qualifiedName}")
+                ?: throw AppConfigException(badData(value), "Undefined entity type.")
+            else -> throw AppDatabaseException("Unexpected value '$value' of type '${value::class.qualifiedName}'.")
         }
     }
 
@@ -49,10 +49,10 @@ class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType(
      */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
-            null -> if (nullable) null else throw AppDataException("Null in non-nullable column")
+            null -> if (nullable) null else throw AppDatabaseException("Null in non-nullable column.")
             is EntityType -> value.name
             is String -> value
-            else -> throw AppDatabaseException("Unexpected value: $value of ${value::class.qualifiedName}")
+            else -> throw AppDatabaseException("Unexpected value '$value' of type '${value::class.qualifiedName}'.")
         }
     }
 }
