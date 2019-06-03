@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.source.nested
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
@@ -58,7 +59,10 @@ class NestedAttributeCell(
         get() = throwNotSupportCellType()
 
     private fun throwNotSupportCellType(): Nothing {
-        throw AppCellDataException("${NestedAttributeCell::class.simpleName} supports only string type value")
+        throw AppDataException(
+            badPlace(this),
+            "${NestedAttributeCell::class.simpleName} supports only string type value."
+        )
     }
 
     /**

@@ -6,9 +6,9 @@ import org.apache.commons.csv.QuoteMode
 /**
  * Nested attribute list format
  *
- * @property quote Char? The name-value pair quote, null - no quote
+ * @property quote Char? The name-value pair quote, null — no quote
  * @property delimiter Char The name-value pair delimiter
- * @property valueQuote Char? The value quote, null - no quote
+ * @property valueQuote Char? The value quote, null — no quote
  * @property valueDelimiter Char The name value delimiter
  * @constructor
  */

@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
 import net.pototskiy.apps.lomout.api.entity.AttributeListType
@@ -78,7 +78,7 @@ internal class DefaultAttributeListReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setCellValue(1.1)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppCellDataException::class.java)
+        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test

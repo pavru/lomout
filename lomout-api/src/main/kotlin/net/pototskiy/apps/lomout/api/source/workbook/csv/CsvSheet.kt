@@ -1,7 +1,8 @@
 package net.pototskiy.apps.lomout.api.source.workbook.csv
 
-import net.pototskiy.apps.lomout.api.AppSheetException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.source.workbook.Row
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -49,7 +50,7 @@ class CsvSheet(
             }
             index++
         }
-        throw AppSheetException("Index out of band")
+        throw AppDataException(badPlace(this), "Index out of band.")
     }
 
     /**

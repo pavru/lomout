@@ -30,7 +30,7 @@ object PluginContext : PluginContextInterface {
      * Main script file
      */
     override var scriptFile: File
-        get() = bScriptFile ?: throw AppException("Script file is not defined in plugin script")
+        get() = bScriptFile ?: throw AppException("Script file is not defined in plugin script.")
         set(value) {
             bScriptFile = value
         }

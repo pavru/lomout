@@ -1,13 +1,15 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.BooleanListType
 import net.pototskiy.apps.lomout.api.entity.BooleanType
 import net.pototskiy.apps.lomout.api.entity.values.stringToBoolean
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
+import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
@@ -40,9 +42,9 @@ open class BooleanListAttributeReader : AttributeReaderPlugin<BooleanListType>()
                 BooleanListType(listValue)
             }
             CellType.BLANK -> null
-            else -> throw AppCellDataException(
-                "Reading Boolean from cell type<${input.cellType}}> is not supported, " +
-                        "attribute<${attribute.name}:${attribute.valueType.simpleName}>"
+            else -> throw AppDataException(
+                badPlace(input) + attribute,
+                "Reading Boolean from the cell is not supported."
             )
         }
 }

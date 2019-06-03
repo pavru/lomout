@@ -6,15 +6,15 @@ class GroupToCategoryPath : AttributeReaderPlugin<StringType>() {
             val entity = DbEntity.getByAttribute(
                 extendedInfo,
                 extendedInfo.getAttributeOrNull("group_code")
-                    ?: throw AppPluginException("Attribute<group_code> is not defined in entity<onec-group-extended>"),
+                    ?: throw AppConfigException(badPlace(attribute) + input, "Attribute 'group_code' is not defined."),
                 LongType(groupId)
             ).firstOrNull()
             return entity?.readAttribute(
                 extendedInfo.getAttributeOrNull("magento_path")
-                    ?: throw AppPluginException("Attribute<magento_path> is not defined in entity<onec-group-extended>")
+                    ?: throw AppConfigException(badPlace(attribute) + input, "Attribute 'magento_path' is not defined.")
             ) as? StringType?
         } catch (e: Exception) {
-            throw AppPluginException(e.message, e)
+            throw AppConfigException(badPlace(attribute) + input, e.message, e)
         }
     }
 }

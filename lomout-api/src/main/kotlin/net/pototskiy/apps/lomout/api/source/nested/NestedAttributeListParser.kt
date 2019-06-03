@@ -1,6 +1,9 @@
 package net.pototskiy.apps.lomout.api.source.nested
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.badData
+import net.pototskiy.apps.lomout.api.plus
+import net.pototskiy.apps.lomout.api.unknownPlace
 import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
@@ -8,9 +11,9 @@ import java.io.StringReader
  * Nested attributes list parser
  *
  * @constructor
- * @param quote Char? The name-value pair quote, null - no quote
+ * @param quote Char? The name-value pair quote, null — no quote
  * @param delimiter Char The name-value pair delimiter
- * @param valueQuote Char? The value quote, null - no quote
+ * @param valueQuote Char? The value quote, null — no quote
  * @param valueDelimiter Char The delimiter between name and value
  */
 class NestedAttributeListParser(
@@ -33,7 +36,7 @@ class NestedAttributeListParser(
                 parsePairsList(attrReader, result)
             }
         } catch (e: AppDataException) {
-            throw AppDataException("Can not parse attribute list<$string>")
+            throw AppDataException(badData(string) + this, "Cannot parse attribute list '$string'.")
         }
         return result
     }
@@ -65,7 +68,7 @@ class NestedAttributeListParser(
                 ""
             }
         } catch (e: Exception) {
-            throw AppDataException("Can not parse attribute list")
+            throw AppDataException(unknownPlace(), "Cannot parse attribute list.")
         }
     }
 }

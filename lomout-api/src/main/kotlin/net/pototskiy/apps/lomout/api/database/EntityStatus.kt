@@ -53,7 +53,7 @@ class EntityStatusColumnType : ColumnType() {
         return when (value) {
             is EntityStatus -> value
             is String -> EntityStatus.valueOf(value)
-            else -> throw AppDatabaseException("Unexpected value: $value of ${value::class.qualifiedName}")
+            else -> throw AppDatabaseException("Unexpected value '$value' of type '${value::class.qualifiedName}'.")
         }
     }
 
@@ -65,10 +65,10 @@ class EntityStatusColumnType : ColumnType() {
      */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
-            null -> if (nullable) null else throw AppDatabaseException("Null in non-nullable column")
+            null -> if (nullable) null else throw AppDatabaseException("Null in non-nullable column.")
             is EntityStatus -> value.name
             is String -> value
-            else -> throw AppDatabaseException("Unexpected value: $value of ${value::class.qualifiedName}")
+            else -> throw AppDatabaseException("Unexpected value '$value' of type '${value::class.qualifiedName}'.")
         }
     }
 }

@@ -1,9 +1,12 @@
 package net.pototskiy.apps.lomout.api.source
 
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.AppSheetException
+import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
+import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 
@@ -30,13 +33,13 @@ private fun readHeaders(
         workbook.filter { source.sheet.isMatch(it.name) }.map { sheet ->
             sheet[headerRow]?.mapIndexed { c, cell ->
                 if (cell == null || cell.cellType != CellType.STRING) {
-                    throw AppConfigException(
-                        "Header row in the source<${workbook.name}:${sheet.name}> " +
-                                "has no cell or cell is not string type in column ${c + 1}"
+                    throw AppDataException(
+                        badPlace(sheet).let { if (cell != null) it + cell else it },
+                        "Header row in the has no cell, or the cell is not string type."
                     )
                 }
                 Field(cell.stringValue, c, null, null)
-            } ?: throw AppSheetException("Source<${workbook.name}:${sheet.name}> has no header row")
+            } ?: throw AppDataException(badPlace(sheet), "Source sheet has no header row.")
         }.flatten()
     }
 }
@@ -44,11 +47,11 @@ private fun readHeaders(
 private fun validateAllSourcesCompatible(fieldSets: List<List<Field>>) {
     val fieldSetSizes = fieldSets.groupBy { it.size }
     if (fieldSetSizes.keys.size > 1) {
-        throw AppConfigException("Sources have different number of fields")
+        throw AppConfigException(unknownPlace(), "Sources have different number of fields.")
     }
     val numberOfCombinations = fieldSetSizes.values.first().size
     val fieldSetNameColumn = fieldSets.flatten().groupBy { Pair(it.name, it.column) }
     if (fieldSetNameColumn.values.any { it.size != numberOfCombinations }) {
-        throw AppConfigException("Sources have different fields or fields in different columns")
+        throw AppConfigException(unknownPlace(), "Sources have different fields or fields in different columns.")
     }
 }

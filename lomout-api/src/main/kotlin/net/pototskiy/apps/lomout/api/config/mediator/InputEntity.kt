@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.mediator
 
-import net.pototskiy.apps.lomout.api.AppAttributeException
+import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.database.DbEntity
@@ -129,7 +130,7 @@ data class InputEntity(
         ) {
             val destAttr = Attribute.Builder(helper, name, T::class).apply(block).build()
             val origData = this.helper.typeManager.getEntityAttribute(entityType, from)
-                ?: throw AppAttributeException("Attribute<${entityType.name}:$from> is not defined>")
+                ?: throw AppConfigException(badPlace(entityType), "Attribute is not defined.")
             attrPairs[origData] = destAttr
         }
 

@@ -55,7 +55,7 @@ internal class EntityLoaderAddTest {
         assertThat(entities).hasSize(0)
         @Suppress("RegExpRedundantEscape", "GraziInspection")
         val matches = Regex(
-            "^\\[ERROR\\].*There is no requested cell<3> in row.*$",
+            "^\\[ERROR\\].*There is no requested cell. Place: .*$",
             RegexOption.MULTILINE
         )
             .findAll(log).toList()
@@ -69,14 +69,14 @@ internal class EntityLoaderAddTest {
         initDatabase(config.database, typeManager)
         transaction { DbEntityTable.deleteAll() }
         val catcher = LogCatcher()
-        catcher.startToCatch(Level.OFF, Level.ERROR)
+        catcher.startToCatch(Level.OFF, Level.TRACE)
         DataLoader.load(config)
         val entities = DbEntity.getEntities(typeManager["entity"])
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
         @Suppress("RegExpRedundantEscape")
-        val matches = Regex("^\\[ERROR\\].*\\/ by zero.*$", RegexOption.MULTILINE)
+        val matches = Regex("""^\[(ERROR|TRACE)\].*\/ by zero.*$""", RegexOption.MULTILINE)
             .findAll(log).toList()
         assertThat(matches).isNotNull
         assertThat(matches).hasSize(6)
@@ -96,7 +96,7 @@ internal class EntityLoaderAddTest {
         assertThat(entities).hasSize(0)
         @Suppress("RegExpRedundantEscape", "GraziInspection")
         val matches = Regex(
-            "^\\[ERROR\\].*Field<data> does not match required regular expression.*$",
+            "^\\[ERROR\\].*Field does not match required regular expression. Place: .*$",
             RegexOption.MULTILINE
         )
             .findAll(log).toList()
@@ -117,7 +117,7 @@ internal class EntityLoaderAddTest {
         catcher.stopToCatch()
         assertThat(entities).hasSize(2)
         @Suppress("RegExpRedundantEscape", "GraziInspection") val matches = Regex(
-            "^\\[ERROR\\].*Attribute<key> is key but has no value.*$",
+            "^\\[ERROR\\].*Attribute is key but has no value. Place: .*$",
             RegexOption.MULTILINE
         ).findAll(log).toList()
         assertThat(matches).isNotNull

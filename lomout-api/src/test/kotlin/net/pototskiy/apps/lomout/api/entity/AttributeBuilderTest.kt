@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppAttributeException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
@@ -129,7 +129,7 @@ internal class AttributeBuilderTest {
                 key()
                 nullable()
             }.build()
-        }.isInstanceOf(AppAttributeException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Key attribute cannot be nullable")
     }
 
@@ -139,7 +139,7 @@ internal class AttributeBuilderTest {
             Attribute.Builder(helper, "test", LongListType::class).apply {
                 key()
             }.build()
-        }.isInstanceOf(AppAttributeException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Key attribute cannot have list type or builder")
         assertThatThrownBy {
             Attribute.Builder(helper, "test", LongListType::class).apply {
@@ -148,7 +148,7 @@ internal class AttributeBuilderTest {
                     LongListType(listOf(LongType(123L)))
                 }
             }.build()
-        }.isInstanceOf(AppAttributeException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Key attribute cannot have list type or builder")
         assertThatThrownBy {
             Attribute.Builder(helper, "test", LongType::class).apply {
@@ -157,7 +157,7 @@ internal class AttributeBuilderTest {
                     LongType(123L)
                 }
             }.build()
-        }.isInstanceOf(AppAttributeException::class.java)
+        }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Key attribute cannot have list type or builder")
     }
 

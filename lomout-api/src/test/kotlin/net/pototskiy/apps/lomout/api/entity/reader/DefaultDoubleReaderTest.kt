@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
@@ -24,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import java.text.ParseException
 import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
@@ -91,7 +91,7 @@ internal class DefaultDoubleReaderTest {
         xlsTestDataCell.setCellValue("1.1")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(1.1)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(ParseException::class.java)
+        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test

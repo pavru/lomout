@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.printer
 
 import net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection
 import net.pototskiy.apps.lomout.api.config.loader.SourceData
+import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.Type
@@ -26,7 +27,7 @@ class EntityPrinter(
     private val sheet: Sheet
 
     init {
-        sheet = workbook.insertSheet(file.sheet.name!!)
+        sheet = workbook.insertSheet((file.sheet as SourceSheetDefinitionWithName).name)
         if (printHead) {
             val row = sheet.insertRow(lastRow++)
             mainFields.forEachIndexed { c, field ->

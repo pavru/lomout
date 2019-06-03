@@ -4,6 +4,7 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileCollection
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Printer part configuration
@@ -44,9 +45,9 @@ data class PrinterConfiguration(
          *  }
          * ...
          * ```
-         * * [file][SourceFileCollection.Builder.file] - define file id, **mandatory**
-         * * [path][SourceFileCollection.Builder.PathBuilder.path] - define file path, **mandatory**
-         * * [locale][SourceFileCollection.Builder.PathBuilder.locale] - define file locale, optional
+         * * [file][SourceFileCollection.Builder.file] — define file id, **mandatory**
+         * * [path][SourceFileCollection.Builder.PathBuilder.path] — define file path, **mandatory**
+         * * [locale][SourceFileCollection.Builder.PathBuilder.locale] — define file locale, optional
          *
          * @see SourceFileCollection
          *
@@ -69,11 +70,11 @@ data class PrinterConfiguration(
          *  }
          * ...
          * ```
-         * * [input][PrinterLine.Builder.input] - printer line input entities, **mandatory**
-         * * [output][PrinterLine.Builder.output] - printer line output, **mandatory**
-         * * [pipeline][PrinterLine.Builder.pipeline] - printer line processing pipeline, **mandatory**
+         * * [input][PrinterLine.Builder.input] — printer line input entities, **mandatory**
+         * * [output][PrinterLine.Builder.output] — printer line output, **mandatory**
+         * * [pipeline][PrinterLine.Builder.pipeline] — printer line processing pipeline, **mandatory**
          *
-         * @param block PrinterLine.Builder.() -> Unit
+         * @param block The printer line definition
          */
         @ConfigDsl
         fun printerLine(block: PrinterLine.Builder.() -> Unit) {
@@ -87,7 +88,7 @@ data class PrinterConfiguration(
          */
         fun build(): PrinterConfiguration {
             return PrinterConfiguration(
-                files ?: throw AppConfigException("Printer files must be defined"),
+                files ?: throw AppConfigException(unknownPlace(), "Printer files must be defined."),
                 PrinterLineCollection(lines)
             )
         }

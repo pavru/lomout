@@ -20,7 +20,7 @@ fun String.stringToBoolean(locale: Locale): Boolean {
     return if (v in booleanString)
         v in booleanTrueString
     else
-        throw ParseException("Value<$this> cannot be converted to boolean", 0)
+        throw ParseException("Value '$this' cannot be converted to boolean.", 0)
 }
 
 private val stringBooleanMap = mapOf(

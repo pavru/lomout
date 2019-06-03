@@ -205,6 +205,6 @@ fun buildEquals(column: Column<*>, value: Type): Expression<Boolean> =
         is BooleanColumnType -> Op.build { (column as Column<Boolean>) eq (value.value as Boolean) }
         is DateColumnType -> Op.build { (column as Column<DateTime>) eq (value.value as DateTime) }
         else -> throw AppDatabaseException(
-            "Cannot build equals operator for column type ${column.columnType.sqlType()}"
+            "Cannot build equals operator for column type '${column.columnType.sqlType()}'."
         )
     }

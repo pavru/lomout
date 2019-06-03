@@ -49,42 +49,42 @@ object DbEntityTable : IntIdTable("entity") {
 }
 
 /**
- * [DbEntityTable] synonym
+ * DbEntityTable synonym
  */
 val EntityTab = DbEntityTable
 /**
- * [DbEntityTable.id] synonym
+ * DbEntityTable.id synonym
  */
 val EntityIdCol = DbEntityTable.id
 /**
- * [DbEntityTable.entityType] synonym
+ * DbEntityTable.entityType synonym
  */
 val EntityTypeCol = DbEntityTable.entityType
 /**
- * [DbEntityTable.touchedInLoading] synonym
+ * DbEntityTable.touchedInLoading synonym
  */
 val EntityTouchedCol = DbEntityTable.touchedInLoading
 /**
- * [DbEntityTable.previousStatus] synonym
+ * DbEntityTable.previousStatus synonym
  */
 val EntityPStatusCol = DbEntityTable.previousStatus
 /**
- * [DbEntityTable.currentStatus]
+ * DbEntityTable.currentStatus synonym
  */
 val EntityCStatusCol = DbEntityTable.currentStatus
 /**
- * [DbEntityTable.created] synonym
+ * DbEntityTable.created synonym
  */
 val EntityCreatedCol = DbEntityTable.created
 /**
- * [DbEntityTable.updated] synonym
+ * DbEntityTable.updated synonym
  */
 val EntityUpdatedCol = DbEntityTable.updated
 /**
- * [DbEntityTable.removed] synonym
+ * DbEntityTable.removed synonym
  */
 val EntityRemovedCol = DbEntityTable.removed
 /**
- * [DbEntityTable.absentDays] synonym
+ * DbEntityTable.absentDays synonym
  */
 val EntityAbsentCol = DbEntityTable.absentDays

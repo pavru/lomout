@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
@@ -39,7 +39,7 @@ internal class AttributeAsCellTest {
         assertThat(cell.asString()).isEqualTo(data.value.toString())
         assertThatThrownBy { cell.row }.isInstanceOf(NotImplementedError::class.java)
         data.notCompatible.forEach {
-            assertThatThrownBy { it(cell) }.isInstanceOf(AppCellDataException::class.java)
+            assertThatThrownBy { it(cell) }.isInstanceOf(AppDataException::class.java)
         }
     }
 
@@ -49,7 +49,7 @@ internal class AttributeAsCellTest {
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         assertThat(cell.asString()).isEqualTo("")
         assertThatThrownBy { cell.stringValue }
-            .isInstanceOf(AppCellDataException::class.java)
+            .isInstanceOf(AppDataException::class.java)
     }
 
     class TestData<T : Type, VT : Any>(

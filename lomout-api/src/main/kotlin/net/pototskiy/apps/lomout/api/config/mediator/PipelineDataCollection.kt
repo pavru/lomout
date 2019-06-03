@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.PublicApi
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Pipeline data collection. Cross lines has server entities, union lines has only one entity
@@ -18,7 +19,7 @@ class PipelineDataCollection(private val data: List<PipelineData>) : List<Pipeli
      * @throws AppConfigException The is no entity for given type
      */
     operator fun get(type: String): PipelineData = this.find { it.entity.eType.name == type }
-        ?: throw AppConfigException("Pipeline data does not contains entity<$type>")
+        ?: throw AppConfigException(unknownPlace(), "Pipeline data does not contain entity '$type'.")
 
     /**
      * Get entity by type name

@@ -19,9 +19,9 @@ fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
     }
     val position = ParsePosition(0)
     val value = format.parse(this.trim(), position)
-        ?: throw ParseException("String cannot be parsed to double", position.index)
+        ?: throw ParseException("String cannot be parsed to double.", position.index)
     if (position.index != this.trim().length) {
-        throw ParseException("String contains extra characters", position.index)
+        throw ParseException("String contains extra characters.", position.index)
     }
     return value.toDouble()
 }

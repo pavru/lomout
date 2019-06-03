@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.source.workbook
 
-import net.pototskiy.apps.lomout.api.AppWorkbookException
+import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvInputWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvOutputWorkbook
@@ -54,7 +54,7 @@ class WorkbookFactory {
                         CsvOutputWorkbook(source, format, workbookLocale)
                 }
                 else ->
-                    throw AppWorkbookException("Unsupported file format, file: $fileName")
+                    throw AppException("Unsupported source file format, file '$fileName'.")
             }
         }
 

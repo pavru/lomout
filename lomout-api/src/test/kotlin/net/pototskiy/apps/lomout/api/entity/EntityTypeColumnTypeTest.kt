@@ -1,8 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDatabaseException
-import net.pototskiy.apps.lomout.api.AppEntityTypeException
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -23,11 +22,11 @@ internal class EntityTypeColumnTypeTest {
         assertThat(type.valueFromDB(entity1)).isEqualTo(entity1)
         assertThat(type.valueFromDB("entity1")).isEqualTo(entity1)
         assertThatThrownBy { type.valueFromDB("entity3") }
-            .isInstanceOf(AppEntityTypeException::class.java)
-            .hasMessageContaining("Undefined entity type<entity3>")
+            .isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Undefined entity type.")
         assertThatThrownBy { type.valueFromDB(1L) }
             .isInstanceOf(AppDatabaseException::class.java)
-            .hasMessageContaining("Unexpected value: 1 of ${Long::class.qualifiedName}")
+            .hasMessageContaining("Unexpected value '1' of type '${Long::class.qualifiedName}'.")
     }
 
     @Test
@@ -38,12 +37,12 @@ internal class EntityTypeColumnTypeTest {
         assertThat(type.valueToDB(null)).isNull()
         type.nullable = false
         assertThatThrownBy { type.valueToDB(null) }
-            .isInstanceOf(AppDataException::class.java)
+            .isInstanceOf(AppDatabaseException::class.java)
             .hasMessageContaining("Null in non-nullable column")
         assertThat(type.valueToDB(entity2)).isEqualTo("entity2")
         assertThat(type.valueToDB("entity2")).isEqualTo("entity2")
         assertThatThrownBy { type.valueFromDB(1L) }
             .isInstanceOf(AppDatabaseException::class.java)
-            .hasMessageContaining("Unexpected value: 1 of ${Long::class.qualifiedName}")
+            .hasMessageContaining("Unexpected value '1' of type '${Long::class.qualifiedName}'.")
     }
 }

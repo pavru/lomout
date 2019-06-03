@@ -1,10 +1,10 @@
 package net.pototskiy.apps.lomout.loader
 
-import net.pototskiy.apps.lomout.api.AppAttributeException
-import net.pototskiy.apps.lomout.api.AppCellDataException
+import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
-import net.pototskiy.apps.lomout.api.AppRowException
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
+import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.FieldSet
 import net.pototskiy.apps.lomout.api.config.loader.Load
@@ -15,6 +15,7 @@ import net.pototskiy.apps.lomout.api.entity.AttributeListType
 import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.StringType
 import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -62,7 +63,7 @@ class EntityLoader(
             }
             try {
                 processRow(row)
-            } catch (e: AppRowException) {
+            } catch (e: AppException) {
                 rowException(row, e)
                 continue
             } catch (e: Exception) {
@@ -87,17 +88,21 @@ class EntityLoader(
     }
 
     private fun rowException(row: Row, e: Exception) {
-        log.error(
-            "{}({}:{}:{})",
-            e.message,
-            row.sheet.workbook.name,
-            row.sheet.name,
-            row.rowNum + 1
-        )
-        if (e !is AppException) {
-            log.error("Internal error: {}", e.message)
-            log.trace("Thread: {}", Thread.currentThread().name)
-            log.trace("Exception: ", e)
+        when (e) {
+            is AppConfigException -> log.error("{} {}", e.message, e.place.placeInfo())
+            is AppDataException -> log.error("{} {}", e.message, e.place.placeInfo())
+            else -> {
+                log.error(
+                    "{}({}:{}:{})",
+                    e.message,
+                    row.sheet.workbook.name,
+                    row.sheet.name,
+                    row.rowNum + 1
+                )
+                log.trace("Internal error: {}", e.message)
+                log.trace("Thread: {}", Thread.currentThread().name)
+                log.trace("Exception: ", e)
+            }
         }
     }
 
@@ -142,7 +147,7 @@ class EntityLoader(
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
             if (v == null || (v is StringType && v.value.isBlank())) {
-                throw AppAttributeException("Attribute<${attr.name}> is key but has no value")
+                throw AppDataException(badPlace(attr), "Attribute is key but has no value.")
             }
         }
     }
@@ -163,7 +168,7 @@ class EntityLoader(
             }
             val attrCell = (data[parentAttr] as AttributeListType).value[attribute.name]
             if (attrCell == null && !attribute.nullable && attribute.valueType != AttributeListType::class) {
-                throw AppCellDataException("Attribute<${attribute.name}> is not nullable and there is no data for it")
+                throw AppDataException(badPlace(attribute), "Attribute is not nullable and there is no data for it.")
             } else if (attrCell == null) {
                 data[attribute] = null
                 return
@@ -176,12 +181,18 @@ class EntityLoader(
         fields.filterNot { it.key.isNested || it.value.isSynthetic }.forEach { (field, attr) ->
             val cell = row[field.column]
                 ?: if (attr.nullable) row.getOrEmptyCell(field.column) else null
-                    ?: throw AppRowException("There is no requested cell<${field.column + 1}> in row")
+                    ?: throw AppDataException(
+                        badPlace(row) + field + attr,
+                        "There is no requested cell."
+                    )
             testFieldRegex(field, cell)
             @Suppress("UNCHECKED_CAST")
             data[attr] = (attr.reader as AttributeReader<Type>).read(attr, cell).also {
                 if (it == null && (!attr.nullable || attr.key)) {
-                    throw AppCellDataException("Attribute<${attr.name}> is not nullable and cannot be null")
+                    throw AppDataException(
+                        badPlace(attr) + field + cell,
+                        "Attribute is not nullable and cannot be null."
+                    )
                 }
             }
         }
@@ -193,7 +204,7 @@ class EntityLoader(
 
     private fun testFieldRegex(field: Field, cell: Cell) {
         if (!field.isMatchToPattern(cell.asString())) {
-            throw AppCellDataException("Field<${field.name}> does not match required regular expression")
+            throw AppDataException(badPlace(field) + cell, "Field does not match required regular expression.")
         }
     }
 
@@ -215,11 +226,9 @@ class EntityLoader(
         var fit = true
         for (field in set.fields.filter { field -> field.regex != null }) {
             val cell = row[field.column]
-                ?: throw AppRowException(
-                    "Workbook<${row.sheet.workbook.name}>, " +
-                            "sheet<${row.sheet.name}>, " +
-                            "row<${row.rowNum + 1}> " +
-                            "does not exist, but it's required for row classification"
+                ?: throw AppDataException(
+                    badPlace(field) + row,
+                    "The cell does not exist, but it's required for row classification."
                 )
             if (!field.isMatchToPattern(cell.asString())) fit = false
         }

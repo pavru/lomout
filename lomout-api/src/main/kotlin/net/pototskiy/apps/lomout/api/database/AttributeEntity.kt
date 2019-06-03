@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.database
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.badData
 import net.pototskiy.apps.lomout.api.entity.Type
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.dao.IntEntity
@@ -61,7 +62,7 @@ abstract class AttributeEntity<V : Comparable<V>>(id: EntityID<Int>) : IntEntity
     fun setValueWithTypeCheck(value: Type) {
         val klass = this::class.supertypes[0].arguments[0].type?.classifier
         if (!value.isSingle() || (klass is KClass<*> && !klass.isInstance(value.value))) {
-            throw AppDataException("Value cannot be assigned to attribute, types are incompatible")
+            throw AppDataException(badData(value), "Value cannot be assigned to attribute, types are incompatible.")
         }
         @Suppress("UNCHECKED_CAST")
         this.value = value.value as V

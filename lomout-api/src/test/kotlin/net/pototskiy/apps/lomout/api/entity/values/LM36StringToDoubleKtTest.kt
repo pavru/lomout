@@ -21,10 +21,10 @@ internal class LM36StringToDoubleKtTest {
         assertThatThrownBy {
             "2${160.toChar()}1,2".stringToDouble(Locale("ru"),false)
         }.isInstanceOf(ParseException::class.java)
-            .hasMessage("String contains extra characters")
+            .hasMessage("String contains extra characters.")
         assertThatThrownBy {
             "abc".stringToDouble(Locale("ru"), false)
         }.isInstanceOf(ParseException::class.java)
-            .hasMessage("String cannot be parsed to double")
+            .hasMessage("String cannot be parsed to double.")
     }
 }

@@ -1,7 +1,6 @@
 package net.pototskiy.apps.lomout.api.source.workbook.csv
 
-import net.pototskiy.apps.lomout.api.AppSheetException
-import net.pototskiy.apps.lomout.api.AppWorkbookException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.createLocale
@@ -48,17 +47,17 @@ internal class CsvWorkbookTest {
             assertThat(workbook.hasSheet(CSV_SHEET_NAME)).isTrue()
             assertThat(workbook[CSV_SHEET_NAME]).isNotNull.isInstanceOf(CsvSheet::class.java)
             assertThat(workbook[CSV_SHEET_NAME].name).isEqualTo(workbook[0].name)
-            assertThatThrownBy { workbook["Sheet1"] }.isInstanceOf(AppWorkbookException::class.java)
-            assertThatThrownBy { workbook[1] }.isInstanceOf(AppWorkbookException::class.java)
+            assertThatThrownBy { workbook["Sheet1"] }.isInstanceOf(AppDataException::class.java)
+            assertThatThrownBy { workbook[1] }.isInstanceOf(AppDataException::class.java)
             assertThatThrownBy { workbook.insertSheet("test") }
-                .isInstanceOf(AppWorkbookException::class.java)
+                .isInstanceOf(AppDataException::class.java)
         }
         val tmpFile = File.createTempFile("csv-test", ".csv", File("../tmp/"))
         try {
             WorkbookFactory.create(tmpFile.toURI().toURL(), "en_US".createLocale(), false).use { workbook ->
                 assertThat(workbook.insertSheet(CSV_SHEET_NAME)).isNotNull
                 assertThatThrownBy { workbook.insertSheet("test") }
-                    .isInstanceOf(AppWorkbookException::class.java)
+                    .isInstanceOf(AppDataException::class.java)
             }
         } finally {
             tmpFile.delete()
@@ -72,8 +71,8 @@ internal class CsvWorkbookTest {
             assertThat(sheet.workbook.name).isEqualTo(file.name)
             assertThat(sheet.name).isEqualTo(CSV_SHEET_NAME)
             assertThat(sheet[0]).isNotNull.isInstanceOf(CsvRow::class.java)
-            assertThatThrownBy { sheet[2] }.isInstanceOf(AppSheetException::class.java)
-            assertThatThrownBy { sheet.insertRow(1) }.isInstanceOf(AppWorkbookException::class.java)
+            assertThatThrownBy { sheet[2] }.isInstanceOf(AppDataException::class.java)
+            assertThatThrownBy { sheet.insertRow(1) }.isInstanceOf(AppDataException::class.java)
         }
         val tmpFile = File.createTempFile("csv-test", ".csv", File("../tmp/"))
         try {
@@ -99,7 +98,7 @@ internal class CsvWorkbookTest {
             assertThat(row[5]).isNull()
             assertThat(row.getOrEmptyCell(1)).isNotNull.isInstanceOf(CsvCell::class.java)
             assertThat(row.getOrEmptyCell(5)).isNotNull.isInstanceOf(CsvCell::class.java)
-            assertThatThrownBy { row.insertCell(5) }.isInstanceOf(AppWorkbookException::class.java)
+            assertThatThrownBy { row.insertCell(5) }.isInstanceOf(AppDataException::class.java)
         }
         val tmpFile = File.createTempFile("csv-test", ".csv", File("../tmp/"))
         try {

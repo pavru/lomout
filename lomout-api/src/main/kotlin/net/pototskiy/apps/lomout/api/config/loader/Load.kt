@@ -7,6 +7,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.addEntityAttribute
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Define entity load configuration
@@ -110,8 +111,8 @@ data class Load(
          *  }
          * ...
          * ```
-         * * main - define main field set, **mandatory**, only one is allowed
-         * * extra - define extra field set, *optional*
+         * * main — define main field set, **mandatory**, only one is allowed
+         * * extra — define extra field set, *optional*
          *
          * @param block Source fields definition
          */
@@ -137,7 +138,8 @@ data class Load(
             val sources =
                 this.sources
                     ?: throw AppConfigException(
-                        "Source files are not defined for entity type<${entityType.name}> loading"
+                        unknownPlace(),
+                        "Source files are not defined for entity type '${entityType.name}' loading."
                     )
             validateFieldColumnDefinition()
             return Load(
@@ -147,7 +149,10 @@ data class Load(
                 entityType,
                 sources,
                 fieldSets
-                    ?: throw AppConfigException("Field set is not defined for entity type<${entityType.name}> loading")
+                    ?: throw AppConfigException(
+                        unknownPlace(),
+                        "Field set is not defined for entity type '${entityType.name}' loading."
+                    )
             )
         }
 
@@ -162,7 +167,10 @@ data class Load(
         private fun validateFieldColumnDefinition() {
             var fields =
                 (fieldSets
-                    ?: throw AppConfigException("Field set is not defined for entity type<${entityType.name}> loading"))
+                    ?: throw AppConfigException(
+                        unknownPlace(),
+                        "Field set is not defined for entity type '${entityType.name}' loading."
+                    ))
                     .map { it.fieldToAttr.toList() }
                     .flatten()
                     .toMap()
@@ -171,10 +179,11 @@ data class Load(
                 .filterNot { it.value.isSynthetic }
             if (this.headersRow == UNDEFINED_ROW && fields.any { it.key.column == UNDEFINED_COLUMN }) {
                 throw AppConfigException(
+                    unknownPlace(),
                     "Dataset has no headers row but " +
-                            "fields<${fields.filter { it.key.column == UNDEFINED_COLUMN }.map { it.value.name }
-                                .joinToString(", ")}> " +
-                            "has no column defined"
+                            "fields '${fields.filter { it.key.column == UNDEFINED_COLUMN }.map { it.value.name }
+                                .joinToString(", ")}' " +
+                            "has no column defined."
                 )
             }
         }

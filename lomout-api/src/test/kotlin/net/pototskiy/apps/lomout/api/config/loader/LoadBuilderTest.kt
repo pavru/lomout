@@ -29,7 +29,7 @@ internal class LoadBuilderTest {
                 }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Field columns<0, 1> are duplicated")
+            .hasMessageContaining("Field columns '0, 1' are duplicated.")
     }
 
     @Test
@@ -50,7 +50,7 @@ internal class LoadBuilderTest {
                 }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Dataset has no headers row but fields<f1, f2, f3, f4> has no column defined")
+            .hasMessageContaining("Dataset has no headers row but fields 'f1, f2, f3, f4' has no column defined.")
     }
 
     @Test
@@ -65,7 +65,7 @@ internal class LoadBuilderTest {
                 }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Source files are not defined for entity type<entity> loading")
+            .hasMessageContaining("Source files are not defined for entity type 'entity' loading.")
     }
 
     @Test
@@ -79,6 +79,6 @@ internal class LoadBuilderTest {
                 fromSources { source { file("file1"); sheet("test") } }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Field set is not defined for entity type<entity> loading")
+            .hasMessageContaining("Field set is not defined for entity type 'entity' loading.")
     }
 }

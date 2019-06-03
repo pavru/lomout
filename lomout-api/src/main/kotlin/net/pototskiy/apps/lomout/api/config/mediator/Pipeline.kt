@@ -87,7 +87,7 @@ data class Pipeline(
          *  }
          * ...
          * ```
-         * entities - pipeline input entities
+         * entities — pipeline input entities
          *
          * @param block PipelineClassifierFunction
          */
@@ -107,7 +107,7 @@ data class Pipeline(
          *  }
          * ...
          * ```
-         * [ClassifierPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin] - classifier
+         * [ClassifierPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin] — classifier
          *      plugin class
          *
          * @param block The classifier options
@@ -128,8 +128,8 @@ data class Pipeline(
          *  }
          * ...
          * ```
-         * target - target entity type
-         * entities - pipeline input entities
+         * target — target entity type
+         * entities — pipeline input entities
          *
          * @param block PipelineAssemblerFunction
          */
@@ -149,7 +149,7 @@ data class Pipeline(
          *  }
          * ...
          * ```
-         * * [AssemblerPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin] - assembler
+         * * [AssemblerPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin] — assembler
          *      plugin class, **mandatory**
          *
          * @param block The assembler options
@@ -170,10 +170,10 @@ data class Pipeline(
          *  }
          * ...
          * ```
-         * [accepted classes][CLASS] - pipeline accepted classes
+         * [accepted classes][CLASS] — pipeline accepted classes
          *
          * @param klass Array<out CLASS> The pipeline accepted class
-         * @param block Builder.() -> Unit
+         * @param block Builder.() → Unit
          */
         @Suppress("SpreadOperator")
         fun pipeline(vararg klass: CLASS, block: Builder.() -> Unit) {

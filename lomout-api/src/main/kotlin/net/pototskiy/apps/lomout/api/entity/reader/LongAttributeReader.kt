@@ -10,8 +10,10 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 /**
  * Default reader for [LongType] attribute
  *
- * @property locale String The value locale
+ * @property locale The value locale
+ * @property groupingUsed Indicate tha number uses digit grouping
  */
+@Suppress("MemberVisibilityCanBePrivate")
 open class LongAttributeReader : AttributeReaderPlugin<LongType>() {
     var locale: String = DEFAULT_LOCALE_STR
     var groupingUsed = false
