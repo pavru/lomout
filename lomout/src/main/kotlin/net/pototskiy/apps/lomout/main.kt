@@ -21,6 +21,8 @@ import net.pototskiy.apps.lomout.printer.DataPrinter
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
+import org.joda.time.DateTime
+import org.joda.time.Duration
 import java.io.File
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
@@ -52,6 +54,7 @@ fun main(args: Array<String>) {
     }
     setLogLevel(mainCommand)
 
+    val startTime = DateTime()
     statusLog.info("Application has started")
 
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(
@@ -72,7 +75,8 @@ fun main(args: Array<String>) {
     PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
     CONFIG_BUILDER.config.printer?.let { DataPrinter.print(CONFIG_BUILDER.config) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
-    statusLog.info("Application has finished")
+    val duration = Duration(startTime, DateTime()).standardSeconds
+    statusLog.info("Application has finished, duration: ${duration}s")
 }
 
 /**

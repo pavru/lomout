@@ -168,7 +168,9 @@ dependencies {
     implementation(kotlin("script-util"))
 //    implementation(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-jvm-host"))
-//    compileOnly(files("libs/idea.jar"))
+    // Cachw 2k
+    implementation("org.cache2k", "cache2k-api", Versions.cache2k)
+    runtimeOnly("org.cache2k", "cache2k-core", Versions.cache2k)
     // Test
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)

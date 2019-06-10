@@ -121,6 +121,7 @@ class NestedAttributeWorkbook(
     /**
      * Close workbook
      */
+    @Suppress("EmptyFunctionBlock")
     override fun close() {
         // nothing to close workbook use string
     }

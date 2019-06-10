@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.TextColumnType
 import org.jetbrains.exposed.sql.VarCharColumnType
 import org.joda.time.DateTime
 
-private const val VARCHAR_LENGTH = 1000
+private const val VARCHAR_LENGTH = 950
 
 /**
  * String, StringList attribute DB table

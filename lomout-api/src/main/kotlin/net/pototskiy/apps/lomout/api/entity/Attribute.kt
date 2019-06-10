@@ -61,8 +61,7 @@ abstract class Attribute<T : Type>(
     /**
      * Attribute full name
      */
-    val fullName: String
-        get() = "${owner.name}:$name"
+    val fullName: String by lazy { "${owner.name}:$name" }
     /**
      * Attribute has builder
      */

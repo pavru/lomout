@@ -31,7 +31,7 @@ abstract class AttributeTable<V : Comparable<V>>(
     /**
      * Attribute code (name)
      */
-    val code = varchar("code", codeNameLength).index()
+    val code = varchar("code", CODE_NAME_LENGTH).index()
     /**
      * Attribute value
      */
@@ -39,7 +39,7 @@ abstract class AttributeTable<V : Comparable<V>>(
 
     init {
         if (value.columnType !is TextColumnType) {
-            value.index()
+            index("${table}_idx_code_value", false, code, value)
         }
         @Suppress("LeakingThis")
         uniqueIndex("unique_attr", this.owner, code, index)
@@ -52,6 +52,6 @@ abstract class AttributeTable<V : Comparable<V>>(
         /**
          * Maximum length of attribute code (name)
          */
-        const val codeNameLength = 300
+        const val CODE_NAME_LENGTH = 70
     }
 }

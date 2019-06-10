@@ -21,7 +21,7 @@ object DbEntityTable : IntIdTable("entity") {
     /**
      * Change flag
      */
-    val touchedInLoading = bool("touched_in_loading").index()
+    val touchedInLoading = bool("touched_in_loading")
     /**
      * Previous entity status
      */
@@ -29,7 +29,7 @@ object DbEntityTable : IntIdTable("entity") {
     /**
      * Current entity status
      */
-    val currentStatus = entityStatus("current_status").index()
+    val currentStatus = entityStatus("current_status")
     /**
      * Timestamp of creating
      */
@@ -37,7 +37,7 @@ object DbEntityTable : IntIdTable("entity") {
     /**
      * Timestamp of updating
      */
-    val updated = datetime("updated").index()
+    val updated = datetime("updated")
     /**
      * Timestamp of removing
      */
@@ -46,6 +46,10 @@ object DbEntityTable : IntIdTable("entity") {
      * Absent (in a source) days
      */
     val absentDays = integer("absent_days").index()
+
+    init {
+        index("entity_idx_id_touch_updated", false, id, touchedInLoading, updated, currentStatus)
+    }
 }
 
 /**

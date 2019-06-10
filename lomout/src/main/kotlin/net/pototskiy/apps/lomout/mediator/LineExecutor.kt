@@ -17,12 +17,15 @@ import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.database.EntityIdCol
 import net.pototskiy.apps.lomout.api.database.EntityTab
 import net.pototskiy.apps.lomout.api.database.EntityTypeCol
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.unknownPlace
 import org.apache.commons.collections4.map.LRUMap
 import org.apache.logging.log4j.Logger
+import org.cache2k.Cache
+import org.cache2k.Cache2kBuilder
+import org.cache2k.CacheManager
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.alias
@@ -39,6 +42,17 @@ abstract class LineExecutor(
     private lateinit var line: AbstractLine
 
     protected val pipelineDataCache = LRUMap<Int, PipelineData>(maxCacheSize, initialCacheSize)
+
+    protected val dataCache: Cache<Int, PipelineData> by lazy {
+        CacheManager.getInstance().getCache<Int, PipelineData>("pipelineData")
+            ?: object : Cache2kBuilder<Int, PipelineData>() {}
+                .name("pipelineData")
+                .enableJmx(true)
+                .entryCapacity(MAX_CACHE_SIZE.toLong())
+                .eternal(true)
+                .build()
+    }
+
     protected abstract val logger: Logger
     private val jobs = mutableListOf<Job>()
     protected var processedRows = 0L
@@ -75,7 +89,7 @@ abstract class LineExecutor(
     }
 
     override fun readEntity(id: EntityID<Int>): PipelineData {
-        var pipelineData = pipelineDataCache[id.value]
+        var pipelineData = dataCache.get(id.value)
         if (pipelineData == null) {
             val entity = transaction { DbEntity.findById(id) }
                 ?: throw AppDataException(unknownPlace(), "Matched entity id '${id.value}' cannot be found.")
@@ -83,7 +97,7 @@ abstract class LineExecutor(
             val inputEntity = line.inputEntities.find { it.entity.name == entity.eType.name }
                 ?: throw AppDataException(badPlace(entity.eType), "Unexpected input entity.")
             pipelineData = PipelineData(entityTypeManager, entity, inputEntity)
-            pipelineDataCache[entity.id.value] = pipelineData
+            dataCache.put(entity.id.value, pipelineData)
         }
         return pipelineData
     }

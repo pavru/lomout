@@ -4,12 +4,10 @@ import net.pototskiy.apps.lomout.api.AppDatabaseException
 import net.pototskiy.apps.lomout.api.DATABASE_LOG_NAME
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
 import net.pototskiy.apps.lomout.api.entity.ListType
 import net.pototskiy.apps.lomout.api.entity.MapType
 import net.pototskiy.apps.lomout.api.entity.Type
 import net.pototskiy.apps.lomout.api.entity.isList
-import net.pototskiy.apps.lomout.api.entity.isTypeOf
 import net.pototskiy.apps.lomout.api.entity.sqlType
 import net.pototskiy.apps.lomout.api.entity.toList
 import net.pototskiy.apps.lomout.api.entity.values.wrapAValue
@@ -44,6 +42,7 @@ abstract class DbEntityWithAttributeClass(
     private val logger = LogManager.getLogger(DATABASE_LOG_NAME)
     private val attributeClasses: List<AttributeEntityClass<*, *>> =
         attributeClasses.toList()
+    private val filteredAttrClasses = AttributeClasses(attributeClasses.toList())
 
     /**
      * Get exposed entity class for attribute type
@@ -101,16 +100,15 @@ abstract class DbEntityWithAttributeClass(
     @PublicApi
     fun readAttributes(entity: DbEntity): Map<AnyTypeAttribute, Type?> {
         val eType = entity.eType
-        val types = eType.attributes
-            .filterNot { it.isSynthetic || it.valueType.isTypeOf<AttributeListType>() }
-            .groupBy { it.valueType.sqlType() }.keys
-        val dbValues = attributeClasses.filter {
-            (it.table as AttributeTable<*>).value.columnType::class in types
-        }.map { attrClass ->
+        val dbValues = filteredAttrClasses.getAttrClasses(entity.eType).map { attrClass ->
             val table = attrClass.table as AttributeTable<*>
-            val v = transaction { attrClass.find { table.owner eq entity.id }.toList() }
-                .groupBy { it.code }
-                .map { it.key to it.value }
+            val v = transaction {
+                attrClass.find { table.owner eq entity.id }
+                    .asSequence()
+                    .groupBy { it.code }
+                    .map { it.key to it.value }
+                    .toList()
+            }
             v
         }.flatten().toMap()
         @Suppress("IMPLICIT_CAST_TO_ANY")

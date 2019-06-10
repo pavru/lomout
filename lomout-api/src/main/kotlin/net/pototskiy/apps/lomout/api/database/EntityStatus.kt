@@ -3,8 +3,8 @@ package net.pototskiy.apps.lomout.api.database
 import net.pototskiy.apps.lomout.api.AppDatabaseException
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
+import org.jetbrains.exposed.sql.IntegerColumnType
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.VarCharColumnType
 
 /**
  * Entity status
@@ -40,7 +40,7 @@ class EntityStatusColumnType : ColumnType() {
      * @return String
      */
     override fun sqlType(): String {
-        return VarCharColumnType(STATUS_NAME_LENGTH).sqlType()
+        return IntegerColumnType().sqlType()
     }
 
     /**
@@ -52,7 +52,7 @@ class EntityStatusColumnType : ColumnType() {
     override fun valueFromDB(value: Any): Any {
         return when (value) {
             is EntityStatus -> value
-            is String -> EntityStatus.valueOf(value)
+            is Int -> EntityStatus.values()[value]
             else -> throw AppDatabaseException("Unexpected value '$value' of type '${value::class.qualifiedName}'.")
         }
     }
@@ -66,8 +66,8 @@ class EntityStatusColumnType : ColumnType() {
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
             null -> if (nullable) null else throw AppDatabaseException("Null in non-nullable column.")
-            is EntityStatus -> value.name
-            is String -> value
+            is EntityStatus -> value.ordinal
+            is Int -> value
             else -> throw AppDatabaseException("Unexpected value '$value' of type '${value::class.qualifiedName}'.")
         }
     }

@@ -60,7 +60,7 @@ val TIMESTAMP = DateTime()
 /**
  * Maximum length of entity type name
  */
-const val ENTITY_TYPE_NAME_LENGTH = 100
+const val ENTITY_TYPE_NAME_LENGTH = 50
 /**
  * CSV file sheet name
  */

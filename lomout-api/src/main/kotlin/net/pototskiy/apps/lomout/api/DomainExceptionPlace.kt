@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package net.pototskiy.apps.lomout.api
 
 import net.pototskiy.apps.lomout.api.entity.Attribute
@@ -66,18 +67,11 @@ data class DomainExceptionPlace(
      *
      * @return String
      */
-    @Suppress("MemberVisibilityCanBePrivate")
+    @Suppress("MemberVisibilityCanBePrivate", "ComplexMethod")
     fun cellInfo(): String {
-        val workbookName = workbook?.name
-            ?: sheet?.workbook?.name
-            ?: row?.sheet?.workbook?.name
-            ?: cell?.row?.sheet?.workbook?.name
-            ?: ""
-        val sheetName = sheet?.name
-            ?: row?.sheet?.name
-            ?: cell?.row?.sheet?.name
-            ?: ""
-        val rowNum = row?.rowNum ?: cell?.row?.rowNum
+        val workbookName = workbookName()
+        val sheetName = sheetName()
+        val rowNum = rowNum()
         val rowNumString = if (rowNum == null) "" else (rowNum + 1).toString()
         val columnNum = cell?.address?.column
         val column = if (columnNum == null) "" else "${columnNum + 1}(${columnNumberToAlpha(columnNum)})"
@@ -91,6 +85,23 @@ data class DomainExceptionPlace(
         } else {
             ""
         }
+    }
+
+    private fun rowNum() = row?.rowNum ?: cell?.row?.rowNum
+
+    private fun sheetName(): String {
+        return (sheet?.name
+            ?: row?.sheet?.name
+            ?: cell?.row?.sheet?.name
+            ?: "")
+    }
+
+    private fun workbookName(): String {
+        return (workbook?.name
+            ?: sheet?.workbook?.name
+            ?: row?.sheet?.workbook?.name
+            ?: cell?.row?.sheet?.workbook?.name
+            ?: "")
     }
 
     /**
@@ -294,6 +305,7 @@ operator fun DomainExceptionPlace.plus(data: Any) = this.copy(data = data)
  * @param column The column number
  * @return String The column alpha code
  */
+@Suppress("MagicNumber")
 private fun columnNumberToAlpha(column: Int): String {
     var c = column
     val alpha = StringBuilder("")

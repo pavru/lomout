@@ -113,8 +113,8 @@ internal class DataLoadingTest {
             @DisplayName("Four entities should be in state CREATED/UNCHANGED")
             internal fun createdCreatedStateTest() {
                 assertThat(DbEntity.getEntities(entityType).filter {
-                    it.previousStatus == EntityStatus.CREATED
-                            && it.currentStatus == EntityStatus.UNCHANGED
+                    it.previousStatus == EntityStatus.CREATED &&
+                            it.currentStatus == EntityStatus.UNCHANGED
                 }.count()).isEqualTo(4)
             }
 
@@ -122,8 +122,8 @@ internal class DataLoadingTest {
             @DisplayName("One entity should be in state CREATED/UPDATED")
             internal fun createdUpdatedStateTest() {
                 assertThat(DbEntity.getEntities(entityType).filter {
-                    it.previousStatus == EntityStatus.CREATED
-                            && it.currentStatus == EntityStatus.UPDATED
+                    it.previousStatus == EntityStatus.CREATED &&
+                            it.currentStatus == EntityStatus.UPDATED
                 }.count()).isEqualTo(1)
             }
 

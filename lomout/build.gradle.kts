@@ -180,6 +180,9 @@ dependencies {
 //    implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("script-util"))
     implementation(kotlin("scripting-jvm-host"))
+    // Cachw 2k
+    implementation("org.cache2k", "cache2k-api", Versions.cache2k)
+    runtimeOnly("org.cache2k", "cache2k-core", Versions.cache2k)
 // Test
 // testCompile(group = "junit", name = "junit", version = "4.12")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
