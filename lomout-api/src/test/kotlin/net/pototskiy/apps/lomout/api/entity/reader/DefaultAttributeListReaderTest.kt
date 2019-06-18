@@ -3,10 +3,13 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -28,14 +31,20 @@ internal class DefaultAttributeListReaderTest {
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<AttributeListType>
+    private lateinit var attr: Attribute<ATTRIBUTELIST>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
-    private val entityTypeManager = EntityTypeManager()
+    private val entityTypeManager = EntityTypeManagerImpl()
 
     @BeforeEach
     internal fun setUp() {
-        attr = entityTypeManager.createAttribute("attr", AttributeListType::class)
+        @Suppress("UNCHECKED_CAST")
+        attr = entityTypeManager.createAttribute(
+            "attr", ATTRIBUTELIST::class,
+            builder = null,
+            reader = defaultReaders[ATTRIBUTELIST::class] as AttributeReader<out ATTRIBUTELIST>,
+            writer = defaultWriters[ATTRIBUTELIST::class] as AttributeWriter<out ATTRIBUTELIST>
+        )
         entity = entityTypeManager.createEntityType("test", emptyList(), false).also {
             entityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
@@ -101,7 +110,7 @@ internal class DefaultAttributeListReaderTest {
     @Test
     internal fun defaultDateReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[AttributeListType::class]
+        val reader = defaultReaders[ATTRIBUTELIST::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin

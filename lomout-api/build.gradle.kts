@@ -168,7 +168,7 @@ dependencies {
     implementation(kotlin("script-util"))
 //    implementation(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-jvm-host"))
-    // Cachw 2k
+    // Cache
     implementation("org.cache2k", "cache2k-api", Versions.cache2k)
     runtimeOnly("org.cache2k", "cache2k-core", Versions.cache2k)
     // Test

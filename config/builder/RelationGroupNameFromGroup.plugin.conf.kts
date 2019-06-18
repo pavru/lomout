@@ -1,8 +1,8 @@
-class RelationGroupNameFromGroup : AttributeBuilderPlugin<StringType>() {
-    override fun build(entity: DbEntity): StringType? {
-        return entity.readAttribute(relationGroupCodeAttr)?.let { code ->
-            DbEntity.getByAttribute(groupEntityType, groupCodeAttr, code).firstOrNull()?.let { group ->
-                return group.readAttribute(groupNameAttr) as? StringType
+class RelationGroupNameFromGroup : AttributeBuilderPlugin<STRING>() {
+    override fun build(entity: Entity): STRING? {
+        return entity[relationGroupCodeAttr]?.let { code ->
+            repository.get(groupEntityType, mapOf(groupCodeAttr to code))?.let { group ->
+                return group[groupNameAttr] as? STRING
             }
         }
     }

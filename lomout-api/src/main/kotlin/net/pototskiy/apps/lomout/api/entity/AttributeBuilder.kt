@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.database.DbEntity
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plugable.AttributeBuilderFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeBuilderPlugin
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
@@ -19,7 +19,7 @@ sealed class AttributeBuilder<R : Type> {
      * @param entity DbEntity The DB entity
      * @return R?
      */
-    fun build(entity: DbEntity): R? {
+    operator fun invoke(entity: Entity): R? {
         return when (this) {
             is AttributeBuilderWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)

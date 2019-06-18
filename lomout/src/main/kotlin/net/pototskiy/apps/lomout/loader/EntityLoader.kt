@@ -8,13 +8,13 @@ import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.FieldSet
 import net.pototskiy.apps.lomout.api.config.loader.Load
-import net.pototskiy.apps.lomout.api.database.DbEntity
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
 import net.pototskiy.apps.lomout.api.entity.AttributeReader
-import net.pototskiy.apps.lomout.api.entity.StringType
-import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
@@ -28,6 +28,7 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 class EntityLoader(
+    private val repository: EntityRepositoryInterface,
     private val loadConfig: Load,
     private val emptyRowBehavior: EmptyRowBehavior,
     private val sheet: Sheet
@@ -37,17 +38,17 @@ class EntityLoader(
     var processedRows = 0L
 
     private lateinit var updater: EntityUpdater
-    private val extraData = mutableMapOf<String, Map<AnyTypeAttribute, Type?>>()
+    private val extraData = mutableMapOf<String, Map<AnyTypeAttribute, Type>>()
     private var fieldSets = loadConfig.fieldSets
     private var eType = loadConfig.entity
 
     fun load() {
-        updater = EntityUpdater(eType)
-        DbEntity.resetTouchFlag(eType)
+        updater = EntityUpdater(repository, eType)
+        repository.resetTouchFlag(eType)
         processRows()
-        DbEntity.markEntitiesAsRemove(eType)
-        DbEntity.updateAbsentAge(eType)
-        DbEntity.removeOldEntities(eType, loadConfig.maxAbsentDays)
+        repository.markEntitiesAsRemoved(eType)
+        repository.updateAbsentDays(eType)
+        repository.removeOldEntities(eType, loadConfig.maxAbsentDays)
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -106,7 +107,7 @@ class EntityLoader(
         }
     }
 
-    private fun plusAdditionalData(data: MutableMap<AnyTypeAttribute, Type?>) =
+    private fun plusAdditionalData(data: MutableMap<AnyTypeAttribute, Type>) =
         extraData.forEach { (_, gData) -> data.putAll(gData) }
 
     private fun checkEmptyRow(
@@ -146,36 +147,34 @@ class EntityLoader(
         val keyFields = fields.filter { it.value.key }
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
-            if (v == null || (v is StringType && v.value.isBlank())) {
+            if (v == null || (v is STRING && v.value.isBlank())) {
                 throw AppDataException(badPlace(attr), "Attribute is key but has no value.")
             }
         }
     }
 
     @Suppress("ComplexMethod", "ThrowsCount")
-    private fun getData(row: Row, fields: FieldAttributeMap): Map<AnyTypeAttribute, Type?> {
-        val data: MutableMap<AnyTypeAttribute, Type?> = mutableMapOf()
+    private fun getData(row: Row, fields: FieldAttributeMap): Map<AnyTypeAttribute, Type> {
+        val data: MutableMap<AnyTypeAttribute, Type> = mutableMapOf()
 
         fun readNestedField(
             field: Field,
             attribute: Attribute<out Type>
         ) {
             val parentAttr = fields[field.parent]
-            if ((data[parentAttr] as AttributeListType).containsKey(attribute.name) &&
+            if ((data[parentAttr] as ATTRIBUTELIST).containsKey(attribute.name) &&
                 field.parent?.parent != null
             ) {
                 readNestedField(field.parent!!, fields[field.parent!!]!!)
             }
-            val attrCell = (data[parentAttr] as AttributeListType).value[attribute.name]
-            if (attrCell == null && !attribute.nullable && attribute.valueType != AttributeListType::class) {
+            val attrCell = (data[parentAttr] as ATTRIBUTELIST).value[attribute.name]
+            if (attrCell == null && !attribute.nullable && attribute.type != ATTRIBUTELIST::class) {
                 throw AppDataException(badPlace(attribute), "Attribute is not nullable and there is no data for it.")
             } else if (attrCell == null) {
-                data[attribute] = null
                 return
             }
             @Suppress("UNCHECKED_CAST")
-            val v = (attribute.reader as AttributeReader<Type>).read(attribute, attrCell)
-            data[attribute] = v
+            (attribute.reader as AttributeReader<Type>)(attribute, attrCell)?.let { data[attribute] = it }
         }
 
         fields.filterNot { it.key.isNested || it.value.isSynthetic }.forEach { (field, attr) ->
@@ -187,12 +186,14 @@ class EntityLoader(
                     )
             testFieldRegex(field, cell)
             @Suppress("UNCHECKED_CAST")
-            data[attr] = (attr.reader as AttributeReader<Type>).read(attr, cell).also {
+            (attr.reader as AttributeReader<Type>)(attr, cell).also {
                 if (it == null && (!attr.nullable || attr.key)) {
                     throw AppDataException(
                         badPlace(attr) + field + cell,
                         "Attribute is not nullable and cannot be null."
                     )
+                } else if (it != null) {
+                    data[attr] = it
                 }
             }
         }

@@ -2,7 +2,7 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.DateListType
+import net.pototskiy.apps.lomout.api.entity.type.DATELIST
 import net.pototskiy.apps.lomout.api.entity.values.dateToString
 import net.pototskiy.apps.lomout.api.entity.values.datetimeToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
@@ -11,21 +11,21 @@ import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
 /**
- * Default writer for [DateListType] attribute
+ * Default writer for [DATELIST] attribute
  *
  * @property locale String The date locale, default system locale
  * @property pattern String? The date pattern, optional
  * @property quote Char? The value quote
  * @property delimiter Char The list delimiter, default:,
  */
-open class DateListAttributeStringWriter : AttributeWriterPlugin<DateListType>() {
+open class DateListAttributeStringWriter : AttributeWriterPlugin<DATELIST>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
     override fun write(
-        value: DateListType?,
+        value: DATELIST?,
         cell: Cell
     ) {
         value?.let { list ->

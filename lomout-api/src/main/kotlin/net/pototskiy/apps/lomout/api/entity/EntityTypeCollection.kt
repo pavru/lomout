@@ -59,6 +59,7 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          *
          * @return EntityTypeCollection
          */
-        fun build(): EntityTypeCollection = EntityTypeCollection(eTypes)
+        fun build(): EntityTypeCollection =
+            EntityTypeCollection(eTypes)
     }
 }

@@ -6,6 +6,9 @@ import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.NamedObject
+import net.pototskiy.apps.lomout.api.database.AttributeTable
+import net.pototskiy.apps.lomout.api.database.DbEntityTable
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
@@ -13,7 +16,7 @@ import net.pototskiy.apps.lomout.api.unknownPlace
  *
  * @property name String
  * @property open Boolean
- * @property manager EntityTypeManagerInterface
+ * @property manager EntityTypeManagerInternal
  * @property attributes List<Attribute<*>>
  * @constructor
  */
@@ -25,13 +28,19 @@ abstract class EntityType(
     /**
      * Entity type manager
      */
-    lateinit var manager: EntityTypeManagerInterface
+    lateinit var manager: EntityTypeManager
 
     /**
      * Entity attributes list
      */
     val attributes: List<Attribute<*>>
         get() = manager.getEntityTypeAttributes(this)
+
+    internal val attributeTables: Array<AttributeTable<*>>
+        get() = manager.getEntityAttributeTables(this)
+
+    internal val mainTable: DbEntityTable
+        get() = manager.getEntityMainTable(this)
 
     /**
      * Get attribute by name
@@ -180,7 +189,10 @@ abstract class EntityType(
          * @param block The attribute configuration
          * @return true — attribute added
          */
-        inline fun <reified T : Type> attribute(name: String, block: Attribute.Builder<T>.() -> Unit = {}) =
+        inline fun <reified T : Type> attribute(
+            name: String,
+            block: Attribute.Builder<T>.() -> Unit = {}
+        ) =
             attributes.add(Attribute.Builder(helper, name, T::class).apply(block).build())
 
         /**
@@ -211,12 +223,15 @@ abstract class EntityType(
 
         /**
          * Build entity
-         *
+         *E
          * @return EntityType
          */
         fun build(): EntityType {
             return helper.typeManager.createEntityType(entityType, inheritances, open).also {
-                helper.typeManager.initialAttributeSetup(it, AttributeCollection(attributes))
+                helper.typeManager.initialAttributeSetup(
+                    it,
+                    AttributeCollection(attributes)
+                )
             }
         }
     }

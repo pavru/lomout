@@ -4,11 +4,14 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.lomout.api.entity.BooleanListType
-import net.pototskiy.apps.lomout.api.entity.BooleanType
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -30,17 +33,23 @@ import kotlin.reflect.full.createInstance
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultBooleanListReaderTest {
 
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<BooleanListType>
+    private lateinit var attr: Attribute<BOOLEANLIST>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        attr = typeManager.createAttribute("attr", BooleanListType::class)
+        @Suppress("UNCHECKED_CAST")
+        attr = typeManager.createAttribute(
+            "attr", BOOLEANLIST::class,
+            builder = null,
+            reader = defaultReaders[BOOLEANLIST::class] as AttributeReader<out BOOLEANLIST>,
+            writer = defaultWriters[BOOLEANLIST::class] as AttributeWriter<out BOOLEANLIST>
+        )
         entity = typeManager.createEntityType("test", emptyList(), false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
@@ -71,9 +80,9 @@ internal class DefaultBooleanListReaderTest {
         xlsTestDataCell.setCellValue("true,false, false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            BooleanListType(
+            BOOLEANLIST(
                 listOf(
-                    BooleanType(true), BooleanType(false), BooleanType(false)
+                    BOOLEAN(true), BOOLEAN(false), BOOLEAN(false)
                 )
             )
         )
@@ -94,9 +103,9 @@ internal class DefaultBooleanListReaderTest {
         xlsTestDataCell.setCellValue("иСтина,Ложь, ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerRuRU.read(attr, inputCell)?.value).isEqualTo(
-            BooleanListType(
+            BOOLEANLIST(
                 listOf(
-                    BooleanType(true), BooleanType(false), BooleanType(false)
+                    BOOLEAN(true), BOOLEAN(false), BOOLEAN(false)
                 )
             )
         )
@@ -105,7 +114,7 @@ internal class DefaultBooleanListReaderTest {
     @Test
     internal fun defaultBooleanListReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[BooleanListType::class]
+        val reader = defaultReaders[BOOLEANLIST::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin

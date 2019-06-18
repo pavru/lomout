@@ -5,7 +5,7 @@ import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import java.io.Closeable
@@ -45,7 +45,7 @@ class EntityPrinter(
             val cell = row.insertCell(c)
             val attr = fieldSets.mainSet.fieldToAttr[field]
             @Suppress("UNCHECKED_CAST")
-            (attr?.writer as? AttributeWriter<Type>)?.write(data[attr], cell)
+            (attr?.writer as? AttributeWriter<Type>)?.invoke(data[attr], cell)
         }
         return (lastRow - currentRow).toLong()
     }
@@ -60,7 +60,7 @@ class EntityPrinter(
                     val cell = row.insertCell(c)
                     val attr = fields.fieldToAttr[field]
                     @Suppress("UNCHECKED_CAST")
-                    (attr?.writer as? AttributeWriter<Type>)?.write(extData[attr], cell)
+                    (attr?.writer as? AttributeWriter<Type>)?.invoke(extData[attr], cell)
                 }
                 extraFields[fields.name] = extData
             }

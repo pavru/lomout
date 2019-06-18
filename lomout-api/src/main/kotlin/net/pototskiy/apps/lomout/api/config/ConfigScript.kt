@@ -71,6 +71,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
         "net.pototskiy.apps.lomout.api.config.mediator.*",
         "net.pototskiy.apps.lomout.api.plugable.*",
         "net.pototskiy.apps.lomout.api.entity.*",
+        "net.pototskiy.apps.lomout.api.entity.type.*",
         "net.pototskiy.apps.lomout.api.config.pipeline.*",
         "net.pototskiy.apps.lomout.api.entity.values.*",
         "net.pototskiy.apps.lomout.api.entity.reader.*",

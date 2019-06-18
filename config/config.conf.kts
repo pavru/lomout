@@ -49,12 +49,12 @@ config {
         }
         entities {
             entity("onec-group", false) {
-                attribute<LongType>("group_code") {
+                attribute<LONG>("group_code") {
                     key()
                     reader<OnecGroupToLong>()
                 }
-                attribute<StringType>("group_name")
-                attribute<StringType>("__path") {
+                attribute<STRING>("group_name")
+                attribute<STRING>("__path") {
                     builder<GroupPathFromRelation> {
                         separator = "/"
                         root = "/Root Catalog/Default Category/Каталог/"
@@ -62,140 +62,140 @@ config {
                 }
             }
             entity("onec-group-relation", false) {
-                attribute<LongType>("group_code") { key() }
-                attribute<LongType>("group_parent_code") { nullable() }
-                attribute<StringType>("group_name") {
+                attribute<LONG>("group_code") { key() }
+                attribute<LONG>("group_parent_code") { nullable() }
+                attribute<STRING>("group_name") {
                     builder<RelationGroupNameFromGroup>()
                 }
             }
             entity("onec-product", true) {
-                attribute<LongType>("sku") { key() }
-                attribute<DoubleType>("weight")
-                attribute<LongType>("group_code") {
+                attribute<LONG>("sku") { key() }
+                attribute<DOUBLE>("weight")
+                attribute<LONG>("group_code") {
                     reader<OnecGroupToLong>()
                 }
             }
             entity("mage-product", true) {
-                attribute<StringType>("sku") { key() }
-                attribute<AttributeListType>("additional_attributes") {
+                attribute<STRING>("sku") { key() }
+                attribute<ATTRIBUTELIST>("additional_attributes") {
                     reader<AttributeListReader> {
                         quote = null;delimiter = ',';valueQuote = '"';valueDelimiter = '='
                     }
                 }
-                attribute<TextType>("description")
-                attribute<TextType>("short_description") { nullable() }
-                attribute<DoubleType>("weight") { nullable() }
-                attribute<BooleanType>("product_online")
-                attribute<DoubleType>("price")
-                attribute<DoubleType>("special_price") { nullable() }
-                attribute<DateType>("special_price_from_date") {
+                attribute<TEXT>("description")
+                attribute<TEXT>("short_description") { nullable() }
+                attribute<DOUBLE>("weight") { nullable() }
+                attribute<BOOLEAN>("product_online")
+                attribute<DOUBLE>("price")
+                attribute<DOUBLE>("special_price") { nullable() }
+                attribute<DATE>("special_price_from_date") {
                     reader<DateAttributeReader> { pattern = "d.M.yy" }
                     nullable()
                 }
-                attribute<DateType>("special_price_to_date") {
+                attribute<DATE>("special_price_to_date") {
                     reader<DateAttributeReader> { pattern = "d.M.yy" }
                     nullable()
                 }
-                attribute<DateTimeType>("created_at") {
+                attribute<DATETIME>("created_at") {
                     reader<DateTimeAttributeReader> { pattern = "d.M.yy, H:m" }
                 }
-                attribute<DateTimeType>("updated_at") {
+                attribute<DATETIME>("updated_at") {
                     reader<DateTimeAttributeReader> { pattern = "d.M.yy, H:m" }
                 }
-                attribute<DateType>("new_from_date") {
+                attribute<DATE>("new_from_date") {
                     reader<DateAttributeReader> { pattern = "d.M.yy" }
                     nullable()
                 }
-                attribute<DateType>("new_to_date") {
+                attribute<DATE>("new_to_date") {
                     reader<DateAttributeReader> { pattern = "d.M.yy" }
                     nullable()
                 }
-                attribute<DoubleType>("qty")
-                attribute<DoubleType>("out_of_stock_qty")
-                attribute<BooleanType>("use_config_min_qty")
-                attribute<BooleanType>("is_qty_decimal")
-                attribute<BooleanType>("allow_backorders")
-                attribute<BooleanType>("use_config_backorders")
-                attribute<DoubleType>("min_cart_qty")
-                attribute<BooleanType>("use_config_min_sale_qty")
-                attribute<DoubleType>("max_cart_qty")
-                attribute<BooleanType>("use_config_max_sale_qty")
-                attribute<BooleanType>("is_in_stock")
-                attribute<DoubleType>("notify_on_stock_below")
-                attribute<BooleanType>("use_config_notify_stock_qty")
-                attribute<BooleanType>("manage_stock")
-                attribute<BooleanType>("use_config_manage_stock")
-                attribute<BooleanType>("use_config_qty_increments")
-                attribute<DoubleType>("qty_increments")
-                attribute<BooleanType>("use_config_enable_qty_inc")
-                attribute<BooleanType>("enable_qty_increments")
-                attribute<BooleanType>("is_decimal_divided")
-                attribute<LongType>("website_id")
-                attribute<StringListType>("related_skus") {
+                attribute<DOUBLE>("qty")
+                attribute<DOUBLE>("out_of_stock_qty")
+                attribute<BOOLEAN>("use_config_min_qty")
+                attribute<BOOLEAN>("is_qty_decimal")
+                attribute<BOOLEAN>("allow_backorders")
+                attribute<BOOLEAN>("use_config_backorders")
+                attribute<DOUBLE>("min_cart_qty")
+                attribute<BOOLEAN>("use_config_min_sale_qty")
+                attribute<DOUBLE>("max_cart_qty")
+                attribute<BOOLEAN>("use_config_max_sale_qty")
+                attribute<BOOLEAN>("is_in_stock")
+                attribute<DOUBLE>("notify_on_stock_below")
+                attribute<BOOLEAN>("use_config_notify_stock_qty")
+                attribute<BOOLEAN>("manage_stock")
+                attribute<BOOLEAN>("use_config_manage_stock")
+                attribute<BOOLEAN>("use_config_qty_increments")
+                attribute<DOUBLE>("qty_increments")
+                attribute<BOOLEAN>("use_config_enable_qty_inc")
+                attribute<BOOLEAN>("enable_qty_increments")
+                attribute<BOOLEAN>("is_decimal_divided")
+                attribute<LONG>("website_id")
+                attribute<STRINGLIST>("related_skus") {
                     reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
-                attribute<StringListType>("crosssell_skus") {
+                attribute<STRINGLIST>("crosssell_skus") {
                     reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
-                attribute<StringListType>("upsell_skus") {
+                attribute<STRINGLIST>("upsell_skus") {
                     reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
-                attribute<StringListType>("additional_images") {
+                attribute<STRINGLIST>("additional_images") {
                     reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
-                attribute<StringListType>("additional_image_labels") {
+                attribute<STRINGLIST>("additional_image_labels") {
                     reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
-                attribute<StringListType>("associated_skus") {
+                attribute<STRINGLIST>("associated_skus") {
                     reader<StringListAttributeReader> { quote = null;delimiter = ',' }
                     nullable()
                 }
-                attribute<DoubleType>("ratings_summary") { nullable() }
-                attribute<DoubleType>("cost") { nullable() }
+                attribute<DOUBLE>("ratings_summary") { nullable() }
+                attribute<DOUBLE>("cost") { nullable() }
                 // todo remove optional in this section
-                attribute<StringType>("english_name") { nullable() }
-                attribute<StringType>("catalog_sku") { nullable() }
-                attribute<StringType>("machine") { nullable() }
-                attribute<StringType>("machine_unit") { nullable() }
-                attribute<StringType>("machine_vendor") { nullable() }
+                attribute<STRING>("english_name") { nullable() }
+                attribute<STRING>("catalog_sku") { nullable() }
+                attribute<STRING>("machine") { nullable() }
+                attribute<STRING>("machine_unit") { nullable() }
+                attribute<STRING>("machine_vendor") { nullable() }
                 // end of todo block
-                attribute<DoubleType>("ts_dimensions_length") { nullable() }
-                attribute<DoubleType>("ts_dimensions_height") { nullable() }
-                attribute<DoubleType>("ts_dimensions_width") { nullable() }
+                attribute<DOUBLE>("ts_dimensions_length") { nullable() }
+                attribute<DOUBLE>("ts_dimensions_height") { nullable() }
+                attribute<DOUBLE>("ts_dimensions_width") { nullable() }
             }
             entity("mage-category", true) {
-                attribute<LongType>("entity_type_id") { nullable() }
-                attribute<LongType>("attribute_set_id")
-                attribute<DateTimeType>("created_at") {
+                attribute<LONG>("entity_type_id") { nullable() }
+                attribute<LONG>("attribute_set_id")
+                attribute<DATETIME>("created_at") {
                     reader<DateTimeAttributeReader> { pattern = "y-M-d H:m:s" }
                 }
-                attribute<DateTimeType>("updated_at") {
+                attribute<DATETIME>("updated_at") {
                     reader<DateTimeAttributeReader> { pattern = "y-M-d H:m:s" }
                 }
-                attribute<LongType>("parent_id")
-                attribute<LongType>("increment_id") { nullable() }
-                attribute<LongType>("entity_id") { key() }
-                attribute<StringType>("children") { nullable() }
-                attribute<LongType>("children_count")
-                attribute<TextType>("description") { nullable() }
-                attribute<BooleanType>("include_in_menu")
-                attribute<BooleanType>("is_active") { nullable() }
-                attribute<BooleanType>("is_anchor") { nullable() }
-                attribute<BooleanType>("is_virtual_category") { nullable() }
-                attribute<LongType>("level")
-                attribute<LongType>("position")
-                attribute<BooleanType>("use_name_in_product_search")
-                attribute<LongType>("gen_store_id")
-                attribute<LongListType>("gen_products") {
+                attribute<LONG>("parent_id")
+                attribute<LONG>("increment_id") { nullable() }
+                attribute<LONG>("entity_id") { key() }
+                attribute<STRING>("children") { nullable() }
+                attribute<LONG>("children_count")
+                attribute<TEXT>("description") { nullable() }
+                attribute<BOOLEAN>("include_in_menu")
+                attribute<BOOLEAN>("is_active") { nullable() }
+                attribute<BOOLEAN>("is_anchor") { nullable() }
+                attribute<BOOLEAN>("is_virtual_category") { nullable() }
+                attribute<LONG>("level")
+                attribute<LONG>("position")
+                attribute<BOOLEAN>("use_name_in_product_search")
+                attribute<LONG>("gen_store_id")
+                attribute<LONGLIST>("gen_products") {
                     reader<LongListAttributeReader> { quote = null;delimiter = '|' }
                     nullable()
                 }
-                attribute<StringType>("__path") {
+                attribute<STRING>("__path") {
                     builder<CategoryPathFromRelation> {
                         separator = "/"
                         root = "/"
@@ -203,31 +203,31 @@ config {
                 }
             }
             entity("mage-customer-group", true) {
-                attribute<LongType>("customer_group_id") { key() }
-                attribute<LongType>("tax_class_id") { key() }
+                attribute<LONG>("customer_group_id") { key() }
+                attribute<LONG>("tax_class_id") { key() }
             }
             entity("mage-adv-price", true) {
-                attribute<StringType>("sku") { key() }
-                attribute<StringType>("tier_price_website") { key() }
-                attribute<StringType>("tier_price_customer_group") { key() }
-                attribute<DoubleType>("tier_price_qty")
-                attribute<DoubleType>("tier_price")
+                attribute<STRING>("sku") { key() }
+                attribute<STRING>("tier_price_website") { key() }
+                attribute<STRING>("tier_price_customer_group") { key() }
+                attribute<DOUBLE>("tier_price_qty")
+                attribute<DOUBLE>("tier_price")
             }
             entity("mage-stock-source", true) {
-                attribute<StringType>("source_code") { key() }
-                attribute<StringType>("sku") { key() }
-                attribute<BooleanType>("status")
-                attribute<DoubleType>("quantity")
+                attribute<STRING>("source_code") { key() }
+                attribute<STRING>("sku") { key() }
+                attribute<BOOLEAN>("status")
+                attribute<DOUBLE>("quantity")
             }
             entity("onec-group-extended", false) {
-                attribute<LongType>("group_code") {
+                attribute<LONG>("group_code") {
                     reader<OnecGroupToLong>()
                     key()
                 }
-                attribute<StringType>("group_name") { nullable() }
-                attribute<StringType>("magento_path") { nullable() }
-                attribute<StringType>("url") { nullable() }
-                attribute<TextType>("description") { nullable() }
+                attribute<STRING>("group_name") { nullable() }
+                attribute<STRING>("magento_path") { nullable() }
+                attribute<STRING>("url") { nullable() }
+                attribute<TEXT>("description") { nullable() }
             }
         }
 
@@ -355,26 +355,20 @@ config {
                 inheritFrom("mage-category") /*{
                     exclude("__path")
                 }*/
-                attribute<BooleanType>("remove_flag")
+                attribute<BOOLEAN>("remove_flag")
             }
             input {
                 entity("onec-group") {
-                    filter {
-                        with(DbEntityTable) {
-                            it[currentStatus] neq EntityStatus.REMOVED
-                        }
+                    statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
+                    extAttribute<STRING>("transformed_path") {
+                        builder<GroupToCategoryPath>()
                     }
-                    extAttribute<StringType>("transformed_path", "group_code") {
-                        reader<GroupToCategoryPath>()
+                    extAttribute<LONG>("entity_id") {
+                        builder { it["group_code"] as? LONG }
                     }
-                    extAttribute<LongType>("entity_id", "group_code")
                 }
                 entity("mage-category") {
-                    filter {
-                        with(DbEntityTable) {
-                            it[currentStatus] neq EntityStatus.REMOVED
-                        }
-                    }
+                    statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
                 }
             }
 
@@ -409,11 +403,7 @@ config {
         printerLine {
             input {
                 entity("import-category") {
-                    filter {
-                        with(DbEntityTable) {
-                            it[currentStatus] eq EntityStatus.UPDATED
-                        }
-                    }
+                    statuses(EntityStatus.UPDATED)
                 }
             }
             output {

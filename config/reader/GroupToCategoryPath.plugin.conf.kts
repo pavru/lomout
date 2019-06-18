@@ -1,20 +1,28 @@
-class GroupToCategoryPath : AttributeReaderPlugin<StringType>() {
-    override fun read(attribute: Attribute<out StringType>, input: Cell): StringType? {
+class GroupToCategoryPath : AttributeBuilderPlugin<STRING>() {
+    override fun build(entity: Entity): STRING? {
         try {
             val extendedInfo = entityTypeManager["onec-group-extended"]
-            val groupId = input.longValue
-            val entity = DbEntity.getByAttribute(
+            val groupId = entity["group_code"] as LONG
+            val entityExtInfo = repository.get(
                 extendedInfo,
-                extendedInfo.getAttributeOrNull("group_code")
-                    ?: throw AppConfigException(badPlace(attribute) + input, "Attribute 'group_code' is not defined."),
-                LongType(groupId)
-            ).firstOrNull()
-            return entity?.readAttribute(
+                mapOf(
+                    (extendedInfo.getAttributeOrNull("group_code")
+                        ?: throw AppConfigException(
+                            badPlace(entity.type),
+                            "Attribute 'group_code' is not defined."
+                        )) to groupId
+                ),
+                EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+            )
+            return entityExtInfo?.get(
                 extendedInfo.getAttributeOrNull("magento_path")
-                    ?: throw AppConfigException(badPlace(attribute) + input, "Attribute 'magento_path' is not defined.")
-            ) as? StringType?
+                    ?: throw AppConfigException(
+                        badPlace(entityExtInfo.type),
+                        "Attribute 'magento_path' is not defined."
+                    )
+            ) as? STRING?
         } catch (e: Exception) {
-            throw AppConfigException(badPlace(attribute) + input, e.message, e)
+            throw AppConfigException(badPlace(entity.type), e.message, e)
         }
     }
 }

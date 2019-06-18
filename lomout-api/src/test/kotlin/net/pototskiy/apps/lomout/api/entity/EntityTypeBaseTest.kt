@@ -1,6 +1,9 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
@@ -14,7 +17,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Execution(ExecutionMode.CONCURRENT)
 internal class EntityTypeBaseTest {
 
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private lateinit var attr1: Attribute<*>
     private lateinit var dupAttr1: Attribute<*>
     private lateinit var attr2: Attribute<*>
@@ -25,13 +28,55 @@ internal class EntityTypeBaseTest {
 
     @BeforeEach
     internal fun setUp() {
-        attr1 = typeManager.createAttribute("attr1", StringType::class)
-        dupAttr1 = typeManager.createAttribute("attr1", StringType::class)
-        attr2 = typeManager.createAttribute("attr2", StringType::class)
-        attr3 = typeManager.createAttribute("attr3", StringType::class)
-        attr4 = typeManager.createAttribute("attr4", StringType::class)
-        attr5 = typeManager.createAttribute("attr5", StringType::class)
-        attr6 = typeManager.createAttribute("attr6", StringType::class)
+        @Suppress("UNCHECKED_CAST")
+        attr1 = typeManager.createAttribute(
+            "attr1", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        dupAttr1 = typeManager.createAttribute(
+            "attr1", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        attr2 = typeManager.createAttribute(
+            "attr2", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        attr3 = typeManager.createAttribute(
+            "attr3", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        attr4 = typeManager.createAttribute(
+            "attr4", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        attr5 = typeManager.createAttribute(
+            "attr5", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        attr6 = typeManager.createAttribute(
+            "attr6", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
     }
 
     @Test
@@ -100,7 +145,7 @@ internal class EntityTypeBaseTest {
         val test2 = typeManager.createEntityType(
             "test2",
             listOf(ParentEntityType(test1)),
-            false
+            true
         ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
         assertThat(test2.attributes)
             .hasSize(3)
@@ -121,7 +166,7 @@ internal class EntityTypeBaseTest {
         assertThat(test2.getAttribute("attr1")).isEqualTo(attr1)
         assertThatThrownBy { test2.getAttribute("attr3") }.isInstanceOf(AppConfigException::class.java)
         assertThatThrownBy { test2.getAttribute("attr5") }.isInstanceOf(AppConfigException::class.java)
-        typeManager.addEntityAttribute(test1, attr3)
+        typeManager.addEntityAttribute(test2, attr3)
         assertThat(test2["attr3"]).isEqualTo(attr3)
     }
 

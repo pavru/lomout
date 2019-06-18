@@ -1,35 +1,40 @@
 import org.apache.commons.collections4.map.LRUMap
+import org.jetbrains.exposed.dao.EntityID
 import java.lang.ref.WeakReference
 import java.util.Collections.*
 import kotlin.collections.set
 
-class CategoryPathFromRelation : AttributeBuilderPlugin<StringType>() {
+class CategoryPathFromRelation : AttributeBuilderPlugin<STRING>() {
     var separator: String = "/"
     var root: String = ""
 
-    override fun build(entity: DbEntity): StringType? {
-        val cachedPath = pathCache[entity.id.value]?.get()
-        if (cachedPath != null) return StringType(cachedPath)
-        val eType = entity.eType
+    override fun build(entity: Entity): STRING? {
+        val cachedPath = pathCache[entity.id]?.get()
+        if (cachedPath != null) return STRING(cachedPath)
+        val eType = entity.type
         val path = mutableListOf<String>()
-        var current: DbEntity? = entity
-        var name = entity.readAttribute(nameAttr)?.value as String?
+        var current: Entity? = entity
+        var name = entity[nameAttr]?.value as String?
         while (name != null && current != null) {
             path.add(name)
-            val parentId = current.readAttribute(parentAttr) as LongType
+            val parentId = current[parentAttr] as LONG
             current = current.let {
-                DbEntity.getByAttribute(eType, idAttr, parentId).firstOrNull()
+                repository.get(
+                    eType,
+                    mapOf(idAttr to parentId),
+                    EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+                )
             }
-            name = current?.let { it.readAttribute(nameAttr)?.value as? String }
+            name = current?.let { it[nameAttr]?.value as? String }
         }
-        return StringType("$root${path.reversed().joinToString(separator)}").also {
-            pathCache[entity.id.value] = WeakReference(it.value)
+        return STRING("$root${path.reversed().joinToString(separator)}").also {
+            pathCache[entity.id] = WeakReference(it.value)
         }
     }
 
     companion object {
         private val typeManager by lazy { PluginContext.entityTypeManager }
-        private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
+        private val pathCache = synchronizedMap(LRUMap<EntityID<Int>, WeakReference<String>>(200, 100))
         private const val eTypeName = "mage-category"
         private val entityType by lazy { typeManager[eTypeName] }
         private val nameAttr by lazy { typeManager.getEntityAttribute(entityType, "name")!! }

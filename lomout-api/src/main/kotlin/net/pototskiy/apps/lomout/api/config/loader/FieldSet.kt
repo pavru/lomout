@@ -7,15 +7,19 @@ import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.Attribute
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.StringType
-import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.type.Type
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
 import net.pototskiy.apps.lomout.api.source.FieldCollection
 import net.pototskiy.apps.lomout.api.source.readFieldNamesFromSource
+import net.pototskiy.apps.lomout.api.unknownPlace
 import kotlin.collections.set
 import kotlin.contracts.contract
 
@@ -100,16 +104,19 @@ data class FieldSet(
             if (fields.containsKey(field)) {
                 throw AppConfigException(badPlace(field), "Field '${field.name}' is already defined.")
             }
+            @Suppress("UNCHECKED_CAST")
             fields[field] = lastAttribute
                 ?: helper.typeManager.getEntityAttribute(entityType, field.name)
                         ?: helper.typeManager.createAttribute(
                     field.name,
-                    StringType::class
-                ) {
-                    key(false)
-                    nullable(true)
-                    auto(true)
-                }
+                    STRING::class,
+                    false,
+                    true,
+                    true,
+                    null,
+                    defaultReaders[STRING::class] as AttributeReader<STRING>,
+                    defaultWriters[STRING::class] as AttributeWriter<STRING>
+                )
             this.lastField = null
         }
 
@@ -212,15 +219,17 @@ data class FieldSet(
                         attr
                     )
                 } else {
+                    @Suppress("UNCHECKED_CAST")
                     val attr = helper.typeManager.getEntityAttribute(entityType, field.name)
                         ?: helper.typeManager.createAttribute(
-                            field.name, StringType::class
-                        ) {
-                            key(false)
-                            nullable(true)
-                            auto(true)
-                        }
-//                            .also { typeManager.addEntityAttribute(entityType, it) }
+                            field.name, STRING::class,
+                            false,
+                            true,
+                            true,
+                            null,
+                            defaultReaders[STRING::class] as AttributeReader<STRING>,
+                            defaultWriters[STRING::class] as AttributeWriter<STRING>
+                        )
                     Pair(field, attr)
                 }
             }.forEach {

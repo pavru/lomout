@@ -30,49 +30,49 @@ config {
         }
         entities {
             entity("onec-product", false) {
-                attribute<StringType>("sku") { key() }
-                attribute<TextType>("description")
-                attribute<BooleanType>("bool_val")
-                attribute<LongType>("long_val") {
+                attribute<STRING>("sku") { key() }
+                attribute<TEXT>("description")
+                attribute<BOOLEAN>("bool_val")
+                attribute<LONG>("long_val") {
                     reader<LongAttributeReader> { locale = "ru_RU" }
                 }
-                attribute<DoubleType>("double_val") {
+                attribute<DOUBLE>("double_val") {
                     reader<DoubleAttributeReader> { locale = "ru_RU" }
                 }
-                attribute<DateType>("date_val") {
+                attribute<DATE>("date_val") {
                     reader<DateAttributeReader> { pattern = "d.M.yy" }
                 }
-                attribute<DateTimeType>("datetime_val") {
+                attribute<DATETIME>("datetime_val") {
                     reader<DateTimeAttributeReader> { pattern = "d.M.yy H:m" }
                 }
-                attribute<StringListType>("string_list") {
+                attribute<STRINGLIST>("string_list") {
                     reader<StringListAttributeReader> { delimiter = ','; quote = null }
                 }
-                attribute<BooleanListType>("bool_list") {
+                attribute<BOOLEANLIST>("bool_list") {
                     reader<BooleanListAttributeReader> { delimiter = ','; quote = null }
                 }
-                attribute<LongListType>("long_list") {
+                attribute<LONGLIST>("long_list") {
                     reader<LongListAttributeReader> { delimiter = ','; quote = null }
                 }
-                attribute<DoubleListType>("double_list") {
+                attribute<DOUBLELIST>("double_list") {
                     reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = '|'; quote = null }
                 }
-                attribute<DateListType>("date_list") {
+                attribute<DATELIST>("date_list") {
                     reader<DateListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy" }
                 }
-                attribute<DateTimeListType>("datetime_list") {
+                attribute<DATETIMELIST>("datetime_list") {
                     reader<DateTimeListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy H:m" }
                 }
-                attribute<AttributeListType>("compound") {
+                attribute<ATTRIBUTELIST>("compound") {
                     reader<AttributeListReader> {
                         delimiter = ',';quote = null;valueDelimiter = '=';valueQuote = '"'
                     }
                 }
-                attribute<LongType>("nested1")
-                attribute<LongType>("nested2")
+                attribute<LONG>("nested1")
+                attribute<LONG>("nested2")
 
-                attribute<StringType>("group_code") { nullable() }
-                attribute<StringType>("group_name") { nullable() }
+                attribute<STRING>("group_code") { nullable() }
+                attribute<STRING>("group_name") { nullable() }
             }
         }
         loadEntity("onec-product") {

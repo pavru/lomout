@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
@@ -33,7 +34,7 @@ class AttributeAsCell<T : Type>(
 
     init {
         @Suppress("UNCHECKED_CAST")
-        (attribute.writer as AttributeWriter<T>).write(aValue, this)
+        (attribute.writer as AttributeWriter<T>)(aValue, this)
     }
 
     /**
@@ -58,7 +59,9 @@ class AttributeAsCell<T : Type>(
     override val booleanValue: Boolean
         get() = when (val v = cellValue) {
             is CellBooleanValue -> v.value
-            else -> throw AppDataException(badPlace(this), DATA_INCOMPATIBLE_MSG)
+            else -> throw AppDataException(badPlace(this),
+                DATA_INCOMPATIBLE_MSG
+            )
         }
     /**
      * Cell long value
@@ -66,7 +69,9 @@ class AttributeAsCell<T : Type>(
     override val longValue: Long
         get() = when (val v = cellValue) {
             is CellLongValue -> v.value
-            else -> throw AppDataException(badPlace(this), DATA_INCOMPATIBLE_MSG)
+            else -> throw AppDataException(badPlace(this),
+                DATA_INCOMPATIBLE_MSG
+            )
         }
     /**
      * Cell double value
@@ -74,7 +79,9 @@ class AttributeAsCell<T : Type>(
     override val doubleValue: Double
         get() = when (val v = cellValue) {
             is CellDoubleValue -> v.value
-            else -> throw AppDataException(badPlace(this), DATA_INCOMPATIBLE_MSG)
+            else -> throw AppDataException(badPlace(this),
+                DATA_INCOMPATIBLE_MSG
+            )
         }
     /**
      * Cell string value
@@ -82,7 +89,9 @@ class AttributeAsCell<T : Type>(
     override val stringValue: String
         get() = when (val v = cellValue) {
             is CellStringValue -> v.value
-            else -> throw AppDataException(badPlace(this), DATA_INCOMPATIBLE_MSG)
+            else -> throw AppDataException(badPlace(this),
+                DATA_INCOMPATIBLE_MSG
+            )
         }
     /**
      * Cell row

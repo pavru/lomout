@@ -1,8 +1,9 @@
 package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerFunction
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
@@ -20,7 +21,7 @@ sealed class PipelineAssembler {
      * @param entities PipelineDataCollection The pipeline input entities
      * @return Map<AnyTypeAttribute, Type?> The target entity attributes
      */
-    fun assemble(target: EntityType, entities: PipelineDataCollection): Map<AnyTypeAttribute, Type?> {
+    operator fun invoke(target: EntityType, entities: EntityCollection): Map<AnyTypeAttribute, Type> {
         return when (this) {
             is PipelineAssemblerWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)

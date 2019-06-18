@@ -1,5 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity
 
+import net.pototskiy.apps.lomout.api.entity.type.Type
+
 /**
  * Attributes collection
  *

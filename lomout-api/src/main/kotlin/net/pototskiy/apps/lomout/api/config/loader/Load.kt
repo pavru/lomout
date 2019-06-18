@@ -6,7 +6,6 @@ import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.addEntityAttribute
 import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**

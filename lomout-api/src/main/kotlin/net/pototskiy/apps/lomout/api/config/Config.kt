@@ -5,12 +5,12 @@ import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
 import net.pototskiy.apps.lomout.api.unknownPlace
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 
 /**
  * Root element of configuration file
  *
- * @property entityTypeManager EntityTypeManager
+ * @property entityTypeManager EntityTypeManagerImpl
  * @property database DatabaseConfig
  * @property loader LoaderConfiguration?
  * @property mediator MediatorConfiguration?
@@ -18,7 +18,7 @@ import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
  * @constructor
  */
 data class Config(
-    val entityTypeManager: EntityTypeManager,
+    val entityTypeManager: EntityTypeManagerImpl,
     val database: DatabaseConfig,
     val loader: LoaderConfiguration?,
     val mediator: MediatorConfiguration?,
@@ -160,7 +160,7 @@ data class Config(
 fun Any.config(block: Config.Builder.() -> Unit) {
     val script = (this as? ConfigScript)
     if (script != null) {
-        val helper = ConfigBuildHelper(EntityTypeManager())
+        val helper = ConfigBuildHelper(EntityTypeManagerImpl())
         script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
         throw AppConfigException(unknownPlace(), "Wrong config script object type.")

@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import java.text.ParseException
 import java.util.*
 
@@ -22,6 +23,17 @@ fun String.stringToBoolean(locale: Locale): Boolean {
     else
         throw ParseException("Value '$this' cannot be converted to boolean.", 0)
 }
+
+/**
+ * Convert PersistentString to Boolean
+ *
+ * @receiver PersistentString
+ * @param locale The locale
+ * @return Boolean
+ */
+@Suppress("unused")
+fun STRING.stringToBoolean(locale: Locale): Boolean =
+    this.value.stringToBoolean(locale)
 
 private val stringBooleanMap = mapOf(
     Locale("en", "US") to BooleanStrings(

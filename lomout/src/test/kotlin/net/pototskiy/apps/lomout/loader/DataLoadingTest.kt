@@ -1,22 +1,24 @@
 package net.pototskiy.apps.lomout.loader
 
+import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.Load
-import net.pototskiy.apps.lomout.api.database.DbEntity
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.database.EntityStatus
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.config.Configurator
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.joda.time.DateTime
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -34,7 +36,8 @@ import org.junit.jupiter.api.parallel.ResourceLock
 internal class DataLoadingTest {
     private lateinit var config: Config
     private lateinit var entityType: EntityType
-    private lateinit var typeManager: EntityTypeManager
+    private lateinit var typeManager: EntityTypeManagerImpl
+    private lateinit var repository: EntityRepositoryInterface
 
     @BeforeAll
     internal fun initAll() {
@@ -42,17 +45,22 @@ internal class DataLoadingTest {
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
         typeManager = config.entityTypeManager
-        util.initDataBase(typeManager)
+        repository = EntityRepository(config.database, typeManager, Level.ERROR)
         PluginContext.config = config
         PluginContext.entityTypeManager = config.entityTypeManager
         entityType = typeManager.getEntityType("onec-product")!!
-        transaction { DbEntityTable.deleteAll() }
+        repository.getIDs(entityType).forEach { repository.delete(it) }
+    }
+
+    @AfterAll
+    internal fun tearDownAll() {
+        repository.close()
     }
 
     @Test
     @DisplayName("There is no loaded entity")
     internal fun thereIsNoAnyLoadedEntity() {
-        assertThat(DbEntity.getEntities(entityType).count()).isZero()
+        assertThat(repository.get(entityType).count()).isZero()
     }
 
     @Nested
@@ -73,13 +81,13 @@ internal class DataLoadingTest {
         @Test
         @DisplayName("Six entities should be loaded")
         internal fun numberOfEntitiesTest() {
-            assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
+            assertThat(repository.get(entityType).count()).isEqualTo(6)
         }
 
         @Test
         @DisplayName("All entities should be in state CREATED/CREATED")
         internal fun createdCreatedStateTest() {
-            DbEntity.getEntities(entityType).forEach {
+            repository.get(entityType).forEach {
                 assertThat(it.previousStatus).isEqualTo(EntityStatus.CREATED)
                 assertThat(it.currentStatus).isEqualTo(EntityStatus.CREATED)
             }
@@ -92,27 +100,29 @@ internal class DataLoadingTest {
             @BeforeAll
             internal fun initAll() {
                 val load = config.loader?.loads?.find {
-                    it.entity.name == "onec-product"
-                            && it.sources.first().file.file.name.endsWith("test.attributes.xls")
-                            && it.sources.first().sheet.definition == "name:test-stock"
+                    it.entity.name == "onec-product" &&
+                            it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
+                            it.sources.first().sheet.definition == "name:test-stock"
                 }
                 val workbook = getHSSFWorkbook(load!!)
                 val sheet = getHSSFSheet(workbook, load)
                 sheet.removeRow(sheet.getRow(5))
                 sheet.getRow(4).getCell(3).setCellValue(12.0)
+                Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
                 loadEntities(load, workbook)
+                Configurator.setLevel(EXPOSED_LOG_NAME, Level.ERROR)
             }
 
             @Test
             @DisplayName("Six entities should be loaded")
             internal fun numberOfEntitiesTes() {
-                assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(6)
+                assertThat(repository.get(entityType).count()).isEqualTo(6)
             }
 
             @Test
             @DisplayName("Four entities should be in state CREATED/UNCHANGED")
             internal fun createdCreatedStateTest() {
-                assertThat(DbEntity.getEntities(entityType).filter {
+                assertThat(repository.get(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED &&
                             it.currentStatus == EntityStatus.UNCHANGED
                 }.count()).isEqualTo(4)
@@ -121,7 +131,7 @@ internal class DataLoadingTest {
             @Test
             @DisplayName("One entity should be in state CREATED/UPDATED")
             internal fun createdUpdatedStateTest() {
-                assertThat(DbEntity.getEntities(entityType).filter {
+                assertThat(repository.get(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED &&
                             it.currentStatus == EntityStatus.UPDATED
                 }.count()).isEqualTo(1)
@@ -130,7 +140,7 @@ internal class DataLoadingTest {
             @Test
             @DisplayName("One entity should be in state CREATED/REMOVED")
             internal fun createdRemovedStateTest() {
-                assertThat(DbEntity.getEntities(entityType).filter {
+                assertThat(repository.get(entityType).filter {
                     it.previousStatus == EntityStatus.CREATED
                             && it.currentStatus == EntityStatus.REMOVED
                 }.count()).isEqualTo(1)
@@ -151,20 +161,20 @@ internal class DataLoadingTest {
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
                     val skuAttr = typeManager.getEntityAttribute(entityType, "sku")!!
-                    val entity = DbEntity.getEntitiesByAttributes(
+                    val entity = repository.get(
                         entityType,
-                        mapOf(skuAttr to StringType("2")),
-                        true
-                    ).first()
+                        mapOf(skuAttr to STRING("2"))
+                    )
                     @Suppress("MagicNumber")
-                    transaction { entity.removed = DateTime().minusDays(11) }
+                    entity!!.removed = DateTime().minusDays(11)
+                    repository.update(entity)
                     loadEntities(load, workbook)
                 }
 
                 @Test
                 @DisplayName("Five entities should be loaded")
                 internal fun numberOfEntitiesTest() {
-                    assertThat(DbEntity.getEntities(entityType).count()).isEqualTo(5)
+                    assertThat(repository.get(entityType).count()).isEqualTo(5)
                 }
             }
         }
@@ -176,9 +186,10 @@ internal class DataLoadingTest {
         excelWorkbook.use { workbook ->
             val excelSheet = workbook.sheetIterator().asSequence().find { sheetDef.isMatch(it.sheetName) }!!
             val loader = EntityLoader(
-                load, EmptyRowBehavior.STOP, ExcelWorkbook(
-                    excelWorkbook
-                )[excelSheet.sheetName]
+                repository,
+                load,
+                EmptyRowBehavior.STOP,
+                ExcelWorkbook(excelWorkbook)[excelSheet.sheetName]
             )
             loader.load()
         }

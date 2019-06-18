@@ -1,14 +1,14 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.BooleanListType
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
 /**
- * Default writer for [BooleanListType] attribute
+ * Default writer for [BOOLEANLIST] attribute
  *
  * * true → 1
  * * false → 0
@@ -17,13 +17,13 @@ import java.io.ByteArrayOutputStream
  * @property quote Char? The value quote, optional
  * @property delimiter Char The list delimiter, default:,
  */
-open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BooleanListType>() {
+open class BooleanListAttributeStringWriter : AttributeWriterPlugin<BOOLEANLIST>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null
     var delimiter: Char = ','
 
     override fun write(
-        value: BooleanListType?,
+        value: BOOLEANLIST?,
         cell: Cell
     ) {
         value?.let { list ->

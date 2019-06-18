@@ -87,11 +87,12 @@ class ParentEntityType(
          *
          * @return ParentEntityType
          */
-        fun build(): ParentEntityType = ParentEntityType(
-            parent,
-            if (this.includes.isEmpty()) null else AttributeCollection(this.includes),
-            if (this.excludes.isEmpty()) null else AttributeCollection(this.excludes)
-        )
+        fun build(): ParentEntityType =
+            ParentEntityType(
+                parent,
+                if (this.includes.isEmpty()) null else AttributeCollection(this.includes),
+                if (this.excludes.isEmpty()) null else AttributeCollection(this.excludes)
+            )
 
         private fun checkThatParentHasAttributes(parent: EntityType, names: List<String>) {
             val notFound = names.minus(parent.attributes.map { it.name })

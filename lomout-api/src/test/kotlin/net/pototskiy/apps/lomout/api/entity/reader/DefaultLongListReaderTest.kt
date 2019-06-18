@@ -4,11 +4,14 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.LongListType
-import net.pototskiy.apps.lomout.api.entity.LongType
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.LONGLIST
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -28,17 +31,23 @@ import kotlin.reflect.full.createInstance
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultLongListReaderTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<LongListType>
+    private lateinit var attr: Attribute<LONGLIST>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        attr = typeManager.createAttribute("attr", LongListType::class)
+        @Suppress("UNCHECKED_CAST")
+        attr = typeManager.createAttribute(
+            "attr", LONGLIST::class,
+            builder = null,
+            reader = defaultReaders[LONGLIST::class] as AttributeReader<out LONGLIST>,
+            writer = defaultWriters[LONGLIST::class] as AttributeWriter<out LONGLIST>
+        )
         entity = typeManager.createEntityType("test", emptyList(), false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
@@ -69,11 +78,7 @@ internal class DefaultLongListReaderTest {
         xlsTestDataCell.setCellValue("11, 22,33")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            LongListType(
-                listOf(
-                    LongType(11L), LongType(22L), LongType(33L)
-                )
-            )
+            LONGLIST(listOf(LONG(11L), LONG(22L), LONG(33L)))
         )
         xlsTestDataCell.setCellValue("11, 22,A")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
@@ -83,7 +88,7 @@ internal class DefaultLongListReaderTest {
     @Test
     internal fun defaultLongListReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[LongListType::class]
+        val reader = defaultReaders[LONGLIST::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin

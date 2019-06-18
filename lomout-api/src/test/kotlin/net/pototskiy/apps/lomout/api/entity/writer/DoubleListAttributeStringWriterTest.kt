@@ -3,9 +3,9 @@ package net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithPlugin
-import net.pototskiy.apps.lomout.api.entity.DoubleListType
-import net.pototskiy.apps.lomout.api.entity.DoubleType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -23,14 +23,14 @@ import kotlin.reflect.full.createInstance
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DoubleListAttributeStringWriterTest {
-    private lateinit var typeManager: EntityTypeManager
+    private lateinit var typeManager: EntityTypeManagerImpl
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        typeManager = EntityTypeManager()
+        typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
         file = File("../tmp/${UUID.randomUUID()}.xls")
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
@@ -45,50 +45,50 @@ internal class DoubleListAttributeStringWriterTest {
 
     @Test
     internal fun simpleWriteUnquotedTest() {
-        val attr = typeManager.createAttribute("attr", DoubleListType::class) {
-            writer(AttributeWriterWithPlugin(DoubleListAttributeStringWriter::class) {
+        val attr = typeManager.createAttribute("attr", DOUBLELIST::class,
+            writer = AttributeWriterWithPlugin(DoubleListAttributeStringWriter::class) {
                 this as DoubleListAttributeStringWriter
                 delimiter = ','
                 quote = null
-            })
-        }
-        val value = DoubleListType(listOf(DoubleType(11.22), DoubleType(33.44)))
+            }
+        )
+        val value = DOUBLELIST(listOf(DOUBLE(11.22), DOUBLE(33.44)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<DoubleListType>).write(value, cell)
+        (attr.writer as AttributeWriter<DOUBLELIST>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("11.22,33.44")
     }
 
     @Test
     internal fun simpleWriteQuotedTest() {
-        val attr = typeManager.createAttribute("attr", DoubleListType::class) {
-            writer(AttributeWriterWithPlugin(DoubleListAttributeStringWriter::class) {
+        val attr = typeManager.createAttribute("attr", DOUBLELIST::class,
+            writer = AttributeWriterWithPlugin(DoubleListAttributeStringWriter::class) {
                 this as DoubleListAttributeStringWriter
                 delimiter = ','
                 quote = '\''
-            })
-        }
-        val value = DoubleListType(listOf(DoubleType(11.22), DoubleType(33.44)))
+            }
+        )
+        val value = DOUBLELIST(listOf(DOUBLE(11.22), DOUBLE(33.44)))
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<DoubleListType>).write(value, cell)
+        (attr.writer as AttributeWriter<DOUBLELIST>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("11.22,33.44")
     }
 
     @Test
     internal fun writeNullValueTest() {
-        val attr = typeManager.createAttribute("attr", DoubleListType::class)
+        val attr = typeManager.createAttribute("attr", DOUBLELIST::class)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<DoubleListType>).write(null, cell)
+        (attr.writer as AttributeWriter<DOUBLELIST>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
-        val writer = defaultWriters[DoubleListType::class]
+        val writer = defaultWriters[DOUBLELIST::class]
         assertThat(writer).isNotNull
         assertThat(writer).isInstanceOf(AttributeWriterWithPlugin::class.java)
         writer as AttributeWriterWithPlugin

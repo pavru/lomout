@@ -5,36 +5,26 @@ import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
-import net.pototskiy.apps.lomout.api.database.DbEntity
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
-import net.pototskiy.apps.lomout.api.database.EntityLongs
 import net.pototskiy.apps.lomout.api.database.EntityStatus
-import net.pototskiy.apps.lomout.api.entity.DoubleType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.LongType
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.get
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
-import net.pototskiy.apps.lomout.database.initDatabase
 import net.pototskiy.apps.lomout.loader.DataLoader
 import net.pototskiy.apps.lomout.mediator.DataMediator
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.alias
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
 import java.io.File
 
 @Suppress("ComplexMethod", "MagicNumber")
 internal class PrinterBasicTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
     private val testDataDir = System.getenv("TEST_DATA_DIR")
     private val fileName = "$testDataDir/mediator-test-data.xls"
@@ -51,18 +41,21 @@ internal class PrinterBasicTest {
 
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
-        DataLoader.load(config)
-        DataMediator.mediate(config)
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        PluginContext.repository = repository
+        repository.getIDs(typeManager["entity1"]).forEach { repository.delete(it) }
+        repository.getIDs(typeManager["entity2"]).forEach { repository.delete(it) }
+        repository.getIDs(typeManager["import-data"]).forEach { repository.delete(it) }
+        DataLoader.load(repository, config)
+        DataMediator.mediate(repository, config)
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataPrinter.print(config)
+        DataPrinter.print(repository, config)
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(log).doesNotContain("[ERROR]")
-        val entities = DbEntity.getEntities(typeManager["import-data"], true)
+        val entities = repository.get(typeManager["import-data"])
         WorkbookFactory.create(File(outputName).toURI().toURL()).use { workbook ->
             val sheet = workbook["test"]
             assertThat(sheet).isNotNull
@@ -72,7 +65,7 @@ internal class PrinterBasicTest {
             assertThat(headRow[1]?.stringValue).isEqualTo("desc")
             assertThat(headRow[2]?.stringValue).isEqualTo("corrected_amount")
             for (i in 1..7 step 2) {
-                val type = entities.first().entityType
+                val type = entities.first().type
                 val sku = sheet[i + 1]!![0]?.longValue
                 val entity = entities.findLast { it.data[type["sku"]]?.value == sku }!!
                 assertThat(sheet[i]!![0]?.doubleValue)
@@ -83,8 +76,10 @@ internal class PrinterBasicTest {
                     .isNotNull().isEqualTo(entity.data[type["corrected_amount"]]!!.value)
             }
         }
+        repository.close()
     }
 
+    @Suppress("LongMethod")
     private fun createConfiguration() = Config.Builder(helper).apply {
         database {
             name("test_lomout")
@@ -101,12 +96,12 @@ internal class PrinterBasicTest {
             }
             entities {
                 entity("entity1", false) {
-                    attribute<LongType>("sku") {
+                    attribute<LONG>("sku") {
                         key()
                         writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
                     }
-                    attribute<StringType>("desc")
-                    attribute<DoubleType>("amount") {
+                    attribute<STRING>("desc")
+                    attribute<DOUBLE>("amount") {
                         writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
                     }
                 }
@@ -119,7 +114,7 @@ internal class PrinterBasicTest {
                 rowsToSkip(1)
                 keepAbsentForDays(1)
                 sourceFields {
-                    main("entity1") {
+                    main("entity") {
                         field("sku") { column(0) }
                         field("desc") { column(1) }
                         field("amount") { column(2) }
@@ -131,7 +126,7 @@ internal class PrinterBasicTest {
                 rowsToSkip(1)
                 keepAbsentForDays(1)
                 sourceFields {
-                    main("entity1") {
+                    main("entity") {
                         field("sku") { column(0) }
                         field("desc") { column(1) }
                         field("amount") { column(2) }
@@ -143,106 +138,74 @@ internal class PrinterBasicTest {
             productionLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] neq EntityStatus.REMOVED
-                            }
-                        }
-                        extAttribute<DoubleType>("corrected_amount", "amount") {
-                            reader { _, cell ->
-                                DoubleType(cell.doubleValue * 11.0)
+                        statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
+                        extAttribute<DOUBLE>("corrected_amount") {
+                            builder {
+                                DOUBLE((it["amount"] as DOUBLE).value * 11.0)
                             }
                         }
                     }
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] neq EntityStatus.REMOVED
-                            }
-                        }
-                        extAttribute<DoubleType>("corrected_amount", "amount") {
-                            reader { _, cell ->
-                                DoubleType(cell.doubleValue * 13.0)
+                        statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
+                        extAttribute<DOUBLE>("corrected_amount") {
+                            builder {
+                                DOUBLE((it["amount"] as DOUBLE).value * 13.0)
                             }
                         }
                     }
                 }
                 output("import-data") {
                     inheritFrom("entity1")
-                    attribute<DoubleType>("corrected_amount") {
+                    attribute<DOUBLE>("corrected_amount") {
                         writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
                     }
                 }
                 pipeline {
                     classifier { element ->
-                        val entityOneAlias = DbEntityTable.alias("entityOne")
-                        val entityTwoAlias = DbEntityTable.alias("entityTwo")
-                        val skuOneAlias = EntityLongs.alias("skuOne")
-                        val skuTwoAlias = EntityLongs.alias("skuTwo")
-                        val entityOneType = entityTypeManager["entity1"]
-                        val entityTwoType = entityTypeManager["entity2"]
-                        val partnerEntityType = when (element.ids[0].type) {
-                            entityOneType -> entityTwoType
-                            else -> entityOneType
-                        }
-
-                        val v = transaction {
-                            entityOneAlias
-                                .join(
-                                    skuOneAlias,
-                                    JoinType.INNER,
-                                    entityOneAlias[DbEntityTable.id],
-                                    skuOneAlias[EntityLongs.owner],
-                                    additionalConstraint = { skuOneAlias[EntityLongs.code] eq "sku" })
-                                .join(
-                                    skuTwoAlias,
-                                    JoinType.INNER,
-                                    skuOneAlias[EntityLongs.value],
-                                    skuTwoAlias[EntityLongs.value],
-                                    additionalConstraint = { skuTwoAlias[EntityLongs.code] eq "sku" }
-                                )
-                                .join(entityTwoAlias,
-                                    JoinType.INNER,
-                                    skuTwoAlias[EntityLongs.owner],
-                                    entityTwoAlias[DbEntityTable.id],
-                                    additionalConstraint = { entityTwoAlias[DbEntityTable.entityType] eq partnerEntityType }
-                                )
-                                .slice(entityOneAlias[DbEntityTable.id], entityTwoAlias[DbEntityTable.id])
-                                .select {
-                                    (entityOneAlias[DbEntityTable.id] eq element.ids[0].id) and
-                                            (entityOneAlias[DbEntityTable.id] neq entityTwoAlias[DbEntityTable.id])
-                                }
-                                .toList()
-                                .map {
-                                    listOf(
-                                        it[entityOneAlias[DbEntityTable.id]],
-                                        it[entityTwoAlias[DbEntityTable.id]]
-                                    )
-                                }
-                        }
-                        // finish test case for pipeline data collection
-                        if (v.isNotEmpty() && element.ids[0].type == entityOneType) {
-                            element.match(ClassifierElement.ElementID(entityTwoType, v[0][1]))
-                        } else if (v.isNotEmpty()) {
-                            element.skip()
+                        var entity = element.entities.getOrNull("entity1")
+                        if (entity != null) {
+                            val partnerType = entityTypeManager["entity2"]
+                            val partner = repository.get(
+                                partnerType,
+                                mapOf(partnerType["sku"] to entity["sku"]!!),
+                                EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+                            )
+                            if (partner != null) {
+                                element.match(partner)
+                            } else {
+                                element.mismatch()
+                            }
+                        } else if (element.entities.getOrNull("entity2") != null) {
+                            entity = element.entities["entity2"]
+                            val partnerType = entityTypeManager["entity1"]
+                            val partner = repository.get(
+                                partnerType,
+                                mapOf(partnerType["sku"] to entity["sku"]!!),
+                                EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+                            )
+                            if (partner != null) {
+                                element.skip()
+                            } else {
+                                element.mismatch()
+                            }
                         } else {
-                            element.mismatch()
+                            element.skip()
                         }
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { target, entities ->
                             mapOf(
-                                target["sku"] to entities[0]["sku"],
-                                target["desc"] to entities[1]["desc"],
-                                target["amount"] to entities[1]["amount"],
-                                target["corrected_amount"] to entities[0]["corrected_amount"]
+                                target["sku"] to entities[0]["sku"]!!,
+                                target["desc"] to entities[1]["desc"]!!,
+                                target["amount"] to entities[1]["amount"]!!,
+                                target["corrected_amount"] to entities[0]["corrected_amount"]!!
                             )
                         }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier {
                             val entities = it.entities
-                            if (entities[0].entity.entityType.name == "entity2") {
+                            if (entities[0].type.name == "entity2") {
                                 it.match()
                             } else {
                                 it.mismatch()
@@ -250,10 +213,10 @@ internal class PrinterBasicTest {
                         }
                         assembler { target, entities ->
                             mapOf(
-                                target["sku"] to entities[0]["sku"],
-                                target["desc"] to entities[0]["desc"],
-                                target["amount"] to entities[0]["amount"],
-                                target["corrected_amount"] to entities[0]["corrected_amount"]
+                                target["sku"] to entities[0]["sku"]!!,
+                                target["desc"] to entities[0]["desc"]!!,
+                                target["amount"] to entities[0]["amount"]!!,
+                                target["corrected_amount"] to entities[0]["corrected_amount"]!!
                             )
                         }
                     }
@@ -267,7 +230,7 @@ internal class PrinterBasicTest {
             printerLine {
                 input {
                     entity("import-data") {
-                        filter { with(DbEntityTable) { it[currentStatus] neq EntityStatus.REMOVED } }
+                        statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
                     }
                 }
                 output {

@@ -5,8 +5,8 @@ import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.DateTimeListType
-import net.pototskiy.apps.lomout.api.entity.DateTimeType
+import net.pototskiy.apps.lomout.api.entity.type.DATETIME
+import net.pototskiy.apps.lomout.api.entity.type.DATETIMELIST
 import net.pototskiy.apps.lomout.api.entity.values.stringToDateTime
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.plus
@@ -15,20 +15,20 @@ import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
 /**
- * Default reader for [DateTimeListType] attribute
+ * Default reader for [DATETIMELIST] attribute
  *
  * @property locale String The value locale
  * @property pattern String? The value pattern, optional (use locale)
  * @property quote Char? The value quote, optional
  * @property delimiter Char The list delimiter, default:,
  */
-open class DateTimeListAttributeReader : AttributeReaderPlugin<DateTimeListType>() {
+open class DateTimeListAttributeReader : AttributeReaderPlugin<DATETIMELIST>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
-    override fun read(attribute: Attribute<out DateTimeListType>, input: Cell): DateTimeListType? =
+    override fun read(attribute: Attribute<out DATETIMELIST>, input: Cell): DATETIMELIST? =
         when (input.cellType) {
             CellType.STRING -> {
                 val listValue = input.stringValue.reader().use { reader ->
@@ -40,13 +40,13 @@ open class DateTimeListAttributeReader : AttributeReaderPlugin<DateTimeListType>
                         .records
                         .map { it.toList() }.flatten()
                         .map { data ->
-                            DateTimeType(
+                            DATETIME(
                                 pattern?.let { data.stringToDateTime(it) }
                                     ?: data.stringToDateTime(locale.createLocale())
                             )
                         }
                 }
-                DateTimeListType(listValue)
+                DATETIMELIST(listValue)
             }
             CellType.BLANK -> null
             else -> throw AppDataException(

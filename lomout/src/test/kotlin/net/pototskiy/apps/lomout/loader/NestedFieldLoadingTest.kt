@@ -3,26 +3,22 @@ package net.pototskiy.apps.lomout.loader
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.database.DbEntity
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.LongType
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.get
 import net.pototskiy.apps.lomout.api.entity.reader.AttributeListReader
-import net.pototskiy.apps.lomout.database.initDatabase
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class NestedFieldLoadingTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
     @BeforeEach
     internal fun setUp() {
@@ -32,11 +28,11 @@ internal class NestedFieldLoadingTest {
     @Test
     internal fun loadNestedFieldsWithoutErrorsTest() {
         val config = createConfStopEmptyRow()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"], true)
-        val type = entities[0].entityType
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
+        val type = entities[0].type
         Assertions.assertThat(entities).hasSize(2)
         assertThat(entities[0].data[type["parent"]]).isNull()
         assertThat(entities[0].data[type["parent2"]]).isNull()
@@ -44,8 +40,10 @@ internal class NestedFieldLoadingTest {
         assertThat(entities[0].data[type["attr1"]]?.value).isEqualTo("a1")
         assertThat(entities[0].data[type["attr2"]]?.value).isEqualTo("a2")
         assertThat(entities[0].data[type["attr3"]]?.value).isEqualTo("a3")
+        repository.close()
     }
 
+    @Suppress("LongMethod")
     private fun createConfStopEmptyRow(): Config {
         return Config.Builder(helper).apply {
             database {
@@ -68,27 +66,27 @@ internal class NestedFieldLoadingTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<AttributeListType>("parent") {
+                        attribute<LONG>("key") { key() }
+                        attribute<ATTRIBUTELIST>("parent") {
                             reader<AttributeListReader> {
                                 delimiter = ','
                                 valueDelimiter = ':'
                             }
                         }
-                        attribute<AttributeListType>("parent2") {
+                        attribute<ATTRIBUTELIST>("parent2") {
                             reader<AttributeListReader> {
                                 delimiter = '%'
                                 valueDelimiter = '#'
                             }
                         }
-                        attribute<AttributeListType>("parent3") {
+                        attribute<ATTRIBUTELIST>("parent3") {
                             reader<AttributeListReader> {
                                 delimiter = '|'
                             }
                         }
-                        attribute<StringType>("attr1")
-                        attribute<StringType>("attr2")
-                        attribute<StringType>("attr3")
+                        attribute<STRING>("attr1")
+                        attribute<STRING>("attr2")
+                        attribute<STRING>("attr3")
                     }
                 }
                 loadEntity("entity") {

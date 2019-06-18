@@ -9,7 +9,7 @@ import org.jetbrains.exposed.dao.IntIdTable
 /**
  * Exposed entity DB table
  */
-object DbEntityTable : IntIdTable("entity") {
+internal object DbEntityTable : IntIdTable("entity") {
     /**
      * Entity type manager
      */
@@ -48,47 +48,11 @@ object DbEntityTable : IntIdTable("entity") {
     val absentDays = integer("absent_days").index()
 
     init {
-        index("entity_idx_id_touch_updated", false, id, touchedInLoading, updated, currentStatus)
+        index(
+            "entity_idx_id_touch_updated", false, id,
+            touchedInLoading,
+            updated,
+            currentStatus
+        )
     }
 }
-
-/**
- * DbEntityTable synonym
- */
-val EntityTab = DbEntityTable
-/**
- * DbEntityTable.id synonym
- */
-val EntityIdCol = DbEntityTable.id
-/**
- * DbEntityTable.entityType synonym
- */
-val EntityTypeCol = DbEntityTable.entityType
-/**
- * DbEntityTable.touchedInLoading synonym
- */
-val EntityTouchedCol = DbEntityTable.touchedInLoading
-/**
- * DbEntityTable.previousStatus synonym
- */
-val EntityPStatusCol = DbEntityTable.previousStatus
-/**
- * DbEntityTable.currentStatus synonym
- */
-val EntityCStatusCol = DbEntityTable.currentStatus
-/**
- * DbEntityTable.created synonym
- */
-val EntityCreatedCol = DbEntityTable.created
-/**
- * DbEntityTable.updated synonym
- */
-val EntityUpdatedCol = DbEntityTable.updated
-/**
- * DbEntityTable.removed synonym
- */
-val EntityRemovedCol = DbEntityTable.removed
-/**
- * DbEntityTable.absentDays synonym
- */
-val EntityAbsentCol = DbEntityTable.absentDays

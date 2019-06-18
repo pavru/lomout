@@ -1,7 +1,7 @@
 package net.pototskiy.apps.lomout.api.plugable
 
-import net.pototskiy.apps.lomout.api.database.DbEntity
-import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.entity.Entity
+import net.pototskiy.apps.lomout.api.entity.type.Type
 
 /**
  * Base class for any attribute builder plugins
@@ -15,10 +15,10 @@ abstract class AttributeBuilderPlugin<R : Type> : Plugin() {
      * @param entity DbEntity The entity to build value
      * @return R? The value type to return
      */
-    abstract fun build(entity: DbEntity): R?
+    abstract fun build(entity: Entity): R?
 }
 
 /**
  * Function type for inline builder
  */
-typealias AttributeBuilderFunction<R> = PluginContextInterface.(DbEntity) -> R?
+typealias AttributeBuilderFunction<R> = PluginContextInterface.(Entity) -> R?

@@ -15,7 +15,7 @@ config {
         }
         entities {
             entity("test", false) {
-                attribute<StringType>("attr") { key() }
+                attribute<STRING>("attr") { key() }
             }
         }
         loadEntity("test") {

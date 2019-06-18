@@ -28,8 +28,6 @@ enum class EntityStatus {
     UNCHANGED
 }
 
-private const val STATUS_NAME_LENGTH = 10
-
 /**
  * Entity status SQL column type
  */

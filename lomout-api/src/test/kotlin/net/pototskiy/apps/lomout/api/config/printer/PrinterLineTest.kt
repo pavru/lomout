@@ -4,21 +4,30 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 internal class PrinterLineTest {
-    private val typeManager = EntityTypeManager().also { manager ->
+    private val typeManager = EntityTypeManagerImpl().also { manager ->
         manager.createEntityType("import-category", emptyList(), false).also { entity ->
+            @Suppress("UNCHECKED_CAST")
             manager.initialAttributeSetup(
                 entity, AttributeCollection(
                     listOf(
-                        manager.createAttribute("attr1", StringType::class)
+                        manager.createAttribute(
+                            "attr1", STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        )
                     )
                 )
             )
@@ -42,11 +51,7 @@ internal class PrinterLineTest {
     private fun createPrinterLine(): PrinterLine = PrinterLine.Builder(helper).apply {
         input {
             entity("import-category") {
-                filter {
-                    with(DbEntityTable) {
-                        it[currentStatus] eq EntityStatus.UPDATED
-                    }
-                }
+                statuses(EntityStatus.UPDATED)
             }
         }
         output {

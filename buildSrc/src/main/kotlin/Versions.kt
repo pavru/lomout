@@ -2,7 +2,7 @@
 object Versions {
     const val kotlin = "1.3.31"
     const val dokka = "0.9.18"
-    const val exposed = "0.14.2"
+    const val exposed = "0.14.4"
     val mysql = MysqlVersions(
         connector = "8.0.16"
     )
@@ -18,6 +18,8 @@ object Versions {
     const val poi = "4.1.0"
     const val detekt = "1.0.0-RC15"
     const val cache2k = "1.2.2.Final"
+    const val jcache = "1.1.1"
+    const val hazelcast = "3.12"
 }
 
 data class MysqlVersions(

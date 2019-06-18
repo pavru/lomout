@@ -3,53 +3,52 @@ package net.pototskiy.apps.lomout.loader
 import net.pototskiy.apps.lomout.LogCatcher
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.database.DbEntity
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.LongType
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.get
-import net.pototskiy.apps.lomout.database.initDatabase
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import org.apache.logging.log4j.Level
 import org.assertj.core.api.Assertions.assertThat
-import org.jetbrains.exposed.sql.deleteAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
+
 
 @Suppress("MagicNumber")
 internal class EntityLoaderAddTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
 
     @Test
     internal fun ignoreEmptyRowTest() {
         val config = createConfIgnoreEmptyRow()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"])
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
         assertThat(entities).hasSize(5)
+        repository.close()
     }
 
     @Test
     internal fun stopOnEmptyRowTest() {
         val config = createConfStopEmptyRow()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"])
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
         assertThat(entities).hasSize(3)
+        repository.close()
     }
 
     @Test
     internal fun tryToLoadNullToNotNullTest() {
         val config = createConfWithSecondField()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"])
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
@@ -61,17 +60,18 @@ internal class EntityLoaderAddTest {
             .findAll(log).toList()
         assertThat(matches).isNotNull
         assertThat(matches).hasSize(3)
+        repository.close()
     }
 
     @Test
     internal fun tryWithWrongReaderTest() {
         val config = createConfZeroDivision()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.TRACE)
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"])
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
@@ -80,17 +80,18 @@ internal class EntityLoaderAddTest {
             .findAll(log).toList()
         assertThat(matches).isNotNull
         assertThat(matches).hasSize(6)
+        repository.close()
     }
 
     @Test
     internal fun tryWithTwoFieldSetsTest() {
         val config = createConfWithTwoFieldSets()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"])
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
@@ -102,17 +103,18 @@ internal class EntityLoaderAddTest {
             .findAll(log).toList()
         assertThat(matches).isNotNull
         assertThat(matches).hasSize(3)
+        repository.close()
     }
 
     @Test
     internal fun tryWithBlankKeyFieldTest() {
         val config = createConfBlankKeyField()
-        initDatabase(config.database, typeManager)
-        transaction { DbEntityTable.deleteAll() }
+        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository.getIDs(typeManager["entity"]).forEach { repository.delete(it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataLoader.load(config)
-        val entities = DbEntity.getEntities(typeManager["entity"])
+        DataLoader.load(repository, config)
+        val entities = repository.get(typeManager["entity"])
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(2)
@@ -122,6 +124,7 @@ internal class EntityLoaderAddTest {
         ).findAll(log).toList()
         assertThat(matches).isNotNull
         assertThat(matches).hasSize(1)
+        repository.close()
     }
 
     private fun createConfIgnoreEmptyRow(): Config {
@@ -146,8 +149,8 @@ internal class EntityLoaderAddTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<StringType>("data")
+                        attribute<LONG>("key") { key() }
+                        attribute<STRING>("data")
                     }
                 }
                 loadEntity("entity") {
@@ -199,8 +202,8 @@ internal class EntityLoaderAddTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<StringType>("data")
+                        attribute<LONG>("key") { key() }
+                        attribute<STRING>("data")
                     }
                 }
                 loadEntity("entity") {
@@ -252,9 +255,9 @@ internal class EntityLoaderAddTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<StringType>("data")
-                        attribute<StringType>("second")
+                        attribute<LONG>("key") { key() }
+                        attribute<STRING>("data")
+                        attribute<STRING>("second")
                     }
                 }
                 loadEntity("entity") {
@@ -307,13 +310,13 @@ internal class EntityLoaderAddTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<StringType>("data") {
+                        attribute<LONG>("key") { key() }
+                        attribute<STRING>("data") {
                             reader { _, _ ->
                                 val v = 1
                                 val c = v / v - v
                                 @Suppress("DIVISION_BY_ZERO")
-                                StringType("test${v / c}")
+                                (STRING("test${v / c}"))
                             }
                         }
                     }
@@ -367,8 +370,8 @@ internal class EntityLoaderAddTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<StringType>("key") { key() }
-                        attribute<StringType>("data")
+                        attribute<STRING>("key") { key() }
+                        attribute<STRING>("data")
                     }
                 }
                 loadEntity("entity") {
@@ -420,8 +423,8 @@ internal class EntityLoaderAddTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<StringType>("data")
+                        attribute<LONG>("key") { key() }
+                        attribute<STRING>("data")
                     }
                 }
                 loadEntity("entity") {

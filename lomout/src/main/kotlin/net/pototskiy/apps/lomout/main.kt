@@ -10,8 +10,8 @@ import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
-import net.pototskiy.apps.lomout.database.initDatabase
 import net.pototskiy.apps.lomout.jcommander.CommandHelp
 import net.pototskiy.apps.lomout.jcommander.CommandMain
 import net.pototskiy.apps.lomout.jcommander.CommandVersion
@@ -56,24 +56,30 @@ fun main(args: Array<String>) {
 
     val startTime = DateTime()
     statusLog.info("Application has started")
-
+    if (!File(mainCommand.configFile.first()).exists()) {
+        statusLog.error("File '{}' cannot be found.", mainCommand.configFile.first())
+        System.exit(1)
+    }
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(
         File(mainCommand.configFile.first()),
         mainCommand.scriptCacheDir,
         mainCommand.doNotUseScriptCache
     )
-    setupPluginContext(File(mainCommand.configFile.first()))
-    initDatabase(
+
+    val repository = EntityRepository(
         CONFIG_BUILDER.config.database,
         CONFIG_BUILDER.config.entityTypeManager,
         Level.toLevel(mainCommand.sqlLogLevel)
     )
+    setupPluginContext(File(mainCommand.configFile.first()))
     PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
-    CONFIG_BUILDER.config.loader?.let { DataLoader.load(CONFIG_BUILDER.config) }
+    PluginContext.repository = repository
+
+    CONFIG_BUILDER.config.loader?.let { DataLoader.load(repository, CONFIG_BUILDER.config) }
     PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
-    CONFIG_BUILDER.config.mediator?.let { DataMediator.mediate(CONFIG_BUILDER.config) }
+    CONFIG_BUILDER.config.mediator?.let { DataMediator.mediate(repository, CONFIG_BUILDER.config) }
     PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
-    CONFIG_BUILDER.config.printer?.let { DataPrinter.print(CONFIG_BUILDER.config) }
+    CONFIG_BUILDER.config.printer?.let { DataPrinter.print(repository, CONFIG_BUILDER.config) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     val duration = Duration(startTime, DateTime()).standardSeconds
     statusLog.info("Application has finished, duration: ${duration}s")

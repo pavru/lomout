@@ -2,24 +2,28 @@ package net.pototskiy.apps.lomout.api.entity.values
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.entity.AttributeAsCell
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithFunction
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithFunction
-import net.pototskiy.apps.lomout.api.entity.BooleanListType
-import net.pototskiy.apps.lomout.api.entity.BooleanType
-import net.pototskiy.apps.lomout.api.entity.DateListType
-import net.pototskiy.apps.lomout.api.entity.DateTimeListType
-import net.pototskiy.apps.lomout.api.entity.DateTimeType
-import net.pototskiy.apps.lomout.api.entity.DateType
-import net.pototskiy.apps.lomout.api.entity.DoubleListType
-import net.pototskiy.apps.lomout.api.entity.DoubleType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.LongListType
-import net.pototskiy.apps.lomout.api.entity.LongType
-import net.pototskiy.apps.lomout.api.entity.StringListType
-import net.pototskiy.apps.lomout.api.entity.StringType
-import net.pototskiy.apps.lomout.api.entity.TextListType
-import net.pototskiy.apps.lomout.api.entity.TextType
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
+import net.pototskiy.apps.lomout.api.entity.type.DATE
+import net.pototskiy.apps.lomout.api.entity.type.DATELIST
+import net.pototskiy.apps.lomout.api.entity.type.DATETIME
+import net.pototskiy.apps.lomout.api.entity.type.DATETIMELIST
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.LONGLIST
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
+import net.pototskiy.apps.lomout.api.entity.type.TEXT
+import net.pototskiy.apps.lomout.api.entity.type.TEXTLIST
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.joda.time.DateTime
@@ -32,9 +36,15 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class AValueWrapperKtTest {
     @Test
     internal fun wrapBooleanTest() {
-        val attr = EntityTypeManager().createAttribute("attr", BooleanType::class)
-        assertThat(wrapAValue(attr, true)).isEqualTo(BooleanType(true))
-        assertThat(wrapAValue(attr, false)).isEqualTo(BooleanType(false))
+        @Suppress("UNCHECKED_CAST")
+        val attr = EntityTypeManagerImpl().createAttribute(
+            "attr", BOOLEAN::class,
+            builder = null,
+            reader = defaultReaders[BOOLEAN::class] as AttributeReader<out BOOLEAN>,
+            writer = defaultWriters[BOOLEAN::class] as AttributeWriter<out BOOLEAN>
+        )
+        assertThat(wrapAValue(attr, true)).isEqualTo(BOOLEAN(true))
+        assertThat(wrapAValue(attr, false)).isEqualTo(BOOLEAN(false))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -42,9 +52,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapLongTest() {
-        val attr = EntityTypeManager().createAttribute("attr", LongType::class)
-        assertThat(wrapAValue(attr, 111L)).isEqualTo(LongType(111L))
-        assertThat(wrapAValue(attr, 123L)).isEqualTo(LongType(123L))
+        val attr = EntityTypeManagerImpl().createAttribute("attr", LONG::class)
+        assertThat(wrapAValue(attr, 111L)).isEqualTo(LONG(111L))
+        assertThat(wrapAValue(attr, 123L)).isEqualTo(LONG(123L))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -52,9 +62,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapDoubleTest() {
-        val attr = EntityTypeManager().createAttribute("attr", DoubleType::class)
-        assertThat(wrapAValue(attr, 11.1)).isEqualTo(DoubleType(11.1))
-        assertThat(wrapAValue(attr, 12.3)).isEqualTo(DoubleType(12.3))
+        val attr = EntityTypeManagerImpl().createAttribute("attr", DOUBLE::class)
+        assertThat(wrapAValue(attr, 11.1)).isEqualTo(DOUBLE(11.1))
+        assertThat(wrapAValue(attr, 12.3)).isEqualTo(DOUBLE(12.3))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -62,9 +72,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapStringTest() {
-        val attr = EntityTypeManager().createAttribute("attr", StringType::class)
-        assertThat(wrapAValue(attr, "11.1")).isEqualTo(StringType("11.1"))
-        assertThat(wrapAValue(attr, "12.3")).isEqualTo(StringType("12.3"))
+        val attr = EntityTypeManagerImpl().createAttribute("attr", STRING::class)
+        assertThat(wrapAValue(attr, "11.1")).isEqualTo(STRING("11.1"))
+        assertThat(wrapAValue(attr, "12.3")).isEqualTo(STRING("12.3"))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -72,11 +82,11 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapDateTest() {
-        val attr = EntityTypeManager().createAttribute("attr", DateType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", DATE::class)
         val now1 = DateTime()
         val now2 = DateTime()
-        assertThat(wrapAValue(attr, now1)).isEqualTo(DateType(now1))
-        assertThat(wrapAValue(attr, now2)).isEqualTo(DateType(now2))
+        assertThat(wrapAValue(attr, now1)).isEqualTo(DATE(now1))
+        assertThat(wrapAValue(attr, now2)).isEqualTo(DATE(now2))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -84,11 +94,11 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapDateTimeTest() {
-        val attr = EntityTypeManager().createAttribute("attr", DateTimeType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", DATETIME::class)
         val now1 = DateTime()
         val now2 = DateTime()
-        assertThat(wrapAValue(attr, now1)).isEqualTo(DateTimeType(now1))
-        assertThat(wrapAValue(attr, now2)).isEqualTo(DateTimeType(now2))
+        assertThat(wrapAValue(attr, now1)).isEqualTo(DATETIME(now1))
+        assertThat(wrapAValue(attr, now2)).isEqualTo(DATETIME(now2))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -96,9 +106,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapTextTest() {
-        val attr = EntityTypeManager().createAttribute("attr", TextType::class)
-        assertThat(wrapAValue(attr, "11.1")).isEqualTo(TextType("11.1"))
-        assertThat(wrapAValue(attr, "12.3")).isEqualTo(TextType("12.3"))
+        val attr = EntityTypeManagerImpl().createAttribute("attr", TEXT::class)
+        assertThat(wrapAValue(attr, "11.1")).isEqualTo(TEXT("11.1"))
+        assertThat(wrapAValue(attr, "12.3")).isEqualTo(TEXT("12.3"))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -106,36 +116,30 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapTextListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", TextListType::class) {
-            reader(AttributeReaderWithFunction { _, _ -> TextListType(listOf()) })
-            writer(AttributeWriterWithFunction { _, _ -> Unit })
-        }
-        assertThat(wrapAValue(attr, listOf("11.1"))).isEqualTo(TextListType(listOf(TextType("11.1"))))
-        assertThat(wrapAValue(attr, listOf("12.3"))).isEqualTo(TextListType(listOf(TextType("12.3"))))
+        val attr = EntityTypeManagerImpl().createAttribute(
+            "attr", TEXTLIST::class,
+            reader = AttributeReaderWithFunction { _, _ -> TEXTLIST(listOf()) },
+            writer = AttributeWriterWithFunction { _, _ -> Unit }
+        )
+        assertThat(wrapAValue(attr, listOf("11.1"))).isEqualTo(TEXTLIST(listOf(TEXT("11.1"))))
+        assertThat(wrapAValue(attr, listOf("12.3"))).isEqualTo(TEXTLIST(listOf(TEXT("12.3"))))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
     }
 
-    class NewType : LongType(1, false)
-
-    @Test
-    internal fun wrapUnknownTypeTest() {
-        val attr = EntityTypeManager().createAttribute("attr", NewType::class) {
-            reader(AttributeReaderWithFunction { _, _ -> NewType() })
-            writer(AttributeWriterWithFunction { _, _ -> Unit })
-        }
-        assertThatThrownBy { wrapAValue(attr, 1) }
-            .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("Unexpected type.")
-    }
-
     @Test
     internal fun wrapBooleanListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", BooleanListType::class)
+        @Suppress("UNCHECKED_CAST")
+        val attr = EntityTypeManagerImpl().createAttribute(
+            "attr", BOOLEANLIST::class,
+            builder = null,
+            reader = defaultReaders[BOOLEANLIST::class] as AttributeReader<out BOOLEANLIST>,
+            writer = defaultWriters[BOOLEANLIST::class] as AttributeWriter<out BOOLEANLIST>
+        )
         @Suppress("BooleanLiteralArgument")
         assertThat(wrapAValue(attr, listOf(true, false)))
-            .isEqualTo(BooleanListType(listOf(BooleanType(true), BooleanType(false))))
+            .isEqualTo(BOOLEANLIST(listOf(BOOLEAN(true), BOOLEAN(false))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -143,9 +147,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapLongListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", LongListType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", LONGLIST::class)
         assertThat(wrapAValue(attr, listOf(111L, 123L)))
-            .isEqualTo(LongListType(listOf(LongType(111L), LongType(123L))))
+            .isEqualTo(LONGLIST(listOf(LONG(111L), LONG(123L))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -153,9 +157,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapDoubleListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", DoubleListType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", DOUBLELIST::class)
         assertThat(wrapAValue(attr, listOf(11.1, 12.3)))
-            .isEqualTo(DoubleListType(listOf(DoubleType(11.1), DoubleType(12.3))))
+            .isEqualTo(DOUBLELIST(listOf(DOUBLE(11.1), DOUBLE(12.3))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -163,9 +167,9 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapStringListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", StringListType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", STRINGLIST::class)
         assertThat(wrapAValue(attr, listOf("11.1", "12.3")))
-            .isEqualTo(StringListType(listOf(StringType("11.1"), StringType("12.3"))))
+            .isEqualTo(STRINGLIST(listOf(STRING("11.1"), STRING("12.3"))))
         assertThatThrownBy { wrapAValue(attr, 1) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -173,11 +177,11 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapDateListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", DateListType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", DATELIST::class)
         val now1 = DateTime()
         val now2 = DateTime()
         assertThat(wrapAValue(attr, listOf(now1, now2)))
-            .isEqualTo(DateListType(listOf(DateType(now1), DateType(now2))))
+            .isEqualTo(DATELIST(listOf(DATE(now1), DATE(now2))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -185,11 +189,11 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapDateTimeListTest() {
-        val attr = EntityTypeManager().createAttribute("attr", DateTimeListType::class)
+        val attr = EntityTypeManagerImpl().createAttribute("attr", DATETIMELIST::class)
         val now1 = DateTime()
         val now2 = DateTime()
         assertThat(wrapAValue(attr, listOf(now1, now2)))
-            .isEqualTo(DateTimeListType(listOf(DateTimeType(now1), DateTimeType(now2))))
+            .isEqualTo(DATETIMELIST(listOf(DATETIME(now1), DATETIME(now2))))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")
@@ -197,15 +201,15 @@ internal class AValueWrapperKtTest {
 
     @Test
     internal fun wrapAttributeListTest() {
-        val entityTypeManager = EntityTypeManager()
-        val attr = entityTypeManager.createAttribute("attr", AttributeListType::class)
-        val attr1 = entityTypeManager.createAttribute("attr1", StringType::class)
+        val entityTypeManager = EntityTypeManagerImpl()
+        val attr = entityTypeManager.createAttribute("attr", ATTRIBUTELIST::class)
+        val attr1 = entityTypeManager.createAttribute("attr1", STRING::class)
         val attrMap = mapOf(
-            "test1" to AttributeAsCell(attr1, StringType("123")),
-            "test2" to AttributeAsCell(attr1, StringType("234"))
+            "test1" to AttributeAsCell(attr1, STRING("123")),
+            "test2" to AttributeAsCell(attr1, STRING("234"))
         )
         assertThat(wrapAValue(attr, attrMap))
-            .isEqualTo(AttributeListType(attrMap))
+            .isEqualTo(ATTRIBUTELIST(attrMap))
         assertThatThrownBy { wrapAValue(attr, "1") }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Cannot wrap value.")

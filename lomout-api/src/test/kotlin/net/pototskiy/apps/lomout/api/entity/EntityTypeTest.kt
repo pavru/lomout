@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -10,7 +11,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class EntityTypeTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
 
     @Test
@@ -27,7 +28,7 @@ internal class EntityTypeTest {
     internal fun createAttributeTest() {
         val builder = EntityType.Builder(helper, "test1", false)
         assertThat(builder.attributes).hasSize(0)
-        builder.attribute<StringType>("attr1")
+        builder.attribute<STRING>("attr1")
         assertThat(builder.attributes).hasSize(1)
     }
 }

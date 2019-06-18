@@ -4,11 +4,14 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.lomout.api.entity.DoubleListType
-import net.pototskiy.apps.lomout.api.entity.DoubleType
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -28,17 +31,23 @@ import kotlin.reflect.full.createInstance
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultDoubleListReaderTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<DoubleListType>
+    private lateinit var attr: Attribute<DOUBLELIST>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        attr = typeManager.createAttribute("attr", DoubleListType::class)
+        @Suppress("UNCHECKED_CAST")
+        attr = typeManager.createAttribute(
+            "attr", DOUBLELIST::class,
+            builder = null,
+            reader = defaultReaders[DOUBLELIST::class] as AttributeReader<out DOUBLELIST>,
+            writer = defaultWriters[DOUBLELIST::class] as AttributeWriter<out DOUBLELIST>
+        )
         entity = typeManager.createEntityType("test", emptyList(), false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
@@ -69,10 +78,8 @@ internal class DefaultDoubleListReaderTest {
         xlsTestDataCell.setCellValue("1.1, 2.2,3.3")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            DoubleListType(
-                listOf(
-                    DoubleType(1.1), DoubleType(2.2), DoubleType(3.3)
-                )
+            DOUBLELIST(
+                listOf(DOUBLE(1.1), DOUBLE(2.2), DOUBLE(3.3))
             )
         )
     }
@@ -80,7 +87,7 @@ internal class DefaultDoubleListReaderTest {
     @Test
     internal fun defaultDoubleListReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[DoubleListType::class]
+        val reader = defaultReaders[DOUBLELIST::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin
