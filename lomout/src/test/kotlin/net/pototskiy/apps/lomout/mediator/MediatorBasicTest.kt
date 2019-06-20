@@ -7,8 +7,8 @@ import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.get
 import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
@@ -34,6 +34,7 @@ internal class MediatorBasicTest {
     private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun complexBasicTest() {
         val config = createConfiguration()

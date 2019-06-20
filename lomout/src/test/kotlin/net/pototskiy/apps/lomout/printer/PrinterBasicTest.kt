@@ -20,6 +20,8 @@ import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 import java.io.File
 
 @Suppress("ComplexMethod", "MagicNumber")
@@ -30,6 +32,7 @@ internal class PrinterBasicTest {
     private val fileName = "$testDataDir/mediator-test-data.xls"
     private val outputName = "../tmp/printer-basic-test.xls"
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun printerBasicTest() {
         File("../tmp/$outputName").parentFile.mkdirs()

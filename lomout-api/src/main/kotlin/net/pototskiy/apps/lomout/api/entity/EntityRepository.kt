@@ -156,7 +156,8 @@ class EntityRepository(
     override fun get(id: EntityID<Int>, vararg status: EntityStatus, startPrefetch: Boolean): Entity? {
         val entity = entityCache[id] ?: return null
         return if (entity.currentStatus in status) {
-            if (startPrefetch) startPrefetch(entity.type, id)
+            @Suppress("SpreadOperator")
+            if (startPrefetch) startPrefetch(entity.type, id, *status)
             entity
         } else {
             null
@@ -228,8 +229,6 @@ class EntityRepository(
                 it.loadAttributes()
                 entityCache.put(it.id, it)
                 dataIdCache.put(DataKey(type, data), it.id)
-            }?.also {
-                startPrefetch(type, it.id)
             }
         }
     }
@@ -497,12 +496,20 @@ class EntityRepository(
      * @param type The entity type
      * @param id The entity id
      */
-    private fun startPrefetch(type: EntityType, id: EntityID<Int>) = runBlocking<Unit> {
+    private fun startPrefetch(
+        type: EntityType,
+        id: EntityID<Int>,
+        vararg status: EntityStatus
+    ) = runBlocking<Unit> {
         launch {
             val ids = transaction {
                 DbEntityTable
                     .slice(DbEntityTable.id)
-                    .select { (DbEntityTable.entityType eq type) and (DbEntityTable.id greater id) }
+                    .select {
+                        (DbEntityTable.entityType eq type) and
+                                (DbEntityTable.id greater id) and
+                                (DbEntityTable.currentStatus inList status.toList())
+                    }
                     .limit(READ_AHEAD_COUNT)
                     .map { it[DbEntityTable.id] }
                     .toList()

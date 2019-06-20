@@ -40,6 +40,7 @@ import kotlin.collections.set
 @Suppress("TooManyFunctions", "MagicNumber")
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
 internal class LoaderAttributeLoadingTest {
 
@@ -60,6 +61,7 @@ internal class LoaderAttributeLoadingTest {
         typeManager = config.entityTypeManager
         repository = EntityRepository(config.database, typeManager, Level.ERROR)
         PluginContext.config = config
+        PluginContext.repository = repository
         PluginContext.entityTypeManager = config.entityTypeManager
         entityType = typeManager["onec-product"]
         repository.getIDs(entityType).forEach { repository.delete(it) }
