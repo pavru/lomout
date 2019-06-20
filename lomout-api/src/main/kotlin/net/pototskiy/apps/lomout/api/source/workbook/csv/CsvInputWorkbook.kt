@@ -12,7 +12,7 @@ import java.util.*
 import kotlin.contracts.contract
 
 /**
- * CSV workbook to read data from a file
+ * CSV workbook to read data from a file.
  *
  * @property reader InputStreamReader
  * @property _parser CSVParser

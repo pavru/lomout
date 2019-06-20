@@ -26,12 +26,23 @@ class SerializableFileScriptSource(
     override val name: String? get() = file.name
     override val locationId: String? get() = file.path
 
+    /**
+     * Is equal
+     *
+     * @param other
+     * @return
+     */
     override fun equals(other: Any?): Boolean =
         this === other ||
                 (other as? SerializableFileScriptSource)?.let {
                     file.absolutePath == it.file.absolutePath && textSafe == it.textSafe
                 } == true
 
+    /**
+     * Object hash code
+     *
+     * @return Int
+     */
     override fun hashCode(): Int = file.absolutePath.hashCode() + textSafe.hashCode() * 23
 
     @Suppress("TooGenericExceptionCaught")

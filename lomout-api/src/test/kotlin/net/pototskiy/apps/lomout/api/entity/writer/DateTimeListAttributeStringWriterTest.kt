@@ -17,10 +17,11 @@ import org.joda.time.DurationFieldType
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.io.TempDir
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
-import java.util.*
+import java.nio.file.Path
 import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
@@ -30,12 +31,14 @@ internal class DateTimeListAttributeStringWriterTest {
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
+    @TempDir
+    lateinit var tempDir: Path
 
     @BeforeEach
     internal fun setUp() {
         typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
-        file = File("../tmp/${UUID.randomUUID()}.xls")
+        file = tempDir.resolve("attributes.xls").toFile()
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
         cell = workbook.insertSheet("test").insertRow(0).insertCell(0)
     }

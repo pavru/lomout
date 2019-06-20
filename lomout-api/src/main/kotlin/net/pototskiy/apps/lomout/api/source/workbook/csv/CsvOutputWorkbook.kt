@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.contracts.contract
 
 /**
- * CSV workbook for output to file
+ * CSV workbook for output to file.
  *
  * @property writer OutputStreamWriter
  * @property _printer CSVPrinter
@@ -28,7 +28,7 @@ class CsvOutputWorkbook(
 ) : CsvWorkbook(workbookLocale) {
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param source URL The CSV file URL
      * @param csvFormat CSVFormat The CSV format definition
@@ -43,7 +43,7 @@ class CsvOutputWorkbook(
     private var _printer: CSVPrinter = csvFormat.print(writer)
 
     /**
-     * Insert sheet to workbook
+     * Insert sheet to workbook.
      *
      * Only one sheet with name *default* can be inserted
      *
@@ -58,13 +58,13 @@ class CsvOutputWorkbook(
     }
 
     /**
-     * CSV printer
+     * CSV printer.
      */
     val printer: CSVPrinter
         get() = _printer
 
     /**
-     * Close workbook
+     * Close workbook.
      */
     override fun close() {
         sheet?.writeLastRow()

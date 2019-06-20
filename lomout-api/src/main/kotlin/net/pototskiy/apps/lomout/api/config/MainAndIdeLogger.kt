@@ -11,7 +11,7 @@ import java.io.Serializable
  * @property mainLogger Logger?
  * @property ideLogger Logger?
  */
-class MainAndIdeLogger: Serializable {
+class MainAndIdeLogger : Serializable {
     @Suppress("TooGenericExceptionCaught")
     private val mainLogger = try {
         LogManager.getLogger(CONFIG_LOG_NAME)

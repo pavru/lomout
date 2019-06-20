@@ -31,7 +31,6 @@ import org.junit.jupiter.api.parallel.ResourceLock
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")
-@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
 internal class DataLoadingTest {
     private lateinit var config: Config
@@ -57,6 +56,7 @@ internal class DataLoadingTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     @DisplayName("There is no loaded entity")
     internal fun thereIsNoAnyLoadedEntity() {

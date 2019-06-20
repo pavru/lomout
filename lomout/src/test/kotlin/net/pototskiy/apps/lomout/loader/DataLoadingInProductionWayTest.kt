@@ -28,7 +28,6 @@ import java.io.ByteArrayOutputStream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Load data in production way")
-@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
 internal class DataLoadingInProductionWayTest {
 
@@ -70,6 +69,7 @@ internal class DataLoadingInProductionWayTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ObsoleteCoroutinesApi
     @Test
     @DisplayName("Load data according production config")

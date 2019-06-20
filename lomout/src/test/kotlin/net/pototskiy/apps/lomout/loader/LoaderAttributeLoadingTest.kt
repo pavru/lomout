@@ -40,7 +40,6 @@ import kotlin.collections.set
 @Suppress("TooManyFunctions", "MagicNumber")
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
 internal class LoaderAttributeLoadingTest {
 
@@ -94,6 +93,7 @@ internal class LoaderAttributeLoadingTest {
         repository.getIDs(entityType).forEach { repository.delete(it) }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Six entities should be loaded")
@@ -102,6 +102,7 @@ internal class LoaderAttributeLoadingTest {
         assertThat(repository.get(entityType).count()).isEqualTo(6)
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entities should have right group_code and group_name")
@@ -112,6 +113,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entities should have description = `description` + sku")
@@ -124,6 +126,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity bool_val attributes should have right value")
@@ -139,6 +142,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity date_val attributes should have right value")
@@ -154,6 +158,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity datetime_val attributes should have right value")
@@ -168,6 +173,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity string_list attributes should have right value")
@@ -181,6 +187,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity bool_list attributes should have right value")
@@ -197,6 +204,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity long_list attributes should have right value")
@@ -210,6 +218,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity double_list attributes should have right value")
@@ -225,6 +234,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity date_list attributes should have right value")
@@ -246,6 +256,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity datetime_list attributes should have right value")
@@ -267,6 +278,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity nested1 attributes should have right value")
@@ -278,6 +290,7 @@ internal class LoaderAttributeLoadingTest {
         }
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity nested1 attributes should have right value")
