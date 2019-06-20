@@ -51,7 +51,7 @@ open class AttributeListReader : AttributeReaderPlugin<ATTRIBUTELIST>() {
             CellType.BLANK -> null
             else -> throw AppDataException(
                 badPlace(input) + attribute,
-                "Reading attribute list from the cell is not supported."
+                "Cannot read attribute list from the cell."
             )
         }
     }

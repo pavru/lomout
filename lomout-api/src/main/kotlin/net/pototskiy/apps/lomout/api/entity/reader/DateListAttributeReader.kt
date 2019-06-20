@@ -54,7 +54,7 @@ open class DateListAttributeReader : AttributeReaderPlugin<DATELIST>() {
             CellType.BLANK -> null
             else -> throw AppDataException(
                 badPlace(input) + attribute,
-                "Reading Date list from the cell is not supported."
+                "Cannot read Date list from the cell."
             )
         }
     }

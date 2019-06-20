@@ -4,9 +4,9 @@ import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.Load
-import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.type.STRING
@@ -60,7 +60,7 @@ internal class DataLoadingTest {
     @Test
     @DisplayName("There is no loaded entity")
     internal fun thereIsNoAnyLoadedEntity() {
-        assertThat(repository.get(entityType).count()).isZero()
+        assertThat(repository.get(entityType).count()).isEqualTo(0)
     }
 
     @Nested

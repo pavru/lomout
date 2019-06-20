@@ -8,7 +8,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
- * Default reader for [PersistentLong] attribute
+ * Default reader for [LONG] attribute
  *
  * @property locale The value locale
  * @property groupingUsed Indicate tha number uses digit grouping

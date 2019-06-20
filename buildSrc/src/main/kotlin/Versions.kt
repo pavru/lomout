@@ -1,8 +1,8 @@
 @Suppress("unused")
 object Versions {
-    const val kotlin = "1.3.31"
+    const val kotlin = "1.3.40"
     const val dokka = "0.9.18"
-    const val exposed = "0.14.4"
+    const val exposed = "0.15.1"
     val mysql = MysqlVersions(
         connector = "8.0.16"
     )
@@ -16,6 +16,7 @@ object Versions {
     const val progressBar = "0.7.2"
     const val jline = "3.9.0"
     const val poi = "4.1.0"
+    const val commonCsv = "1.7"
     const val detekt = "1.0.0-RC15"
     const val cache2k = "1.2.2.Final"
     const val jcache = "1.1.1"

@@ -37,6 +37,7 @@ class Entity internal constructor(type: EntityType, id: EntityID<Int>, repositor
         checkTypeHasAttribute(attribute)
         checkTypeIsSynthetic(attribute)
         checkAttributeIsNullable(attribute, value)
+        checkAttributeType(attribute, value)
         if (value == null) {
             proceedAttributeDeletion(attribute)
         } else {
@@ -52,6 +53,12 @@ class Entity internal constructor(type: EntityType, id: EntityID<Int>, repositor
                 val builder = attr.builder!!
                 builder(this)?.let { data[attr] = it } ?: data.remove(attr)
             }
+    }
+
+    private fun checkAttributeType(attribute: AnyTypeAttribute, value: Type?) {
+        if (value != null && !attribute.type.isInstance(value)) {
+            throw AppDataException(badPlace(type) + attribute, "Value is not compatible with the attribute's type.")
+        }
     }
 
     private fun checkTypeIsSynthetic(attribute: AnyTypeAttribute) {

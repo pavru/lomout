@@ -23,7 +23,7 @@ internal class ExcelWorkbookTest {
         val file = File("../tmp/csv-creation-test.xls")
         file.parentFile.mkdirs()
         file.delete()
-        assertThat(file.exists()).isFalse()
+        assertThat(file.exists()).isEqualTo(false)
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
             val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for ((rowNumber, list) in testDataForWrite.withIndex()) {
@@ -33,7 +33,7 @@ internal class ExcelWorkbookTest {
                 }
             }
         }
-        assertThat(file.exists()).isTrue()
+        assertThat(file.exists()).isEqualTo(true)
         file.inputStream().use { reader ->
             HSSFWorkbook(reader).use { wb ->
                 val sheet = wb.getSheet(CSV_SHEET_NAME)
@@ -49,7 +49,7 @@ internal class ExcelWorkbookTest {
         val file = File("../tmp/csv-creation-test.xlsx")
         file.parentFile.mkdirs()
         file.delete()
-        assertThat(file.exists()).isFalse()
+        assertThat(file.exists()).isEqualTo(false)
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
             val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for ((rowNumber, list) in testDataForWrite.withIndex()) {
@@ -59,7 +59,7 @@ internal class ExcelWorkbookTest {
                 }
             }
         }
-        assertThat(file.exists()).isTrue()
+        assertThat(file.exists()).isEqualTo(true)
         file.inputStream().use { reader ->
             XSSFWorkbook(reader).use { wb ->
                 val sheet = wb.getSheet(CSV_SHEET_NAME)
@@ -80,9 +80,9 @@ internal class ExcelWorkbookTest {
             assertThat(workbook).isInstanceOf(ExcelWorkbook::class.java)
             assertThat(workbook.type).isEqualTo(WorkbookType.EXCEL)
             assertThat(workbook.name).contains("excel-workbook-test.xls")
-            assertThat(workbook.hasSheet("Sheet1")).isTrue()
-            assertThat(workbook.hasSheet("Sheet2")).isTrue()
-            assertThat(workbook.hasSheet("Sheet5")).isFalse()
+            assertThat(workbook.hasSheet("Sheet1")).isEqualTo(true)
+            assertThat(workbook.hasSheet("Sheet2")).isEqualTo(true)
+            assertThat(workbook.hasSheet("Sheet5")).isEqualTo(false)
             assertThat(workbook["Sheet1"]).isInstanceOf(ExcelSheet::class.java)
             assertThat(workbook["Sheet1"].name).isEqualTo(workbook[0].name)
         }
@@ -170,7 +170,7 @@ internal class ExcelWorkbookTest {
             cell.setCellValue(11.22)
             assertThat(cell.doubleValue).isEqualTo(11.22)
             cell.setCellValue(true)
-            assertThat(cell.booleanValue).isTrue()
+            assertThat(cell.booleanValue).isEqualTo(true)
         }
     }
 

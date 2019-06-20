@@ -110,12 +110,12 @@ data class FieldSet(
                         ?: helper.typeManager.createAttribute(
                     field.name,
                     STRING::class,
-                    false,
-                    true,
-                    true,
-                    null,
-                    defaultReaders[STRING::class] as AttributeReader<STRING>,
-                    defaultWriters[STRING::class] as AttributeWriter<STRING>
+                    key = false,
+                    nullable = true,
+                    auto = true,
+                    builder = null,
+                    reader = defaultReaders[STRING::class] as AttributeReader<STRING>,
+                    writer = defaultWriters[STRING::class] as AttributeWriter<STRING>
                 )
             this.lastField = null
         }
@@ -223,12 +223,12 @@ data class FieldSet(
                     val attr = helper.typeManager.getEntityAttribute(entityType, field.name)
                         ?: helper.typeManager.createAttribute(
                             field.name, STRING::class,
-                            false,
-                            true,
-                            true,
-                            null,
-                            defaultReaders[STRING::class] as AttributeReader<STRING>,
-                            defaultWriters[STRING::class] as AttributeWriter<STRING>
+                            key = false,
+                            nullable = true,
+                            auto = true,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<STRING>
                         )
                     Pair(field, attr)
                 }

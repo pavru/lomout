@@ -152,7 +152,7 @@ dependencies {
     implementation("org.apache.poi", "poi", Versions.poi)
     implementation("org.apache.poi", "poi-ooxml", Versions.poi)
     // CSV
-    implementation("org.apache.commons", "commons-csv", "1.6")
+    implementation("org.apache.commons", "commons-csv", Versions.commonCsv)
     // MySql
     implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
     // Logger

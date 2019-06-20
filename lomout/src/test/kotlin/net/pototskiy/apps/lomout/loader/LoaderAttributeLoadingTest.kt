@@ -63,6 +63,7 @@ internal class LoaderAttributeLoadingTest {
         PluginContext.config = config
         PluginContext.entityTypeManager = config.entityTypeManager
         entityType = typeManager["onec-product"]
+        repository.getIDs(entityType).forEach { repository.delete(it) }
         @Suppress("UNCHECKED_CAST")
         skuAttr = typeManager
             .getEntityAttribute(entityType, "sku") as Attribute<STRING>
@@ -131,6 +132,7 @@ internal class LoaderAttributeLoadingTest {
         val attr = attr("bool_val")
         repository.get(entityType).forEach { entity ->
             val sku = (entity.data[skuAttr]?.value as? String)?.toShort()
+            @Suppress("UsePropertyAccessSyntax")
             assertThat(sku).isNotNull()
             val expected = sku!! < 4
             assertThat(entity.data[attr]?.value as Boolean).isEqualTo(expected)
@@ -187,6 +189,7 @@ internal class LoaderAttributeLoadingTest {
         val attr = attr("bool_list")
         repository.get(entityType).forEach { entity ->
             val sku = (entity.data[skuAttr] as? STRING)?.value?.toInt()
+            @Suppress("UsePropertyAccessSyntax")
             assertThat(sku).isNotNull()
             @Suppress("UNCHECKED_CAST")
             assertThat(entity.data[attr]?.value as List<BOOLEAN>)

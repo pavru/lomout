@@ -10,6 +10,7 @@ import net.pototskiy.apps.lomout.api.unknownPlace
  * @constructor
  */
 class EntityCollection(private val data: List<Entity>) : List<Entity> by data {
+    private val entityMap = data.map { it.type.name to it }.toMap()
     /**
      * Get entity by type name
      *
@@ -18,7 +19,7 @@ class EntityCollection(private val data: List<Entity>) : List<Entity> by data {
      * @throws AppDataException Entity not found
      */
     operator fun get(typeName: String): Entity {
-        return data.firstOrNull { it.type.name == typeName }
+        return entityMap[typeName]
             ?: throw AppDataException(unknownPlace(), "There is no entity with type $typeName in pipeline data")
     }
 
@@ -29,7 +30,7 @@ class EntityCollection(private val data: List<Entity>) : List<Entity> by data {
      * @throws AppDataException Entity not found
      */
     operator fun get(type: EntityType): Entity {
-        return data.firstOrNull { it.type == type }
+        return entityMap[type.name]
             ?: throw AppDataException(unknownPlace(), "There is no entity with type ${type.name} in pipeline data")
     }
 
@@ -37,17 +38,16 @@ class EntityCollection(private val data: List<Entity>) : List<Entity> by data {
      * Get entity by type name
      *
      * @param typeName The entity type name
-     * @return Entity?
+     * @return The entity or null
      */
-    fun getOrNull(typeName: String): Entity? = data.firstOrNull { it.type.name == typeName }
+    fun getOrNull(typeName: String): Entity? = entityMap[typeName]
 
     /**
      * Get entity by entity type
      *
      * @param type The entity type
-     *
-     * @return Entity?
+     * @return The entity or null
      */
     @Suppress("unused")
-    fun getOrNull(type: EntityType): Entity? = data.firstOrNull { it.type == type }
+    fun getOrNull(type: EntityType): Entity? = entityMap[type.name]
 }

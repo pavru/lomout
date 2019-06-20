@@ -1,9 +1,12 @@
 package net.pototskiy.apps.lomout.loader
 
-import net.pototskiy.apps.lomout.api.database.EntityStatus.*
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.Entity
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED
 import net.pototskiy.apps.lomout.api.entity.EntityType
 import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
 import net.pototskiy.apps.lomout.api.entity.type.Type

@@ -68,6 +68,19 @@ abstract class EntityTypeManager {
      */
     abstract fun removeEntityType(type: EntityType)
 
+    /**
+     * Create new entity attribute without assigment
+     *
+     * @param name The attribute name
+     * @param type The attribute type
+     * @param key The key attribute
+     * @param nullable The nullable attribute
+     * @param auto The auto attribute
+     * @param builder The attribute builder
+     * @param reader The attribute reader
+     * @param writer The attribute writer
+     * @return The new attribute
+     */
     @Suppress("LongParameterList", "UNCHECKED_CAST", "kotlin:S107")
     @SuppressWarnings("kotlin:S107")
     abstract fun <T : Type> createAttribute(
@@ -107,8 +120,8 @@ abstract class EntityTypeManager {
     internal abstract fun getEntityMainTable(type: EntityType): DbEntityTable
 
     /**
-     * Get array of antity attribute tables
-     * @param type EntityType
+     * Get array of entity attribute tables
+     * @param type The entity type
      * @return Array<AttributeTable<*>>
      */
     internal abstract fun getEntityAttributeTables(type: EntityType): Array<AttributeTable<*>>

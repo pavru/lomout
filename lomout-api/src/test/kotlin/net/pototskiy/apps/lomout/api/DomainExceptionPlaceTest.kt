@@ -23,23 +23,23 @@ internal class DomainExceptionPlaceTest {
     private val attr1 = manager.createAttribute(
         "attr1",
         STRING::class,
-        false,
-        true,
-        false,
-        null,
-        defaultReaders[STRING::class] as AttributeReader<out STRING>,
-        defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        key = false,
+        nullable = true,
+        auto = false,
+        builder = null,
+        reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+        writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
     )
     @Suppress("UNCHECKED_CAST")
     private val attr2 = manager.createAttribute(
         "attr2",
         STRING::class,
-        false,
-        true,
-        false,
-        null,
-        defaultReaders[STRING::class] as AttributeReader<out STRING>,
-        defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        key = false,
+        nullable = true,
+        auto = false,
+        builder = null,
+        reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+        writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
     )
     private val entity2 = manager.createEntityType("entity2", emptyList(), false).also {
         manager.initialAttributeSetup(it, AttributeCollection(listOf(attr2)))

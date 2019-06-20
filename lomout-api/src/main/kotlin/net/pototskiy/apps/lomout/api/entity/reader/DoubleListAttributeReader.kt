@@ -16,7 +16,7 @@ import org.apache.commons.csv.CSVFormat
 import java.text.ParseException
 
 /**
- * Default reader for [PersistentDoubleList] attribute
+ * Default reader for [DOUBLELIST] attribute
  *
  * @property locale The value locale, default: system locale
  * @property quote The value quote, optional
@@ -54,7 +54,7 @@ open class DoubleListAttributeReader : AttributeReaderPlugin<DOUBLELIST>() {
             CellType.BLANK -> null
             else -> throw AppDataException(
                 badPlace(input) + attribute,
-                "Reading Double from the cell is not supported."
+                "Cannot read Double from the cell."
             )
         }
 }

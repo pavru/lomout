@@ -70,10 +70,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isTrue()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue(0.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isFalse()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -81,10 +81,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isTrue()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isFalse()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -92,10 +92,10 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("true")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isTrue()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue("false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isFalse()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -111,10 +111,10 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("истИНа")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isTrue()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue("Ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isFalse()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test

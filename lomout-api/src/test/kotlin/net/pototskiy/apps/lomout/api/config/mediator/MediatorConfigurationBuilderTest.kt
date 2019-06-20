@@ -2,7 +2,7 @@ package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.database.EntityStatus
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
 import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeWriter

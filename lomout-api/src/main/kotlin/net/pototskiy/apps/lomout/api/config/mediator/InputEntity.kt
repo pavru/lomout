@@ -5,8 +5,11 @@ import net.pototskiy.apps.lomout.api.Generated
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.database.EntityStatus
-import net.pototskiy.apps.lomout.api.database.EntityStatus.*
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
@@ -98,6 +101,12 @@ data class InputEntity(
         }
     }
 
+    /**
+     * Test equal
+     *
+     * @param other The other
+     * @return The result
+     */
     @Generated
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -110,6 +119,11 @@ data class InputEntity(
         return true
     }
 
+    /**
+     * Generate hash code
+     *
+     * @return The hash code
+     */
     @Generated
     override fun hashCode(): Int {
         var result = entity.hashCode()

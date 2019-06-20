@@ -5,8 +5,8 @@ import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.get
 import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
@@ -68,10 +68,13 @@ internal class PrinterBasicTest {
                 val type = entities.first().type
                 val sku = sheet[i + 1]!![0]?.longValue
                 val entity = entities.findLast { it.data[type["sku"]]?.value == sku }!!
+                @Suppress("UsePropertyAccessSyntax")
                 assertThat(sheet[i]!![0]?.doubleValue)
                     .isNotNull().isEqualTo(entity.data[type["amount"]]!!.value)
+                @Suppress("UsePropertyAccessSyntax")
                 assertThat(sheet[i + 1]!![1]?.stringValue)
                     .isNotNull().isEqualTo(entity.data[type["desc"]]!!.value)
+                @Suppress("UsePropertyAccessSyntax")
                 assertThat(sheet[i + 1]!![2]?.doubleValue)
                     .isNotNull().isEqualTo(entity.data[type["corrected_amount"]]!!.value)
             }

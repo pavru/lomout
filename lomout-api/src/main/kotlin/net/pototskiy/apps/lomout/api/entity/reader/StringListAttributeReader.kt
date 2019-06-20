@@ -12,7 +12,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
 
 /**
- * Default reader for [PersistentStringList] attribute
+ * Default reader for [STRINGLIST] attribute
  *
  * @property quote Char? The value quote, optional
  * @property delimiter Char The list delimiter: default:,

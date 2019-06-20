@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicArtifactCoordinates
 import java.io.File
+import java.net.URLClassLoader
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.ScriptAcceptedLocation
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
@@ -32,8 +33,8 @@ import kotlin.script.experimental.jvm.updateClasspath
 /**
  * Config script definition for Kotlin script host
  *
- * @property args Array<String>
- * @property evaluatedConfig Config?
+ * @property args The arguments
+ * @property evaluatedConfig The configuration
  * @constructor
  */
 @Suppress("DEPRECATION")
@@ -66,15 +67,21 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     defaultImports(
         "org.jetbrains.kotlin.script.util.*",
         "net.pototskiy.apps.lomout.api.*",
-        "net.pototskiy.apps.lomout.api.database.*",
         "net.pototskiy.apps.lomout.api.config.*",
+        "net.pototskiy.apps.lomout.api.config.config",
+        "net.pototskiy.apps.lomout.api.config.loader.*",
         "net.pototskiy.apps.lomout.api.config.mediator.*",
+        "net.pototskiy.apps.lomout.api.config.pipeline.*",
+        "net.pototskiy.apps.lomout.api.config.printer.*",
         "net.pototskiy.apps.lomout.api.plugable.*",
         "net.pototskiy.apps.lomout.api.entity.*",
-        "net.pototskiy.apps.lomout.api.entity.type.*",
-        "net.pototskiy.apps.lomout.api.config.pipeline.*",
-        "net.pototskiy.apps.lomout.api.entity.values.*",
+        "net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED",
+        "net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED",
+        "net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED",
+        "net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED",
         "net.pototskiy.apps.lomout.api.entity.reader.*",
+        "net.pototskiy.apps.lomout.api.entity.type.*",
+        "net.pototskiy.apps.lomout.api.entity.values.*",
         "net.pototskiy.apps.lomout.api.entity.writer.*",
         "net.pototskiy.apps.lomout.api.source.*",
         "net.pototskiy.apps.lomout.api.source.workbook.*"
@@ -86,6 +93,21 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     )
     jvm {
         val logger = MainAndIdeLogger()
+        val apiInPlace = (ConfigScriptCompilationConfiguration::class.java.classLoader as? URLClassLoader)?.urLs
+            ?.filter { it.protocol == "file" }
+            ?.map { File(it.toURI()) }
+            ?.firstOrNull {
+                it.isDirectory &&
+                        it.absolutePath.contains(Regex("""lomout-api.build.classes.kotlin.main$""")) }
+        val apiInJar = (ConfigScriptCompilationConfiguration::class.java.classLoader as? URLClassLoader)?.urLs
+            ?.filter { it.protocol == "file" }
+            ?.map { File(it.toURI()) }?.firstOrNull {
+                @Suppress("GraziInspection")
+                it.isFile && it.name.contains(Regex("""lomout-api.*\.jar$"""))
+            }
+        if (apiInPlace != null && apiInJar == null) {
+            updateClasspath(listOf(apiInPlace))
+        }
         dependenciesFromClassloader(
             "lomout-api",
             classLoader = ConfigScriptCompilationConfiguration::class.java.classLoader,

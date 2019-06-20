@@ -8,7 +8,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
- * Default reader for [PersistentDate] attribute
+ * Default reader for [DATE] attribute
  *
  * @property locale String The value locale
  * @property pattern String? The value pattern, optional (use locale)

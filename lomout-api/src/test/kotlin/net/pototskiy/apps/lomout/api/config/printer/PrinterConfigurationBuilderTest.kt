@@ -2,10 +2,10 @@ package net.pototskiy.apps.lomout.api.config.printer
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
 import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeWriter
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
 import net.pototskiy.apps.lomout.api.entity.type.STRING
@@ -89,10 +89,10 @@ internal class PrinterConfigurationBuilderTest {
             assertThat(inputEntities[0].extAttributes).hasSize(0)
             assertThat(outputFieldSets).isNotNull
             assertThat(outputFieldSets.file.file.id).isEqualTo("id1")
-            assertThat(outputFieldSets.printHead).isTrue()
+            assertThat(outputFieldSets.printHead).isEqualTo(true)
             assertThat(outputFieldSets.fieldSets).hasSize(2)
             assertThat(pipeline).isNotNull
-            assertThat(config.lines.contains(this)).isTrue()
+            assertThat(config.lines.contains(this)).isEqualTo(true)
             assertThat(config.lines.indexOf(this)).isEqualTo(0)
             assertThat(config.lines.lastIndexOf(this)).isEqualTo(0)
             Unit

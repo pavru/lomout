@@ -44,7 +44,7 @@ open class BooleanListAttributeReader : AttributeReaderPlugin<BOOLEANLIST>() {
             CellType.BLANK -> null
             else -> throw AppDataException(
                 badPlace(input) + attribute,
-                "Reading Boolean from the cell is not supported."
+                "Cannot read Boolean from the cell."
             )
         }
 }

@@ -52,64 +52,64 @@ internal class TypeTest {
 
     @Test
     internal fun isSingleTest() {
-        assertThat(STRING::class.isSingle()).isTrue()
-        assertThat(STRINGLIST::class.isSingle()).isFalse()
-        assertThat(ATTRIBUTELIST::class.isSingle()).isFalse()
-        assertThat(STRING("").isSingle()).isTrue()
-        assertThat(STRINGLIST(emptyList()).isSingle()).isFalse()
-        assertThat(ATTRIBUTELIST(emptyMap()).isSingle()).isFalse()
+        assertThat(STRING::class.isSingle()).isEqualTo(true)
+        assertThat(STRINGLIST::class.isSingle()).isEqualTo(false)
+        assertThat(ATTRIBUTELIST::class.isSingle()).isEqualTo(false)
+        assertThat(STRING("").isSingle()).isEqualTo(true)
+        assertThat(STRINGLIST(emptyList()).isSingle()).isEqualTo(false)
+        assertThat(ATTRIBUTELIST(emptyMap()).isSingle()).isEqualTo(false)
     }
 
     @Test
     internal fun isListTest() {
-        assertThat(STRINGLIST::class.isList()).isTrue()
-        assertThat(STRING::class.isList()).isFalse()
-        assertThat(STRINGLIST(emptyList()).isList()).isTrue()
-        assertThat(STRING("").isList()).isFalse()
+        assertThat(STRINGLIST::class.isList()).isEqualTo(true)
+        assertThat(STRING::class.isList()).isEqualTo(false)
+        assertThat(STRINGLIST(emptyList()).isList()).isEqualTo(true)
+        assertThat(STRING("").isList()).isEqualTo(false)
     }
 
     @Test
     internal fun isMapTest() {
-        assertThat(ATTRIBUTELIST::class.isMap()).isTrue()
-        assertThat(STRING::class.isMap()).isFalse()
-        assertThat(ATTRIBUTELIST(emptyMap()).isMap()).isTrue()
-        assertThat(STRING("").isMap()).isFalse()
+        assertThat(ATTRIBUTELIST::class.isMap()).isEqualTo(true)
+        assertThat(STRING::class.isMap()).isEqualTo(false)
+        assertThat(ATTRIBUTELIST(emptyMap()).isMap()).isEqualTo(true)
+        assertThat(STRING("").isMap()).isEqualTo(false)
     }
 
     @Test
     internal fun isTypeOfTest() {
-        assertThat(STRING::class.isTypeOf<STRING>()).isTrue()
-        assertThat(STRING("").isTypeOf<STRING>()).isTrue()
-        assertThat(STRING::class.isTypeOf<LONG>()).isFalse()
-        assertThat(STRING("").isTypeOf<LONG>()).isFalse()
+        assertThat(STRING::class.isTypeOf<STRING>()).isEqualTo(true)
+        assertThat(STRING("").isTypeOf<STRING>()).isEqualTo(true)
+        assertThat(STRING::class.isTypeOf<LONG>()).isEqualTo(false)
+        assertThat(STRING("").isTypeOf<LONG>()).isEqualTo(false)
     }
 
     @Test
     internal fun booleanTypeTest() {
         assertThat(BOOLEAN::class.table).isSameAs(EntityBooleans)
         assertThat(BOOLEAN(true).table).isSameAs(EntityBooleans)
-        assertThat(BOOLEAN(true) == BOOLEAN(true)).isTrue()
+        assertThat(BOOLEAN(true) == BOOLEAN(true)).isEqualTo(true)
     }
 
     @Test
     internal fun longTypeTest() {
         assertThat(LONG::class.table).isSameAs(EntityLongs)
         assertThat(LONG(3L).table).isSameAs(EntityLongs)
-        assertThat(LONG(3L) == LONG(3L)).isTrue()
+        assertThat(LONG(3L) == LONG(3L)).isEqualTo(true)
     }
 
     @Test
     internal fun doubleTypeTest() {
         assertThat(DOUBLE::class.table).isSameAs(EntityDoubles)
         assertThat(DOUBLE(3.3).table).isSameAs(EntityDoubles)
-        assertThat(DOUBLE(3.3) == DOUBLE(3.3)).isTrue()
+        assertThat(DOUBLE(3.3) == DOUBLE(3.3)).isEqualTo(true)
     }
 
     @Test
     internal fun stringTypeTest() {
         assertThat(STRING::class.table).isSameAs(EntityStrings)
         assertThat(STRING("").table).isSameAs(EntityStrings)
-        assertThat(STRING("test") == STRING("test")).isTrue()
+        assertThat(STRING("test") == STRING("test")).isEqualTo(true)
     }
 
     @Test
@@ -128,7 +128,7 @@ internal class TypeTest {
     internal fun textTypeTest() {
         assertThat(TEXT::class.table).isSameAs(EntityTexts)
         assertThat(TEXT("").table).isSameAs(EntityTexts)
-        assertThat(TEXT("test") == TEXT("test")).isTrue()
+        assertThat(TEXT("test") == TEXT("test")).isEqualTo(true)
     }
 
     @Test

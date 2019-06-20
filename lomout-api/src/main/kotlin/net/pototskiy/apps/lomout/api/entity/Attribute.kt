@@ -149,6 +149,9 @@ class Attribute<T : Type>(
          */
         fun nullable() = this.let { nullable = true }
 
+        /**
+         * Attribute builder
+         */
         var builder: AttributeBuilder<out T>? = null
         /**
          * Inline builder function, attribute can have only one builder

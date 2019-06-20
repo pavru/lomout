@@ -24,41 +24,24 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.joda.time.DateTime
 import org.joda.time.Duration
 import java.io.File
+import kotlin.system.exitProcess
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
+@Suppress("ReturnCount")
 fun main(args: Array<String>) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     val mainCommand = CommandMain()
-    val jCommander = JCommander.Builder()
-        .addCommand(CommandHelp())
-        .addCommand(CommandVersion())
-        .addCommand(mainCommand)
-        .build()
-    try {
-        @Suppress("SpreadOperator")
-        jCommander.parse(*args)
-    } catch (e: ParameterException) {
-        println(e.message)
-        jCommander.usage()
-        System.exit(1)
-    }
-    if (jCommander.parsedCommand == "--help") {
-        jCommander.usage()
-        return
-    } else if (jCommander.parsedCommand == "--version") {
-        println("LoMout v${BuildInfo.lomoutVersion}")
-        return
-    }
+    if (parseArguments(mainCommand, args)) return
     setLogLevel(mainCommand)
 
     val startTime = DateTime()
     statusLog.info("Application has started")
     if (!File(mainCommand.configFile.first()).exists()) {
         statusLog.error("File '{}' cannot be found.", mainCommand.configFile.first())
-        System.exit(1)
+        exitProcess(1)
     }
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(
         File(mainCommand.configFile.first()),
@@ -83,6 +66,34 @@ fun main(args: Array<String>) {
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     val duration = Duration(startTime, DateTime()).standardSeconds
     statusLog.info("Application has finished, duration: ${duration}s")
+}
+
+@Suppress("ReturnCount")
+private fun parseArguments(
+    mainCommand: CommandMain,
+    args: Array<String>
+): Boolean {
+    val jCommander = JCommander.Builder()
+        .addCommand(CommandHelp())
+        .addCommand(CommandVersion())
+        .addCommand(mainCommand)
+        .build()
+    try {
+        @Suppress("SpreadOperator")
+        jCommander.parse(*args)
+    } catch (e: ParameterException) {
+        println(e.message)
+        jCommander.usage()
+        exitProcess(1)
+    }
+    if (jCommander.parsedCommand == "--help") {
+        jCommander.usage()
+        return true
+    } else if (jCommander.parsedCommand == "--version") {
+        println("LoMout v${BuildInfo.lomoutVersion}")
+        return true
+    }
+    return false
 }
 
 /**

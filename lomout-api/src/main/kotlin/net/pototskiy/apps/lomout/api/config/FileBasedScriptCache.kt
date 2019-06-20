@@ -1,14 +1,16 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.Generated
+import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
+import org.apache.logging.log4j.LogManager
 import java.io.File
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import kotlin.script.experimental.api.CompiledScript
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.SourceCode
+import kotlin.script.experimental.jvm.impl.KJvmCompiledScript
 import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
-import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 
 /**
  * File base compiled script cache
@@ -23,7 +25,7 @@ class FileBasedScriptCache(
     private val baseDir: File,
     private val doNotUseCache: Boolean
 ) : CompiledJvmScriptsCache {
-
+    private val logger = LogManager.getLogger(STATUS_LOG_NAME)
     /**
      * Try get script from the cache
      *
@@ -40,7 +42,7 @@ class FileBasedScriptCache(
         val scriptHash = ScriptUniqueHash(script, scriptCompilationConfiguration).hash()
             ?: return null
         val file = File(baseDir, scriptHash)
-        return if (!file.exists()) null else file.readCompiledScript(scriptCompilationConfiguration)
+        return if (!file.exists()) null else file.readCompiledScript()
     }
 
     /**
@@ -58,6 +60,10 @@ class FileBasedScriptCache(
         if (doNotUseCache) return
         if (!baseDir.exists()) baseDir.mkdirs()
         val scriptHash = ScriptUniqueHash(script, scriptCompilationConfiguration).hash()
+        if (scriptHash == null) {
+            logger.warn("Cannot create the configuration cache.")
+            return
+        }
         val file = File(baseDir, scriptHash)
         file.outputStream().use { fs ->
             ObjectOutputStream(fs).use { os ->
@@ -66,14 +72,10 @@ class FileBasedScriptCache(
         }
     }
 
-    private fun File.readCompiledScript(
-        scriptCompilationConfiguration: ScriptCompilationConfiguration
-    ): CompiledScript<*> {
+    private fun File.readCompiledScript(): CompiledScript<*> {
         return inputStream().use { fs ->
             ObjectInputStream(fs).use { os ->
-                (os.readObject() as KJvmCompiledScript<*>).apply {
-                    setCompilationConfiguration(scriptCompilationConfiguration)
-                }
+                (os.readObject() as KJvmCompiledScript<*>)
             }
         }
     }

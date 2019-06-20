@@ -1,10 +1,24 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.TIMESTAMP
-import net.pototskiy.apps.lomout.api.database.EntityStatus
 import org.jetbrains.exposed.dao.EntityID
 import org.joda.time.DateTime
 
+/**
+ * Entity base class
+ *
+ * @property type The entity type
+ * @property id The entity id
+ * @property repository The entity repository
+ * @property touchedInLoading Is entity touched?
+ * @property currentStatus The entity current status
+ * @property previousStatus The entity previous status
+ * @property created The entity creation date
+ * @property updated The entity updating date
+ * @property removed The entity removing date
+ * @property absentDays Days entity is absent
+ * @constructor
+ */
 abstract class EntityBase internal constructor(
     val type: EntityType,
     val id: EntityID<Int>,
@@ -17,8 +31,9 @@ abstract class EntityBase internal constructor(
     var updated: DateTime = TIMESTAMP
     var removed: DateTime? = null
     var absentDays: Int = 0
+
     /**
-     * Update entity create status
+     * Update entity status to **created**
      */
     fun wasCreated() {
         touchedInLoading = true
@@ -29,7 +44,7 @@ abstract class EntityBase internal constructor(
     }
 
     /**
-     * Update entity update status
+     * Update entity status to **updated**
      *
      * @param onlyCurrent Boolean true — update only current status, false — update current and previous status
      */
@@ -46,7 +61,7 @@ abstract class EntityBase internal constructor(
     }
 
     /**
-     * Update entity unchanged status
+     * Update entity status to **unchanged**
      *
      * @param onlyCurrent Boolean true — update only current status, false — update current and previous status
      */

@@ -91,7 +91,7 @@ internal class EntityTypeBaseTest {
         assertThat(eType.attributes)
             .hasSize(2)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2))
-        assertThat(eType.open).isFalse()
+        assertThat(eType.open).isEqualTo(false)
         assertThatThrownBy {
             typeManager.addEntityAttribute(
                 eType,
@@ -102,9 +102,9 @@ internal class EntityTypeBaseTest {
         assertThat(typeManager["test1"]).isEqualTo(eType)
         try {
             eType.checkAttributeDefined(attr1)
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         } catch (e: Exception) {
-            assertThat(false).isTrue()
+            assertThat(false).isEqualTo(true)
         }
         assertThatThrownBy { eType.checkAttributeDefined(attr3) }.isInstanceOf(AppConfigException::class.java)
         assertThatThrownBy { eType.checkAttributeDefined(attr4) }.isInstanceOf(AppConfigException::class.java)
@@ -154,9 +154,9 @@ internal class EntityTypeBaseTest {
         assertThat(typeManager["test2"]).isEqualTo(test2)
         try {
             test2.checkAttributeDefined(attr1)
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         } catch (e: Exception) {
-            assertThat(false).isTrue()
+            assertThat(false).isEqualTo(true)
         }
         assertThatThrownBy { test2.checkAttributeDefined(attr3) }.isInstanceOf(AppConfigException::class.java)
         assertThatThrownBy { test2.checkAttributeDefined(attr5) }.isInstanceOf(AppConfigException::class.java)
@@ -256,9 +256,9 @@ internal class EntityTypeBaseTest {
         val type1 = typeManager.createEntityType("type1", emptyList(), false)
         val type2 = typeManager.createEntityType("type2", emptyList(), false)
         val type3 = typeManager.createEntityType("type1", emptyList(), false)
-        assertThat(type1 == type1).isTrue()
-        assertThat(type1 == type2).isFalse()
-        assertThat(type1 == type3).isTrue()
-        assertThat(type1 == Any()).isFalse()
+        assertThat(type1 == type1).isEqualTo(true)
+        assertThat(type1 == type2).isEqualTo(false)
+        assertThat(type1 == type3).isEqualTo(true)
+        assertThat(type1 == Any()).isEqualTo(false)
     }
 }

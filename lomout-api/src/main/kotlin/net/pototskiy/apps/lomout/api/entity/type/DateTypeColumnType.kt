@@ -5,10 +5,22 @@ import org.jetbrains.exposed.sql.IColumnType
 import org.joda.time.DateTime
 import java.sql.PreparedStatement
 
+/**
+ * Column type for [DATE] value.
+ *
+ * @property columnType The exposed column type
+ * @constructor
+ */
 class DateTypeColumnType(
     private val columnType: DateColumnType = DateColumnType(false)
 ) : IColumnType by columnType {
 
+    /**
+     * Convert [DATE] to db value
+     *
+     * @param value
+     * @return
+     */
     override fun notNullValueToDB(value: Any): Any {
         return when (value) {
             is DATE -> columnType.notNullValueToDB(value.value)
@@ -16,6 +28,12 @@ class DateTypeColumnType(
         }
     }
 
+    /**
+     * Convert db value to [DATE]
+     *
+     * @param value
+     * @return
+     */
     override fun valueFromDB(value: Any): Any {
         return when (value) {
             is DATE -> value
@@ -23,6 +41,12 @@ class DateTypeColumnType(
         }
     }
 
+    /**
+     * Convert [DATE] to db value
+     *
+     * @param value
+     * @return
+     */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
             null -> null
@@ -31,6 +55,12 @@ class DateTypeColumnType(
         }
     }
 
+    /**
+     * Convert [DATE] to String
+     *
+     * @param value
+     * @return
+     */
     override fun nonNullValueToString(value: Any): String {
         return when (value) {
             is DATE -> columnType.nonNullValueToString(value.value)
@@ -38,6 +68,12 @@ class DateTypeColumnType(
         }
     }
 
+    /**
+     * Convert [DATE] to String
+     *
+     * @param value
+     * @return
+     */
     override fun valueToString(value: Any?): String {
         return when (value) {
             is DATE -> columnType.valueToString(value.value)
@@ -45,6 +81,13 @@ class DateTypeColumnType(
         }
     }
 
+    /**
+     * Set statement parameters
+     *
+     * @param stmt PreparedStatement
+     * @param index Int
+     * @param value Any?
+     */
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         when (value) {
             is DATE -> columnType.setParameter(stmt, index, value.value)

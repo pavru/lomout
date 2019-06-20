@@ -10,7 +10,7 @@ import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
- * Default reader for [PersistentDouble] attribute
+ * Default reader for [DOUBLE] attribute
  *
  * @property locale The value locale: default: system locale
  * @property groupingUsed Indicate that number uses digit grouping

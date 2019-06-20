@@ -12,10 +12,10 @@ import java.text.ParseException
 internal class StringToBooleanKtTest {
     @Test
     internal fun stringToBooleanTest() {
-        assertThat("true".stringToBoolean("en_US".createLocale())).isTrue()
-        assertThat("false".stringToBoolean("en_US".createLocale())).isFalse()
-        assertThat("истина".stringToBoolean("ru_RU".createLocale())).isTrue()
-        assertThat("ложь".stringToBoolean("ru_RU".createLocale())).isFalse()
+        assertThat("true".stringToBoolean("en_US".createLocale())).isEqualTo(true)
+        assertThat("false".stringToBoolean("en_US".createLocale())).isEqualTo(false)
+        assertThat("истина".stringToBoolean("ru_RU".createLocale())).isEqualTo(true)
+        assertThat("ложь".stringToBoolean("ru_RU".createLocale())).isEqualTo(false)
         assertThatThrownBy { "true".stringToBoolean("ru_RU".createLocale()) }
             .isInstanceOf(ParseException::class.java)
             .hasMessageContaining("Value 'true' cannot be converted to boolean.")

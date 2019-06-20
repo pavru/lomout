@@ -1,4 +1,5 @@
 @file:Suppress("TooManyFunctions")
+
 package net.pototskiy.apps.lomout.api
 
 import net.pototskiy.apps.lomout.api.entity.Attribute
@@ -12,7 +13,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 /**
  * Domain exception place.
  *
- * In text information next coding is used:
+ * Problem place code:
  * * E — Entity type
  * * A — Attribute
  * * F — Field

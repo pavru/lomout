@@ -4,11 +4,23 @@ import org.jetbrains.exposed.sql.IColumnType
 import org.jetbrains.exposed.sql.TextColumnType
 import java.sql.PreparedStatement
 
+/**
+ * Column type for [TEXT] values.
+ *
+ * @property columnType The exposed column type
+ * @constructor
+ */
 class TextTypeColumnType(
     collate: String? = null,
     private val columnType: TextColumnType = TextColumnType(collate)
 ) : IColumnType by columnType {
 
+    /**
+     * Convert [TEXT] to db value
+     *
+     * @param value
+     * @return
+     */
     override fun notNullValueToDB(value: Any): Any {
         return when (value) {
             is TEXT -> columnType.notNullValueToDB(value.value)
@@ -16,6 +28,12 @@ class TextTypeColumnType(
         }
     }
 
+    /**
+     * Convert db value to [TEXT]
+     *
+     * @param value
+     * @return
+     */
     override fun valueFromDB(value: Any): Any {
         return when (value) {
             is TEXT -> value
@@ -23,6 +41,12 @@ class TextTypeColumnType(
         }
     }
 
+    /**
+     * Convert [TEXT] to db value
+     *
+     * @param value
+     * @return
+     */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
             null -> null
@@ -31,6 +55,12 @@ class TextTypeColumnType(
         }
     }
 
+    /**
+     * Convert [TEXT] to String
+     *
+     * @param value
+     * @return
+     */
     override fun nonNullValueToString(value: Any): String {
         return when (value) {
             is TEXT -> columnType.nonNullValueToString(value.value)
@@ -38,6 +68,13 @@ class TextTypeColumnType(
         }
     }
 
+    /**
+     * Set statement parameters
+     *
+     * @param stmt PreparedStatement
+     * @param index Int
+     * @param value Any?
+     */
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         when (value) {
             is TEXT -> columnType.setParameter(stmt, index, value.value)
@@ -45,6 +82,12 @@ class TextTypeColumnType(
         }
     }
 
+    /**
+     * Convert [TEXT] to String
+     *
+     * @param value
+     * @return
+     */
     override fun valueToString(value: Any?): String {
         return when (value) {
             is TEXT -> columnType.valueToString(value.value)

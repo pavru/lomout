@@ -1,11 +1,14 @@
 package net.pototskiy.apps.lomout.mediator
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
@@ -34,17 +37,18 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
             runBlocking {
                 val pipeline = preparePipelineExecutor(line)
                 val inputChannel: Channel<ClassifierElement> = Channel()
-                jobs.add(launch {
+                jobs.add(launch(Dispatchers.IO) {
                     pipeline.execute(inputChannel).consumeEach {
                         try {
                             processedRows += processResultData(it)
                         } catch (e: AppException) {
-                            logger.error("Cannot process entity, {}", e.message)
-                            logger.trace("Cause: ", e)
+                            processException(e)
                         }
                     }
                 })
-                topLevelInput(line).forEach { inputChannel.send(it) }
+                topLevelInput(line).forEach { element ->
+                    inputChannel.send(element)
+                }
                 inputChannel.close()
                 joinAll(*jobs.toTypedArray())
             }
@@ -83,7 +87,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                         @Suppress("SpreadOperator")
                         yield(
                             ClassifierElement.Mismatched(
-                                EntityCollection(listOf(repository.get(it, *input.statuses)!!))
+                                EntityCollection(listOf(repository.get(it, *input.statuses, startPrefetch = true)!!))
                             )
                         )
                     }
@@ -93,7 +97,11 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
         }
 
     private fun processException(e: Exception) {
-        logger.error("{}", e.message)
+        when (e) {
+            is AppConfigException -> logger.error("Cannot process entity, {} {}", e.message, e.place.placeInfo())
+            is AppDataException -> logger.error("Cannot process entity, {} {}", e.message, e.place.placeInfo())
+            else -> logger.error("Cannot process entity, {}", e.message)
+        }
         logger.trace("Caused by:", e)
     }
 

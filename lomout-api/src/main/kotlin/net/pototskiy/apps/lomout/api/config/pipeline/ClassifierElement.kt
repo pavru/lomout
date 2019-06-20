@@ -31,7 +31,7 @@ sealed class ClassifierElement {
     /**
      * Element should be skipped
      *
-     * @property ids List<ElementID>
+     * @property entities Entities list
      * @constructor
      */
     class Skipped(override val entities: EntityCollection) : ClassifierElement()

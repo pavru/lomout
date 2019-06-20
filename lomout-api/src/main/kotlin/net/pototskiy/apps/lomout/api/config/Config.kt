@@ -4,8 +4,8 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Root element of configuration file
@@ -27,11 +27,11 @@ data class Config(
     /**
      * Configuration root element builder class
      *
-     * @property helper ConfigBuildHelper
-     * @property database DatabaseConfig?
-     * @property loader LoaderConfiguration?
-     * @property mediator MediatorConfiguration?
-     * @property printer PrinterConfiguration?
+     * @property helper The configuration helper
+     * @property database The database configuration
+     * @property loader The loader configuration
+     * @property mediator The mediator configuration
+     * @property printer The printer configuration
      * @constructor
      */
     @ConfigDsl

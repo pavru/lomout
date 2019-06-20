@@ -14,6 +14,7 @@ const val CONFIG_LOG_NAME = "net.pototskiy.apps.lomout.config"
 /**
  * Database operation log name
  */
+@Suppress("unused")
 const val DATABASE_LOG_NAME = "net.pototskiy.apps.lomout.database"
 /**
  * Loader log name

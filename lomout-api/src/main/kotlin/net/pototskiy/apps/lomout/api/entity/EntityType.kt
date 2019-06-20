@@ -39,6 +39,7 @@ abstract class EntityType(
     internal val attributeTables: Array<AttributeTable<*>>
         get() = manager.getEntityAttributeTables(this)
 
+    @Suppress("unused")
     internal val mainTable: DbEntityTable
         get() = manager.getEntityMainTable(this)
 
@@ -72,7 +73,7 @@ abstract class EntityType(
      */
     fun checkAttributeDefined(attribute: Attribute<*>) {
         if (!isAttributeDefined(attribute)) {
-            throw AppConfigException(badPlace(attribute), "Attribute is not defined for entity '$this.name'.")
+            throw AppConfigException(badPlace(attribute), "Entity '$this.name' has no attribute.")
         }
     }
 

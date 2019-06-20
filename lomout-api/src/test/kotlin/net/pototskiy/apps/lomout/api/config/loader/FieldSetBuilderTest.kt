@@ -26,10 +26,10 @@ internal class FieldSetBuilderTest {
             helper,
             entity,
             "test",
-            true,
-            false,
-            null,
-            null
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null
         ).apply {
         }
         Assertions.assertThatThrownBy { fs.build() }.isInstanceOf(AppConfigException::class.java)
@@ -42,10 +42,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1")
                 field("f1")
@@ -60,10 +60,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") { column(0) }
                 field("f2") { column(0) }
@@ -78,10 +78,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") to attribute("f1")
             }.build()
@@ -95,10 +95,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") to attribute<STRING>(null) {}
             }.build()
@@ -112,10 +112,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") to attribute<STRING>("f2") {}
             }.build()
@@ -129,10 +129,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1")
                 field("f2") { parent("f3") }
@@ -147,10 +147,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") { } to attribute<ATTRIBUTELIST>("f1") {}
                 field("f2") { parent("f1") } to attribute<ATTRIBUTELIST>("f2") {}

@@ -3,6 +3,7 @@
 package net.pototskiy.apps.lomout.api.database
 
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.entityStatus
 import net.pototskiy.apps.lomout.api.entity.entityType
 import org.jetbrains.exposed.dao.IntIdTable
 

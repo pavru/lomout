@@ -4,9 +4,21 @@ import org.jetbrains.exposed.sql.BooleanColumnType
 import org.jetbrains.exposed.sql.IColumnType
 import java.sql.PreparedStatement
 
+/**
+ * Column type for [BOOLEAN] attribute value.
+ *
+ * @property columnType The exposed column type
+ * @constructor
+ */
 class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanColumnType()) :
     IColumnType by columnType {
 
+    /**
+     * Convert non null value to db value.
+     *
+     * @param value
+     * @return
+     */
     override fun notNullValueToDB(value: Any): Any {
         return when (value) {
             is BOOLEAN -> columnType.notNullValueToDB(value.value)
@@ -14,6 +26,12 @@ class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanC
         }
     }
 
+    /**
+     * Convert value from the DB to [BOOLEAN].
+     *
+     * @param value Any
+     * @return Any
+     */
     override fun valueFromDB(value: Any): Any {
         return when (value) {
             is BOOLEAN -> value
@@ -21,6 +39,12 @@ class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanC
         }
     }
 
+    /**
+     * Convert [BOOLEAN] to db value.
+     *
+     * @param value
+     * @return
+     */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
             null -> null
@@ -29,6 +53,12 @@ class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanC
         }
     }
 
+    /**
+     * Convert [BOOLEAN] to string.
+     *
+     * @param value
+     * @return
+     */
     override fun nonNullValueToString(value: Any): String {
         return when (value) {
             is BOOLEAN -> columnType.nonNullValueToString(value.value)
@@ -36,6 +66,12 @@ class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanC
         }
     }
 
+    /**
+     * Convert [BOOLEAN] to String.
+     *
+     * @param value
+     * @return
+     */
     override fun valueToString(value: Any?): String {
         return when (value) {
             is BOOLEAN -> columnType.valueToString(value.value)
@@ -43,6 +79,13 @@ class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanC
         }
     }
 
+    /**
+     * Set statement parameters.
+     *
+     * @param stmt PreparedStatement
+     * @param index Int
+     * @param value Any?
+     */
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         when (value) {
             is BOOLEAN -> columnType.setParameter(stmt, index, value.value)

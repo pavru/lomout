@@ -1,5 +1,10 @@
 package net.pototskiy.apps.lomout.loader
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
@@ -36,23 +41,29 @@ class EntityLoader(
 
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
     var processedRows = 0L
+    private val updateChanel = Channel<UpdaterData>(CHANEL_CAPACITY)
 
     private lateinit var updater: EntityUpdater
     private val extraData = mutableMapOf<String, Map<AnyTypeAttribute, Type>>()
     private var fieldSets = loadConfig.fieldSets
     private var eType = loadConfig.entity
 
-    fun load() {
+    fun load() = runBlocking {
+        val updaterJob = launch(Dispatchers.IO) {
+            updateChanel.consumeEach { updateEntity(it) }
+        }
         updater = EntityUpdater(repository, eType)
         repository.resetTouchFlag(eType)
         processRows()
+        updateChanel.close()
+        updaterJob.join()
         repository.markEntitiesAsRemoved(eType)
         repository.updateAbsentDays(eType)
         repository.removeOldEntities(eType, loadConfig.maxAbsentDays)
     }
 
     @Suppress("TooGenericExceptionCaught")
-    private fun processRows() {
+    private suspend fun processRows() {
         loop@ for (row in sheet) {
             processedRows++
             if (row.rowNum == loadConfig.headersRow || row.rowNum < loadConfig.rowsToSkip) continue
@@ -74,14 +85,25 @@ class EntityLoader(
         }
     }
 
-    private fun processRow(row: Row) {
+    @Suppress("TooGenericExceptionCaught")
+    private fun updateEntity(data: UpdaterData) {
+        try {
+            updater.update(data.data)
+        } catch (e: AppException) {
+            rowException(data.row, e)
+        } catch (e: Exception) {
+            rowException(data.row, e)
+        }
+    }
+
+    private suspend fun processRow(row: Row) {
         val rowFiledSet = findRowFieldSet(row)
         if (rowFiledSet.mainSet) {
             val data = getData(row, rowFiledSet.fieldToAttr).toMutableMap()
             plusAdditionalData(data)
             validateKeyFieldData(data, rowFiledSet.fieldToAttr)
-            @Suppress("UNCHECKED_CAST")
-            updater.update(data)
+            repository.preload(eType, data.filter { it.key.key })
+            updateChanel.send(UpdaterData(row, data))
         } else {
             val data = getData(row, rowFiledSet.fieldToAttr)
             extraData[rowFiledSet.name] = data
@@ -234,5 +256,14 @@ class EntityLoader(
             if (!field.isMatchToPattern(cell.asString())) fit = false
         }
         return fit
+    }
+
+    private data class UpdaterData(
+        val row: Row,
+        val data: Map<AnyTypeAttribute, Type>
+    )
+
+    companion object {
+        private const val CHANEL_CAPACITY = 500
     }
 }

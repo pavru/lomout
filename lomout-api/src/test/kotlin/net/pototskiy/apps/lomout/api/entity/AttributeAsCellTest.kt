@@ -79,6 +79,7 @@ internal class AttributeAsCellTest {
         val notCompatible: List<(Cell) -> Unit>
     )
 
+    @Suppress("RemoveExplicitTypeArguments")
     companion object {
         private val typeManager = EntityTypeManagerImpl()
 
@@ -113,7 +114,7 @@ internal class AttributeAsCellTest {
             CellType.BOOL,
             { it.booleanValue },
             false.toString(),
-            listOf<(Cell) -> Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
+            listOf<(Cell)->Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
         )
         @Suppress("UNCHECKED_CAST")
         private val longTestData1 = TestData(
@@ -128,7 +129,7 @@ internal class AttributeAsCellTest {
             CellType.LONG,
             { it.longValue },
             111L.toString(),
-            listOf<(Cell) -> Unit>({ it.booleanValue }, { it.doubleValue }, { it.stringValue })
+            listOf<(Cell)->Unit>({ it.booleanValue }, { it.doubleValue }, { it.stringValue })
         )
 
         @Suppress("unused", "LongMethod")
@@ -148,7 +149,7 @@ internal class AttributeAsCellTest {
                     CellType.BOOL,
                     { it.booleanValue },
                     true.toString(),
-                    listOf<(Cell) -> Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
                 ),
                 boolTestData2,
                 longTestData1,
@@ -164,7 +165,7 @@ internal class AttributeAsCellTest {
                     CellType.DOUBLE,
                     { it.doubleValue },
                     11.1.toString(),
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -178,7 +179,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "test value",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -192,7 +193,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "test value",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute("attr7", DATE::class,
@@ -206,7 +207,7 @@ internal class AttributeAsCellTest {
                     CellType.DOUBLE,
                     { it.doubleValue },
                     dateVal.toString(),
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
                 ),
                 TestData(
                     typeManager.createAttribute("attr8", DATETIME::class,
@@ -220,7 +221,7 @@ internal class AttributeAsCellTest {
                     CellType.DOUBLE,
                     { it.doubleValue },
                     dateTimeVal.toString(),
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -234,7 +235,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "1,0",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -248,7 +249,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "1,2,3",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -262,7 +263,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "1.1,2.2",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -276,7 +277,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "\"str1\"\"\",\"str2\"\"\"",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -291,7 +292,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "$dateVal,$dateVal",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -306,7 +307,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "$dateTimeVal,$dateTimeVal",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
                     typeManager.createAttribute(
@@ -325,7 +326,7 @@ internal class AttributeAsCellTest {
                     CellType.STRING,
                     { it.stringValue },
                     "sAttr1=false,sAttr2=111",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 )
             )
         }

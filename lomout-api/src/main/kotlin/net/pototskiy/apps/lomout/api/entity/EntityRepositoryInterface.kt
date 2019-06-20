@@ -1,7 +1,9 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import net.pototskiy.apps.lomout.api.database.EntityStatus
-import net.pototskiy.apps.lomout.api.database.EntityStatus.*
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED
 import net.pototskiy.apps.lomout.api.entity.type.Type
 import org.jetbrains.exposed.dao.EntityID
 
@@ -53,18 +55,17 @@ interface EntityRepositoryInterface : AutoCloseable {
      */
     fun get(
         id: EntityID<Int>,
-        vararg status: EntityStatus = arrayOf(UNCHANGED, CREATED, UPDATED, REMOVED)
+        vararg status: EntityStatus = arrayOf(UNCHANGED, CREATED, UPDATED, REMOVED),
+        startPrefetch: Boolean = false
     ): Entity?
 
     /**
      * Preload entity to cache
      *
      * @param id The entity id
-     * @param status The entity status
      */
     suspend fun preload(
-        id: EntityID<Int>,
-        vararg status: EntityStatus = arrayOf(UNCHANGED, CREATED, UPDATED, REMOVED)
+        id: EntityID<Int>
     )
 
     /**
@@ -84,7 +85,6 @@ interface EntityRepositoryInterface : AutoCloseable {
      *
      * @param type The entity type
      * @param data Data to find entity
-     * @param status Entity statuses to get
      * @return List<Entity> Found entities
      */
     fun get(
@@ -98,12 +98,10 @@ interface EntityRepositoryInterface : AutoCloseable {
      *
      * @param type The entity cache
      * @param data Entity attributes data to select entity
-     * @param status The entity status
      */
     suspend fun preload(
         type: EntityType,
-        data: Map<AnyTypeAttribute, Type>,
-        vararg status: EntityStatus = arrayOf(UNCHANGED, CREATED, UPDATED, REMOVED)
+        data: Map<AnyTypeAttribute, Type>
     )
 
     // Attribute operations
@@ -158,8 +156,31 @@ interface EntityRepositoryInterface : AutoCloseable {
         vararg status: EntityStatus = arrayOf(CREATED, UPDATED, UNCHANGED, REMOVED)
     ): List<EntityID<Int>>
 
+    /**
+     * Reset touch flag of entity by entity type.
+     *
+     * @param type The entity type
+     */
     fun resetTouchFlag(type: EntityType)
+
+    /**
+     * Mark untouched entities as **removed**
+     * @param type EntityType
+     */
     fun markEntitiesAsRemoved(type: EntityType)
+
+    /**
+     * Update entities absent days.
+     *
+     * @param type The entity type
+     */
     fun updateAbsentDays(type: EntityType)
+
+    /**
+     * Remove old entities.
+     *
+     * @param type The entity type
+     * @param maxAbsentDays The maximum absent days
+     */
     fun removeOldEntities(type: EntityType, maxAbsentDays: Int)
 }

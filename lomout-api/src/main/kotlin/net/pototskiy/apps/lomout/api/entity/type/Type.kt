@@ -308,6 +308,12 @@ data class TEXT(override val value: String) : Type(), CharSequence by value {
  */
 data class BOOLEANLIST(override val value: List<BOOLEAN>) :
     ListType<BOOLEAN>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: BOOLEANLIST) : this(other.value)
 
@@ -325,6 +331,12 @@ data class BOOLEANLIST(override val value: List<BOOLEAN>) :
  */
 data class LONGLIST(override val value: List<LONG>) :
     ListType<LONG>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: LONGLIST) : this(other.value)
 
@@ -342,6 +354,12 @@ data class LONGLIST(override val value: List<LONG>) :
  */
 data class DOUBLELIST(override val value: List<DOUBLE>) :
     ListType<DOUBLE>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: DOUBLELIST) : this(other.value)
 
@@ -359,6 +377,12 @@ data class DOUBLELIST(override val value: List<DOUBLE>) :
  */
 data class STRINGLIST(override val value: List<STRING>) :
     ListType<STRING>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: STRINGLIST) : this(other.value)
 
@@ -376,6 +400,12 @@ data class STRINGLIST(override val value: List<STRING>) :
  */
 data class TEXTLIST(override val value: List<TEXT>) :
     ListType<TEXT>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: TEXTLIST) : this(other.value)
 
@@ -393,6 +423,12 @@ data class TEXTLIST(override val value: List<TEXT>) :
  */
 data class DATELIST(override val value: List<DATE>) :
     ListType<DATE>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: DATELIST) : this(other.value)
 
@@ -410,6 +446,12 @@ data class DATELIST(override val value: List<DATE>) :
  */
 data class DATETIMELIST(override val value: List<DATETIME>) :
     ListType<DATETIME>(value) {
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: DATETIMELIST) : this(other.value)
 
@@ -429,6 +471,12 @@ data class ATTRIBUTELIST(override val value: Map<String, Cell>) : MapType<String
     override val table: AttributeTable<*>
         get() = throw AppDataException(badData(this), "Type has no store table.")
 
+    /**
+     * Copy constructor
+     *
+     * @param other
+     * @constructor
+     */
     @Suppress("unused")
     constructor(other: ATTRIBUTELIST) : this(other.value)
 

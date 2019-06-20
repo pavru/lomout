@@ -5,10 +5,22 @@ import org.jetbrains.exposed.sql.IColumnType
 import org.joda.time.DateTime
 import java.sql.PreparedStatement
 
+/**
+ * Column type for [DATE] type.
+ *
+ * @property columnType The exposed column type
+ * @constructor
+ */
 class DateTimeTypeColumnType(
     private val columnType: DateColumnType = DateColumnType(true)
 ) : IColumnType by columnType {
 
+    /**
+     * Convert [DATETIME] to db value.
+     *
+     * @param value
+     * @return
+     */
     override fun notNullValueToDB(value: Any): Any {
         return when (value) {
             is DATETIME -> columnType.notNullValueToDB(value.value)
@@ -16,6 +28,12 @@ class DateTimeTypeColumnType(
         }
     }
 
+    /**
+     * Convert db value to [DATETIME].
+     *
+     * @param value
+     * @return
+     */
     override fun valueFromDB(value: Any): Any {
         return when (value) {
             is DATETIME -> value
@@ -23,6 +41,12 @@ class DateTimeTypeColumnType(
         }
     }
 
+    /**
+     * Convert [DATETIME] to the DB value.
+     *
+     * @param value
+     * @return
+     */
     override fun valueToDB(value: Any?): Any? {
         return when (value) {
             null -> null
@@ -31,6 +55,12 @@ class DateTimeTypeColumnType(
         }
     }
 
+    /**
+     * Convert [DATETIME] to String.
+     *
+     * @param value
+     * @return
+     */
     override fun nonNullValueToString(value: Any): String {
         return when (value) {
             is DATETIME -> columnType.nonNullValueToString(value.value)
@@ -38,6 +68,13 @@ class DateTimeTypeColumnType(
         }
     }
 
+    /**
+     * Set statement parameters.
+     *
+     * @param stmt PreparedStatement
+     * @param index Int
+     * @param value Any?
+     */
     override fun setParameter(stmt: PreparedStatement, index: Int, value: Any?) {
         when (value) {
             is DATETIME -> columnType.setParameter(stmt, index, value.value)
@@ -45,6 +82,12 @@ class DateTimeTypeColumnType(
         }
     }
 
+    /**
+     * Convert [DATETIME] to String.
+     *
+     * @param value
+     * @return
+     */
     override fun valueToString(value: Any?): String {
         return when (value) {
             is DATETIME -> columnType.valueToString(value.value)

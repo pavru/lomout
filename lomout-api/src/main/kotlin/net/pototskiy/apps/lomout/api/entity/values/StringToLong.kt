@@ -30,7 +30,7 @@ fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
 }
 
 /**
- * Convert [PersistentString] to Long according to the locale
+ * Convert [STRING] to Long according to the locale
  *
  * @receiver PersistentString
  * @param locale The locale
@@ -54,7 +54,7 @@ fun Long.longToString(locale: Locale): String {
 }
 
 /**
- * Convert [PersistentLong] to String according to the locale
+ * Convert [STRING] to String according to the locale
  *
  * @receiver PersistentLong
  * @param locale The locale

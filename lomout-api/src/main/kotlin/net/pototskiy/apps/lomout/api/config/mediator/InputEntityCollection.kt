@@ -29,8 +29,7 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
          * ```
          * ...
          *  entity("type name") {
-         *      filter {...}
-         *      filter<FilterPluginClass>()
+         *      statuses(...)
          *      extAttribute("ext attribute name", "regular attribute name") {...}
          *      extAttribute("ext attribute name", "regular attribute name") {...}
          *      ...
@@ -39,7 +38,7 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
          * ```
          * * filter — SQL filter for entities, usually used for filter entity by status, *optional*,
          *      **only one filter definition is allowed**
-         * * [FilterPluginClass][net.pototskiy.apps.lomout.api.plugable.SqlFilterPlugin] — filter plugin class
+         * * statuses — [net.pototskiy.apps.lomout.api.entity.EntityStatus] — The entity status to get
          * * extAttribute(...) — define an extended attribute that is function of regular attribute, this attribute
          *      accessible only in pipelines
          *

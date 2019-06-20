@@ -7,7 +7,7 @@ import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.database.EntityStatus
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.entity.get

@@ -73,7 +73,7 @@ internal class AttributeReaderWriterTest {
             }
         }.build()
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriterWithFunction::class.java)
-        assertThat(v).isZero()
+        assertThat(v).isEqualTo(0)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<LONG>)(LONG(123L), createCsvCell("123"))
         assertThat(v).isEqualTo(123L)
@@ -85,7 +85,7 @@ internal class AttributeReaderWriterTest {
             writer<TestWriter>()
         }.build()
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriterWithPlugin::class.java)
-        assertThat(testVal).isZero()
+        assertThat(testVal).isEqualTo(0)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<LONG>)(LONG(123L), createCsvCell("123"))
         assertThat(testVal).isEqualTo(123L)

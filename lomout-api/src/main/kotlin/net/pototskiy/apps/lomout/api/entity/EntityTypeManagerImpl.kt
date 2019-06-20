@@ -1,7 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.database.AttributeTable
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
@@ -168,6 +167,19 @@ class EntityTypeManagerImpl : EntityTypeManager() {
         entityAttributeTables.remove(type)
     }
 
+    /**
+     * Create new entity attribute without assigment
+     *
+     * @param name The attribute name
+     * @param type The attribute type
+     * @param key The key attribute
+     * @param nullable The nullable attribute
+     * @param auto The auto attribute
+     * @param builder The attribute builder
+     * @param reader The attribute reader
+     * @param writer The attribute writer
+     * @return The new attribute
+     */
     override fun <T : Type> createAttribute(
         name: String,
         type: KClass<out T>,
@@ -226,27 +238,6 @@ private fun checkEntityTypeIsOpen(type: EntityType) {
         throw AppConfigException(badPlace(type), "Entity type is close, it's not possible to add an attribute.")
     }
 }
-
-/**
- * Add attributes to entity type
- *
- * @receiver EntityTypeManagerImpl
- * @param entityType EntityType
- * @param attributes List<Attribute<*>>
- */
-fun EntityTypeManager.addEntityAttributes(entityType: EntityType, attributes: List<Attribute<*>>) =
-    this.addEntityAttributes(entityType, AttributeCollection(attributes))
-
-/**
- * Add the attribute to entity type
- *
- * @receiver EntityTypeManagerImpl
- * @param type The entity type
- * @param attributes Attributes collection
- */
-@PublicApi
-fun EntityTypeManager.addEntityAttributes(type: EntityType, attributes: AttributeCollection) =
-    attributes.forEach { this.addEntityAttribute(type, it) }
 
 /**
  * Get entity type by name

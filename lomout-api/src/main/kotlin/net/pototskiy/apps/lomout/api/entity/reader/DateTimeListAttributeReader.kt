@@ -51,7 +51,7 @@ open class DateTimeListAttributeReader : AttributeReaderPlugin<DATETIMELIST>() {
             CellType.BLANK -> null
             else -> throw AppDataException(
                 badPlace(input) + attribute,
-                "Reading DateTime list from the cell is not supported."
+                "Cannot read DateTime list from the cell."
             )
         }
 }

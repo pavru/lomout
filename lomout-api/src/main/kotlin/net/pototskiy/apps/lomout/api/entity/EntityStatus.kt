@@ -1,4 +1,4 @@
-package net.pototskiy.apps.lomout.api.database
+package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppDatabaseException
 import org.jetbrains.exposed.sql.Column
