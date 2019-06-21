@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
 import net.pototskiy.apps.lomout.api.entity.type.STRING
 import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class EntityTypeBaseTest {
 
     private val typeManager = EntityTypeManagerImpl()
+    private val helper = ConfigBuildHelper(typeManager)
     private lateinit var attr1: Attribute<*>
     private lateinit var dupAttr1: Attribute<*>
     private lateinit var attr2: Attribute<*>
@@ -81,11 +83,8 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun createEntityTest() {
-        val eType = typeManager.createEntityType(
-            "test1",
-            emptyList(),
-            false
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        val eType = typeManager.createEntityType("test1", false)
+            .also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThat(eType).isNotNull
         assertThat(eType.name).isEqualTo("test1")
         assertThat(eType.attributes)
@@ -117,15 +116,15 @@ internal class EntityTypeBaseTest {
         assertThatThrownBy {
             typeManager.initialAttributeSetup(eType, AttributeCollection(listOf(attr1, attr2)))
         }.isInstanceOf(AppConfigException::class.java)
+        assertThatThrownBy { typeManager.createEntityType("test1", false) }
+            .isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Entity 'test1' already exists.")
     }
 
     @Test
     internal fun createOpenAndRefineTest() {
-        val eType = typeManager.createEntityType(
-            "test1",
-            emptyList(),
-            true
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        val eType = typeManager.createEntityType("test1", true)
+            .also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThat(eType.attributes)
             .hasSize(2)
             .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2))
@@ -137,20 +136,24 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun createEntityWithInheritanceTest() {
-        val test1 = typeManager.createEntityType(
-            "test1",
-            emptyList(),
-            true
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
-        val test2 = typeManager.createEntityType(
-            "test2",
-            listOf(ParentEntityType(test1)),
-            true
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
-        assertThat(test2.attributes)
+        val test1 = typeManager.createEntityType("test1", true)
+            .also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
+        val test2 = typeManager.createEntityType("test2", true).also { type ->
+            typeManager.initialAttributeSetup(
+                type,
+                AttributeCollection(listOf(attr4).plus(
+                    test1.mainAttributes.map {
+                        typeManager.createAttribute(
+                            it.name, it.type, it.key, it.nullable, it.auto, it.builder, it.reader, it.writer
+                        )
+                    }
+                ))
+            )
+        }
+        assertThat(test2.attributes.map { it.name })
             .hasSize(3)
-            .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr2, attr4))
-        assertThat(test2["attr2"]).isEqualTo(attr2)
+            .containsExactlyInAnyOrderElementsOf(listOf("attr1", "attr2", "attr4"))
+        assertThat(test2["attr2"].name).isEqualTo(attr2.name)
         assertThat(typeManager["test2"]).isEqualTo(test2)
         try {
             test2.checkAttributeDefined(attr1)
@@ -160,10 +163,10 @@ internal class EntityTypeBaseTest {
         }
         assertThatThrownBy { test2.checkAttributeDefined(attr3) }.isInstanceOf(AppConfigException::class.java)
         assertThatThrownBy { test2.checkAttributeDefined(attr5) }.isInstanceOf(AppConfigException::class.java)
-        assertThat(test2.getAttributeOrNull("attr1")).isEqualTo(attr1)
+        assertThat(test2.getAttributeOrNull("attr1")?.name).isEqualTo(attr1.name)
         assertThat(test2.getAttributeOrNull("attr3")).isNull()
-        assertThat(test2.getAttributeOrNull("attr4")).isEqualTo(attr4)
-        assertThat(test2.getAttribute("attr1")).isEqualTo(attr1)
+        assertThat(test2.getAttributeOrNull("attr4")?.name).isEqualTo(attr4.name)
+        assertThat(test2.getAttribute("attr1").name).isEqualTo(attr1.name)
         assertThatThrownBy { test2.getAttribute("attr3") }.isInstanceOf(AppConfigException::class.java)
         assertThatThrownBy { test2.getAttribute("attr5") }.isInstanceOf(AppConfigException::class.java)
         typeManager.addEntityAttribute(test2, attr3)
@@ -172,65 +175,94 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun createWithInheritanceIncludeTest() {
-        val test1 = typeManager.createEntityType(
-            "test1",
-            emptyList(),
-            true
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
+        @Suppress("UNUSED_VARIABLE")
+        val test1 = typeManager.createEntityType("test1", true)
+            .also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
         val test2 = typeManager.createEntityType(
             "test2",
-            listOf(ParentEntityType(test1, AttributeCollection(listOf(attr1, attr3)))),
             false
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
-        val test3 = typeManager.createEntityType(
-            "test3",
-            listOf(
-                ParentEntityType(test2, AttributeCollection(listOf(attr4, attr3))),
-                ParentEntityType(test1, AttributeCollection(listOf(attr2)))
-            ),
-            false
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr5, attr6))) }
-        assertThat(test2.attributes)
+        ).also {
+            typeManager.initialAttributeSetup(
+                it,
+                AttributeCollection(
+                    listOf(attr4).plus(
+                        EntityType.Builder.CopyAttributeListBuilder(helper, "test1").apply {
+                            exclude("attr2")
+                        }.build()
+                    )
+                )
+            )
+        }
+        val test3 = typeManager.createEntityType("test3", false).also {
+            typeManager.initialAttributeSetup(
+                it,
+                AttributeCollection(
+                    listOf(attr5, attr6).plus(
+                        EntityType.Builder.CopyAttributeListBuilder(helper, "test2").apply {
+                            exclude("attr1", "attr2")
+                        }.build().plus(
+                            EntityType.Builder.CopyAttributeListBuilder(helper, "test1").apply {
+                                exclude("attr1", "attr3")
+                            }.build()
+                        )
+                    )
+                )
+            )
+        }
+        assertThat(test2.attributes.map { it.name })
             .hasSize(3)
-            .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr3, attr4))
-        assertThat(test3.attributes)
+            .containsExactlyInAnyOrderElementsOf(listOf("attr1", "attr3", "attr4"))
+        assertThat(test3.attributes.map { it.name })
             .hasSize(5)
-            .containsExactlyInAnyOrderElementsOf(listOf(attr4, attr3, attr2, attr5, attr6))
+            .containsExactlyInAnyOrderElementsOf(listOf("attr4", "attr3", "attr2", "attr5", "attr6"))
     }
 
     @Test
     internal fun createWithInheritanceExcludeTest() {
+        @Suppress("UNUSED_VARIABLE")
         val test1 = typeManager.createEntityType(
             "test1",
-            emptyList(),
             true
         ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3))) }
-        val test2 = typeManager.createEntityType(
-            "test2",
-            listOf(ParentEntityType(test1, null, AttributeCollection(listOf(attr2)))),
-            false
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr4))) }
-        val test3 = typeManager.createEntityType(
-            "test3",
-            listOf(
-                ParentEntityType(test2, null, AttributeCollection(listOf(attr1, attr2))),
-                ParentEntityType(test1, null, AttributeCollection(listOf(attr1, attr3)))
-            ),
-            false
-        ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr5, attr6))) }
-        assertThat(test2.attributes)
+        val test2 = typeManager.createEntityType("test2", false).also {
+            typeManager.initialAttributeSetup(
+                it, AttributeCollection(
+                    listOf(attr4).plus(
+                        EntityType.Builder.CopyAttributeListBuilder(helper, "test1").apply {
+                            exclude("attr2")
+                        }.build()
+                    )
+                )
+            )
+        }
+        val test3 = typeManager.createEntityType("test3", false).also {
+            typeManager.initialAttributeSetup(
+                it, AttributeCollection(
+                    listOf(attr5, attr6).plus(
+                        EntityType.Builder.CopyAttributeListBuilder(helper, "test2").apply {
+                            exclude("attr1")
+                            exclude("attr2")
+                        }.build().plus(
+                            EntityType.Builder.CopyAttributeListBuilder(helper, "test1").apply {
+                                exclude("attr1", "attr3")
+                            }.build()
+                        )
+                    )
+                )
+            )
+        }
+        assertThat(test2.attributes.map { it.name })
             .hasSize(3)
-            .containsExactlyInAnyOrderElementsOf(listOf(attr1, attr3, attr4))
-        assertThat(test3.attributes)
+            .containsExactlyInAnyOrderElementsOf(listOf("attr1", "attr3", "attr4"))
+        assertThat(test3.attributes.map { it.name })
             .hasSize(5)
-            .containsExactlyInAnyOrderElementsOf(listOf(attr4, attr3, attr2, attr5, attr6))
+            .containsExactlyInAnyOrderElementsOf(listOf("attr4", "attr3", "attr2", "attr5", "attr6"))
     }
 
     @Test
     internal fun removeEntityTypeTest() {
         val eType = typeManager.createEntityType(
             "test1",
-            emptyList(),
             false
         ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThat(typeManager["test1"]).isEqualTo(eType)
@@ -242,7 +274,6 @@ internal class EntityTypeBaseTest {
     internal fun tryToAddAlreadyAssignedAttributeTest() {
         val eType = typeManager.createEntityType(
             "test1",
-            emptyList(),
             true
         ).also { typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2))) }
         assertThatThrownBy { typeManager.addEntityAttribute(eType, attr1) }
@@ -253,12 +284,10 @@ internal class EntityTypeBaseTest {
 
     @Test
     internal fun equalsTest() {
-        val type1 = typeManager.createEntityType("type1", emptyList(), false)
-        val type2 = typeManager.createEntityType("type2", emptyList(), false)
-        val type3 = typeManager.createEntityType("type1", emptyList(), false)
+        val type1 = typeManager.createEntityType("type1", false)
+        val type2 = typeManager.createEntityType("type2", false)
         assertThat(type1 == type1).isEqualTo(true)
         assertThat(type1 == type2).isEqualTo(false)
-        assertThat(type1 == type3).isEqualTo(true)
         assertThat(type1 == Any()).isEqualTo(false)
     }
 }

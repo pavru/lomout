@@ -6,7 +6,6 @@ import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
@@ -14,7 +13,6 @@ import net.pototskiy.apps.lomout.api.entity.get
 import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
 import net.pototskiy.apps.lomout.api.entity.type.LONG
 import net.pototskiy.apps.lomout.api.entity.type.STRING
-import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.loader.DataLoader
 import org.apache.logging.log4j.Level
@@ -34,6 +32,7 @@ internal class MediatorBasicTest {
     private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
 
+    @Suppress("LongMethod")
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun complexBasicTest() {
@@ -129,7 +128,7 @@ internal class MediatorBasicTest {
                         attribute<DOUBLE>("amount")
                     }
                     entity("entity2", false) {
-                        inheritFrom("entity1")
+                        copyFrom("entity1")
                     }
                 }
                 loadEntity("entity1") {
@@ -163,22 +162,18 @@ internal class MediatorBasicTest {
                         entity("entity1") {
                             statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
                             extAttribute<DOUBLE>("corrected_amount") {
-                                builder { entity ->
-                                    DOUBLE((entity["amount"]!!.value as Double) * 11.0)
-                                }
+                                builder { DOUBLE((it["amount"]!!.value as Double) * 11.0) }
                             }
                         }
                         entity("entity2") {
                             statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
                             extAttribute<DOUBLE>("corrected_amount") {
-                                builder { entity ->
-                                    DOUBLE((entity["amount"]!!.value as Double) * 13.0)
-                                }
+                                builder { DOUBLE((it["amount"]!!.value as Double) * 13.0) }
                             }
                         }
                     }
                     output("import-data") {
-                        inheritFrom("entity1")
+                        copyFrom("entity1")
                         attribute<DOUBLE>("corrected_amount")
                     }
                     pipeline {
@@ -196,10 +191,10 @@ internal class MediatorBasicTest {
                             // finish test case for pipeline data collection
                             val entityOne = entities.getOrNull("entity1")
                             if (entityOne != null) {
-                                val twoType = entityTypeManager["entity2"]
+                                val typeTwo = entityTypeManager["entity2"]
                                 val entityTwo = repository.get(
-                                    twoType,
-                                    mapOf(twoType["sku"] to entityOne["sku"]!!),
+                                    typeTwo,
+                                    mapOf(typeTwo["sku"] to entityOne["sku"]!!),
                                     EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
                                 )
                                 if (entityTwo != null && flag1 && flag2) {
@@ -209,10 +204,10 @@ internal class MediatorBasicTest {
                                 }
                             } else if (entities.getOrNull("entity2") != null) {
                                 val entityTwo = entities["entity2"]
-                                val oneType = entityTypeManager["entity1"]
+                                val typeOne = entityTypeManager["entity1"]
                                 val partner = repository.get(
-                                    oneType,
-                                    mapOf(oneType["sku"] to entityTwo["sku"]!!),
+                                    typeOne,
+                                    mapOf(typeOne["sku"] to entityTwo["sku"]!!),
                                     EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
                                 )
                                 if (partner != null) {
@@ -259,27 +254,18 @@ internal class MediatorBasicTest {
                         entity("entity1") {
                             statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
                             extAttribute<DOUBLE>("corrected_amount") {
-                                builder {
-                                    DOUBLE((it["amount"]!!.value as Double) * 11.0)
-                                }
+                                builder { DOUBLE((it["amount"]!!.value as Double) * 11.0) }
                             }
                         }
                         entity("entity2") {
                             statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
                             extAttribute<DOUBLE>("corrected_amount") {
-                                builder {
-                                    DOUBLE(
-                                        (it["amount"] as STRING).stringToDouble(
-                                            "en_US".createLocale(),
-                                            false
-                                        ) * 13.0
-                                    )
-                                }
+                                builder { DOUBLE((it["amount"]!!.value as Double) * 13.0) }
                             }
                         }
                     }
                     output("import-data-union") {
-                        inheritFrom("entity1")
+                        copyFrom("entity1")
                         attribute<DOUBLE>("corrected_amount")
                     }
                     pipeline {

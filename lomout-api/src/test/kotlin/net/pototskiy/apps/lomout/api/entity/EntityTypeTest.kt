@@ -17,9 +17,9 @@ internal class EntityTypeTest {
     @Test
     fun inheritAbsentTypeTest() {
         val builder = EntityType.Builder(helper, "test1", false)
-        assertThat(builder.entityType).isEqualTo("test1")
+        assertThat(builder.typeName).isEqualTo("test1")
         assertThatThrownBy {
-            builder.inheritFrom("test2")
+            builder.copyFrom("test2")
         }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Entity type 'test2' is not defined.")
     }

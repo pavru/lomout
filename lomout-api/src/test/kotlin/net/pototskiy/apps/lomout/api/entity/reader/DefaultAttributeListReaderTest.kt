@@ -45,7 +45,7 @@ internal class DefaultAttributeListReaderTest {
             reader = defaultReaders[ATTRIBUTELIST::class] as AttributeReader<out ATTRIBUTELIST>,
             writer = defaultWriters[ATTRIBUTELIST::class] as AttributeWriter<out ATTRIBUTELIST>
         )
-        entity = entityTypeManager.createEntityType("test", emptyList(), false).also {
+        entity = entityTypeManager.createEntityType("test", false).also {
             entityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()

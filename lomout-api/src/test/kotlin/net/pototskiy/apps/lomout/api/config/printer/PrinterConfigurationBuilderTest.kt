@@ -20,7 +20,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Suppress("TooManyFunctions")
 internal class PrinterConfigurationBuilderTest {
     private val typeManager = EntityTypeManagerImpl().also { manager ->
-        manager.createEntityType("entity1", emptyList(), false).also { type ->
+        manager.createEntityType("entity1", false).also { type ->
             @Suppress("UNCHECKED_CAST")
             manager.initialAttributeSetup(
                 type, AttributeCollection(
@@ -48,7 +48,7 @@ internal class PrinterConfigurationBuilderTest {
                 )
             )
         }
-        manager.createEntityType("entity2", emptyList(), false).also { type ->
+        manager.createEntityType("entity2", false).also { type ->
             @Suppress("UNCHECKED_CAST")
             manager.initialAttributeSetup(
                 type, AttributeCollection(

@@ -32,7 +32,7 @@ internal class DefaultAttributeListWriterTest {
     @BeforeEach
     internal fun setUp() {
         attr = entityTypeManager.createAttribute("attr", ATTRIBUTELIST::class)
-        entity = entityTypeManager.createEntityType("test", emptyList(), false).also {
+        entity = entityTypeManager.createEntityType("test", false).also {
             entityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()

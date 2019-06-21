@@ -18,7 +18,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class FieldSetBuilderTest {
     private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
-    private val entity = typeManager.createEntityType("test", emptyList(), true)
+    private val entity = typeManager.createEntityType("test", true)
 
     @Test
     internal fun noFieldDefinedTest() {
@@ -206,7 +206,7 @@ internal class FieldSetBuilderTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")

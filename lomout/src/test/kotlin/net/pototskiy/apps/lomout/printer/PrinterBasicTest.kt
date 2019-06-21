@@ -112,7 +112,7 @@ internal class PrinterBasicTest {
                     }
                 }
                 entity("entity2", false) {
-                    inheritFrom("entity1")
+                    copyFrom("entity1")
                 }
             }
             loadEntity("entity1") {
@@ -161,7 +161,7 @@ internal class PrinterBasicTest {
                     }
                 }
                 output("import-data") {
-                    inheritFrom("entity1")
+                    copyFrom("entity1")
                     attribute<DOUBLE>("corrected_amount") {
                         writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
                     }

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class LoadBuilderTest {
     private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
-    private val entity = typeManager.createEntityType("entity", emptyList(), true)
+    private val entity = typeManager.createEntityType("entity", true)
 
     @Test
     internal fun validateFieldColumnsTest() {

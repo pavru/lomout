@@ -11,6 +11,10 @@ import net.pototskiy.apps.lomout.api.TIMESTAMP
 import net.pototskiy.apps.lomout.api.config.DatabaseConfig
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.database.DbSchema
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED
+import net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED
 import net.pototskiy.apps.lomout.api.entity.helper.findEntityByAttributes
 import net.pototskiy.apps.lomout.api.entity.type.ListType
 import net.pototskiy.apps.lomout.api.entity.type.Type
@@ -22,6 +26,7 @@ import org.cache2k.Cache2kBuilder
 import org.cache2k.integration.CacheLoader
 import org.jetbrains.exposed.dao.EntityID
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
@@ -90,8 +95,8 @@ class EntityRepository(
             DbEntityTable.insertAndGetId {
                 it[entityType] = type
                 it[touchedInLoading] = true
-                it[previousStatus] = EntityStatus.CREATED
-                it[currentStatus] = EntityStatus.CREATED
+                it[previousStatus] = CREATED
+                it[currentStatus] = CREATED
                 it[created] = TIMESTAMP
                 it[updated] = TIMESTAMP
                 it[absentDays] = 0
@@ -99,8 +104,8 @@ class EntityRepository(
         }
         return Entity(type, id, this).apply {
             touchedInLoading = true
-            previousStatus = EntityStatus.CREATED
-            currentStatus = EntityStatus.CREATED
+            previousStatus = CREATED
+            currentStatus = CREATED
             created = TIMESTAMP
             updated = TIMESTAMP
             absentDays = 0
@@ -169,15 +174,20 @@ class EntityRepository(
      *
      * @param id The entity id
      */
-    override suspend fun preload(id: EntityID<Int>) {
+    override suspend fun preload(id: EntityID<Int>, moreThanOne: Boolean) {
         if (!entityCache.containsKey(id)) {
             GlobalScope.launch(Dispatchers.IO) {
                 transaction {
-                    DbEntityTable.select { DbEntityTable.id eq id }.firstOrNull()
+                    DbEntityTable.select { DbEntityTable.id eq id }.limit(1).firstOrNull()
                 }?.also {
                     val entity = it.toEntity(this@EntityRepository)
                     entity.loadAttributes()
                     entityCache.putIfAbsent(entity.id, entity)
+                    if (moreThanOne) startPrefetch(
+                        entity.type,
+                        entity.id,
+                        CREATED, UPDATED, UNCHANGED, REMOVED
+                    )
                 }
             }
         }
@@ -267,7 +277,6 @@ class EntityRepository(
                 .slice(DbEntityTable.id)
                 .select { (DbEntityTable.entityType eq type) and (DbEntityTable.currentStatus inList status.toList()) }
                 .map { it[DbEntityTable.id] }
-                .toList()
         }
     }
 
@@ -294,7 +303,6 @@ class EntityRepository(
                 .select { (DbEntityTable.entityType eq type) and (DbEntityTable.currentStatus inList status.toList()) }
                 .limit(pageSize, pageNumber * pageSize)
                 .map { it[DbEntityTable.id] }
-                .toList()
         }
     }
 
@@ -324,10 +332,10 @@ class EntityRepository(
             DbEntityTable.update({
                 (DbEntityTable.entityType eq type)
                     .and(DbEntityTable.touchedInLoading eq false)
-                    .and(DbEntityTable.currentStatus neq EntityStatus.REMOVED)
+                    .and(DbEntityTable.currentStatus neq REMOVED)
             }) {
                 it.update(previousStatus, currentStatus)
-                it[currentStatus] = EntityStatus.REMOVED
+                it[currentStatus] = REMOVED
                 it[removed] = TIMESTAMP
             }
         }
@@ -335,10 +343,10 @@ class EntityRepository(
             .forEach {
                 val entity = it.value
                 if (false == entity?.touchedInLoading && entity.type == type &&
-                    entity.currentStatus != EntityStatus.REMOVED
+                    entity.currentStatus != REMOVED
                 ) {
                     entity.previousStatus = entity.currentStatus
-                    entity.currentStatus = EntityStatus.REMOVED
+                    entity.currentStatus = REMOVED
                     entity.removed = TIMESTAMP
                 }
             }
@@ -355,18 +363,18 @@ class EntityRepository(
                 .slice(DbEntityTable.id, DbEntityTable.removed)
                 .select {
                     (DbEntityTable.entityType eq type)
-                        .and(DbEntityTable.currentStatus eq EntityStatus.REMOVED)
-                }.toList()
-        }.forEach { row ->
-            transaction {
-                DbEntityTable.update({ DbEntityTable.id eq row[DbEntityTable.id] }) {
-                    it[absentDays] = Duration(row[removed], TIMESTAMP).standardDays.toInt()
+                        .and(DbEntityTable.currentStatus eq REMOVED)
+                }.forEach { row ->
+                    transaction {
+                        DbEntityTable.update({ DbEntityTable.id eq row[DbEntityTable.id] }) {
+                            it[absentDays] = Duration(row[removed], TIMESTAMP).standardDays.toInt()
+                        }
+                    }
                 }
-            }
         }
         entityCache.entries().forEach {
             val entity = it.value
-            if (EntityStatus.REMOVED == entity?.currentStatus && entity.type == type) {
+            if (REMOVED == entity?.currentStatus && entity.type == type) {
                 entity.absentDays = Duration(entity.removed, TIMESTAMP).standardDays.toInt()
             }
         }
@@ -383,12 +391,12 @@ class EntityRepository(
             DbEntityTable.deleteWhere {
                 (DbEntityTable.entityType eq type)
                     .and(DbEntityTable.absentDays greaterEq maxAbsentDays)
-                    .and(DbEntityTable.currentStatus eq EntityStatus.REMOVED)
+                    .and(DbEntityTable.currentStatus eq REMOVED)
             }
         }
         entityCache.entries().forEach {
             val entity = it.value
-            if (EntityStatus.REMOVED == entity?.currentStatus && entity.type == type &&
+            if (REMOVED == entity?.currentStatus && entity.type == type &&
                 entity.absentDays >= maxAbsentDays
             ) {
                 entityCache.remove(it.key)
@@ -510,11 +518,11 @@ class EntityRepository(
                                 (DbEntityTable.id greater id) and
                                 (DbEntityTable.currentStatus inList status.toList())
                     }
+                    .orderBy(DbEntityTable.id, SortOrder.DESC)
                     .limit(READ_AHEAD_COUNT)
                     .map { it[DbEntityTable.id] }
-                    .toList()
             }
-            entityCache.prefetchAll(ids.reversed(), null)
+            entityCache.prefetchAll(ids, null)
         }
     }
 
@@ -540,7 +548,7 @@ class EntityRepository(
         override fun load(key: EntityID<Int>?): Entity? {
             val row = key?.let { id ->
                 transaction {
-                    DbEntityTable.select { DbEntityTable.id eq id }.firstOrNull()
+                    DbEntityTable.select { DbEntityTable.id eq id }.limit(1).firstOrNull()
                 }
             } ?: return null
             return row.toEntity(repository).also { it.loadAttributes() }
@@ -583,7 +591,7 @@ class EntityRepository(
     companion object {
         private const val CACHE_SIZE = 5500L
         private const val CACHE_SIZE_FOR_BULK = CACHE_SIZE / 4L
-        private const val READ_AHEAD_COUNT = 30
+        private const val READ_AHEAD_COUNT = 20
         private const val LOADER_THREAD_COUNT = 5
     }
 }

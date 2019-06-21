@@ -352,7 +352,7 @@ config {
     mediator {
         productionLine {
             output("import-category") {
-                inheritFrom("mage-category") /*{
+                copyFrom("mage-category") /*{
                     exclude("__path")
                 }*/
                 attribute<BOOLEAN>("remove_flag")

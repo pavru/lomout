@@ -53,7 +53,7 @@ internal class DefaultDateReaderTest {
             reader = defaultReaders[DATE::class] as AttributeReader<out DATE>,
             writer = defaultWriters[DATE::class] as AttributeWriter<out DATE>
         )
-        entity = typeManager.createEntityType("test", emptyList(), false).also {
+        entity = typeManager.createEntityType("test", false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()

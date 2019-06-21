@@ -23,11 +23,10 @@ abstract class EntityTypeManager {
      * Create entity type
      *
      * @param name String The entity type
-     * @param supers List<ParentEntityType> Entity type parent (super) types
      * @param open Boolean Open flag
      * @return EntityType
      */
-    abstract fun createEntityType(name: String, supers: List<ParentEntityType>, open: Boolean): EntityType
+    abstract fun createEntityType(name: String, open: Boolean): EntityType
 
     /**
      * Initial entity type attributes setup
@@ -101,6 +100,22 @@ abstract class EntityTypeManager {
      * @return AttributeCollection
      */
     abstract fun getEntityTypeAttributes(type: EntityType): AttributeCollection
+
+    /**
+     * Get main(not extended) entity type attributes
+     *
+     * @param type The entity type
+     * @return AttributeCollection
+     */
+    abstract fun getEntityTypeMainAttributes(type: EntityType): AttributeCollection
+
+    /**
+     * Get extended entity type attributes
+     *
+     * @param type The entity type extended attributes
+     * @return AttributeCollection
+     */
+    abstract fun getEntityTypeExtAttributes(type: EntityType): AttributeCollection
 
     /**
      * Get entity type attribute by name

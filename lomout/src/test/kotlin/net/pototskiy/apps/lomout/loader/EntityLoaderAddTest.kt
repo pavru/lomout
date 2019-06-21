@@ -168,7 +168,7 @@ internal class EntityLoaderAddTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")
@@ -221,7 +221,7 @@ internal class EntityLoaderAddTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")
@@ -276,7 +276,7 @@ internal class EntityLoaderAddTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")
@@ -336,7 +336,7 @@ internal class EntityLoaderAddTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")
@@ -389,7 +389,7 @@ internal class EntityLoaderAddTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")
@@ -446,7 +446,7 @@ internal class EntityLoaderAddTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")

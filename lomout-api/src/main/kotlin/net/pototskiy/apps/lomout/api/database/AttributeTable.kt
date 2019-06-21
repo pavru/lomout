@@ -1,6 +1,5 @@
 package net.pototskiy.apps.lomout.api.database
 
-import net.pototskiy.apps.lomout.api.entity.type.TextTypeColumnType
 import net.pototskiy.apps.lomout.api.entity.type.Type
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Column
@@ -32,16 +31,13 @@ internal abstract class AttributeTable<V : Type>(
     /**
      * Attribute code (name)
      */
-    val code = varchar("code", CODE_NAME_LENGTH).index()
+    val code = varchar("code", CODE_NAME_LENGTH)
     /**
      * Attribute value
      */
     val value: Column<Type> = registerColumn("value", valueColumnType)
 
     init {
-        if (value.columnType !is TextTypeColumnType) {
-            index("${table}_idx_code_value", false, code, value)
-        }
         @Suppress("LeakingThis")
         uniqueIndex("unique_attr", this.owner, code, index)
     }

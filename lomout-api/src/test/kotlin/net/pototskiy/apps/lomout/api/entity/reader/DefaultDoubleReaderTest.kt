@@ -50,7 +50,7 @@ internal class DefaultDoubleReaderTest {
             reader = defaultReaders[DOUBLE::class] as AttributeReader<out DOUBLE>,
             writer = defaultWriters[DOUBLE::class] as AttributeWriter<out DOUBLE>
         )
-        entity = typeManager.createEntityType("test", emptyList(), false).also {
+        entity = typeManager.createEntityType("test", false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()

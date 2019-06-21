@@ -50,7 +50,7 @@ internal class DefaultBooleanListReaderTest {
             reader = defaultReaders[BOOLEANLIST::class] as AttributeReader<out BOOLEANLIST>,
             writer = defaultWriters[BOOLEANLIST::class] as AttributeWriter<out BOOLEANLIST>
         )
-        entity = typeManager.createEntityType("test", emptyList(), false).also {
+        entity = typeManager.createEntityType("test", false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()

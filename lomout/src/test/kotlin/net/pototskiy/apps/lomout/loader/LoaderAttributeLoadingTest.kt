@@ -36,7 +36,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import kotlin.collections.set
 
-
 @Suppress("TooManyFunctions", "MagicNumber")
 @DisplayName("Loading entity with all types attribute")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

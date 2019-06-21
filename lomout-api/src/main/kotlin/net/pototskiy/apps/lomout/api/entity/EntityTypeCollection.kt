@@ -27,8 +27,8 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          * ```
          * ...
          *  entity("name", isOpen:Boolean) {
-         *      inheritFrom("entity type") {...}
-         *      inheritFrom("entity type") {...}
+         *      copyFrom("entity type") {...}
+         *      copyFrom("entity type") {...}
          *      ...
          *      attribute<Type>("name") {...}
          *      attribute<Type>("name") {...}
@@ -39,7 +39,7 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          * * name — entity type name, must be unique, **mandatory**
          * * isOpen — true — it's allowed to add the attribute from source file automatically,
          *      false — allow only declared attributes for entity type, optional
-         * * [inheritFrom][EntityType.Builder.inheritFrom] — inherit attributes from another entity type, optional
+         * * [copyFrom][EntityType.Builder.copyFrom] — inherit attributes from another entity type, optional
          * * [attribute][EntityType.Builder.attribute] — entity type attribute definition,
          *  **at least one must be defined**
          *

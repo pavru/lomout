@@ -55,7 +55,11 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
         } catch (e: Exception) {
             processException(e)
         } finally {
-            removeExtensionAttributes(line)
+            try {
+                removeExtensionAttributes(line)
+            } catch (e: Exception) {
+                processException(e)
+            }
         }
         return processedRows
     }

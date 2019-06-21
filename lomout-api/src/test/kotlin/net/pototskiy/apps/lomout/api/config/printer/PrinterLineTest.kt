@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 
 internal class PrinterLineTest {
     private val typeManager = EntityTypeManagerImpl().also { manager ->
-        manager.createEntityType("import-category", emptyList(), false).also { entity ->
+        manager.createEntityType("import-category", false).also { entity ->
             @Suppress("UNCHECKED_CAST")
             manager.initialAttributeSetup(
                 entity, AttributeCollection(

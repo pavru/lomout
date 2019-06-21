@@ -41,7 +41,7 @@ internal class DomainExceptionPlaceTest {
         reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
         writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
     )
-    private val entity2 = manager.createEntityType("entity2", emptyList(), false).also {
+    private val entity2 = manager.createEntityType("entity2", false).also {
         manager.initialAttributeSetup(it, AttributeCollection(listOf(attr2)))
     }
 
@@ -51,7 +51,7 @@ internal class DomainExceptionPlaceTest {
         val place = badPlace(attr1)
         assertThat(place.attributeInfo()).isEqualTo("A:'attr1'")
         @Suppress("UNUSED_VARIABLE")
-        val entity1 = manager.createEntityType("entity1", emptyList(), false).also {
+        val entity1 = manager.createEntityType("entity1", false).also {
             manager.initialAttributeSetup(it, AttributeCollection(listOf(attr1)))
         }
         assertThat(place.attributeInfo()).isEqualTo("A:'attr1', E:'entity1'")

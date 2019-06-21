@@ -18,16 +18,19 @@ import kotlin.reflect.KClass
  * It should be used to create entity type, entity type attributes. It also is used to find entity type
  * by the name, and it's an attribute.
  *
- * @property entityAttributes MutableMap<EntityType, MutableMap<String, Attribute<*>>>
+ * @property entityMainAttributes MutableMap<EntityType, MutableMap<String, Attribute<*>>>
  * @property entities MutableMap<String, EntityType>
- * @property entitySupers MutableMap<EntityType, List<ParentEntityType>>
  */
 class EntityTypeManagerImpl : EntityTypeManager() {
 
-    private val entityAttributes = mutableMapOf<EntityType, MutableMap<String, AnyTypeAttribute>>()
+    private val entityMainAttributes = mutableMapOf<EntityType, MutableMap<String, AnyTypeAttribute>>()
+    private val entityExtAttributes = mutableMapOf<EntityType, MutableMap<String, AnyTypeAttribute>>()
+
     private val cachedEntityAttributes = mutableMapOf<EntityType, AttributeCollection>()
+    private val cachedExtEntityAttributes = mutableMapOf<EntityType, AttributeCollection>()
+    private val cachedMainEntityAttributes = mutableMapOf<EntityType, AttributeCollection>()
+
     private val entities = mutableMapOf<String, EntityType>()
-    private val entitySupers = mutableMapOf<EntityType, List<ParentEntityType>>()
     private val entityAttributeTables = mutableMapOf<EntityType, Array<AttributeTable<*>>>()
 
     /**
@@ -42,19 +45,18 @@ class EntityTypeManagerImpl : EntityTypeManager() {
      * Create entity type name
      *
      * @param name The entity type name
-     * @param supers The entity type parent (super) types
      * @param open Open flag, true — attributes can be added later
      * @return EntityType
      */
     override fun createEntityType(
         name: String,
-        supers: List<ParentEntityType>,
         open: Boolean
     ): EntityType {
+        if (entities[name] != null)
+            throw AppConfigException(badPlace(entities[name]!!), "Entity '$name' already exists.")
         return object : EntityType(name, open) {}.also {
             it.manager = this
             entities[it.name] = it
-            entitySupers[it] = supers
             updateAttributeTables(it)
         }
     }
@@ -71,8 +73,8 @@ class EntityTypeManagerImpl : EntityTypeManager() {
             val alreadyExists = attributes.filter { it in type.attributes }.joinToString(",") { it.fullName }
             throw AppConfigException(badPlace(type), "Attributes '$alreadyExists' are already defined.")
         }
-        this.entityAttributes[type] = attributes.map { it.name to it }.toMap().toMutableMap()
-        cachedEntityAttributes[type] = generateEntityTypeAttributes(type)
+        this.entityMainAttributes[type] = attributes.map { it.name to it }.toMap().toMutableMap()
+        updateAttributeCachedCollection(type)
         updateAttributeTables(type)
     }
 
@@ -86,26 +88,37 @@ class EntityTypeManagerImpl : EntityTypeManager() {
         cachedEntityAttributes[type] ?: AttributeCollection(emptyList())
 
     /**
+     * Get main(not extended) entity type attributes
+     *
+     * @param type The entity type
+     * @return AttributeCollection
+     */
+    override fun getEntityTypeMainAttributes(type: EntityType): AttributeCollection =
+        cachedMainEntityAttributes[type] ?: AttributeCollection(emptyList())
+
+    /**
+     * Get extended entity type attributes
+     *
+     * @param type The entity type extended attributes
+     * @return AttributeCollection
+     */
+    override fun getEntityTypeExtAttributes(type: EntityType): AttributeCollection =
+        cachedExtEntityAttributes[type] ?: AttributeCollection(emptyList())
+
+    /**
      * Create list of entity type attributes
      *
      * @param type The entity type
      * @return AttributeCollection
      */
-    private fun generateEntityTypeAttributes(type: EntityType): AttributeCollection {
-        val ownAttributes = entityAttributes[type]?.let {
-            AttributeCollection(
-                it.values.toList()
-            )
-        }
+    private fun updateAttributeCachedCollection(type: EntityType) {
+        cachedEntityAttributes[type] = entityMainAttributes[type]?.plus(entityExtAttributes[type] ?: emptyMap())
+            ?.let { AttributeCollection(it.values.toList()) }
             ?: AttributeCollection(emptyList())
-        val inheritedAttributes = ownAttributes.plus(entitySupers[type]?.map { inheritance ->
-            getEntityTypeAttributes(inheritance.parent).filter {
-                inheritance.include == null || inheritance.include.contains(it)
-            }.filterNot {
-                inheritance.exclude != null && inheritance.exclude.contains(it)
-            }
-        }?.flatten() ?: emptyList())
-        return AttributeCollection(inheritedAttributes)
+        cachedMainEntityAttributes[type] = entityMainAttributes[type]?.let { AttributeCollection(it.values.toList()) }
+            ?: AttributeCollection(emptyList())
+        cachedExtEntityAttributes[type] = entityExtAttributes[type]?.let { AttributeCollection(it.values.toList()) }
+            ?: AttributeCollection(emptyList())
     }
 
     /**
@@ -115,9 +128,8 @@ class EntityTypeManagerImpl : EntityTypeManager() {
      * @param attributeName The attribute name to get
      * @return Attribute<*>?
      */
-    @Suppress("ReturnCount")
     override fun getEntityAttribute(type: EntityType, attributeName: String): Attribute<*>? {
-        return cachedEntityAttributes[type]?.firstOrNull { it.name == attributeName }
+        return cachedEntityAttributes[type]?.get(attributeName)
     }
 
     /**
@@ -131,8 +143,8 @@ class EntityTypeManagerImpl : EntityTypeManager() {
         checkEntityTypeIsOpen(type)
         checkEntityTypeHasNoAttribute(type, attribute)
         attribute.owner = type
-        entityAttributes[type]?.put(attribute.name, attribute)
-        cachedEntityAttributes[type] = generateEntityTypeAttributes(type)
+        entityMainAttributes[type]?.put(attribute.name, attribute)
+        updateAttributeCachedCollection(type)
         updateAttributeTables(type)
     }
 
@@ -141,16 +153,18 @@ class EntityTypeManagerImpl : EntityTypeManager() {
         checkThatAttributeHasBuilder(attribute)
         checkEntityTypeHasNoAttribute(type, attribute)
         attribute.owner = type
-        entityAttributes[type]?.put(attribute.name, attribute)
-        cachedEntityAttributes[type] = generateEntityTypeAttributes(type)
+        entityExtAttributes.getOrPut(type, { mutableMapOf<String, AnyTypeAttribute>() })[attribute.name] = attribute
+        updateAttributeCachedCollection(type)
         updateAttributeTables(type)
     }
 
     override fun removeEntityExtAttribute(type: EntityType, attribute: AnyTypeAttribute) {
-        if (entityAttributes[type]?.remove(attribute.name) == null) {
-            throw AppConfigException(badPlace(type) + attribute, "Entity type has no attribute")
+        if (attribute.owner == type && entityExtAttributes[type]?.get(attribute.name) != null) {
+            entityExtAttributes[type]?.remove(attribute.name)
+        } else {
+            throw AppConfigException(badPlace(type) + attribute, "Attribute is not extension attribute of the entity")
         }
-        cachedEntityAttributes[type] = generateEntityTypeAttributes(type)
+        updateAttributeCachedCollection(type)
         updateAttributeTables(type)
     }
 
@@ -160,8 +174,7 @@ class EntityTypeManagerImpl : EntityTypeManager() {
      * @param type EntityType
      */
     override fun removeEntityType(type: EntityType) {
-        entitySupers.remove(type)
-        entityAttributes.remove(type)
+        entityMainAttributes.remove(type)
         entities.remove(type.name)
         cachedEntityAttributes.remove(type)
         entityAttributeTables.remove(type)
@@ -224,12 +237,9 @@ private fun checkThatAttributeHasBuilder(attribute: AnyTypeAttribute) {
 }
 
 private fun checkEntityTypeHasNoAttribute(type: EntityType, attribute: AnyTypeAttribute) {
-    val entityAttributeNames = type.attributes.map { it.name }
-    if (attribute.name in entityAttributeNames) {
-        throw AppConfigException(
-            badPlace(type),
-            "Entity type already has attributes '${attribute.name}'."
-        )
+    val entityAttribute = type.attributes[attribute.name]
+    if (entityAttribute != null) {
+        throw AppConfigException(badPlace(type), "Entity type already has attributes '${attribute.name}'.")
     }
 }
 

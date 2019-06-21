@@ -141,7 +141,7 @@ config {
                 entity("onec-product")
             }
             output("import-product") {
-                inheritFrom("onec-product")
+                copyFrom("onec-product")
             }
             pipeline {
                 assembler { _, _ -> emptyMap() }

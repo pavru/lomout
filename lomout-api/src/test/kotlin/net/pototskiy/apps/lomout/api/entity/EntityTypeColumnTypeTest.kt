@@ -12,8 +12,8 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Execution(ExecutionMode.CONCURRENT)
 internal class EntityTypeColumnTypeTest {
     private val typeManager = EntityTypeManagerImpl()
-    private val entity1 = typeManager.createEntityType("entity1", emptyList(), false)
-    private val entity2 = typeManager.createEntityType("entity2", emptyList(), false)
+    private val entity1 = typeManager.createEntityType("entity1", false)
+    private val entity2 = typeManager.createEntityType("entity2", false)
 
     @Test
     internal fun valueFromDbTest() {

@@ -26,7 +26,7 @@ internal object DbEntityTable : IntIdTable("entity") {
     /**
      * Previous entity status
      */
-    val previousStatus = entityStatus("previous_status").nullable().index()
+    val previousStatus = entityStatus("previous_status").nullable()
     /**
      * Current entity status
      */
@@ -34,7 +34,7 @@ internal object DbEntityTable : IntIdTable("entity") {
     /**
      * Timestamp of creating
      */
-    val created = datetime("created").index()
+    val created = datetime("created")
     /**
      * Timestamp of updating
      */
@@ -42,17 +42,17 @@ internal object DbEntityTable : IntIdTable("entity") {
     /**
      * Timestamp of removing
      */
-    val removed = datetime("removed").nullable().index()
+    val removed = datetime("removed").nullable()
     /**
      * Absent (in a source) days
      */
     val absentDays = integer("absent_days").index()
 
     init {
-        index(
-            "entity_idx_id_touch_updated", false, id,
-            touchedInLoading,
-            updated,
+        uniqueIndex(
+            "entity_idx_type_id_status",
+            entityType,
+            id,
             currentStatus
         )
     }

@@ -35,6 +35,7 @@ internal fun findEntityByAttributes(
         from
             .slice(DbEntityTable.columns)
             .select { where }
+            .limit(1)
             .firstOrNull()
     }?.toEntity(repository)
 }

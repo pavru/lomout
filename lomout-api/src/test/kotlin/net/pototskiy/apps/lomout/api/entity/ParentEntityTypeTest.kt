@@ -40,14 +40,8 @@ internal class ParentEntityTypeTest {
 
     @BeforeEach
     internal fun setUp() {
-        typeManager.createEntityType("entity", emptyList(), false).also {
-            typeManager.initialAttributeSetup(
-                it, AttributeCollection(
-                    listOf(
-                        attr1, attr2, attr3
-                    )
-                )
-            )
+        typeManager.createEntityType("entity", false).also {
+            typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr1, attr2, attr3)))
         }
     }
 

@@ -9,7 +9,6 @@ import net.pototskiy.apps.lomout.api.config.NamedObject
 import net.pototskiy.apps.lomout.api.database.AttributeTable
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.entity.type.Type
-import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Entity type configuration
@@ -33,10 +32,21 @@ abstract class EntityType(
     /**
      * Entity attributes list
      */
-    val attributes: List<Attribute<*>>
+    val attributes: AttributeCollection
         get() = manager.getEntityTypeAttributes(this)
+    /**
+     * Extended entity type attributes
+     */
+    val extAttributes: AttributeCollection
+        get() = manager.getEntityTypeExtAttributes(this)
+    /**
+     * Main entity type attributes
+     */
+    val mainAttributes: AttributeCollection
+        get() = manager.getEntityTypeMainAttributes(this)
 
-    internal val attributeTables: Array<AttributeTable<*>>
+    internal
+    val attributeTables: Array<AttributeTable<*>>
         get() = manager.getEntityAttributeTables(this)
 
     @Suppress("unused")
@@ -123,23 +133,22 @@ abstract class EntityType(
      * Entity type builder class
      *
      * @property helper ConfigBuildHelper The builder helper
-     * @property entityType String The entity type name
+     * @property typeName String The entity type name
      * @property open Boolean Is open or not
      * @property attributes MutableList<Attribute<*>> The entity attributes list
-     * @property inheritances MutableList<ParentEntityType> Super types of the entity type
      * @constructor
      */
     @ConfigDsl
     class Builder(
         val helper: ConfigBuildHelper,
-        val entityType: String,
+        val typeName: String,
         private val open: Boolean
     ) {
         /**
          * Attribute list, **do not use in the configuration**
          */
         val attributes = mutableListOf<Attribute<*>>()
-        private val inheritances = mutableListOf<ParentEntityType>()
+        val entityType = helper.typeManager.getEntityType(typeName)
 
         /**
          * Attribute definition
@@ -190,36 +199,48 @@ abstract class EntityType(
          * @param block The attribute configuration
          * @return true — attribute added
          */
+        @ConfigDsl
         inline fun <reified T : Type> attribute(
             name: String,
             block: Attribute.Builder<T>.() -> Unit = {}
-        ) =
-            attributes.add(Attribute.Builder(helper, name, T::class).apply(block).build())
+        ): Boolean {
+            checkThatEntityTypeAlreadyDefined()
+            return attributes.add(Attribute.Builder(helper, name, T::class).apply(block).build())
+        }
+
+        fun checkThatEntityTypeAlreadyDefined() {
+            if (entityType != null) {
+                throw AppConfigException(
+                    badPlace(entityType),
+                    "Entity type '$typeName' is already defined, and cannot be redefined."
+                )
+            }
+        }
 
         /**
          * Inherit attributes from super entity type, *optional*
          *
          * ```
          * ...
-         *  inheritFrom("name") {
+         *  copyFrom("name") {
          *      exclude("attr_name", "attr_name" ...)
-         *      include("attr_name", "attr_name" ...)
+         *      exclude("attr_name", "attr_name" ...)
+         *      ...
          *  }
          * ...
          * ```
-         * * [inheritFrom][ParentEntityType.Builder] — inherit attributes from super entity type, *optional*
+         * * [copyFrom][CopyAttributeListBuilder] — inherit attributes from super entity type, *optional*
          * * name: String — entity type name to inherit attributes
-         * * [exclude][ParentEntityType.Builder.exclude] — list of attributes to exclude
-         * * [include][ParentEntityType.Builder.include] — list of attribute to include
+         * * [exclude][CopyAttributeListBuilder.exclude] — list of attributes to exclude
          *
          *
          * @param name The entity type name
          * @param block The inheritance configuration
          */
-        fun inheritFrom(name: String, block: ParentEntityType.Builder.() -> Unit = {}) {
-            val eType = helper.typeManager.getEntityType(name)
-                ?: throw AppConfigException(unknownPlace(), "Entity type '$name' is not defined.")
-            inheritances.add(ParentEntityType.Builder(helper, eType).apply(block).build())
+        @ConfigDsl
+        fun copyFrom(name: String, block: CopyAttributeListBuilder.() -> Unit = {}) {
+            checkThatEntityTypeAlreadyDefined()
+            attributes.addAll(CopyAttributeListBuilder(helper, name).apply(block).build())
         }
 
         /**
@@ -228,11 +249,45 @@ abstract class EntityType(
          * @return EntityType
          */
         fun build(): EntityType {
-            return helper.typeManager.createEntityType(entityType, inheritances, open).also {
-                helper.typeManager.initialAttributeSetup(
-                    it,
-                    AttributeCollection(attributes)
-                )
+            return entityType ?: helper.typeManager.createEntityType(typeName, open).also {
+                helper.typeManager.initialAttributeSetup(it, AttributeCollection(attributes))
+            }
+        }
+
+        @ConfigDsl
+        class CopyAttributeListBuilder(private val helper: ConfigBuildHelper, private val typeName: String) {
+            private val excludeList = mutableListOf<String>()
+
+            /**
+             * Exclude the attribute from copy. Exclude can be used more than one time.
+             *
+             * @param name String
+             */
+            @ConfigDsl
+            fun exclude(vararg name: String) {
+                excludeList.addAll(name)
+            }
+
+            /**
+             * Build attribute list to copy
+             *
+             * @return List<AnyTypeAttribute>
+             */
+            fun build(): List<AnyTypeAttribute> {
+                val type = helper.typeManager[typeName]
+                val v = type.mainAttributes.filterNot { it.name in excludeList }.map {
+                    helper.typeManager.createAttribute(
+                        it.name,
+                        it.type,
+                        it.key,
+                        it.nullable,
+                        it.auto,
+                        it.builder,
+                        it.reader,
+                        it.writer
+                    )
+                }
+                return v
             }
         }
     }

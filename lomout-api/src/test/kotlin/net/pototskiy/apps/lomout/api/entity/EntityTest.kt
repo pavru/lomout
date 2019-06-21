@@ -48,7 +48,7 @@ internal class EntityTest {
             entityTypeManager,
             Level.ERROR
         )
-        entityType = entityTypeManager.createEntityType("entity", listOf(), false)
+        entityType = entityTypeManager.createEntityType("entity", false)
         @Suppress("UNCHECKED_CAST")
         entityTypeManager.initialAttributeSetup(
             entityType,

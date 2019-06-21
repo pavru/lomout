@@ -21,7 +21,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Execution(ExecutionMode.CONCURRENT)
 internal class MediatorConfigurationBuilderTest {
     private val typeManager = EntityTypeManagerImpl().also { typeManager ->
-        typeManager.createEntityType("input-entity-1", emptyList(), false).also {
+        typeManager.createEntityType("input-entity-1", false).also {
             @Suppress("UNCHECKED_CAST")
             typeManager.initialAttributeSetup(
                 it, AttributeCollection(
@@ -37,7 +37,7 @@ internal class MediatorConfigurationBuilderTest {
                 )
             )
         }
-        typeManager.createEntityType("input-entity-2", emptyList(), false).also {
+        typeManager.createEntityType("input-entity-2", false).also {
             @Suppress("UNCHECKED_CAST")
             typeManager.initialAttributeSetup(
                 it, AttributeCollection(
@@ -53,7 +53,7 @@ internal class MediatorConfigurationBuilderTest {
                 )
             )
         }
-        typeManager.createEntityType("import-output-9", emptyList(), false).also {
+        typeManager.createEntityType("import-output-9", false).also {
             @Suppress("UNCHECKED_CAST")
             typeManager.initialAttributeSetup(
                 it, AttributeCollection(

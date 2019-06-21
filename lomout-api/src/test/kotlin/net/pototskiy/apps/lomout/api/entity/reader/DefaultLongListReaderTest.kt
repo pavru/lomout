@@ -48,7 +48,7 @@ internal class DefaultLongListReaderTest {
             reader = defaultReaders[LONGLIST::class] as AttributeReader<out LONGLIST>,
             writer = defaultWriters[LONGLIST::class] as AttributeWriter<out LONGLIST>
         )
-        entity = typeManager.createEntityType("test", emptyList(), false).also {
+        entity = typeManager.createEntityType("test", false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()

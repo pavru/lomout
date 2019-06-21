@@ -65,7 +65,8 @@ interface EntityRepositoryInterface : AutoCloseable {
      * @param id The entity id
      */
     suspend fun preload(
-        id: EntityID<Int>
+        id: EntityID<Int>,
+        moreThanOne: Boolean = false
     )
 
     /**
