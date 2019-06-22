@@ -55,8 +55,7 @@ interface EntityRepositoryInterface : AutoCloseable {
      */
     fun get(
         id: EntityID<Int>,
-        vararg status: EntityStatus = arrayOf(UNCHANGED, CREATED, UPDATED, REMOVED),
-        startPrefetch: Boolean = false
+        vararg status: EntityStatus = arrayOf(UNCHANGED, CREATED, UPDATED, REMOVED)
     ): Entity?
 
     /**
@@ -184,4 +183,11 @@ interface EntityRepositoryInterface : AutoCloseable {
      * @param maxAbsentDays The maximum absent days
      */
     fun removeOldEntities(type: EntityType, maxAbsentDays: Int)
+
+    /**
+     * Cache control strategy
+     */
+    enum class CacheStrategy { LOADER, MEDIATOR, PRINTER }
+
+    var cacheStrategy: CacheStrategy
 }

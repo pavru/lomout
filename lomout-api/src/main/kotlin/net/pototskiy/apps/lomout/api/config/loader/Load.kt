@@ -159,7 +159,7 @@ data class Load(
             val autoAttrs = fieldSets
                 ?.map { it.fieldToAttr.attributes }
                 ?.flatten()
-                ?.filter { it.auto } ?: emptyList()
+                ?.filter { it.isAuto } ?: emptyList()
             autoAttrs.forEach { helper.typeManager.addEntityAttribute(entityType, it) }
         }
 

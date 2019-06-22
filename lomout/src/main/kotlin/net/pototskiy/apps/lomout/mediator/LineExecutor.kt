@@ -13,7 +13,6 @@ import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.lomout.api.entity.EntityCollection
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.type.Type
 import org.apache.logging.log4j.Logger
@@ -46,9 +45,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                         }
                     }
                 })
-                topLevelInput(line).forEach { element ->
-                    inputChannel.send(element)
-                }
+                topLevelInput(line).forEach { inputChannel.send(it) }
                 inputChannel.close()
                 joinAll(*jobs.toTypedArray())
             }
@@ -89,11 +86,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                     val items = repository.getIDs(input.entity, PAGE_SIZE, pageNumber, *input.statuses)
                     items.forEach {
                         @Suppress("SpreadOperator")
-                        yield(
-                            ClassifierElement.Mismatched(
-                                EntityCollection(listOf(repository.get(it, *input.statuses, startPrefetch = true)!!))
-                            )
-                        )
+                        yield(ClassifierElement.Mismatched(repository.get(it, *input.statuses)!!))
                     }
                     pageNumber++
                 } while (items.isNotEmpty())

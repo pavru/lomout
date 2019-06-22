@@ -18,7 +18,10 @@ sealed class ClassifierElement {
      * @property entities The entity collection
      * @constructor
      */
-    class Matched(override val entities: EntityCollection) : ClassifierElement()
+    class Matched(override val entities: EntityCollection) : ClassifierElement() {
+        @Suppress("unused")
+        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+    }
 
     /**
      * Element that is not matched to classifier
@@ -26,7 +29,10 @@ sealed class ClassifierElement {
      * @property entities The entity collection
      * @constructor
      */
-    class Mismatched(override val entities: EntityCollection) : ClassifierElement()
+    class Mismatched(override val entities: EntityCollection) : ClassifierElement() {
+        @Suppress("unused")
+        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+    }
 
     /**
      * Element should be skipped
@@ -34,7 +40,10 @@ sealed class ClassifierElement {
      * @property entities Entities list
      * @constructor
      */
-    class Skipped(override val entities: EntityCollection) : ClassifierElement()
+    class Skipped(override val entities: EntityCollection) : ClassifierElement() {
+        @Suppress("unused")
+        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+    }
 
     /**
      * Create the matched element

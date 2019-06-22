@@ -279,9 +279,9 @@ abstract class EntityType(
                     helper.typeManager.createAttribute(
                         it.name,
                         it.type,
-                        it.key,
-                        it.nullable,
-                        it.auto,
+                        it.isKey,
+                        it.isNullable,
+                        it.isAuto,
                         it.builder,
                         it.reader,
                         it.writer

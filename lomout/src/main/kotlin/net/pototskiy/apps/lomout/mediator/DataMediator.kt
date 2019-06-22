@@ -20,6 +20,7 @@ object DataMediator {
         val mediator = config.mediator ?: return
         statusLog.info("Data mediating has started")
         val startTime = DateTime()
+        repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.MEDIATOR
         val orderedLines = mediator.lines.groupBy { it.outputEntity.name }
         orderedLines.forEach { (_, lines) ->
             lines.forEach { line ->

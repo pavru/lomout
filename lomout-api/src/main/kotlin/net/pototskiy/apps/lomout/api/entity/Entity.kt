@@ -68,7 +68,7 @@ class Entity internal constructor(type: EntityType, id: EntityID<Int>, repositor
     }
 
     private fun checkAttributeIsNullable(attribute: AnyTypeAttribute, value: Type?) {
-        if (!attribute.nullable && value == null) {
+        if (!attribute.isNullable && value == null) {
             throw AppDataException(badPlace(attribute), "Trying to set null to non-nullable attribute")
         }
     }

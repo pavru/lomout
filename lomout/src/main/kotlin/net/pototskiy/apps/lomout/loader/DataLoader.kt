@@ -25,6 +25,7 @@ object DataLoader {
     fun load(repository: EntityRepositoryInterface, config: Config) = runBlocking {
         val loader = config.loader ?: return@runBlocking
         statusLog.info("Data loading has started")
+        repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.LOADER
         val startTime = DateTime()
         val jobs = mutableListOf<Job>()
         val orderedLoads = loader.loads.map { load ->

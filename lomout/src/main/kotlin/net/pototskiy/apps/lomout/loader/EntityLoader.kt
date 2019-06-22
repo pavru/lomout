@@ -102,7 +102,7 @@ class EntityLoader(
             val data = getData(row, rowFiledSet.fieldToAttr).toMutableMap()
             plusAdditionalData(data)
             validateKeyFieldData(data, rowFiledSet.fieldToAttr)
-            repository.preload(eType, data.filter { it.key.key })
+            repository.preload(eType, data.filter { it.key.isKey })
             updateChanel.send(UpdaterData(row, data))
         } else {
             val data = getData(row, rowFiledSet.fieldToAttr)
@@ -166,7 +166,7 @@ class EntityLoader(
         data: Map<AnyTypeAttribute, Type?>,
         fields: FieldAttributeMap
     ) {
-        val keyFields = fields.filter { it.value.key }
+        val keyFields = fields.filter { it.value.isKey }
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
             if (v == null || (v is STRING && v.value.isBlank())) {
@@ -190,7 +190,7 @@ class EntityLoader(
                 readNestedField(field.parent!!, fields[field.parent!!]!!)
             }
             val attrCell = (data[parentAttr] as ATTRIBUTELIST).value[attribute.name]
-            if (attrCell == null && !attribute.nullable && attribute.type != ATTRIBUTELIST::class) {
+            if (attrCell == null && !attribute.isNullable && attribute.type != ATTRIBUTELIST::class) {
                 throw AppDataException(badPlace(attribute), "Attribute is not nullable and there is no data for it.")
             } else if (attrCell == null) {
                 return
@@ -201,7 +201,7 @@ class EntityLoader(
 
         fields.filterNot { it.key.isNested || it.value.isSynthetic }.forEach { (field, attr) ->
             val cell = row[field.column]
-                ?: if (attr.nullable) row.getOrEmptyCell(field.column) else null
+                ?: if (attr.isNullable) row.getOrEmptyCell(field.column) else null
                     ?: throw AppDataException(
                         badPlace(row) + field + attr,
                         "There is no requested cell."
@@ -209,7 +209,7 @@ class EntityLoader(
             testFieldRegex(field, cell)
             @Suppress("UNCHECKED_CAST")
             (attr.reader as AttributeReader<Type>)(attr, cell).also {
-                if (it == null && (!attr.nullable || attr.key)) {
+                if (it == null && (!attr.isNullable || attr.isKey)) {
                     throw AppDataException(
                         badPlace(attr) + field + cell,
                         "Attribute is not nullable and cannot be null."

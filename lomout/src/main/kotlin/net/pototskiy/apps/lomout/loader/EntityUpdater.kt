@@ -20,7 +20,7 @@ class EntityUpdater(
         val processedRows: Long
         var entity = repository.get(
             entityType,
-            data.filterKeys { it.key },
+            data.filterKeys { it.isKey },
             CREATED, UPDATED, UNCHANGED, REMOVED
         )
         val filteredData = data.filterNot { it.key.isSynthetic || it.key.type == ATTRIBUTELIST::class }
@@ -41,7 +41,7 @@ class EntityUpdater(
         var updatedRows = 0L
         val storeData = entity.data
         data.keys.union(storeData.keys)
-            .filter { !it.key && !it.isSynthetic }.forEach { attr ->
+            .filter { !it.isKey && !it.isSynthetic }.forEach { attr ->
                 val value = data[attr]
                 val storedValue = storeData[attr]
                 if (value != null && storedValue == null || needToUpdate(value, storedValue)) {

@@ -2,6 +2,9 @@ package net.pototskiy.apps.lomout.api.entity
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
@@ -10,10 +13,9 @@ import net.pototskiy.apps.lomout.api.TIMESTAMP
 import net.pototskiy.apps.lomout.api.config.DatabaseConfig
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
 import net.pototskiy.apps.lomout.api.database.DbSchema
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface.CacheStrategy
 import net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED
 import net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED
-import net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED
-import net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED
 import net.pototskiy.apps.lomout.api.entity.helper.findEntityByAttributes
 import net.pototskiy.apps.lomout.api.entity.type.ListType
 import net.pototskiy.apps.lomout.api.entity.type.Type
@@ -44,27 +46,39 @@ import kotlin.system.exitProcess
  *
  * @property entityTypeManager Entity type manager
  * @property entityCache The entity cache
- * @property dataIdCache The entity id cache
+ * @property keyAttributesCache The entity id cache
  * @constructor
  */
+@UseExperimental(ObsoleteCoroutinesApi::class)
 class EntityRepository(
     config: DatabaseConfig,
     override val entityTypeManager: EntityTypeManagerImpl,
     sqlLogLevel: Level
 ) : EntityRepositoryInterface {
+    override var cacheStrategy: CacheStrategy = CacheStrategy.LOADER
 
     /**
      * Close repository, and it's caches
      *
      */
     override fun close() {
+        keyAttributesCacheUpdate.close()
         entityCache.close()
-        dataIdCache.close()
+        keyAttributesCache.close()
         datasource.close()
     }
 
     private lateinit var datasource: BasicDataSource
     private lateinit var database: Database
+
+    private val keyAttributesCache = object : Cache2kBuilder<DataKey, EntityID<Int>>() {}
+        .name("dataEntityIdCache")
+        .enableJmx(true)
+        .entryCapacity(CACHE_SIZE)
+        .eternal(true)
+        .build()
+
+    private val keyAttributesCacheUpdate = Channel<Entity>(QUEUE_SIZE)
 
     private val entityCache = object : Cache2kBuilder<EntityID<Int>, Entity?>() {}
         .name("entityRepositoryCache")
@@ -73,19 +87,17 @@ class EntityRepository(
         .permitNullValues(true)
         .eternal(true)
         .loaderThreadCount(LOADER_THREAD_COUNT)
-        .loader(Loader(this))
+        .loader(Loader(this, keyAttributesCacheUpdate))
         .storeByReference(true)
-        .build()
-
-    private val dataIdCache = object : Cache2kBuilder<DataKey, EntityID<Int>>() {}
-        .name("dataEntityIdCache")
-        .enableJmx(true)
-        .entryCapacity(CACHE_SIZE)
-        .eternal(true)
         .build()
 
     init {
         initDatabase(config, entityTypeManager, sqlLogLevel)
+        GlobalScope.launch(Dispatchers.Default) {
+            keyAttributesCacheUpdate.consumeEach { entity ->
+                keyAttributesCache.put(DataKey(entity.type, entity.data.filter { it.key.isKey }), entity.id)
+            }
+        }
     }
 
     /**
@@ -159,14 +171,15 @@ class EntityRepository(
      *
      * @param id The entity id
      * @param status Entity statuses
-     * @param startPrefetch Prefetch entities with next id
      * @return The entity or null
      */
-    override fun get(id: EntityID<Int>, vararg status: EntityStatus, startPrefetch: Boolean): Entity? {
+    override fun get(id: EntityID<Int>, vararg status: EntityStatus): Entity? {
         val entity = entityCache[id] ?: return null
         return if (entity.currentStatus in status) {
             @Suppress("SpreadOperator")
-            if (startPrefetch) startPrefetch(entity.type, id, *status)
+            if (cacheStrategy == CacheStrategy.MEDIATOR || cacheStrategy == CacheStrategy.PRINTER) {
+                startPrefetch(entity.type, id)
+            }
             entity
         } else {
             null
@@ -183,15 +196,16 @@ class EntityRepository(
             GlobalScope.launch(Dispatchers.IO) {
                 transaction {
                     DbEntityTable.select { DbEntityTable.id eq id }.limit(1).firstOrNull()
-                }?.also {
-                    val entity = it.toEntity(this@EntityRepository)
+                }?.also { row ->
+                    val entity = row.toEntity(this@EntityRepository)
                     entity.loadAttributes()
-                    entityCache.putIfAbsent(entity.id, entity)
-                    if (moreThanOne) startPrefetch(
-                        entity.type,
-                        entity.id,
-                        CREATED, UPDATED, UNCHANGED, REMOVED
-                    )
+                    if (entityCache.putIfAbsent(entity.id, entity)) {
+                        keyAttributesCache.putIfAbsent(
+                            DataKey(entity.type, entity.data.filter { it.key.isKey }),
+                            entity.id
+                        )
+                    }
+                    if (moreThanOne) startPrefetch(entity.type, entity.id)
                 }
             }
         }
@@ -229,7 +243,7 @@ class EntityRepository(
      */
     override fun get(type: EntityType, data: Map<AnyTypeAttribute, Type>, vararg status: EntityStatus): Entity? {
         val key = DataKey(type, data)
-        val candidate = dataIdCache[key]
+        val candidate = keyAttributesCache[key]
         val entity = candidate?.let { entityCache[candidate] }
         return if (entity != null && data.all { it.value == entity[it.key] }) {
             if (entity.currentStatus in status) {
@@ -238,12 +252,11 @@ class EntityRepository(
                 null
             }
         } else {
-            dataIdCache.remove(key)
             findEntityByAttributes(type, data, this)?.also {
                 it.loadAttributes()
                 entityCache.put(it.id, it)
-                dataIdCache.put(DataKey(type, data), it.id)
-            }
+                keyAttributesCacheUpdate.offer(it)
+            }?.also { startPrefetch(it.type, it.id) }
         }
     }
 
@@ -256,13 +269,12 @@ class EntityRepository(
      * @param data Attribute values
      */
     override suspend fun preload(type: EntityType, data: Map<AnyTypeAttribute, Type>) {
-        if (!dataIdCache.containsKey(DataKey(type, data))) {
+        if (!keyAttributesCache.containsKey(DataKey(type, data))) {
             GlobalScope.launch(Dispatchers.IO) {
                 findEntityByAttributes(type, data, this@EntityRepository)?.also { entity ->
                     entity.loadAttributes()
-                    if (entityCache.putIfAbsent(entity.id, entity)) {
-                        dataIdCache.put(DataKey(type, data), entity.id)
-                    }
+                    entityCache.putIfAbsent(entity.id, entity)
+                    keyAttributesCacheUpdate.offer(entity)
                 }
             }
         }
@@ -280,6 +292,7 @@ class EntityRepository(
             DbEntityTable
                 .slice(DbEntityTable.id)
                 .select { (DbEntityTable.entityType eq type) and (DbEntityTable.currentStatus inList status.toList()) }
+                .orderBy(DbEntityTable.id, SortOrder.ASC)
                 .map { it[DbEntityTable.id] }
         }
     }
@@ -305,6 +318,7 @@ class EntityRepository(
             DbEntityTable
                 .slice(DbEntityTable.id)
                 .select { (DbEntityTable.entityType eq type) and (DbEntityTable.currentStatus inList status.toList()) }
+                .orderBy(DbEntityTable.id, SortOrder.ASC)
                 .limit(pageSize, pageNumber * pageSize)
                 .map { it[DbEntityTable.id] }
         }
@@ -452,6 +466,9 @@ class EntityRepository(
             internalCreateAttribute(entity, attribute)
         }
         entityCache.put(entity.id, entity)
+        if (attribute.isKey) {
+            keyAttributesCacheUpdate.offer(entity)
+        }
     }
 
     /**
@@ -464,6 +481,9 @@ class EntityRepository(
     override fun createAttribute(entity: Entity, attribute: AnyTypeAttribute) {
         internalCreateAttribute(entity, attribute)
         entityCache.put(entity.id, entity)
+        if (attribute.isKey) {
+            keyAttributesCacheUpdate.offer(entity)
+        }
     }
 
     /**
@@ -510,23 +530,18 @@ class EntityRepository(
      */
     private fun startPrefetch(
         type: EntityType,
-        id: EntityID<Int>,
-        vararg status: EntityStatus
+        id: EntityID<Int>
     ) = runBlocking<Unit> {
-        launch {
+        launch(Dispatchers.IO) {
             val ids = transaction {
                 DbEntityTable
                     .slice(DbEntityTable.id)
-                    .select {
-                        (DbEntityTable.entityType eq type) and
-                                (DbEntityTable.id greater id) and
-                                (DbEntityTable.currentStatus inList status.toList())
-                    }
-                    .orderBy(DbEntityTable.id, SortOrder.DESC)
+                    .select { (DbEntityTable.entityType eq type) and (DbEntityTable.id greater id) }
+                    .orderBy(DbEntityTable.id, SortOrder.ASC)
                     .limit(READ_AHEAD_COUNT)
                     .map { it[DbEntityTable.id] }
             }
-            entityCache.prefetchAll(ids, null)
+            entityCache.prefetchAll(ids.reversed(), null)
         }
     }
 
@@ -548,14 +563,20 @@ class EntityRepository(
      * @property repository The entity repository
      * @constructor
      */
-    private class Loader(private val repository: EntityRepositoryInterface) : CacheLoader<EntityID<Int>, Entity?>() {
+    private class Loader(
+        private val repository: EntityRepositoryInterface,
+        private val requests: Channel<Entity>
+    ) : CacheLoader<EntityID<Int>, Entity?>() {
         override fun load(key: EntityID<Int>?): Entity? {
             val row = key?.let { id ->
                 transaction {
                     DbEntityTable.select { DbEntityTable.id eq id }.limit(1).firstOrNull()
                 }
             } ?: return null
-            return row.toEntity(repository).also { it.loadAttributes() }
+            return row.toEntity(repository).also { entity ->
+                entity.loadAttributes()
+                requests.offer(entity)
+            }
         }
     }
 
@@ -600,7 +621,7 @@ class EntityRepository(
     }
 
     companion object {
-        private const val CACHE_SIZE = 5500L
+        private const val CACHE_SIZE = 30000L
         private const val CACHE_SIZE_FOR_BULK = CACHE_SIZE / 4L
         private const val READ_AHEAD_COUNT = 20
         private const val LOADER_THREAD_COUNT = 5
@@ -608,5 +629,6 @@ class EntityRepository(
         private const val MAX_IDLE_CONNECTIONS = 15
         private const val MAX_TOTAL_CONNECTIONS = 15
         private const val INIT_CONNECTION_POOL_SIZE = 15
+        private const val QUEUE_SIZE = 500
     }
 }

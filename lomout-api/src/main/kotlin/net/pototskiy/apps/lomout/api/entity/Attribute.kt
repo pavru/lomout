@@ -24,9 +24,9 @@ import kotlin.reflect.KClass
  * @param T The attribute type
  * @property name The attribute name
  * @property type The class of attribute type
- * @property key Key attribute indicator
- * @property nullable Nullable attribute indicator
- * @property auto The attribute create automatically from source analysis
+ * @property isKey Key attribute indicator
+ * @property isNullable Nullable attribute indicator
+ * @property isAuto The attribute create automatically from source analysis
  * @property reader The attribute reader
  * @property writer The attribute write
  * @property builder The attribute builder
@@ -40,9 +40,9 @@ import kotlin.reflect.KClass
 class Attribute<T : Type>(
     override val name: String,
     val type: KClass<out T>,
-    val key: Boolean = false,
-    val nullable: Boolean = false,
-    val auto: Boolean = false,
+    val isKey: Boolean = false,
+    val isNullable: Boolean = false,
+    val isAuto: Boolean = false,
     val builder: AttributeBuilder<out T>?,
     val reader: AttributeReader<out T>?,
     val writer: AttributeWriter<out T>

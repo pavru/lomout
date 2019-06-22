@@ -20,6 +20,7 @@ object DataPrinter {
         val printer = config.printer ?: return
         statusLog.info("Data printing has started")
         val startTime = DateTime()
+        repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.PRINTER
         val orderedLines = printer.lines.groupBy { it.outputFieldSets.file.file.id }
         orderedLines.forEach { (_, lines) ->
             lines.forEach { line ->

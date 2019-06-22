@@ -144,7 +144,7 @@ internal class EntityTypeBaseTest {
                 AttributeCollection(listOf(attr4).plus(
                     test1.mainAttributes.map {
                         typeManager.createAttribute(
-                            it.name, it.type, it.key, it.nullable, it.auto, it.builder, it.reader, it.writer
+                            it.name, it.type, it.isKey, it.isNullable, it.isAuto, it.builder, it.reader, it.writer
                         )
                     }
                 ))

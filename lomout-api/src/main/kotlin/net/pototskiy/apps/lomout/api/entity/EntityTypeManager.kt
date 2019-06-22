@@ -74,7 +74,7 @@ abstract class EntityTypeManager {
      * @param type The attribute type
      * @param key The key attribute
      * @param nullable The nullable attribute
-     * @param auto The auto attribute
+     * @param auto The isAuto attribute
      * @param builder The attribute builder
      * @param reader The attribute reader
      * @param writer The attribute writer
