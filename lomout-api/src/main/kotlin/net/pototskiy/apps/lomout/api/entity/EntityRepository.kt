@@ -1,6 +1,5 @@
 package net.pototskiy.apps.lomout.api.entity
 
-import com.mysql.cj.jdbc.MysqlDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -19,6 +18,7 @@ import net.pototskiy.apps.lomout.api.entity.helper.findEntityByAttributes
 import net.pototskiy.apps.lomout.api.entity.type.ListType
 import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.entity.type.table
+import org.apache.commons.dbcp2.BasicDataSource
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
@@ -60,7 +60,11 @@ class EntityRepository(
     override fun close() {
         entityCache.close()
         dataIdCache.close()
+        datasource.close()
     }
+
+    private lateinit var datasource: BasicDataSource
+    private lateinit var database: Database
 
     private val entityCache = object : Cache2kBuilder<EntityID<Int>, Entity?>() {}
         .name("entityRepositoryCache")
@@ -570,16 +574,23 @@ class EntityRepository(
         val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
         Configurator.setLevel(EXPOSED_LOG_NAME, logLevel)
         statusLog.info("Database has stated to check and init")
-        val datasource = MysqlDataSource()
-        datasource.setURL("jdbc:mysql://${config.server.host}:${config.server.port}/${config.name}")
-        datasource.user = config.server.user
+        datasource = BasicDataSource()
+        datasource.url = "jdbc:mysql://${config.server.host}:${config.server.port}/${config.name}" +
+                "?serverTimezone=${TimeZone.getDefault().id}"
+        datasource.username = config.server.user
         datasource.password = config.server.password
-        datasource.serverTimezone = TimeZone.getDefault().id
+        datasource.minIdle = MIN_IDLE_CONNECTIONS
+        datasource.maxIdle = MAX_IDLE_CONNECTIONS
+        datasource.maxTotal = MAX_TOTAL_CONNECTIONS
+        datasource.initialSize = INIT_CONNECTION_POOL_SIZE
+        @Suppress("MagicNumber")
+        datasource.maxOpenPreparedStatements = 100
+        datasource.jmxName = "org.apache.dbcp:DataSource=lomout"
 
         @Suppress("TooGenericExceptionCaught")
         try {
-            val db = Database.connect(datasource)
-            statusLog.info("DB dialect: ${db.dialect.name}")
+            database = Database.connect(datasource)
+            statusLog.info("DB dialect: ${database.dialect.name}")
             DbSchema.createSchema(entityTypeManager)
         } catch (e: Exception) {
             statusLog.error("Cannot init DB", e)
@@ -593,5 +604,9 @@ class EntityRepository(
         private const val CACHE_SIZE_FOR_BULK = CACHE_SIZE / 4L
         private const val READ_AHEAD_COUNT = 20
         private const val LOADER_THREAD_COUNT = 5
+        private const val MIN_IDLE_CONNECTIONS = 5
+        private const val MAX_IDLE_CONNECTIONS = 15
+        private const val MAX_TOTAL_CONNECTIONS = 15
+        private const val INIT_CONNECTION_POOL_SIZE = 15
     }
 }

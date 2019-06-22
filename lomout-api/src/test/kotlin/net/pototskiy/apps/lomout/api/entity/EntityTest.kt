@@ -23,9 +23,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 
 @Suppress("MagicNumber")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class EntityTest {
     private lateinit var entityTypeManager: EntityTypeManagerImpl
     private lateinit var repository: EntityRepositoryInterface

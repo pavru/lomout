@@ -149,6 +149,7 @@ dependencies {
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
     }
+    implementation("org.apache.commons", "commons-dbcp2", Versions.dbcp)
     // Excel
     implementation("org.apache.poi", "poi", Versions.poi)
     implementation("org.apache.poi", "poi-ooxml", Versions.poi)

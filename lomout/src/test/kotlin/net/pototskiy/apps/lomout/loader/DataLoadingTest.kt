@@ -32,6 +32,7 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")
 @Execution(ExecutionMode.SAME_THREAD)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class DataLoadingTest {
     private lateinit var config: Config
     private lateinit var entityType: EntityType
@@ -47,7 +48,7 @@ internal class DataLoadingTest {
         repository = EntityRepository(config.database, typeManager, Level.ERROR)
         PluginContext.config = config
         PluginContext.entityTypeManager = config.entityTypeManager
-        entityType = typeManager.getEntityType("onec-product")!!
+        entityType = typeManager.getEntityType("test-entity-attributes")!!
         repository.getIDs(entityType).forEach { repository.delete(it) }
     }
 
@@ -71,7 +72,7 @@ internal class DataLoadingTest {
         @BeforeAll
         internal fun initAll() {
             val load = config.loader?.loads?.find {
-                it.entity.name == "onec-product" &&
+                it.entity.name == "test-entity-attributes" &&
                         it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                         it.sources.first().sheet.definition == "name:test-stock"
             }
@@ -100,7 +101,7 @@ internal class DataLoadingTest {
             @BeforeAll
             internal fun initAll() {
                 val load = config.loader?.loads?.find {
-                    it.entity.name == "onec-product" &&
+                    it.entity.name == "test-entity-attributes" &&
                             it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                             it.sources.first().sheet.definition == "name:test-stock"
                 }
@@ -153,7 +154,7 @@ internal class DataLoadingTest {
                 @BeforeAll
                 internal fun initAll() {
                     val load = config.loader?.loads?.find {
-                        it.entity.name == "onec-product" &&
+                        it.entity.name == "test-entity-attributes" &&
                                 it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                                 it.sources.first().sheet.definition == "name:test-stock"
                     }
@@ -193,7 +194,7 @@ internal class DataLoadingTest {
             )
             loader.load()
         }
-        entityType = typeManager.getEntityType("onec-product")!!
+        entityType = typeManager.getEntityType("test-entity-attributes")!!
     }
 
     private fun getHSSFWorkbook(load: Load): HSSFWorkbook {
@@ -205,5 +206,4 @@ internal class DataLoadingTest {
         val sheetDef = load.sources.first().sheet
         return workbook.sheetIterator().asSequence().find { sheetDef.isMatch(it.sheetName) }!!
     }
-
 }

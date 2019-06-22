@@ -275,7 +275,7 @@ abstract class EntityType(
              */
             fun build(): List<AnyTypeAttribute> {
                 val type = helper.typeManager[typeName]
-                val v = type.mainAttributes.filterNot { it.name in excludeList }.map {
+                return type.mainAttributes.filterNot { it.name in excludeList }.map {
                     helper.typeManager.createAttribute(
                         it.name,
                         it.type,
@@ -287,7 +287,6 @@ abstract class EntityType(
                         it.writer
                     )
                 }
-                return v
             }
         }
     }

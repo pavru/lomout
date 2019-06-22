@@ -62,7 +62,7 @@ internal class LoaderAttributeLoadingTest {
         PluginContext.config = config
         PluginContext.repository = repository
         PluginContext.entityTypeManager = config.entityTypeManager
-        entityType = typeManager["onec-product"]
+        entityType = typeManager["test-entity-attributes"]
         repository.getIDs(entityType).forEach { repository.delete(it) }
         @Suppress("UNCHECKED_CAST")
         skuAttr = typeManager
@@ -322,6 +322,6 @@ internal class LoaderAttributeLoadingTest {
     companion object {
         private const val xlsLoad = "xls"
         private const val csvLoad = "csv"
-        private const val entityTypeName = "onec-product"
+        private const val entityTypeName = "test-entity-attributes"
     }
 }

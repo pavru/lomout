@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Load data in production way")
 @Execution(ExecutionMode.SAME_THREAD)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class DataLoadingInProductionWayTest {
 
     private lateinit var config: Config

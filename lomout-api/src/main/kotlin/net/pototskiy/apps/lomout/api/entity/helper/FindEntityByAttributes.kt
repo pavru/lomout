@@ -9,6 +9,7 @@ import net.pototskiy.apps.lomout.api.entity.toEntity
 import net.pototskiy.apps.lomout.api.entity.type.Type
 import org.jetbrains.exposed.sql.ColumnSet
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.innerJoin
@@ -31,11 +32,18 @@ internal fun findEntityByAttributes(
                 .and(Op.build { alias[table.value] eq value })
         }
     }
+    return execFindQuery(from, where)?.toEntity(repository)
+}
+
+private fun execFindQuery(
+    from: ColumnSet,
+    where: Op<Boolean>
+): ResultRow? {
     return transaction {
         from
             .slice(DbEntityTable.columns)
             .select { where }
             .limit(1)
-            .firstOrNull()
-    }?.toEntity(repository)
+            .toList()
+    }.firstOrNull()
 }

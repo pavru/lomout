@@ -153,13 +153,13 @@ class EntityTypeManagerImpl : EntityTypeManager() {
         checkThatAttributeHasBuilder(attribute)
         checkEntityTypeHasNoAttribute(type, attribute)
         attribute.owner = type
-        entityExtAttributes.getOrPut(type, { mutableMapOf<String, AnyTypeAttribute>() })[attribute.name] = attribute
+        entityExtAttributes.getOrPut(type, { mutableMapOf() })[attribute.name] = attribute
         updateAttributeCachedCollection(type)
         updateAttributeTables(type)
     }
 
     override fun removeEntityExtAttribute(type: EntityType, attribute: AnyTypeAttribute) {
-        if (attribute.owner == type && entityExtAttributes[type]?.get(attribute.name) != null) {
+        if (attribute.owner == type && type.extAttributes.contains(attribute)) {
             entityExtAttributes[type]?.remove(attribute.name)
         } else {
             throw AppConfigException(badPlace(type) + attribute, "Attribute is not extension attribute of the entity")

@@ -21,6 +21,7 @@ object Versions {
     const val cache2k = "1.2.2.Final"
     const val jcache = "1.1.1"
     const val hazelcast = "3.12"
+    const val dbcp = "2.6.0"
 }
 
 data class MysqlVersions(

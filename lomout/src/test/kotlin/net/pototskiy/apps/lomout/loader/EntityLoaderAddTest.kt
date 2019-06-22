@@ -11,13 +11,17 @@ import net.pototskiy.apps.lomout.api.entity.type.STRING
 import org.apache.logging.log4j.Level
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 
 
 @Suppress("MagicNumber")
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class EntityLoaderAddTest {
     private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun ignoreEmptyRowTest() {
         val config = createConfIgnoreEmptyRow()
@@ -29,6 +33,7 @@ internal class EntityLoaderAddTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun stopOnEmptyRowTest() {
         val config = createConfStopEmptyRow()
@@ -40,6 +45,7 @@ internal class EntityLoaderAddTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryToLoadNullToNotNullTest() {
         val config = createConfWithSecondField()
@@ -63,6 +69,7 @@ internal class EntityLoaderAddTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryWithWrongReaderTest() {
         val config = createConfZeroDivision()
@@ -83,6 +90,7 @@ internal class EntityLoaderAddTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryWithTwoFieldSetsTest() {
         val config = createConfWithTwoFieldSets()
@@ -106,6 +114,7 @@ internal class EntityLoaderAddTest {
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryWithBlankKeyFieldTest() {
         val config = createConfBlankKeyField()

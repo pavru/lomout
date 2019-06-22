@@ -29,7 +29,7 @@ config {
             file("mage-stock-source") { path("$testDataDir/stock_sources.csv") }
         }
         entities {
-            entity("onec-product", false) {
+            entity("test-entity-attributes", false) {
                 attribute<STRING>("sku") { key() }
                 attribute<TEXT>("description")
                 attribute<BOOLEAN>("bool_val")
@@ -75,7 +75,7 @@ config {
                 attribute<STRING>("group_name") { nullable() }
             }
         }
-        loadEntity("onec-product") {
+        loadEntity("test-entity-attributes") {
             fromSources { source { file("test-attributes-xls"); sheet("test-stock"); stopOnEmptyRow() } }
             rowsToSkip(3)
             keepAbsentForDays(10)
@@ -104,7 +104,7 @@ config {
                 }
             }
         }
-        loadEntity("onec-product") {
+        loadEntity("test-entity-attributes") {
             fromSources { source { file("test-attributes-csv"); sheet(CSV_SHEET_NAME); stopOnEmptyRow() } }
             headersRow(2)
             rowsToSkip(3)
@@ -138,10 +138,10 @@ config {
     mediator {
         productionLine {
             input {
-                entity("onec-product")
+                entity("test-entity-attributes")
             }
             output("import-product") {
-                copyFrom("onec-product")
+                copyFrom("test-entity-attributes")
             }
             pipeline {
                 assembler { _, _ -> emptyMap() }
