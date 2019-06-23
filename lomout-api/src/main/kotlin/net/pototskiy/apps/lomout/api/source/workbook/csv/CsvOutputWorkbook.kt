@@ -35,8 +35,11 @@ class CsvOutputWorkbook(
      * @param workbookLocale Locale The CSV file locale
      * @constructor
      */
-    constructor(source: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
-            : this(FileOutputStream(source.file).writer(), csvFormat, workbookLocale) {
+    constructor(
+        source: URL,
+        csvFormat: CSVFormat,
+        workbookLocale: Locale = DEFAULT_LOCALE
+    ) : this(FileOutputStream(source.file).writer(), csvFormat, workbookLocale) {
         this.sourceURL = source
     }
 

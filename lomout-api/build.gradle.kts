@@ -108,9 +108,8 @@ java {
 }
 
 tasks.named<Test>("test") {
-    maxHeapSize = "2G"
-    minHeapSize = "1G"
-    setForkEvery(100L)
+    maxHeapSize = "1G"
+    minHeapSize = "700M"
     systemProperties(
         mapOf(
             "junit.jupiter.execution.parallel.enabled" to "true",

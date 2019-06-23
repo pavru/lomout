@@ -33,8 +33,11 @@ class CsvInputWorkbook(
      * @param workbookLocale Locale
      * @constructor
      */
-    constructor(source: URL, csvFormat: CSVFormat, workbookLocale: Locale = DEFAULT_LOCALE)
-            : this(source.openStream().reader(), csvFormat, workbookLocale) {
+    constructor(
+        source: URL,
+        csvFormat: CSVFormat,
+        workbookLocale: Locale = DEFAULT_LOCALE
+    ) : this(source.openStream().reader(), csvFormat, workbookLocale) {
         this.sourceURL = source
     }
 
