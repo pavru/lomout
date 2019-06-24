@@ -140,7 +140,7 @@ tasks.named<Test>("test") {
     }
     testLogging {
         events(
-            "passed",
+            /*"passed",*/
             "skipped",
             "failed",
             "standardOut",
