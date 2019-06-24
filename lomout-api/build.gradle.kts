@@ -110,7 +110,7 @@ java {
 tasks.named<Test>("test") {
     maxHeapSize = "1G"
     minHeapSize = "700M"
-    if (System.getenv("TRVIS_BUILD_DIR") == null) {
+    if (System.getenv("TRAVIS_BUILD_DIR") == null) {
         systemProperties(
             mapOf(
                 "junit.jupiter.execution.parallel.enabled" to "true",
