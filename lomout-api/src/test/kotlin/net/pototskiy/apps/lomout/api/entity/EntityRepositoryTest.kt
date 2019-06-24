@@ -154,16 +154,16 @@ internal class EntityRepositoryTest {
                 .map { it[DbEntityTable.id] }
         }
         val entity = repository.get(ids[0])
-        assertThat(entity).isNotNull()
+        assertThat(entity).isNotNull
         entity as Entity
         assertThat(entity["key"]).isEqualTo(STRING("1"))
         assertThat(entity["value"]).isEqualTo(STRING("value1"))
         assertThat(repository.get(ids[0], EntityStatus.REMOVED)).isNull()
         assertThat(repository.get(EntityID(-1, DbEntityTable))).isNull()
         repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.MEDIATOR
-        assertThat(repository.get(ids[0])).isNotNull()
+        assertThat(repository.get(ids[0])).isNotNull
         repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.PRINTER
-        assertThat(repository.get(ids[0])).isNotNull()
+        assertThat(repository.get(ids[0])).isNotNull
     }
 
     @Test
@@ -176,16 +176,16 @@ internal class EntityRepositoryTest {
                 .map { it[DbEntityTable.id] }
         }
         val entity = repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")))
-        assertThat(entity).isNotNull()
+        assertThat(entity).isNotNull
         entity as Entity
         assertThat(entity.id).isEqualTo(ids[1])
-        assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")))).isNotNull()
+        assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")))).isNotNull
         assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")), EntityStatus.REMOVED))
             .isNull()
         assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("5"))))
             .isNull()
         (repository as EntityRepository).clearCache()
-        assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")))).isNotNull()
+        assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")))).isNotNull
     }
 
     @Test
@@ -203,9 +203,9 @@ internal class EntityRepositoryTest {
             repository.preload(ids[1], true)
             repository.preload(EntityID(-1, DbEntityTable), true)
         }
-        assertThat(repository.get(ids[0])).isNotNull()
+        assertThat(repository.get(ids[0])).isNotNull
         assertThat(repository.get(ids[0])!!["key"]).isEqualTo(STRING("1"))
-        assertThat(repository.get(ids[3])).isNotNull()
+        assertThat(repository.get(ids[3])).isNotNull
         assertThat(repository.get(ids[3])!!["key"]).isEqualTo(STRING("4"))
     }
 
@@ -224,7 +224,7 @@ internal class EntityRepositoryTest {
             repository.preload(type, mapOf(keyAttr as AnyTypeAttribute to STRING("3")))
             repository.preload(type, mapOf(keyAttr as AnyTypeAttribute to STRING("20")))
         }
-        assertThat(repository.get(ids[2])).isNotNull()
+        assertThat(repository.get(ids[2])).isNotNull
         assertThat(repository.get(ids[2])!!["value"]).isEqualTo(STRING("value3"))
     }
 
@@ -311,7 +311,7 @@ internal class EntityRepositoryTest {
     }
 
     @Test
-    fun createUpdteDeleteAttribute() {
+    fun createUpdateDeleteAttribute() {
         val entity = repository.create(type)
         val table = listAttr.type.table
         assertThat(transaction {

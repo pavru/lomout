@@ -110,13 +110,15 @@ java {
 tasks.named<Test>("test") {
     maxHeapSize = "1G"
     minHeapSize = "700M"
-    systemProperties(
-        mapOf(
-            "junit.jupiter.execution.parallel.enabled" to "true",
-            "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
+    if (System.getenv("TRVIS_BUILD_DIR") == null) {
+        systemProperties(
+            mapOf(
+                "junit.jupiter.execution.parallel.enabled" to "true",
+                "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
 //    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
+            )
         )
-    )
+    }
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
