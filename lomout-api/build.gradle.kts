@@ -111,6 +111,7 @@ tasks.named<Test>("test") {
     maxHeapSize = "1G"
     minHeapSize = "700M"
     if (System.getenv("TRAVIS_BUILD_DIR") == null) {
+        println("NOT UNDER TRAVIS PARALLEL TEST EXECUTION")
         systemProperties(
             mapOf(
                 "junit.jupiter.execution.parallel.enabled" to "true",
@@ -118,6 +119,8 @@ tasks.named<Test>("test") {
 //    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
             )
         )
+    } else {
+        println("UNDER TRAVIS NON PARALLEL TEST EXECUTION")
     }
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
