@@ -1,5 +1,5 @@
 dist: xenial
-services: mysql
+#services: mysql
 language: java
 git:
   depth: false
@@ -19,6 +19,7 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 addons:
+  mariadb: '10.0'
   sonarcloud:
     organization: pavru-github
     token:
