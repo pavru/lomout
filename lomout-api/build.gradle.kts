@@ -121,8 +121,9 @@ tasks.named<Test>("test") {
         )
     } else {
         println("UNDER TRAVIS NON PARALLEL TEST EXECUTION")
-        maxHeapSize = "500M"
-        minHeapSize = "200M"
+        setForkEvery(14)
+        maxHeapSize = "700M"
+        minHeapSize = "300M"
         systemProperties(
             mapOf(
                 "junit.jupiter.execution.parallel.enabled" to "flase",
