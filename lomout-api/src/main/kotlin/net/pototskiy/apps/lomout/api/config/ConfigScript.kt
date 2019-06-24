@@ -12,7 +12,6 @@ import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import org.jetbrains.kotlin.script.util.resolvers.experimental.BasicArtifactCoordinates
 import java.io.File
-import java.net.URLClassLoader
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.ScriptAcceptedLocation
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
@@ -29,6 +28,7 @@ import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
+import kotlin.script.experimental.jvm.util.classpathFromClassloader
 
 /**
  * Config script definition for Kotlin script host
@@ -93,15 +93,11 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     )
     jvm {
         val logger = MainAndIdeLogger()
-        val apiInPlace = (ConfigScriptCompilationConfiguration::class.java.classLoader as? URLClassLoader)?.urLs
-            ?.filter { it.protocol == "file" }
-            ?.map { File(it.toURI()) }
-            ?.firstOrNull {
+        val classpath = classpathFromClassloader(ConfigScriptCompilationConfiguration::class.java.classLoader)
+        val apiInPlace = classpath?.firstOrNull {
                 it.isDirectory &&
                         it.absolutePath.contains(Regex("""lomout-api.build.classes.kotlin.main$""")) }
-        val apiInJar = (ConfigScriptCompilationConfiguration::class.java.classLoader as? URLClassLoader)?.urLs
-            ?.filter { it.protocol == "file" }
-            ?.map { File(it.toURI()) }?.firstOrNull {
+        val apiInJar = classpath?.firstOrNull {
                 @Suppress("GraziInspection")
                 it.isFile && it.name.contains(Regex("""lomout-api.*\.jar$"""))
             }

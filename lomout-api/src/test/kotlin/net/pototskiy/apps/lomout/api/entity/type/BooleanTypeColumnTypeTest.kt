@@ -64,10 +64,10 @@ internal class BooleanTypeColumnTypeTest {
         assertThat(column.valueFromDB(false))
             .isInstanceOf(BOOLEAN::class.java)
             .isEqualTo(BOOLEAN(false))
-        assertThat(column.valueFromDB(java.lang.Boolean(true)))
+        assertThat(column.valueFromDB(java.lang.Boolean.valueOf(true)))
             .isInstanceOf(BOOLEAN::class.java)
             .isEqualTo(BOOLEAN(true))
-        assertThat(column.valueFromDB(java.lang.Boolean(false)))
+        assertThat(column.valueFromDB(java.lang.Boolean.valueOf(false)))
             .isInstanceOf(BOOLEAN::class.java)
             .isEqualTo(BOOLEAN(false))
     }
