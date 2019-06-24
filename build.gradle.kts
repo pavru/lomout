@@ -5,7 +5,7 @@ plugins {
     id("org.sonarqube") version "2.7.1"
     jacoco
     kotlin("jvm") version Versions.kotlin
-    id("com.gradle.build-scan") version "2.1"
+    id("com.gradle.build-scan") version "2.3"
 }
 
 buildscript {
