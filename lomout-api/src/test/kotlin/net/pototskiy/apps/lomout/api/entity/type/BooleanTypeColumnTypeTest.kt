@@ -91,8 +91,8 @@ internal class BooleanTypeColumnTypeTest {
 
     @Test
     fun nonNullValueToStringTest() {
-        val expectedTrue = database!!.dialect.dataTypeProvider.booleanToStatementString(true)
-        val expectedFalse = database!!.dialect.dataTypeProvider.booleanToStatementString(false)
+        val expectedTrue = "true"
+        val expectedFalse = "false"
         transaction { assertThat(column.nonNullValueToString(BOOLEAN(true))).isEqualTo(expectedTrue) }
         transaction { assertThat(column.nonNullValueToString(BOOLEAN(false))).isEqualTo(expectedFalse) }
         transaction { assertThat(column.nonNullValueToString(true)).isEqualTo(expectedTrue) }
@@ -101,8 +101,8 @@ internal class BooleanTypeColumnTypeTest {
 
     @Test
     fun valueToStringTest() {
-        val expectedTrue = database!!.dialect.dataTypeProvider.booleanToStatementString(true)
-        val expectedFalse = database!!.dialect.dataTypeProvider.booleanToStatementString(false)
+        val expectedTrue = "true"
+        val expectedFalse = "false"
         transaction { assertThat(column.valueToString(null)).isEqualTo("NULL") }
         transaction { assertThat(column.valueToString(BOOLEAN(true))).isEqualTo(expectedTrue) }
         transaction { assertThat(column.valueToString(BOOLEAN(false))).isEqualTo(expectedFalse) }
