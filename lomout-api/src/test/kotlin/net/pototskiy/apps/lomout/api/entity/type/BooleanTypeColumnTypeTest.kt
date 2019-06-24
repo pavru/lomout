@@ -91,22 +91,30 @@ internal class BooleanTypeColumnTypeTest {
 
     @Test
     fun nonNullValueToStringTest() {
-        val expectedTrue = "true"
-        val expectedFalse = "false"
-        transaction { assertThat(column.nonNullValueToString(BOOLEAN(true))).isEqualTo(expectedTrue) }
-        transaction { assertThat(column.nonNullValueToString(BOOLEAN(false))).isEqualTo(expectedFalse) }
-        transaction { assertThat(column.nonNullValueToString(true)).isEqualTo(expectedTrue) }
-        transaction { assertThat(column.nonNullValueToString(false)).isEqualTo(expectedFalse) }
+        val expectedTrue = transaction(database) {
+            database!!.dialect.dataTypeProvider.booleanToStatementString(true)
+        }
+        val expectedFalse = transaction(database) {
+            database!!.dialect.dataTypeProvider.booleanToStatementString(false)
+        }
+        transaction(database) { assertThat(column.nonNullValueToString(BOOLEAN(true))).isEqualTo(expectedTrue) }
+        transaction(database) { assertThat(column.nonNullValueToString(BOOLEAN(false))).isEqualTo(expectedFalse) }
+        transaction(database) { assertThat(column.nonNullValueToString(true)).isEqualTo(expectedTrue) }
+        transaction(database) { assertThat(column.nonNullValueToString(false)).isEqualTo(expectedFalse) }
     }
 
     @Test
     fun valueToStringTest() {
-        val expectedTrue = "true"
-        val expectedFalse = "false"
-        transaction { assertThat(column.valueToString(null)).isEqualTo("NULL") }
-        transaction { assertThat(column.valueToString(BOOLEAN(true))).isEqualTo(expectedTrue) }
-        transaction { assertThat(column.valueToString(BOOLEAN(false))).isEqualTo(expectedFalse) }
-        transaction { assertThat(column.valueToString(true)).isEqualTo(expectedTrue) }
-        transaction { assertThat(column.valueToString(false)).isEqualTo(expectedFalse) }
+        val expectedTrue = transaction(database) {
+            database!!.dialect.dataTypeProvider.booleanToStatementString(true)
+        }
+        val expectedFalse = transaction(database) {
+            database!!.dialect.dataTypeProvider.booleanToStatementString(false)
+        }
+        transaction(database) { assertThat(column.valueToString(null)).isEqualTo("NULL") }
+        transaction(database) { assertThat(column.valueToString(BOOLEAN(true))).isEqualTo(expectedTrue) }
+        transaction(database) { assertThat(column.valueToString(BOOLEAN(false))).isEqualTo(expectedFalse) }
+        transaction(database) { assertThat(column.valueToString(true)).isEqualTo(expectedTrue) }
+        transaction(database) { assertThat(column.valueToString(false)).isEqualTo(expectedFalse) }
     }
 }
