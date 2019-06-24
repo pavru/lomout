@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.entity
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
@@ -27,10 +28,15 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.cache2k.Cache2kBuilder
 import org.cache2k.integration.CacheLoader
 import org.jetbrains.exposed.dao.EntityID
+import org.jetbrains.exposed.sql.CustomFunction
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.Expression
+import org.jetbrains.exposed.sql.IntegerColumnType
+import org.jetbrains.exposed.sql.QueryBuilder
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.dateTimeParam
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -50,12 +56,16 @@ import kotlin.system.exitProcess
  * @constructor
  */
 @UseExperimental(ObsoleteCoroutinesApi::class)
+@Suppress("TooManyFunctions")
 class EntityRepository(
     config: DatabaseConfig,
-    override val entityTypeManager: EntityTypeManagerImpl,
-    sqlLogLevel: Level
+    override val entityTypeManager: EntityTypeManager,
+    sqlLogLevel: Level,
+    cacheSize: Long = CACHE_SIZE
 ) : EntityRepositoryInterface {
     override var cacheStrategy: CacheStrategy = CacheStrategy.LOADER
+    @Suppress("MagicNumber")
+    private val cacheSizeForBulkOperation = cacheSize / 4
 
     /**
      * Close repository, and it's caches
@@ -66,6 +76,12 @@ class EntityRepository(
         entityCache.close()
         keyAttributesCache.close()
         datasource.close()
+        runBlocking { keyCacheUpdateJob.join() }
+    }
+
+    fun clearCache() {
+        keyAttributesCache.clear()
+        entityCache.clear()
     }
 
     private lateinit var datasource: BasicDataSource
@@ -74,7 +90,7 @@ class EntityRepository(
     private val keyAttributesCache = object : Cache2kBuilder<DataKey, EntityID<Int>>() {}
         .name("dataEntityIdCache")
         .enableJmx(true)
-        .entryCapacity(CACHE_SIZE)
+        .entryCapacity(cacheSize)
         .eternal(true)
         .build()
 
@@ -83,7 +99,7 @@ class EntityRepository(
     private val entityCache = object : Cache2kBuilder<EntityID<Int>, Entity?>() {}
         .name("entityRepositoryCache")
         .enableJmx(true)
-        .entryCapacity(CACHE_SIZE)
+        .entryCapacity(cacheSize)
         .permitNullValues(true)
         .eternal(true)
         .loaderThreadCount(LOADER_THREAD_COUNT)
@@ -91,11 +107,15 @@ class EntityRepository(
         .storeByReference(true)
         .build()
 
+    private val keyCacheUpdateJob: Job
+
     init {
         initDatabase(config, entityTypeManager, sqlLogLevel)
-        GlobalScope.launch(Dispatchers.Default) {
+        keyCacheUpdateJob = GlobalScope.launch(Dispatchers.Default) {
             keyAttributesCacheUpdate.consumeEach { entity ->
-                keyAttributesCache.put(DataKey(entity.type, entity.data.filter { it.key.isKey }), entity.id)
+                if (!keyAttributesCache.isClosed) {
+                    keyAttributesCache.put(DataKey(entity.type, entity.data.filter { it.key.isKey }), entity.id)
+                }
             }
         }
     }
@@ -199,11 +219,8 @@ class EntityRepository(
                 }?.also { row ->
                     val entity = row.toEntity(this@EntityRepository)
                     entity.loadAttributes()
-                    if (entityCache.putIfAbsent(entity.id, entity)) {
-                        keyAttributesCache.putIfAbsent(
-                            DataKey(entity.type, entity.data.filter { it.key.isKey }),
-                            entity.id
-                        )
+                    if (!entityCache.isClosed && entityCache.putIfAbsent(entity.id, entity)) {
+                        keyAttributesCacheUpdate.offer(entity)
                     }
                     if (moreThanOne) startPrefetch(entity.type, entity.id)
                 }
@@ -227,7 +244,7 @@ class EntityRepository(
                     }
                 }
         }
-        if (entities.size <= CACHE_SIZE_FOR_BULK) {
+        if (entities.size <= cacheSizeForBulkOperation) {
             entityCache.putAll(entities.map { it.id to it }.toMap())
         }
         return entities.filter { it.currentStatus in status }
@@ -269,11 +286,12 @@ class EntityRepository(
      * @param data Attribute values
      */
     override suspend fun preload(type: EntityType, data: Map<AnyTypeAttribute, Type>) {
-        if (!keyAttributesCache.containsKey(DataKey(type, data))) {
+        val entity = keyAttributesCache[DataKey(type, data)]
+        if (entity == null) {
             GlobalScope.launch(Dispatchers.IO) {
                 findEntityByAttributes(type, data, this@EntityRepository)?.also { entity ->
                     entity.loadAttributes()
-                    entityCache.putIfAbsent(entity.id, entity)
+                    if (!entityCache.isClosed) entityCache.putIfAbsent(entity.id, entity)
                     keyAttributesCacheUpdate.offer(entity)
                 }
             }
@@ -360,9 +378,7 @@ class EntityRepository(
         entityCache.entries()
             .forEach {
                 val entity = it.value
-                if (false == entity?.touchedInLoading && entity.type == type &&
-                    entity.currentStatus != REMOVED
-                ) {
+                if (false == entity?.touchedInLoading && entity.type == type && entity.currentStatus != REMOVED) {
                     entity.previousStatus = entity.currentStatus
                     entity.currentStatus = REMOVED
                     entity.removed = TIMESTAMP
@@ -377,17 +393,12 @@ class EntityRepository(
      */
     override fun updateAbsentDays(type: EntityType) {
         transaction {
+
             DbEntityTable
-                .slice(DbEntityTable.id, DbEntityTable.removed)
-                .select {
-                    (DbEntityTable.entityType eq type)
-                        .and(DbEntityTable.currentStatus eq REMOVED)
-                }.forEach { row ->
-                    transaction {
-                        DbEntityTable.update({ DbEntityTable.id eq row[DbEntityTable.id] }) {
-                            it[absentDays] = Duration(row[removed], TIMESTAMP).standardDays.toInt()
-                        }
-                    }
+                .update(
+                    { (DbEntityTable.entityType eq type) and (DbEntityTable.currentStatus eq REMOVED) }
+                ) {
+                    it.update(absentDays, days)
                 }
         }
         entityCache.entries().forEach {
@@ -465,10 +476,8 @@ class EntityRepository(
             internalDeleteAttribute(entity, attribute)
             internalCreateAttribute(entity, attribute)
         }
-        entityCache.put(entity.id, entity)
-        if (attribute.isKey) {
-            keyAttributesCacheUpdate.offer(entity)
-        }
+        entityCache.putIfAbsent(entity.id, entity)
+        if (attribute.isKey) keyAttributesCacheUpdate.offer(entity)
     }
 
     /**
@@ -481,9 +490,7 @@ class EntityRepository(
     override fun createAttribute(entity: Entity, attribute: AnyTypeAttribute) {
         internalCreateAttribute(entity, attribute)
         entityCache.put(entity.id, entity)
-        if (attribute.isKey) {
-            keyAttributesCacheUpdate.offer(entity)
-        }
+        if (attribute.isKey) keyAttributesCacheUpdate.offer(entity)
     }
 
     /**
@@ -533,6 +540,7 @@ class EntityRepository(
         id: EntityID<Int>
     ) = runBlocking<Unit> {
         launch(Dispatchers.IO) {
+            if (datasource.isClosed) return@launch
             val ids = transaction {
                 DbEntityTable
                     .slice(DbEntityTable.id)
@@ -541,7 +549,7 @@ class EntityRepository(
                     .limit(READ_AHEAD_COUNT)
                     .map { it[DbEntityTable.id] }
             }
-            entityCache.prefetchAll(ids.reversed(), null)
+            if (!entityCache.isClosed) entityCache.prefetchAll(ids.reversed(), null)
         }
     }
 
@@ -621,8 +629,17 @@ class EntityRepository(
     }
 
     companion object {
+        private val unitDay = object : Expression<String>() {
+            override fun toSQL(queryBuilder: QueryBuilder): String = "DAY"
+        }
+        private val days = CustomFunction<Int>(
+            "TIMESTAMPDIFF",
+            IntegerColumnType(),
+            unitDay,
+            DbEntityTable.removed,
+            dateTimeParam(TIMESTAMP)
+        )
         private const val CACHE_SIZE = 30000L
-        private const val CACHE_SIZE_FOR_BULK = CACHE_SIZE / 4L
         private const val READ_AHEAD_COUNT = 20
         private const val LOADER_THREAD_COUNT = 5
         private const val MIN_IDLE_CONNECTIONS = 5

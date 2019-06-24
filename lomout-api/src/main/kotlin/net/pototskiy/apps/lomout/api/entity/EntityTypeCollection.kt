@@ -10,6 +10,10 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
  * @constructor
  */
 class EntityTypeCollection(private val value: List<EntityType>) : List<EntityType> by value {
+    private val index = value.map { it.name to it }.toMap()
+
+    operator fun get(name: String) = index[name]
+
     /**
      * Entity type collection builder
      *

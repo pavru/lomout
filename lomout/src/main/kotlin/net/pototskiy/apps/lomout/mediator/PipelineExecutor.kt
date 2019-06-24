@@ -13,11 +13,11 @@ import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.type.Type
 
 class PipelineExecutor(
-    private val entityTypeManager: EntityTypeManagerImpl,
+    private val entityTypeManager: EntityTypeManager,
     private val pipeline: Pipeline,
     private val inputEntities: InputEntityCollection,
     private val targetEntity: EntityType

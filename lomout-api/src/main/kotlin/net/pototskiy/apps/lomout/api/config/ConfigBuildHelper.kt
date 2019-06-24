@@ -2,9 +2,9 @@ package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileDefinition
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.unknownPlace
 import java.util.*
 
 /**
@@ -16,7 +16,7 @@ import java.util.*
  * @property definedSourceFiles The registrar for defined source fields
  * @constructor
  */
-open class ConfigBuildHelper(val typeManager: EntityTypeManagerImpl) {
+open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
 
     private val scopeStack = Stack<String>().apply { push("root") }
     /**

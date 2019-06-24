@@ -8,7 +8,7 @@ import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.type.STRING
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -36,7 +36,7 @@ import org.junit.jupiter.api.parallel.ResourceLock
 internal class DataLoadingTest {
     private lateinit var config: Config
     private lateinit var entityType: EntityType
-    private lateinit var typeManager: EntityTypeManagerImpl
+    private lateinit var typeManager: EntityTypeManager
     private lateinit var repository: EntityRepositoryInterface
 
     @BeforeAll

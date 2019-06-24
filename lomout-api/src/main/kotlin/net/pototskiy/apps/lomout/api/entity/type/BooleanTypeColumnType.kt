@@ -10,8 +10,9 @@ import java.sql.PreparedStatement
  * @property columnType The exposed column type
  * @constructor
  */
-class BooleanTypeColumnType(private val columnType: BooleanColumnType = BooleanColumnType()) :
-    IColumnType by columnType {
+class BooleanTypeColumnType(
+    private val columnType: BooleanColumnType = BooleanColumnType()
+) : IColumnType by columnType {
 
     /**
      * Convert non null value to db value.

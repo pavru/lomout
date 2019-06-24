@@ -8,7 +8,7 @@ import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.get
 import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
 import net.pototskiy.apps.lomout.api.entity.type.DATE
@@ -49,7 +49,7 @@ internal class LoaderAttributeLoadingTest {
     private lateinit var nameAttr: Attribute<STRING>
     private val loads = mutableMapOf<String, Load>()
     private lateinit var entityType: EntityType
-    private lateinit var typeManager: EntityTypeManagerImpl
+    private lateinit var typeManager: EntityTypeManager
     private lateinit var repository: EntityRepositoryInterface
 
     @BeforeAll

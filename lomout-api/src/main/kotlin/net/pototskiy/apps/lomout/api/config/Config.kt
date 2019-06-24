@@ -4,6 +4,7 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
 import net.pototskiy.apps.lomout.api.unknownPlace
 
@@ -18,7 +19,7 @@ import net.pototskiy.apps.lomout.api.unknownPlace
  * @constructor
  */
 data class Config(
-    val entityTypeManager: EntityTypeManagerImpl,
+    val entityTypeManager: EntityTypeManager,
     val database: DatabaseConfig,
     val loader: LoaderConfiguration?,
     val mediator: MediatorConfiguration?,

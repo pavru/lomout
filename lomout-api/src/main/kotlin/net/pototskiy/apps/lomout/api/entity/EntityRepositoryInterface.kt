@@ -16,7 +16,7 @@ interface EntityRepositoryInterface : AutoCloseable {
     /**
      * Entity type manager
      */
-    val entityTypeManager: EntityTypeManagerImpl
+    val entityTypeManager: EntityTypeManager
 
     /**
      * Create new entity

@@ -7,6 +7,7 @@ import net.pototskiy.apps.lomout.api.entity.helper.loadEntityAttributes
 import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plus
 import org.jetbrains.exposed.dao.EntityID
+import java.util.concurrent.*
 
 /**
  * Data entity
@@ -20,7 +21,7 @@ class Entity internal constructor(type: EntityType, id: EntityID<Int>, repositor
     /**
      * Entity attributes
      */
-    val data: MutableMap<AnyTypeAttribute, Type> = mutableMapOf()
+    val data: MutableMap<AnyTypeAttribute, Type> = ConcurrentHashMap()
 
     internal fun loadAttributes() {
         data.clear()
