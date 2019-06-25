@@ -128,7 +128,7 @@ tasks.named<Test>("test") {
             )
         }
     } else {
-        setForkEvery(14)
+//        setForkEvery(14)
         maxHeapSize = "700M"
         minHeapSize = "300M"
         systemProperties(
