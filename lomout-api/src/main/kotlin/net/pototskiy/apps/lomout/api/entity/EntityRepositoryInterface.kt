@@ -190,4 +190,9 @@ interface EntityRepositoryInterface : AutoCloseable {
     enum class CacheStrategy { LOADER, MEDIATOR, PRINTER }
 
     var cacheStrategy: CacheStrategy
+
+    companion object {
+        val REMOVED_ENTITY = arrayOf(REMOVED)
+        val ACTUAL_ENTITY = arrayOf(CREATED, UPDATED, UNCHANGED)
+    }
 }

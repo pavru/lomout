@@ -5,6 +5,7 @@ import net.pototskiy.apps.lomout.api.TIMESTAMP
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.DatabaseConfig
 import net.pototskiy.apps.lomout.api.database.DbEntityTable
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface.Companion.REMOVED_ENTITY
 import net.pototskiy.apps.lomout.api.entity.type.STRING
 import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
 import net.pototskiy.apps.lomout.api.entity.type.table
@@ -184,7 +185,7 @@ internal class EntityRepositoryTest {
         entity as Entity
         assertThat(entity.id).isEqualTo(ids[1])
         assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")))).isNotNull
-        assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")), EntityStatus.REMOVED))
+        assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("2")),*REMOVED_ENTITY))
             .isNull()
         assertThat(repository.get(type, mapOf(keyAttr as Attribute<*> to STRING("5"))))
             .isNull()
