@@ -25,6 +25,7 @@ before_cache:
   - sudo service x11-common stop || true
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - sed -i 's/all.zip/bin.zip/g' gradle/wrapper/gradle-wrapper.properties
 #cache:
 #  directories:
 #  - "$HOME/.gradle/caches/"
