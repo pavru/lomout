@@ -109,7 +109,6 @@ java {
 
 tasks.named<Test>("test") {
     if (System.getenv("TRAVIS_BUILD_DIR") == null) {
-        println("NOT UNDER TRAVIS PARALLEL TEST EXECUTION")
         maxHeapSize = "2G"
         minHeapSize = "1G"
         systemProperties(
@@ -119,8 +118,16 @@ tasks.named<Test>("test") {
 //    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
             )
         )
+        testLogging {
+            events(
+                "passed",
+                "skipped",
+                "failed",
+                "standardOut",
+                "standardError"
+            )
+        }
     } else {
-        println("UNDER TRAVIS NON PARALLEL TEST EXECUTION")
         setForkEvery(14)
         maxHeapSize = "700M"
         minHeapSize = "300M"
@@ -132,20 +139,20 @@ tasks.named<Test>("test") {
 //    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
             )
         )
+        testLogging {
+            events(
+                /*"passed",*/
+                "skipped",
+                "failed",
+                "standardOut",
+                "standardError"
+            )
+        }
     }
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
     useJUnitPlatform {
-    }
-    testLogging {
-        events(
-            /*"passed",*/
-            "skipped",
-            "failed",
-            "standardOut",
-            "standardError"
-        )
     }
 }
 

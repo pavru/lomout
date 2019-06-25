@@ -91,6 +91,11 @@ internal class BooleanTypeColumnTypeTest {
 
     @Test
     fun nonNullValueToStringTest() {
+        try {
+            database!!.dialect.dataTypeProvider.booleanToStatementString(true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         val expectedTrue = transaction(database) {
             database!!.dialect.dataTypeProvider.booleanToStatementString(true)
         }

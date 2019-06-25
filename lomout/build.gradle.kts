@@ -92,13 +92,24 @@ tasks.named<Test>("test") {
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     useJUnitPlatform()
-    testLogging {
-        events(
-            /*"passed",*/
-            "skipped",
-            "failed"
-        )
+    if (System.getenv("TRAVIS_BUILD_DIR") == null) {
+        testLogging {
+            events(
+                "passed",
+                "skipped",
+                "failed"
+            )
 //        events("passed", "skipped", "failed", "standardOut", "standardError")
+        }
+    } else {
+        testLogging {
+            events(
+                /*"passed",*/
+                "skipped",
+                "failed"
+            )
+//        events("passed", "skipped", "failed", "standardOut", "standardError")
+        }
     }
 }
 
