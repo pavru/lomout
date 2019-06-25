@@ -4,10 +4,9 @@ language: java
 git:
   depth: false
 before_install:
-- mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE =
-  'utf8_general_ci';"
-- mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE
-  = 'utf8_general_ci';"
+  - sudo apt-get install -y sed
+  - mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+  - mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
 before_script:
   - sudo service postgresql stop || true
   - sudo service redis stop || true
@@ -37,6 +36,6 @@ addons:
     token:
       secure: "Ii7rtNJivsmPK5wUb1uZ5QM6ZbqYYKwvFsVrd8w6kwo+L5STBOsga1s05hOpcWSXOVRCeM32HJ0aXsS2EpWL2Zke5+H78d+EtbPxVxmaF24LHtITE8VhjeBIa8fThbNZBQQ+SrpHJ0gIxPNLwD9yXrTYEtAeozSlV9IlnSBV7R1vuPKanZVX21Q/zIp8XbGocCgKCxQAMu0DibaoPSckF0VIjDMdADMGhgVZug0MWgm4TPBQ2KjBUd3Be4sp6XAWh8HT2Zr6sC35FfnBZ6nuGucB3heGurOoWOUG8BqeNhDqlaVNeLyhA1Ev4jLXjUJy8UQYI2Jotarntd3CZNSL6yd70R+9nnh50RfA84YARHm4TVdWXrtRA/6cmU9WVhisgFypKRTqG9APLkA32PMlDQQy/VCEaDILsIW99StfEAfgQmjP1eVyccK0dqE5tHzWFTRGqObSSVTAIkfI6JO632mJ2UfM6+P8fpheW1mx94xUhiGuwWaLgVkB0KgLvi2xpIEPHIyNAW+9g2lMvm3ziMXuNy2+YKtLy0DpxKP8BIGhcoEh8+ycLVYu1nyTo0lOtrV0m4nVXvu9POv5dDZHj4MoDa80eS3U3eyJfGakVUF5u07zNOSZicjziHkFlP7AimTOkU2gu8NaVnbzISJfkxb0UWUzTcrttiQTEmgRk1E="
 after_success:
-- "./gradlew codeCoverageReport"
-- sonar-scanner
-- bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/
+  - "./gradlew codeCoverageReport"
+  - sonar-scanner
+  - bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/
