@@ -79,6 +79,8 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
         "net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED",
         "net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED",
         "net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED",
+        "net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface.Companion.REMOVED_ENTITY",
+        "net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface.Companion.ACTUAL_ENTITY",
         "net.pototskiy.apps.lomout.api.entity.reader.*",
         "net.pototskiy.apps.lomout.api.entity.type.*",
         "net.pototskiy.apps.lomout.api.entity.values.*",

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [1.2.1]
+### Added
+- LM-40. Two constant added EntityRepositoryInterface.REMOVED_ENTITY and EntityRepositoryInterface.ACTUAL_ENTITY 
 ## [1.1.5]
 ### Added
 - parameter to switch off script cache usage
