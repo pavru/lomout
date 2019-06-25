@@ -21,8 +21,8 @@ before_script:
   - sed -i 's/all.zip/bin.zip/g' gradle/wrapper/gradle-wrapper.properties
 #  - sed -i 's/org.gradle.parallel=true/org.gradle.parallel=false/g' gradle.properties
 script:
-  - ./gradlew assemble --scan
-  - ./gradlew check --sacn
+  - ./gradlew assemble
+  - ./gradlew check
 env:
   global:
   - secure: SZ0Xngwo3zcMulrjIMXrT/HGQlgO5z6CyNLprLuKJAalGUplQ6qjDW7pkfg3j5XVTWJbJSJaPAjdaQZQsxJp852yjOKgxvLcov/IyjWcQvTbcripDl57sidijUthMlo1PlRx1rr3ck7wcIgHn8aAcPx80pnY+vkZyMndsGoLoK+f5TnVPCDlhBthjO8FwRtSWaaTJ91HsrsSnZyieAIN7thPM6OIOOHUYF4kD6wiN9qpqzA7G+sjw4W95c8Axng+UUYEqgKMs+LXrUB2iKOztSuFYVxlWUvb0CWkmuEkRPPBda17ufdQJt2004Njp5nVSQ1rXuQtPapRtT3UrXC+SGj61A+VIOQwRZ/Oz8sNVCO1SGRRqa8rkEYzCt6s4yTZsfcWtpu49VgVNfYYaJqSUWpyt3S4a1mYYbqhNpedxPcYUxeZO3NM6BUCO1qDS9d1nRuAMr1FAww2s+U6DFRQyLp5xi7wOiP/Wr78vndQLS0WKAYEiPz06hyw3GXPxdshOTCvN4TYnoFGFNASBppz8Z7vmH53pQ0rIb5yXbXAhJ2+O7RUD/im9vGdxmDQUFVSn/tDbJHUFuw8T3sfcINi6lEJhY7GYttUclo46iqLsw2PGSylP255zz/ng0x1YEWJnkScFSzK4mkIz1jdphp3oolTvqlraPSU50ChOQFBGDI=
