@@ -11,13 +11,13 @@ internal class PluginContextTest {
     @Test
     internal fun contextLogTest() {
         val plugin = TestPlugin()
-        assertThat(plugin.testLog(ROOT_LOG_NAME)).isTrue()
+        assertThat(plugin.testLog(ROOT_LOG_NAME)).isEqualTo(true)
         PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
-        assertThat(plugin.testLog(LOADER_LOG_NAME)).isTrue()
-        assertThat(plugin.testLog(MEDIATOR_LOG_NAME)).isFalse()
+        assertThat(plugin.testLog(LOADER_LOG_NAME)).isEqualTo(true)
+        assertThat(plugin.testLog(MEDIATOR_LOG_NAME)).isEqualTo(false)
         PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
-        assertThat(plugin.testLog(MEDIATOR_LOG_NAME)).isTrue()
-        assertThat(plugin.testLog(LOADER_LOG_NAME)).isFalse()
+        assertThat(plugin.testLog(MEDIATOR_LOG_NAME)).isEqualTo(true)
+        assertThat(plugin.testLog(LOADER_LOG_NAME)).isEqualTo(false)
     }
 
     class TestPlugin : Plugin() {

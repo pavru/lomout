@@ -3,9 +3,9 @@ package net.pototskiy.apps.lomout.api.source
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Source data field
@@ -129,7 +129,7 @@ data class Field(
          */
         fun parent(parent: String) {
             val field = definedFields.keys.find { it.name == parent }?.takeIf {
-                definedFields[it]?.valueType == AttributeListType::class
+                definedFields[it]?.type == ATTRIBUTELIST::class
             } ?: throw AppConfigException(
                 unknownPlace(),
                 "Parent field '$parent' must be defined and has type attribute list."

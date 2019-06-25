@@ -2,7 +2,7 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.DoubleListType
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -10,19 +10,19 @@ import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
 /**
- * Default writer for [DoubleListType] attribute
+ * Default writer for [DOUBLELIST] attribute
  *
  * @property locale String The value locale
  * @property quote Char? The value quote, optional
  * @property delimiter Char The list delimiter, default:,
  */
-open class DoubleListAttributeStringWriter : AttributeWriterPlugin<DoubleListType>() {
+open class DoubleListAttributeStringWriter : AttributeWriterPlugin<DOUBLELIST>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null
     var delimiter: Char = ','
 
     override fun write(
-        value: DoubleListType?,
+        value: DOUBLELIST?,
         cell: Cell
     ) {
         value?.let { list ->

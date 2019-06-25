@@ -10,8 +10,8 @@ import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
-import net.pototskiy.apps.lomout.database.initDatabase
 import net.pototskiy.apps.lomout.jcommander.CommandHelp
 import net.pototskiy.apps.lomout.jcommander.CommandMain
 import net.pototskiy.apps.lomout.jcommander.CommandVersion
@@ -21,15 +21,58 @@ import net.pototskiy.apps.lomout.printer.DataPrinter
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
+import org.joda.time.DateTime
+import org.joda.time.Duration
 import java.io.File
+import kotlin.system.exitProcess
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
+@Suppress("ReturnCount")
 fun main(args: Array<String>) {
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     val mainCommand = CommandMain()
+    if (parseArguments(mainCommand, args)) return
+    setLogLevel(mainCommand)
+
+    val startTime = DateTime()
+    statusLog.info("Application has started")
+    if (!File(mainCommand.configFile.first()).exists()) {
+        statusLog.error("File '{}' cannot be found.", mainCommand.configFile.first())
+        exitProcess(1)
+    }
+    CONFIG_BUILDER = ConfigurationBuilderFromDSL(
+        File(mainCommand.configFile.first()),
+        mainCommand.scriptCacheDir,
+        mainCommand.doNotUseScriptCache
+    )
+
+    val repository = EntityRepository(
+        CONFIG_BUILDER.config.database,
+        CONFIG_BUILDER.config.entityTypeManager,
+        Level.toLevel(mainCommand.sqlLogLevel)
+    )
+    setupPluginContext(File(mainCommand.configFile.first()))
+    PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
+    PluginContext.repository = repository
+
+    CONFIG_BUILDER.config.loader?.let { DataLoader.load(repository, CONFIG_BUILDER.config) }
+    PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
+    CONFIG_BUILDER.config.mediator?.let { DataMediator.mediate(repository, CONFIG_BUILDER.config) }
+    PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
+    CONFIG_BUILDER.config.printer?.let { DataPrinter.print(repository, CONFIG_BUILDER.config) }
+//    MediatorFactory.create(MediatorType.CATEGORY).merge()
+    val duration = Duration(startTime, DateTime()).standardSeconds
+    statusLog.info("Application has finished, duration: ${duration}s")
+}
+
+@Suppress("ReturnCount")
+private fun parseArguments(
+    mainCommand: CommandMain,
+    args: Array<String>
+): Boolean {
     val jCommander = JCommander.Builder()
         .addCommand(CommandHelp())
         .addCommand(CommandVersion())
@@ -41,38 +84,16 @@ fun main(args: Array<String>) {
     } catch (e: ParameterException) {
         println(e.message)
         jCommander.usage()
-        System.exit(1)
+        exitProcess(1)
     }
     if (jCommander.parsedCommand == "--help") {
         jCommander.usage()
-        return
+        return true
     } else if (jCommander.parsedCommand == "--version") {
         println("LoMout v${BuildInfo.lomoutVersion}")
-        return
+        return true
     }
-    setLogLevel(mainCommand)
-
-    statusLog.info("Application has started")
-
-    CONFIG_BUILDER = ConfigurationBuilderFromDSL(
-        File(mainCommand.configFile.first()),
-        mainCommand.scriptCacheDir,
-        mainCommand.doNotUseScriptCache
-    )
-    setupPluginContext(File(mainCommand.configFile.first()))
-    initDatabase(
-        CONFIG_BUILDER.config.database,
-        CONFIG_BUILDER.config.entityTypeManager,
-        Level.toLevel(mainCommand.sqlLogLevel)
-    )
-    PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
-    CONFIG_BUILDER.config.loader?.let { DataLoader.load(CONFIG_BUILDER.config) }
-    PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
-    CONFIG_BUILDER.config.mediator?.let { DataMediator.mediate(CONFIG_BUILDER.config) }
-    PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
-    CONFIG_BUILDER.config.printer?.let { DataPrinter.print(CONFIG_BUILDER.config) }
-//    MediatorFactory.create(MediatorType.CATEGORY).merge()
-    statusLog.info("Application has finished")
+    return false
 }
 
 /**

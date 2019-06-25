@@ -33,7 +33,6 @@ idea {
         iml {
             whenMerged {
                 val iModule = this as Module
-                val existingDeps = iModule.dependencies
                 iModule.dependencies.clear()
             }
         }
@@ -93,9 +92,24 @@ tasks.named<Test>("test") {
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     useJUnitPlatform()
-    testLogging {
-        events("passed", "skipped", "failed")
+    if (System.getenv("TRAVIS_BUILD_DIR") == null) {
+        testLogging {
+            events(
+                "passed",
+                "skipped",
+                "failed"
+            )
 //        events("passed", "skipped", "failed", "standardOut", "standardError")
+        }
+    } else {
+        testLogging {
+            events(
+                /*"passed",*/
+                "skipped",
+                "failed"
+            )
+//        events("passed", "skipped", "failed", "standardOut", "standardError")
+        }
     }
 }
 
@@ -168,7 +182,7 @@ dependencies {
     implementation("org.apache.poi", "poi", Versions.poi)
     implementation("org.apache.poi", "poi-ooxml", Versions.poi)
 // CSV
-    implementation("org.apache.commons", "commons-csv", "1.6")
+    implementation("org.apache.commons", "commons-csv", Versions.commonCsv)
 // MySql
     implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
 // Logger
@@ -180,6 +194,9 @@ dependencies {
 //    implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("script-util"))
     implementation(kotlin("scripting-jvm-host"))
+    // Cachw 2k
+    implementation("org.cache2k", "cache2k-api", Versions.cache2k)
+    runtimeOnly("org.cache2k", "cache2k-core", Versions.cache2k)
 // Test
 // testCompile(group = "junit", name = "junit", version = "4.12")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)

@@ -1,5 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.ParsePosition
@@ -28,6 +30,18 @@ fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
 }
 
 /**
+ * Convert [STRING] to Long according to the locale
+ *
+ * @receiver PersistentString
+ * @param locale The locale
+ * @param groupingUsed Grouping is used
+ * @return Long
+ */
+@Suppress("unused")
+fun STRING.stringToLong(locale: Locale, groupingUsed: Boolean): Long =
+    this.value.stringToLong(locale, groupingUsed)
+
+/**
  * Convert Long to String according to the locale
  *
  * @receiver Long
@@ -38,3 +52,13 @@ fun Long.longToString(locale: Locale): String {
     val format = NumberFormat.getIntegerInstance(locale)
     return format.format(this)
 }
+
+/**
+ * Convert [STRING] to String according to the locale
+ *
+ * @receiver PersistentLong
+ * @param locale The locale
+ * @return String
+ */
+@Suppress("unused")
+fun LONG.longToString(locale: Locale): String = this.value.longToString(locale)

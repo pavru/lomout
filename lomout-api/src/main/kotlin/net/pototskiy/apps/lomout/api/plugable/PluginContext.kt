@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.plugable
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -34,4 +35,8 @@ object PluginContext : PluginContextInterface {
         set(value) {
             bScriptFile = value
         }
+    /**
+     * Entity repository
+     */
+    override lateinit var repository: EntityRepositoryInterface
 }

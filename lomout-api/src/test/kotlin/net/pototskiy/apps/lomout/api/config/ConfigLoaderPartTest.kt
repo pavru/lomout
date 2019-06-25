@@ -1,7 +1,10 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.NoExitSecurityManager
+import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.createLocale
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -15,6 +18,7 @@ internal class ConfigLoaderPartTest {
     @BeforeEach
     internal fun setUp() {
         System.setSecurityManager(NoExitSecurityManager())
+        Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         config = ConfigurationBuilderFromDSL(
             File("${System.getenv("TEST_DATA_DIR")}/conf-test.conf.kts")
         ).config
@@ -40,15 +44,19 @@ internal class ConfigLoaderPartTest {
     @Test
     internal fun entitiesConfigurationTest() {
         assertThat(config.loader?.entities).hasSize(3)
-        assertThat(config.loader?.entities?.map { it.name }).containsExactlyElementsOf(listOf(
-            "test-entity-1", "test-entity-2", "onec-product"
-        ))
-        val entity1 = config.loader?.entities?.find { it.name == "test-entity-1" }
+        assertThat(config.loader?.entities?.map { it.name }).containsExactlyElementsOf(
+            listOf(
+                "test-entity-1", "test-entity-2", "onec-product"
+            )
+        )
+        val entity1 = config.loader?.entities?.get("test-entity-1")
         assertThat(entity1).isNotNull
         assertThat(entity1?.attributes).hasSize(5)
-        assertThat(entity1?.attributes?.map { it.name }).containsExactlyElementsOf(listOf(
-            "string-attr-1", "text-attr-1", "boolean-attr-1", "long-attr-1", "double-attr-1"
-            ))
+        assertThat(entity1?.attributes?.map { it.name }).containsExactlyElementsOf(
+            listOf(
+                "string-attr-1", "text-attr-1", "boolean-attr-1", "long-attr-1", "double-attr-1"
+            )
+        )
     }
 
     companion object {

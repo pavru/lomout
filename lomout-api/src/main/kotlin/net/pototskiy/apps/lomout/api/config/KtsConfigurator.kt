@@ -5,7 +5,9 @@ import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
 import org.jetbrains.kotlin.script.util.Repository
 import java.io.File
+import java.io.Serializable
 import kotlin.script.dependencies.ScriptContents
+import kotlin.script.experimental.api.ExternalSourceCode
 import kotlin.script.experimental.api.RefineScriptCompilationConfigurationHandler
 import kotlin.script.experimental.api.ResultWithDiagnostics
 import kotlin.script.experimental.api.ScriptCollectedData
@@ -16,21 +18,13 @@ import kotlin.script.experimental.api.asDiagnostics
 import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.foundAnnotations
 import kotlin.script.experimental.api.importScripts
-import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.updateClasspath
 
 /**
  * Config script configuration on annotations
- *
- * @property logger The logger
- * @property resolver The dependency resolver
  */
 @Suppress("ReturnCount", "TooGenericExceptionCaught")
-class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
-    private val logger = MainAndIdeLogger()
-
-    private val resolver = FilesAndIvyResolver()
-
+class KtsConfigurator : RefineScriptCompilationConfigurationHandler, Serializable {
     /**
      * Main configuration function
      *
@@ -40,13 +34,17 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
     override operator fun invoke(
         context: ScriptConfigurationRefinementContext
     ): ResultWithDiagnostics<ScriptCompilationConfiguration> {
+        val resolver = FilesAndIvyResolver()
+        val logger = MainAndIdeLogger()
+
         val diagnostics = arrayListOf<ScriptDiagnostic>()
 
         val annotations = context.collectedData
             ?.get(ScriptCollectedData.foundAnnotations)?.takeIf { it.isNotEmpty() }
             ?: return context.compilationConfiguration.asSuccess()
 
-        val scriptBaseDir = (context.script as? FileScriptSource)?.file?.parentFile
+        val scriptLocation = (context.script as? ExternalSourceCode)?.externalLocation?.toURI()
+        val scriptBaseDir = if (scriptLocation != null) File(scriptLocation).parentFile else null
         val importedSources = getImportScripts(annotations, scriptBaseDir)
 
         val resolvedClassPath = try {
@@ -91,10 +89,10 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler {
     private fun getImportScripts(
         annotations: List<Annotation>,
         scriptBaseDir: File?
-    ): List<FileScriptSource> {
+    ): List<SerializableFileScriptSource> {
         return annotations.flatMap {
             (it as? Import)?.paths?.map { sourceName ->
-                FileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
+                SerializableFileScriptSource(scriptBaseDir?.resolve(sourceName) ?: File(sourceName))
             } ?: emptyList()
         }
     }

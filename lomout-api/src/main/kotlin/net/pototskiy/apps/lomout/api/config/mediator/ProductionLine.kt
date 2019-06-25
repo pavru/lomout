@@ -93,7 +93,7 @@ class ProductionLine(
          * ```
          * ...
          *  output("entity type name") {
-         *      inheritFrom("name") {...}
+         *      copyFrom("name") {...}
          *      attribute<Type> {...}
          *      attribute<Type> {...}
          *      ...

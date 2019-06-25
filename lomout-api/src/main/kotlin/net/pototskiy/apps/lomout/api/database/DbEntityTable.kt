@@ -3,13 +3,14 @@
 package net.pototskiy.apps.lomout.api.database
 
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.entityStatus
 import net.pototskiy.apps.lomout.api.entity.entityType
 import org.jetbrains.exposed.dao.IntIdTable
 
 /**
  * Exposed entity DB table
  */
-object DbEntityTable : IntIdTable("entity") {
+internal object DbEntityTable : IntIdTable("entity") {
     /**
      * Entity type manager
      */
@@ -21,70 +22,38 @@ object DbEntityTable : IntIdTable("entity") {
     /**
      * Change flag
      */
-    val touchedInLoading = bool("touched_in_loading").index()
+    val touchedInLoading = bool("touched_in_loading")
     /**
      * Previous entity status
      */
-    val previousStatus = entityStatus("previous_status").nullable().index()
+    val previousStatus = entityStatus("previous_status").nullable()
     /**
      * Current entity status
      */
-    val currentStatus = entityStatus("current_status").index()
+    val currentStatus = entityStatus("current_status")
     /**
      * Timestamp of creating
      */
-    val created = datetime("created").index()
+    val created = datetime("created")
     /**
      * Timestamp of updating
      */
-    val updated = datetime("updated").index()
+    val updated = datetime("updated")
     /**
      * Timestamp of removing
      */
-    val removed = datetime("removed").nullable().index()
+    val removed = datetime("removed").nullable()
     /**
      * Absent (in a source) days
      */
     val absentDays = integer("absent_days").index()
-}
 
-/**
- * DbEntityTable synonym
- */
-val EntityTab = DbEntityTable
-/**
- * DbEntityTable.id synonym
- */
-val EntityIdCol = DbEntityTable.id
-/**
- * DbEntityTable.entityType synonym
- */
-val EntityTypeCol = DbEntityTable.entityType
-/**
- * DbEntityTable.touchedInLoading synonym
- */
-val EntityTouchedCol = DbEntityTable.touchedInLoading
-/**
- * DbEntityTable.previousStatus synonym
- */
-val EntityPStatusCol = DbEntityTable.previousStatus
-/**
- * DbEntityTable.currentStatus synonym
- */
-val EntityCStatusCol = DbEntityTable.currentStatus
-/**
- * DbEntityTable.created synonym
- */
-val EntityCreatedCol = DbEntityTable.created
-/**
- * DbEntityTable.updated synonym
- */
-val EntityUpdatedCol = DbEntityTable.updated
-/**
- * DbEntityTable.removed synonym
- */
-val EntityRemovedCol = DbEntityTable.removed
-/**
- * DbEntityTable.absentDays synonym
- */
-val EntityAbsentCol = DbEntityTable.absentDays
+    init {
+        uniqueIndex(
+            "entity_idx_type_id_status",
+            entityType,
+            id,
+            currentStatus
+        )
+    }
+}

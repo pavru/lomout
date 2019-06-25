@@ -14,8 +14,8 @@ data class DatabaseConfig(
     /**
      * Database configuration builder
      *
-     * @property name String
-     * @property server DatabaseServerConfig?
+     * @property name The database configuration name
+     * @property server The database server configuration
      * @constructor
      */
     @ConfigDsl

@@ -3,11 +3,14 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
 import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.lomout.api.entity.BooleanListType
-import net.pototskiy.apps.lomout.api.entity.BooleanType
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -29,18 +32,24 @@ import kotlin.reflect.full.createInstance
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultBooleanReaderTest {
 
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<BooleanType>
+    private lateinit var attr: Attribute<BOOLEAN>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        attr = typeManager.createAttribute("attr", BooleanType::class)
-        entity = typeManager.createEntityType("test", emptyList(), false).also {
+        @Suppress("UNCHECKED_CAST")
+        attr = typeManager.createAttribute(
+            "attr", BOOLEAN::class,
+            builder = null,
+            reader = defaultReaders[BOOLEAN::class] as AttributeReader<out BOOLEAN>,
+            writer = defaultWriters[BOOLEAN::class] as AttributeWriter<out BOOLEAN>
+        )
+        entity = typeManager.createEntityType("test", false).also {
             typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
@@ -61,10 +70,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isTrue()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue(0.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isFalse()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -72,10 +81,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isTrue()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isFalse()
+        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -83,10 +92,10 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("true")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isTrue()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue("false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isFalse()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -102,10 +111,10 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("истИНа")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isTrue()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(true)
         xlsTestDataCell.setCellValue("Ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isFalse()
+        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(false)
     }
 
     @Test
@@ -119,7 +128,7 @@ internal class DefaultBooleanReaderTest {
     @Test
     internal fun defaultBooleanReaderTest() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[BooleanType::class]
+        val reader = defaultReaders[BOOLEAN::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin
@@ -133,7 +142,7 @@ internal class DefaultBooleanReaderTest {
     @Test
     internal fun defaultBooleanListReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[BooleanListType::class]
+        val reader = defaultReaders[BOOLEANLIST::class]
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
         reader as AttributeReaderWithPlugin

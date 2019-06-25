@@ -32,7 +32,7 @@ internal class LoadConfigurationTest {
         try {
             ConfigurationBuilderFromDSL(File(compileErrorConf)).config
         } catch (e: Exception) {
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
@@ -46,12 +46,12 @@ internal class LoadConfigurationTest {
         try {
             ConfigurationBuilderFromDSL(File(emptyConf)).config
         } catch (e: Exception) {
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
         @Suppress("RegExpRedundantEscape", "GraziInspection")
-        assertThat(log.contains(Regex("^\\[ERROR\\] .* - Script cannot be evaluated$"))).isTrue()
+        assertThat(log.contains(Regex("^\\[ERROR\\] .* - Script cannot be evaluated$"))).isEqualTo(true)
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -61,7 +61,7 @@ internal class LoadConfigurationTest {
         try {
             ConfigurationBuilderFromDSL(File(evaluateErrorConf)).config
         } catch (e: Exception) {
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
@@ -75,7 +75,7 @@ internal class LoadConfigurationTest {
         try {
             ConfigurationBuilderFromDSL(File(importErrorConf)).config
         } catch (e: Exception) {
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
@@ -85,7 +85,7 @@ internal class LoadConfigurationTest {
                     ".*ERROR.*- Source file or directory not found.*absent-file.plugin.conf.kts"
                 )
             )
-        ).isTrue()
+        ).isEqualTo(true)
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -95,7 +95,7 @@ internal class LoadConfigurationTest {
         try {
             ConfigurationBuilderFromDSL(File(depenedsOnErrorConf)).config
         } catch (e: Exception) {
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
@@ -105,7 +105,7 @@ internal class LoadConfigurationTest {
                     ".*ERROR.*- Unable to resolve dependency.*absent-file.plugin.conf.kts"
                 )
             )
-        ).isTrue()
+        ).isEqualTo(true)
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -117,10 +117,10 @@ internal class LoadConfigurationTest {
             assertThat(v.config).isNotNull
             assertThat(v.config).isNotNull
         } catch (e: Exception) {
-            assertThat(true).isTrue()
+            assertThat(true).isEqualTo(true)
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
-        assertThat(log.contains("ERROR")).isFalse()
+        assertThat(log.contains("ERROR")).isEqualTo(false)
     }
 }

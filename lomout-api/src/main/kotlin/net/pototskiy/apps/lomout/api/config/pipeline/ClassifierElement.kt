@@ -1,68 +1,49 @@
 package net.pototskiy.apps.lomout.api.config.pipeline
 
-import net.pototskiy.apps.lomout.api.config.mediator.PipelineDataCollection
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import org.jetbrains.exposed.dao.EntityID
+import net.pototskiy.apps.lomout.api.entity.Entity
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
 
 /**
  * Pipeline classifier result
  */
-sealed class ClassifierElement(
-    private val pipelineDataCache: PipelineDataCache
-) {
+sealed class ClassifierElement {
     /**
      * Entity IDs of element to classify
      */
-    abstract val ids: List<ElementID>
-    /**
-     * Entities of element
-     */
-    val entities by lazy { PipelineDataCollection(ids.map { pipelineDataCache.readEntity(it.id) }) }
-
-    /**
-     * Classifier entity identifier
-     *
-     * @property type EntityType
-     * @property id Int
-     * @constructor
-     */
-    data class ElementID(
-        val type: EntityType,
-        val id: EntityID<Int>
-    )
+    abstract val entities: EntityCollection
 
     /**
      * Element that is matched to classifier
      *
-     * @property ids List<ElementID>
+     * @property entities The entity collection
      * @constructor
      */
-    class Matched(
-        override val ids: List<ElementID>,
-        pipelineDataCache: PipelineDataCache
-    ) : ClassifierElement(pipelineDataCache)
+    class Matched(override val entities: EntityCollection) : ClassifierElement() {
+        @Suppress("unused")
+        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+    }
 
     /**
      * Element that is not matched to classifier
      *
-     * @property ids List<ElementID>
+     * @property entities The entity collection
      * @constructor
      */
-    class Mismatched(
-        override val ids: List<ElementID>,
-        pipelineDataCache: PipelineDataCache
-    ) : ClassifierElement(pipelineDataCache)
+    class Mismatched(override val entities: EntityCollection) : ClassifierElement() {
+        @Suppress("unused")
+        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+    }
 
     /**
      * Element should be skipped
      *
-     * @property ids List<ElementID>
+     * @property entities Entities list
      * @constructor
      */
-    class Skipped(
-        override val ids: List<ElementID>,
-        pipelineDataCache: PipelineDataCache
-    ) : ClassifierElement(pipelineDataCache)
+    class Skipped(override val entities: EntityCollection) : ClassifierElement() {
+        @Suppress("unused")
+        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+    }
 
     /**
      * Create the matched element
@@ -70,25 +51,31 @@ sealed class ClassifierElement(
      * @receiver ClassifierElement
      * @return Matched
      */
-    fun match() = Matched(this.ids, this.pipelineDataCache)
+    fun match() = Matched(this.entities)
 
     /**
      * Create the matched element
      *
-     * @param addElement ElementID
+     * @param entity The entity to add to element
      * @return Matched
      */
-    fun match(addElement: ElementID) =
-        Matched(this.ids.plus(addElement), this.pipelineDataCache)
+    fun match(entity: Entity) = Matched(EntityCollection(this.entities.plus(entity)))
 
     /**
      * Create the matched element
      *
-     * @param addElements List<ElementID>
+     * @param entities Entities to add to element
      * @return Matched
      */
-    fun match(addElements: List<ElementID>) =
-        Matched(this.ids.plus(addElements), this.pipelineDataCache)
+    fun match(entities: EntityCollection) = Matched(EntityCollection(this.entities.plus(entities)))
+
+    /**
+     * Create the matched element
+     *
+     * @param entities Entities to add to element
+     * @return Matched
+     */
+    fun match(entities: List<Entity>) = Matched(EntityCollection(this.entities.plus(entities)))
 
     /**
      * Create the element mismatched
@@ -96,12 +83,12 @@ sealed class ClassifierElement(
      * @receiver ClassifierElement
      * @return Mismatched
      */
-    fun mismatch() = Mismatched(this.ids, this.pipelineDataCache)
+    fun mismatch() = Mismatched(this.entities)
 
     /**
      * Create the skipped element
      *
      * @return Skipped
      */
-    fun skip() = Skipped(this.ids, this.pipelineDataCache)
+    fun skip() = Skipped(this.entities)
 }

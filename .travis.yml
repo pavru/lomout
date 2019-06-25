@@ -4,19 +4,34 @@ language: java
 git:
   depth: false
 before_install:
-- mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE =
-  'utf8_general_ci';"
-- mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE
-  = 'utf8_general_ci';"
+  - mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+  - mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+before_script:
+  - sudo service postgresql stop || true
+  - sudo service redis stop || true
+  - sudo service memcached stop || true
+  - sudo service bootlogd stop || true
+  - sudo service elasticsearch stop || true
+  - sudo service mongodb stop || true
+  - sudo service neo4j stop || true
+  - sudo service cassandra stop || true
+  - sudo service riak stop || true
+  - sudo service rsync stop || true
+  - sudo service x11-common stop || true
+  - sed -i 's/all.zip/bin.zip/g' gradle/wrapper/gradle-wrapper.properties
+#  - sed -i 's/org.gradle.parallel=true/org.gradle.parallel=false/g' gradle.properties
+script:
+  - ./gradlew assemble
+  - ./gradlew check
 env:
   global:
   - secure: SZ0Xngwo3zcMulrjIMXrT/HGQlgO5z6CyNLprLuKJAalGUplQ6qjDW7pkfg3j5XVTWJbJSJaPAjdaQZQsxJp852yjOKgxvLcov/IyjWcQvTbcripDl57sidijUthMlo1PlRx1rr3ck7wcIgHn8aAcPx80pnY+vkZyMndsGoLoK+f5TnVPCDlhBthjO8FwRtSWaaTJ91HsrsSnZyieAIN7thPM6OIOOHUYF4kD6wiN9qpqzA7G+sjw4W95c8Axng+UUYEqgKMs+LXrUB2iKOztSuFYVxlWUvb0CWkmuEkRPPBda17ufdQJt2004Njp5nVSQ1rXuQtPapRtT3UrXC+SGj61A+VIOQwRZ/Oz8sNVCO1SGRRqa8rkEYzCt6s4yTZsfcWtpu49VgVNfYYaJqSUWpyt3S4a1mYYbqhNpedxPcYUxeZO3NM6BUCO1qDS9d1nRuAMr1FAww2s+U6DFRQyLp5xi7wOiP/Wr78vndQLS0WKAYEiPz06hyw3GXPxdshOTCvN4TYnoFGFNASBppz8Z7vmH53pQ0rIb5yXbXAhJ2+O7RUD/im9vGdxmDQUFVSn/tDbJHUFuw8T3sfcINi6lEJhY7GYttUclo46iqLsw2PGSylP255zz/ng0x1YEWJnkScFSzK4mkIz1jdphp3oolTvqlraPSU50ChOQFBGDI=
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - "$HOME/.gradle/caches/"
+#  - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 addons:
   sonarcloud:
@@ -24,6 +39,6 @@ addons:
     token:
       secure: "Ii7rtNJivsmPK5wUb1uZ5QM6ZbqYYKwvFsVrd8w6kwo+L5STBOsga1s05hOpcWSXOVRCeM32HJ0aXsS2EpWL2Zke5+H78d+EtbPxVxmaF24LHtITE8VhjeBIa8fThbNZBQQ+SrpHJ0gIxPNLwD9yXrTYEtAeozSlV9IlnSBV7R1vuPKanZVX21Q/zIp8XbGocCgKCxQAMu0DibaoPSckF0VIjDMdADMGhgVZug0MWgm4TPBQ2KjBUd3Be4sp6XAWh8HT2Zr6sC35FfnBZ6nuGucB3heGurOoWOUG8BqeNhDqlaVNeLyhA1Ev4jLXjUJy8UQYI2Jotarntd3CZNSL6yd70R+9nnh50RfA84YARHm4TVdWXrtRA/6cmU9WVhisgFypKRTqG9APLkA32PMlDQQy/VCEaDILsIW99StfEAfgQmjP1eVyccK0dqE5tHzWFTRGqObSSVTAIkfI6JO632mJ2UfM6+P8fpheW1mx94xUhiGuwWaLgVkB0KgLvi2xpIEPHIyNAW+9g2lMvm3ziMXuNy2+YKtLy0DpxKP8BIGhcoEh8+ycLVYu1nyTo0lOtrV0m4nVXvu9POv5dDZHj4MoDa80eS3U3eyJfGakVUF5u07zNOSZicjziHkFlP7AimTOkU2gu8NaVnbzISJfkxb0UWUzTcrttiQTEmgRk1E="
 after_success:
-- "./gradlew codeCoverageReport"
-- sonar-scanner
-- bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/
+  - "./gradlew codeCoverageReport"
+  - sonar-scanner
+  - bash <(curl -s https://codecov.io/bash) -s build/reports/jacoco/

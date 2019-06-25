@@ -71,7 +71,7 @@ class PrinterLine(
                         "One and only one input entity is allowed for printer line."
                     )
                 }
-                if (it.first().extAttrMaps.isNotEmpty()) {
+                if (it.first().extAttributes.isNotEmpty()) {
                     throw AppConfigException(
                         unknownPlace(),
                         "Input entity of printer line cannot have extended attributes."

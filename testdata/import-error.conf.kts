@@ -34,7 +34,7 @@ config {
                 entity("test")
             }
             output("import-test") {
-                inheritFrom("test")
+                copyFrom("test")
             }
             pipeline {
                 assembler { _, _ -> emptyMap() }

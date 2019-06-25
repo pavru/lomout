@@ -1,7 +1,3 @@
-@file:Import("NotRemovedFilter.plugin.conf.kts")
-
-import NotRemovedFilter_plugin_conf.NotRemovedFilter
-
 config {
     database {
         name("test_db_name")
@@ -30,65 +26,65 @@ config {
         }
         entities {
             entity("test-entity-1", false) {
-                attribute<StringType>("string-attr-1") {
-                    reader { _, _ -> StringType("test reader function") }
+                attribute<STRING>("string-attr-1") {
+                    reader { _, _ -> STRING("test reader function") }
                 }
-                attribute<TextType>("text-attr-1") { key() }
-                attribute<BooleanType>("boolean-attr-1") { nullable() }
-                attribute<LongType>("long-attr-1")
-                attribute<DoubleType>("double-attr-1")
+                attribute<TEXT>("text-attr-1") { key() }
+                attribute<BOOLEAN>("boolean-attr-1") { nullable() }
+                attribute<LONG>("long-attr-1")
+                attribute<DOUBLE>("double-attr-1")
             }
             entity("test-entity-2", true) {
-                attribute<StringListType>("string-list-attr-2")
-                attribute<BooleanListType>("boolean-list-attr-2")
-                attribute<LongListType>("long-list-attr-2")
-                attribute<DoubleListType>("double-list-2")
-                attribute<AttributeListType>("attribute-list-2")
+                attribute<STRINGLIST>("string-list-attr-2")
+                attribute<BOOLEANLIST>("boolean-list-attr-2")
+                attribute<LONGLIST>("long-list-attr-2")
+                attribute<DOUBLELIST>("double-list-2")
+                attribute<ATTRIBUTELIST>("attribute-list-2")
             }
             entity("onec-product", false) {
-                attribute<StringType>("sku") { key() }
-                attribute<TextType>("description")
-                attribute<BooleanType>("bool_val")
-                attribute<LongType>("long_val") {
+                attribute<STRING>("sku") { key() }
+                attribute<TEXT>("description")
+                attribute<BOOLEAN>("bool_val")
+                attribute<LONG>("long_val") {
                     reader<LongAttributeReader> { locale = "ru_RU" }
                 }
-                attribute<DoubleType>("double_val") {
+                attribute<DOUBLE>("double_val") {
                     reader<DoubleAttributeReader> { locale = "ru_RU" }
                 }
-                attribute<DateType>("date_val") {
+                attribute<DATE>("date_val") {
                     reader<DateAttributeReader> { pattern = "d.M.yy" }
                 }
-                attribute<DateTimeType>("datetime_val") {
+                attribute<DATETIME>("datetime_val") {
                     reader<DateTimeAttributeReader> { pattern = "d.M.yy H:m" }
                 }
-                attribute<StringListType>("string_list") {
+                attribute<STRINGLIST>("string_list") {
                     reader<StringListAttributeReader> { delimiter = ','; quote = null }
                 }
-                attribute<BooleanListType>("bool_list") {
+                attribute<BOOLEANLIST>("bool_list") {
                     reader<BooleanListAttributeReader> { delimiter = ','; quote = null }
                 }
-                attribute<LongListType>("long_list") {
+                attribute<LONGLIST>("long_list") {
                     reader<LongListAttributeReader> { delimiter = ','; quote = null }
                 }
-                attribute<DoubleListType>("double_list") {
+                attribute<DOUBLELIST>("double_list") {
                     reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = '|'; quote = null }
                 }
-                attribute<DateListType>("date_list") {
+                attribute<DATELIST>("date_list") {
                     reader<DateListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy" }
                 }
-                attribute<DateTimeListType>("datetime_list") {
+                attribute<DATETIMELIST>("datetime_list") {
                     reader<DateTimeListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy H:m" }
                 }
-                attribute<AttributeListType>("compound") {
+                attribute<ATTRIBUTELIST>("compound") {
                     reader<AttributeListReader> {
                         delimiter = ',';quote = null;valueDelimiter = '=';valueQuote = '"'
                     }
                 }
-                attribute<LongType>("nested1")
-                attribute<LongType>("nested2")
+                attribute<LONG>("nested1")
+                attribute<LONG>("nested2")
 
-                attribute<StringType>("group_code") { nullable() }
-                attribute<StringType>("group_name") { nullable() }
+                attribute<STRING>("group_code") { nullable() }
+                attribute<STRING>("group_name") { nullable() }
             }
         }
         loadEntity("onec-product") {
@@ -155,13 +151,11 @@ config {
         productionLine {
             input {
                 entity("onec-product") {
-                    filter {
-                        it[DbEntityTable.currentStatus] neq EntityStatus.REMOVED
-                    }
+                    statuses(EntityStatus.CREATED,EntityStatus.UPDATED,EntityStatus.UNCHANGED)
                 }
             }
             output("import-product") {
-                inheritFrom("onec-product")
+                copyFrom("onec-product")
             }
             pipeline {
                 assembler { _, _ -> emptyMap() }
@@ -170,12 +164,10 @@ config {
         productionLine {
             input {
                 entity("onec-product") {
-                    filter<NotRemovedFilter>()
+                    statuses(EntityStatus.CREATED,EntityStatus.UPDATED,EntityStatus.UNCHANGED)
                 }
             }
-            output("import-product") {
-                inheritFrom("onec-product")
-            }
+            output("import-product")
             pipeline {
                 assembler { _, _ -> emptyMap() }
             }

@@ -16,7 +16,7 @@ sealed class PipelineClassifier {
      * @param element ClassifierElement Element to classify
      * @return ClassifierElement
      */
-    fun classify(element: ClassifierElement): ClassifierElement {
+    operator fun invoke(element: ClassifierElement): ClassifierElement {
         return when (this) {
             is PipelineClassifierWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)

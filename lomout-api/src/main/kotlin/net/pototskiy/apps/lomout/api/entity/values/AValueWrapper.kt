@@ -3,22 +3,22 @@ package net.pototskiy.apps.lomout.api.entity.values
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.badData
 import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
-import net.pototskiy.apps.lomout.api.entity.BooleanListType
-import net.pototskiy.apps.lomout.api.entity.BooleanType
-import net.pototskiy.apps.lomout.api.entity.DateListType
-import net.pototskiy.apps.lomout.api.entity.DateTimeListType
-import net.pototskiy.apps.lomout.api.entity.DateTimeType
-import net.pototskiy.apps.lomout.api.entity.DateType
-import net.pototskiy.apps.lomout.api.entity.DoubleListType
-import net.pototskiy.apps.lomout.api.entity.DoubleType
-import net.pototskiy.apps.lomout.api.entity.LongListType
-import net.pototskiy.apps.lomout.api.entity.LongType
-import net.pototskiy.apps.lomout.api.entity.StringListType
-import net.pototskiy.apps.lomout.api.entity.StringType
-import net.pototskiy.apps.lomout.api.entity.TextListType
-import net.pototskiy.apps.lomout.api.entity.TextType
-import net.pototskiy.apps.lomout.api.entity.Type
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
+import net.pototskiy.apps.lomout.api.entity.type.DATE
+import net.pototskiy.apps.lomout.api.entity.type.DATELIST
+import net.pototskiy.apps.lomout.api.entity.type.DATETIME
+import net.pototskiy.apps.lomout.api.entity.type.DATETIMELIST
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.LONGLIST
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
+import net.pototskiy.apps.lomout.api.entity.type.TEXT
+import net.pototskiy.apps.lomout.api.entity.type.TEXTLIST
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.joda.time.DateTime
@@ -32,39 +32,38 @@ import org.joda.time.DateTime
  * @throws AppDataException The value cannot be wrapped to [Type]
  */
 @Suppress("ComplexMethod")
-fun wrapAValue(attribute: AnyTypeAttribute, value: Any?): Type? {
-    if (value == null) return null
+fun wrapAValue(attribute: AnyTypeAttribute, value: Any): Type {
     @Suppress("UNCHECKED_CAST")
-    return when (attribute.valueType) {
-        BooleanType::class -> (value as? Boolean)?.let { BooleanType(it) }
-        LongType::class -> (value as? Long)?.let { LongType(it) }
-        DoubleType::class -> (value as? Double)?.let { DoubleType(it) }
-        StringType::class -> (value as? String)?.let { StringType(it) }
-        DateType::class -> (value as? DateTime)?.let { DateType(it) }
-        DateTimeType::class -> (value as? DateTime)?.let { DateTimeType(it) }
-        TextType::class -> (value as? String)?.let { TextType(it) }
-        BooleanListType::class -> (value as? List<Boolean>)?.let { list ->
-            BooleanListType(list.map { BooleanType(it) })
+    return when (attribute.type) {
+        BOOLEAN::class -> (value as? Boolean)?.let { BOOLEAN(it) }
+        LONG::class -> (value as? Long)?.let { LONG(it) }
+        DOUBLE::class -> (value as? Double)?.let { DOUBLE(it) }
+        STRING::class -> (value as? String)?.let { STRING(it) }
+        DATE::class -> (value as? DateTime)?.let { DATE(it) }
+        DATETIME::class -> (value as? DateTime)?.let { DATETIME(it) }
+        TEXT::class -> (value as? String)?.let { TEXT(it) }
+        BOOLEANLIST::class -> (value as? List<Boolean>)?.let { list ->
+            BOOLEANLIST(list.map { BOOLEAN(it) })
         }
-        LongListType::class -> (value as? List<Long>)?.let { list ->
-            LongListType(list.map { LongType(it) })
+        LONGLIST::class -> (value as? List<Long>)?.let { list ->
+            LONGLIST(list.map { LONG(it) })
         }
-        DoubleListType::class -> (value as? List<Double>)?.let { list ->
-            DoubleListType(list.map { DoubleType(it) })
+        DOUBLELIST::class -> (value as? List<Double>)?.let { list ->
+            DOUBLELIST(list.map { DOUBLE(it) })
         }
-        StringListType::class -> (value as? List<String>)?.let { list ->
-            StringListType(list.map { StringType(it) })
+        STRINGLIST::class -> (value as? List<String>)?.let { list ->
+            STRINGLIST(list.map { STRING(it) })
         }
-        DateListType::class -> (value as? List<DateTime>)?.let { list ->
-            DateListType(list.map { DateType(it) })
+        DATELIST::class -> (value as? List<DateTime>)?.let { list ->
+            DATELIST(list.map { DATE(it) })
         }
-        DateTimeListType::class -> (value as? List<DateTime>)?.let { list ->
-            DateTimeListType(list.map { DateTimeType(it) })
+        DATETIMELIST::class -> (value as? List<DateTime>)?.let { list ->
+            DATETIMELIST(list.map { DATETIME(it) })
         }
-        TextListType::class -> (value as? List<String>)?.let { list ->
-            TextListType(list.map { TextType(it) })
+        TEXTLIST::class -> (value as? List<String>)?.let { list ->
+            TEXTLIST(list.map { TEXT(it) })
         }
-        AttributeListType::class -> (value as? Map<String, Cell>)?.let { AttributeListType(it) }
+        ATTRIBUTELIST::class -> (value as? Map<String, Cell>)?.let { ATTRIBUTELIST(it) }
         else -> throw AppDataException(
             badData(value) + attribute,
             "Unexpected type."

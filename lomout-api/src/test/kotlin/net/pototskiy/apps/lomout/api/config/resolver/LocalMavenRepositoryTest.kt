@@ -9,7 +9,9 @@ internal class LocalMavenRepositoryTest {
     @Test
     @DisabledIfEnvironmentVariable(named = "TRAVIS_BUILD_DIR", matches = ".*")
     internal fun homeFolderTest() {
+        @Suppress("UsePropertyAccessSyntax")
         assertThat(LocalMavenRepository.findLocalMavenRepo()).isNotNull()
+        @Suppress("UsePropertyAccessSyntax")
         assertThat(localMaven().string).isNotBlank()
     }
     @Test

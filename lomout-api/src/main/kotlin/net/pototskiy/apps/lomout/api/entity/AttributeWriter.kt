@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
@@ -19,7 +20,7 @@ sealed class AttributeWriter<T : Type> {
      * @param value T? The value to write
      * @param cell Cell The cell to write
      */
-    fun write(value: T?, cell: Cell) {
+    operator fun invoke(value: T?, cell: Cell) {
         return when (this) {
             is AttributeWriterWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)

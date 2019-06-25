@@ -5,8 +5,8 @@ import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.DoubleListType
-import net.pototskiy.apps.lomout.api.entity.DoubleType
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.plus
@@ -16,7 +16,7 @@ import org.apache.commons.csv.CSVFormat
 import java.text.ParseException
 
 /**
- * Default reader for [DoubleListType] attribute
+ * Default reader for [DOUBLELIST] attribute
  *
  * @property locale The value locale, default: system locale
  * @property quote The value quote, optional
@@ -24,13 +24,13 @@ import java.text.ParseException
  * @property groupingUsed Indicate that number uses digit grouping
  */
 @Suppress("MemberVisibilityCanBePrivate")
-open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
+open class DoubleListAttributeReader : AttributeReaderPlugin<DOUBLELIST>() {
     var locale: String = DEFAULT_LOCALE_STR
     var quote: Char? = null
     var delimiter: Char = ','
     var groupingUsed: Boolean = false
 
-    override fun read(attribute: Attribute<out DoubleListType>, input: Cell): DoubleListType? =
+    override fun read(attribute: Attribute<out DOUBLELIST>, input: Cell): DOUBLELIST? =
         when (input.cellType) {
             CellType.STRING -> {
                 val listValue = input.stringValue.reader().use { reader ->
@@ -42,17 +42,19 @@ open class DoubleListAttributeReader : AttributeReaderPlugin<DoubleListType>() {
                             .parse(reader)
                             .records
                             .map { it.toList() }.flatten()
-                            .map { DoubleType(it.stringToDouble(locale.createLocale(), groupingUsed)) }
+                            .map {
+                                DOUBLE(it.stringToDouble(locale.createLocale(), groupingUsed))
+                            }
                     } catch (e: ParseException) {
                         throw AppDataException(badPlace(attribute) + input, e.message, e)
                     }
                 }
-                DoubleListType(listValue)
+                DOUBLELIST(listValue)
             }
             CellType.BLANK -> null
             else -> throw AppDataException(
                 badPlace(input) + attribute,
-                "Reading Double from the cell is not supported."
+                "Cannot read Double from the cell."
             )
         }
 }

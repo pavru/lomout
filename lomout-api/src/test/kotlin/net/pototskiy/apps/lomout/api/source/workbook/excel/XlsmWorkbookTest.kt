@@ -20,9 +20,9 @@ internal class XlsmWorkbookTest {
             assertThat(workbook).isInstanceOf(ExcelWorkbook::class.java)
             assertThat(workbook.type).isEqualTo(WorkbookType.EXCEL)
             assertThat(workbook.name).contains("test-xlsm.xlsm")
-            assertThat(workbook.hasSheet("Sheet1")).isTrue()
-            assertThat(workbook.hasSheet("Sheet2")).isTrue()
-            assertThat(workbook.hasSheet("Sheet5")).isFalse()
+            assertThat(workbook.hasSheet("Sheet1")).isEqualTo(true)
+            assertThat(workbook.hasSheet("Sheet2")).isEqualTo(true)
+            assertThat(workbook.hasSheet("Sheet5")).isEqualTo(false)
             assertThat(workbook["Sheet1"]).isInstanceOf(ExcelSheet::class.java)
             assertThat(workbook["Sheet1"].name).isEqualTo(workbook[0].name)
         }

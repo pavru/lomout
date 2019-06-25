@@ -9,6 +9,7 @@ import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.LogManager
 import org.joda.time.DateTime
@@ -16,15 +17,15 @@ import org.joda.time.Duration
 import java.util.concurrent.atomic.*
 
 object DataLoader {
-    private const val millisInSecond = 1000.0
     private val processedRows = AtomicLong(0)
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
     @ObsoleteCoroutinesApi
-    fun load(config: Config) = runBlocking {
+    fun load(repository: EntityRepositoryInterface, config: Config) = runBlocking {
         val loader = config.loader ?: return@runBlocking
         statusLog.info("Data loading has started")
+        repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.LOADER
         val startTime = DateTime()
         val jobs = mutableListOf<Job>()
         val orderedLoads = loader.loads.map { load ->
@@ -44,7 +45,7 @@ object DataLoader {
                         } else {
                             workbook.filter { source.sheet.isMatch(it.name) }.forEach {
                                 log.debug("Start loading sheet<{}> from the file<{}>", it.name, file.id)
-                                EntityLoader(load, source.emptyRowBehavior, it).apply {
+                                EntityLoader(repository, load, source.emptyRowBehavior, it).apply {
                                     load()
                                     this@DataLoader.processedRows.addAndGet(processedRows)
                                 }
@@ -58,7 +59,7 @@ object DataLoader {
         }
         @Suppress("SpreadOperator")
         joinAll(*jobs.toTypedArray())
-        val duration = Duration(startTime, DateTime()).millis.toDouble() / millisInSecond
+        val duration = Duration(startTime, DateTime()).standardSeconds
         statusLog.info("Data loading has finished, duration: ${duration}s, rows: ${processedRows.get()}")
     }
 }

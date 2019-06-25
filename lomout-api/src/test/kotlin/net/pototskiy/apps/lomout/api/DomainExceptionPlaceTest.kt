@@ -1,8 +1,12 @@
 package net.pototskiy.apps.lomout.api
 
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.setFileName
@@ -14,10 +18,30 @@ import java.io.File
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class DomainExceptionPlaceTest {
-    private val manager = EntityTypeManager()
-    private val attr1 = manager.createAttribute("attr1", StringType::class)
-    private val attr2 = manager.createAttribute("attr2", StringType::class)
-    private val entity2 = manager.createEntityType("entity2", emptyList(), false).also {
+    private val manager = EntityTypeManagerImpl()
+    @Suppress("UNCHECKED_CAST")
+    private val attr1 = manager.createAttribute(
+        "attr1",
+        STRING::class,
+        key = false,
+        nullable = true,
+        auto = false,
+        builder = null,
+        reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+        writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+    )
+    @Suppress("UNCHECKED_CAST")
+    private val attr2 = manager.createAttribute(
+        "attr2",
+        STRING::class,
+        key = false,
+        nullable = true,
+        auto = false,
+        builder = null,
+        reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+        writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+    )
+    private val entity2 = manager.createEntityType("entity2", false).also {
         manager.initialAttributeSetup(it, AttributeCollection(listOf(attr2)))
     }
 
@@ -27,7 +51,7 @@ internal class DomainExceptionPlaceTest {
         val place = badPlace(attr1)
         assertThat(place.attributeInfo()).isEqualTo("A:'attr1'")
         @Suppress("UNUSED_VARIABLE")
-        val entity1 = manager.createEntityType("entity1", emptyList(), false).also {
+        val entity1 = manager.createEntityType("entity1", false).also {
             manager.initialAttributeSetup(it, AttributeCollection(listOf(attr1)))
         }
         assertThat(place.attributeInfo()).isEqualTo("A:'attr1', E:'entity1'")

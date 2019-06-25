@@ -6,6 +6,8 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.NamedObject
 import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.Type
+import net.pototskiy.apps.lomout.api.entity.type.isList
 import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.plugable.AttributeBuilderFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeBuilderPlugin
@@ -21,10 +23,10 @@ import kotlin.reflect.KClass
  *
  * @param T The attribute type
  * @property name The attribute name
- * @property valueType The class of attribute type
- * @property key Key attribute indicator
- * @property nullable Nullable attribute indicator
- * @property auto The attribute create automatically from source analysis
+ * @property type The class of attribute type
+ * @property isKey Key attribute indicator
+ * @property isNullable Nullable attribute indicator
+ * @property isAuto The attribute create automatically from source analysis
  * @property reader The attribute reader
  * @property writer The attribute write
  * @property builder The attribute builder
@@ -35,20 +37,20 @@ import kotlin.reflect.KClass
  * @property isSynthetic Is a synthetic attribute, has the builder
  * @constructor
  */
-abstract class Attribute<T : Type>(
+class Attribute<T : Type>(
     override val name: String,
-    val valueType: KClass<out T>,
-    val key: Boolean = false,
-    val nullable: Boolean = false,
-    val auto: Boolean = false,
-    val reader: AttributeReader<out T>,
-    val writer: AttributeWriter<out T>,
-    val builder: AttributeBuilder<out T>? = null
+    val type: KClass<out T>,
+    val isKey: Boolean = false,
+    val isNullable: Boolean = false,
+    val isAuto: Boolean = false,
+    val builder: AttributeBuilder<out T>?,
+    val reader: AttributeReader<out T>?,
+    val writer: AttributeWriter<out T>
 ) : NamedObject {
     /**
      * Entity type manager
      */
-    private lateinit var manager: EntityAttributeManagerInterface
+    private lateinit var manager: EntityTypeManager
     /**
      * Owner entity type
      */
@@ -61,8 +63,7 @@ abstract class Attribute<T : Type>(
     /**
      * Attribute full name
      */
-    val fullName: String
-        get() = "${owner.name}:$name"
+    val fullName: String by lazy { "${owner.name}:$name" }
     /**
      * Attribute has builder
      */
@@ -106,8 +107,6 @@ abstract class Attribute<T : Type>(
      * @property typeClass The class of attribute type
      * @property key Key attribute indicator
      * @property nullable Nullable attribute indicator
-     * @property builder The attribute builder
-     * @property reader The attribute reader
      * @property writer The attribute writer
      * @constructor
      */
@@ -115,20 +114,11 @@ abstract class Attribute<T : Type>(
     @ConfigDsl
     class Builder<T : Type>(
         private val helper: ConfigBuildHelper,
-        private var name: String,
+        val name: String,
         private val typeClass: KClass<out T>
     ) {
-        @Suppress("UNCHECKED_CAST")
         private var key: Boolean = false
         private var nullable: Boolean = false
-        /**
-         * Builder, do not use in DSL
-         */
-        var builder: AttributeBuilder<out T>? = null
-        /**
-         * Reader, do not use in DSL
-         */
-        var reader: AttributeReader<out T>? = null
         /**
          * Writer, do not use in DSL
          */
@@ -160,21 +150,33 @@ abstract class Attribute<T : Type>(
         fun nullable() = this.let { nullable = true }
 
         /**
+         * Attribute builder
+         */
+        var builder: AttributeBuilder<out T>? = null
+        /**
          * Inline builder function, attribute can have only one builder
          *
-         * ```
+         *```
          * ...
          *  builder { entity ->
          *      // builder code
          *  }
          * ...
-         * ```
+         *```
          * @see AttributeBuilderFunction
          * @param block AttributeBuilderFunction<T>
          */
+        @ConfigDsl
         @JvmName("builder__function")
         fun builder(block: AttributeBuilderFunction<T>) {
-            this.builder = AttributeBuilderWithFunction(block)
+            if (reader == null) {
+                this.builder = AttributeBuilderWithFunction(block)
+            } else {
+                throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '$name' has the reader and therefore cannot have builder."
+                )
+            }
         }
 
         /**
@@ -192,12 +194,28 @@ abstract class Attribute<T : Type>(
          * @param P The builder plugin
          * @param block
          */
+        @ConfigDsl
         @JvmName("builder__plugin")
         @Generated
         inline fun <reified P : AttributeBuilderPlugin<T>> builder(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
-            this.builder = AttributeBuilderWithPlugin(P::class, block as (AttributeBuilderPlugin<T>.() -> Unit))
+            if (reader == null) {
+                this.builder = AttributeBuilderWithPlugin(
+                    P::class,
+                    block as (AttributeBuilderPlugin<T>.() -> Unit)
+                )
+            } else {
+                throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '$name' has the reader and therefore cannot have builder."
+                )
+            }
         }
+
+        /**
+         * Reader, do not use in DSL
+         */
+        var reader: AttributeReader<out T>? = null
 
         /**
          * Inline attribute reader, attribute can have only one reader
@@ -215,8 +233,16 @@ abstract class Attribute<T : Type>(
          * @see AttributeReaderFunction
          * @param block AttributeReaderFunction<T>
          */
+        @ConfigDsl
         fun reader(block: AttributeReaderFunction<T>) {
-            this.reader = AttributeReaderWithFunction(block)
+            if (builder == null) {
+                this.reader = AttributeReaderWithFunction(block)
+            } else {
+                throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '$name' has the builder type and therefore cannot have reader."
+                )
+            }
         }
 
         /**
@@ -233,10 +259,21 @@ abstract class Attribute<T : Type>(
          *
          * @param block
          */
+        @ConfigDsl
         @Generated
         inline fun <reified P : AttributeReaderPlugin<T>> reader(noinline block: P.() -> Unit = {}) {
-            @Suppress("UNCHECKED_CAST")
-            this.reader = AttributeReaderWithPlugin(P::class, block as (AttributeReaderPlugin<T>.() -> Unit))
+            if (builder == null) {
+                @Suppress("UNCHECKED_CAST")
+                this.reader = AttributeReaderWithPlugin(
+                    P::class,
+                    block as (AttributeReaderPlugin<T>.() -> Unit)
+                )
+            } else {
+                throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '$name' has the builder type and therefore cannot have reader."
+                )
+            }
         }
 
         /**
@@ -255,6 +292,7 @@ abstract class Attribute<T : Type>(
          * @see AttributeWriterFunction
          * @param block AttributeWriterFunction<T>
          */
+        @ConfigDsl
         fun writer(block: AttributeWriterFunction<T>) {
             this.writer = AttributeWriterWithFunction(block)
         }
@@ -273,10 +311,14 @@ abstract class Attribute<T : Type>(
          *
          * @param block The writer options
          */
+        @ConfigDsl
         @Generated
         inline fun <reified P : AttributeWriterPlugin<T>> writer(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
-            this.writer = AttributeWriterWithPlugin(P::class, block as (AttributeWriterPlugin<T>.() -> Unit))
+            this.writer = AttributeWriterWithPlugin(
+                P::class,
+                block as (AttributeWriterPlugin<T>.() -> Unit)
+            )
         }
 
         /**
@@ -288,14 +330,17 @@ abstract class Attribute<T : Type>(
             validateKeyIsNotList()
             validateKeyIsNotNullable()
             @Suppress("UNCHECKED_CAST")
-            return helper.typeManager.createAttribute(name, typeClass) {
-                key(key)
-                nullable(nullable)
-                auto(false)
-                reader(reader ?: defaultReaders[typeClass] as AttributeReader<out T>)
-                writer(writer ?: defaultWriters[typeClass] as AttributeWriter<out T>)
-                builder(builder)
-            }
+            return helper.typeManager
+                .createAttribute(
+                    name,
+                    typeClass,
+                    key,
+                    nullable,
+                    false,
+                    builder,
+                    if (builder == null) reader ?: (defaultReaders[typeClass] as AttributeReader<out T>) else null,
+                    writer ?: defaultWriters.getValue(typeClass) as AttributeWriter<out T>
+                )
         }
 
         private fun validateKeyIsNotNullable() {

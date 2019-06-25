@@ -17,7 +17,7 @@ internal class CsvOutputWorkbookTest {
         val file = File("../tmp/csv-creation-test.csv")
         file.parentFile.mkdirs()
         file.delete()
-        assertThat(file.exists()).isFalse()
+        assertThat(file.exists()).isEqualTo(false)
         WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false).use { workbook ->
             val sheet = workbook.insertSheet(CSV_SHEET_NAME)
             for (list in testDataForWrite) {
@@ -27,7 +27,7 @@ internal class CsvOutputWorkbookTest {
                 }
             }
         }
-        assertThat(file.exists()).isTrue()
+        assertThat(file.exists()).isEqualTo(true)
         file.reader().use { reader ->
             CSVFormat.RFC4180.parse(reader).forEachIndexed { r, csvRecord ->
                 assertThat(csvRecord.map { it }).containsExactlyElementsOf(testDataForWrite[r])

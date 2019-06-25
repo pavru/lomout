@@ -2,279 +2,82 @@
 
 package net.pototskiy.apps.lomout.api.database
 
-import org.jetbrains.exposed.dao.EntityID
-import org.jetbrains.exposed.sql.BooleanColumnType
-import org.jetbrains.exposed.sql.DateColumnType
-import org.jetbrains.exposed.sql.DoubleColumnType
-import org.jetbrains.exposed.sql.LongColumnType
-import org.jetbrains.exposed.sql.TextColumnType
-import org.jetbrains.exposed.sql.VarCharColumnType
-import org.joda.time.DateTime
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.entity.type.BooleanTypeColumnType
+import net.pototskiy.apps.lomout.api.entity.type.DATE
+import net.pototskiy.apps.lomout.api.entity.type.DATETIME
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DateTimeTypeColumnType
+import net.pototskiy.apps.lomout.api.entity.type.DateTypeColumnType
+import net.pototskiy.apps.lomout.api.entity.type.DoubleTypeColumnType
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.LongTypeColumnType
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.type.StringTypeColumnType
+import net.pototskiy.apps.lomout.api.entity.type.TEXT
+import net.pototskiy.apps.lomout.api.entity.type.TextTypeColumnType
 
-private const val VARCHAR_LENGTH = 1000
+private const val VARCHAR_LENGTH = 950
 
 /**
  * String, StringList attribute DB table
  */
-object EntityVarchars : AttributeTable<String>(
+internal object EntityStrings : AttributeTable<STRING>(
     "entity_string",
     DbEntityTable,
-    VarCharColumnType(VARCHAR_LENGTH)
+    StringTypeColumnType(VARCHAR_LENGTH)
 )
-
-/**
- * Alias for EntityVarchars
- */
-val StringAttrTab = EntityVarchars
-/**
- * Alias for EntityVarchars.id
- */
-val StringAttrId = EntityVarchars.id
-/**
- * Alias for EntityVarchars.owner
- */
-val StringAttrOwner = EntityVarchars.owner
-/**
- * Alias for EntityVarchars.code
- */
-val StringAttrCode = EntityVarchars.code
-/**
- * Alias for EntityVarchars.value
- */
-val StringAttrValue = EntityVarchars.value
-
-/**
- * String, StringList attribute Exposed entity
- *
- * @constructor
- * @param id EntityID<Int> The entity internal id
- */
-class EntityVarchar(id: EntityID<Int>) : AttributeEntity<String>(id) {
-    /**
-     * Companion object
-     */
-    companion object : AttributeEntityClass<String, EntityVarchar>(
-        EntityVarchars
-    )
-}
 
 /**
  * Long, LongList attribute DB table
  */
-object EntityLongs : AttributeTable<Long>(
+internal object EntityLongs : AttributeTable<LONG>(
     "entity_long",
     DbEntityTable,
-    LongColumnType()
+    LongTypeColumnType()
 )
-
-/**
- * Alias for EntityLongs
- */
-val LongAttrTab = EntityLongs
-/**
- * Alias for EntityLongs.id
- */
-val LongAttrId = EntityLongs.id
-/**
- * Alias for EntityLongs.owner
- */
-val LongAttrOwner = EntityLongs.owner
-/**
- * Alias for EntityLongs.code
- */
-val LongAttrCode = EntityLongs.code
-/**
- * Alias for EntityLongs.value
- */
-val LongAttrValue = EntityLongs.value
-
-/**
- * Long, LongList attribute Exposed entity
- *
- * @constructor
- * @param id EntityID<Int> The entity internal id
- */
-class EntityLong(id: EntityID<Int>) : AttributeEntity<Long>(id) {
-    /**
-     * Companion object
-     */
-    companion object : AttributeEntityClass<Long, EntityLong>(EntityLongs)
-}
 
 /**
  * Double, DoubleList attribute DB table
  */
-object EntityDoubles : AttributeTable<Double>(
+internal object EntityDoubles : AttributeTable<DOUBLE>(
     "entity_double",
     DbEntityTable,
-    DoubleColumnType()
+    DoubleTypeColumnType()
 )
-
-/**
- * Alias for EntityDoubles
- */
-val DoubleAttrTab = EntityDoubles
-/**
- * Alias for EntityDoubles.id
- */
-val DoubleAttrId = EntityDoubles.id
-/**
- * Alias for EntityDoubles.owner
- */
-val DoubleAttrOwner = EntityDoubles.owner
-/**
- * Alias for EntityDoubles.code
- */
-val DoubleAttrCode = EntityDoubles.code
-/**
- * Alias for EntityDoubles.value
- */
-val DoubleAttrValue = EntityDoubles.value
-
-/**
- * Double, DoubleList attribute Exposed entity
- *
- * @constructor
- * @param id EntityID<Int> The entity internal id
- */
-class EntityDouble(id: EntityID<Int>) : AttributeEntity<Double>(id) {
-    /**
-     * Companion object
-     */
-    companion object : AttributeEntityClass<Double, EntityDouble>(
-        EntityDoubles
-    )
-}
 
 /**
  * Boolean, BooleanList attribute DB table
  */
-object EntityBooleans : AttributeTable<Boolean>(
+internal object EntityBooleans : AttributeTable<BOOLEAN>(
     "entity_bool",
     DbEntityTable,
-    BooleanColumnType()
+    BooleanTypeColumnType()
 )
-
-/**
- * Alias for EntityBooleans
- */
-val BooleanAttrTab = EntityBooleans
-/**
- * Alias for EntityBooleans.id
- */
-val BooleanAttrId = EntityBooleans.id
-/**
- * Alias for EntityBooleans.owner
- */
-val BooleanAttrOwner = EntityBooleans.owner
-/**
- * Alias for EntityBooleans.code
- */
-val BooleanAttrCode = EntityBooleans.code
-/**
- * Alias for EntityBooleans.value
- */
-val BooleanAttrValue = EntityBooleans.value
-
-/**
- * Boolean, BooleanList Exposed entity
- *
- * @constructor
- * @param id EntityID<Int> The entity internal id
- */
-class EntityBoolean(id: EntityID<Int>) : AttributeEntity<Boolean>(id) {
-    /**
-     * Companion object
-     */
-    companion object : AttributeEntityClass<Boolean, EntityBoolean>(
-        EntityBooleans
-    )
-}
 
 /**
  * DateTime, DateTimeList DB table
  */
-object EntityDateTimes : AttributeTable<DateTime>(
+internal object EntityDateTimes : AttributeTable<DATETIME>(
     "entity_datetime",
     DbEntityTable,
-    DateColumnType(true)
+    DateTimeTypeColumnType()
 )
 
 /**
- * Alias for EntityDateTimes
+ * DateTime, DateTimeList DB table
  */
-val DateTimeAttrTab = EntityDateTimes
-/**
- * Alias for EntityDateTimes.id
- */
-val DateTimeAttrId = EntityDateTimes.id
-/**
- * Alias for EntityDateTimes.owner
- */
-val DateTimeAttrOwner = EntityDateTimes.owner
-/**
- * Alias for EntityDateTimes.code
- */
-val DateTimeAttrCode = EntityDateTimes.code
-/**
- * Alias for EntityDateTimes.value
- */
-val DateTimeAttrValue = EntityDateTimes.value
-
-/**
- * DateTime, DateTimeList Exposed entity
- *
- * @constructor
- * @param id EntityID<Int> The entity internal id
- */
-class EntityDateTime(id: EntityID<Int>) : AttributeEntity<DateTime>(id) {
-    /**
-     * Companion object
-     */
-    companion object : AttributeEntityClass<DateTime, EntityDateTime>(
-        EntityDateTimes
-    )
-}
+internal object EntityDates : AttributeTable<DATE>(
+    "entity_date",
+    DbEntityTable,
+    DateTypeColumnType()
+)
 
 /**
  * Text attribute DB table
  */
-object EntityTexts : AttributeTable<String>(
+internal object EntityTexts : AttributeTable<TEXT>(
     "entity_text",
     DbEntityTable,
-    TextColumnType()
+    TextTypeColumnType()
 )
-
-/**
- * Alias for EntityTexts
- */
-val TextAttrTab = EntityTexts
-/**
- * Alias for EntityTexts.id
- */
-val TextAttrId = EntityTexts.id
-/**
- * Alias for EntityTexts.owner
- */
-val TextAttrOwner = EntityTexts.owner
-/**
- * Alias for EntityTexts.code
- */
-val TextAttrCode = EntityTexts.code
-/**
- * Alias for EntityTexts.value
- */
-val TextAttrValue = EntityTexts.value
-
-/**
- * Text attribute Exposed entity
- *
- * @constructor
- * @param id EntityID<Int> The entity internal id
- */
-class EntityText(id: EntityID<Int>) : AttributeEntity<String>(id) {
-    /**
-     * Companion object
-     */
-    companion object : AttributeEntityClass<String, EntityText>(EntityTexts)
-}

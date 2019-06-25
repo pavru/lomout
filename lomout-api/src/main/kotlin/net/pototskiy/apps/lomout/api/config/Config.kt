@@ -4,13 +4,14 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Root element of configuration file
  *
- * @property entityTypeManager EntityTypeManager
+ * @property entityTypeManager EntityTypeManagerImpl
  * @property database DatabaseConfig
  * @property loader LoaderConfiguration?
  * @property mediator MediatorConfiguration?
@@ -27,11 +28,11 @@ data class Config(
     /**
      * Configuration root element builder class
      *
-     * @property helper ConfigBuildHelper
-     * @property database DatabaseConfig?
-     * @property loader LoaderConfiguration?
-     * @property mediator MediatorConfiguration?
-     * @property printer PrinterConfiguration?
+     * @property helper The configuration helper
+     * @property database The database configuration
+     * @property loader The loader configuration
+     * @property mediator The mediator configuration
+     * @property printer The printer configuration
      * @constructor
      */
     @ConfigDsl
@@ -160,7 +161,7 @@ data class Config(
 fun Any.config(block: Config.Builder.() -> Unit) {
     val script = (this as? ConfigScript)
     if (script != null) {
-        val helper = ConfigBuildHelper(EntityTypeManager())
+        val helper = ConfigBuildHelper(EntityTypeManagerImpl())
         script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
         throw AppConfigException(unknownPlace(), "Wrong config script object type.")

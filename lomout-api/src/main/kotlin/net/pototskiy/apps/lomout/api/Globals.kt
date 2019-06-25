@@ -14,6 +14,7 @@ const val CONFIG_LOG_NAME = "net.pototskiy.apps.lomout.config"
 /**
  * Database operation log name
  */
+@Suppress("unused")
 const val DATABASE_LOG_NAME = "net.pototskiy.apps.lomout.database"
 /**
  * Loader log name
@@ -60,7 +61,7 @@ val TIMESTAMP = DateTime()
 /**
  * Maximum length of entity type name
  */
-const val ENTITY_TYPE_NAME_LENGTH = 100
+const val ENTITY_TYPE_NAME_LENGTH = 50
 /**
  * CSV file sheet name
  */

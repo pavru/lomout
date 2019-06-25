@@ -3,10 +3,10 @@ package net.pototskiy.apps.lomout.api.config.loader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.LongType
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.STRING
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -16,9 +16,9 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class FieldSetBuilderTest {
-    private val typeManager = EntityTypeManager()
+    private val typeManager = EntityTypeManagerImpl()
     private val helper = ConfigBuildHelper(typeManager)
-    private val entity = typeManager.createEntityType("test", emptyList(), true)
+    private val entity = typeManager.createEntityType("test", true)
 
     @Test
     internal fun noFieldDefinedTest() {
@@ -26,10 +26,10 @@ internal class FieldSetBuilderTest {
             helper,
             entity,
             "test",
-            true,
-            false,
-            null,
-            null
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null
         ).apply {
         }
         Assertions.assertThatThrownBy { fs.build() }.isInstanceOf(AppConfigException::class.java)
@@ -42,10 +42,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1")
                 field("f1")
@@ -60,10 +60,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") { column(0) }
                 field("f2") { column(0) }
@@ -78,10 +78,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1") to attribute("f1")
             }.build()
@@ -95,12 +95,12 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
-                field("f1") to attribute<StringType>(null) {}
+                field("f1") to attribute<STRING>(null) {}
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
     }
@@ -112,12 +112,12 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
-                field("f1") to attribute<StringType>("f2") {}
+                field("f1") to attribute<STRING>("f2") {}
             }.build()
         ).isNotNull
     }
@@ -129,10 +129,10 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
                 field("f1")
                 field("f2") { parent("f3") }
@@ -147,21 +147,21 @@ internal class FieldSetBuilderTest {
                 helper,
                 entity,
                 "test",
-                true,
-                false,
-                null,
-                null
+                mainSet = true,
+                withSourceHeaders = false,
+                sources = null,
+                headerRow = null
             ).apply {
-                field("f1") { } to attribute<AttributeListType>("f1") {}
-                field("f2") { parent("f1") } to attribute<AttributeListType>("f2") {}
-                field("f3") { parent("f2") } to attribute<AttributeListType>("f3") {}
+                field("f1") { } to attribute<ATTRIBUTELIST>("f1") {}
+                field("f2") { parent("f1") } to attribute<ATTRIBUTELIST>("f2") {}
+                field("f3") { parent("f2") } to attribute<ATTRIBUTELIST>("f3") {}
             }.build()
         ).isNotNull
     }
 
     @Test
     internal fun createFieldSetWithoutMainTest() {
-        assertThatThrownBy { createConfWithoutMainSet()}
+        assertThatThrownBy { createConfWithoutMainSet() }
             .isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Field set collection must contain main set")
     }
@@ -187,8 +187,8 @@ internal class FieldSetBuilderTest {
                 }
                 entities {
                     entity("entity", false) {
-                        attribute<LongType>("key") { key() }
-                        attribute<StringType>("data")
+                        attribute<LONG>("key") { key() }
+                        attribute<STRING>("data")
                     }
                 }
                 loadEntity("entity") {
@@ -206,7 +206,7 @@ internal class FieldSetBuilderTest {
             mediator {
                 productionLine {
                     output("output") {
-                        inheritFrom("entity")
+                        copyFrom("entity")
                     }
                     input {
                         entity("entity")

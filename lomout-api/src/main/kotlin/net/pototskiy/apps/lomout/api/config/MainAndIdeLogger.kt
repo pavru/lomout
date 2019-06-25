@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.config
 import com.intellij.openapi.diagnostic.Logger
 import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import org.apache.logging.log4j.LogManager
+import java.io.Serializable
 
 /**
  * Logger for script tools, log messages into the application or ide log
@@ -10,7 +11,7 @@ import org.apache.logging.log4j.LogManager
  * @property mainLogger Logger?
  * @property ideLogger Logger?
  */
-class MainAndIdeLogger {
+class MainAndIdeLogger : Serializable {
     @Suppress("TooGenericExceptionCaught")
     private val mainLogger = try {
         LogManager.getLogger(CONFIG_LOG_NAME)

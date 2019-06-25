@@ -5,13 +5,19 @@ plugins {
     id("org.sonarqube") version "2.7.1"
     jacoco
     kotlin("jvm") version Versions.kotlin
+    id("com.gradle.build-scan") version "2.3"
 }
 
 buildscript {
 }
 
+buildScan {
+    termsOfServiceUrl = "https://gradle.com/terms-of-service"
+    termsOfServiceAgree = "yes"
+}
+
 group = "lomout"
-version = "1.1.5"
+version = "1.2.0"
 
 subprojects {
     apply {
@@ -25,9 +31,17 @@ repositories {
     mavenCentral()
 }
 tasks["sonarqube"].group = "verification"
+tasks.named<Test>("test") {
+    if (System.getenv("TRAVIS_BUILD_DIR") == null) {
+        println("NOT UNDER TRAVIS PARALLEL TEST EXECUTION")
+    } else {
+        println("UNDER TRAVIS NON PARALLEL TEST EXECUTION")
+        maxParallelForks = 1
+    }
+}
 
 jacoco {
-    toolVersion = "0.8.3"
+    toolVersion = "0.8.4"
 }
 
 task<JacocoReport>("codeCoverageReport") {

@@ -1,10 +1,10 @@
 package net.pototskiy.apps.lomout.api.database
 
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import org.jetbrains.exposed.dao.IntIdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.ColumnType
+import org.jetbrains.exposed.sql.IColumnType
 import org.jetbrains.exposed.sql.ReferenceOption
-import org.jetbrains.exposed.sql.TextColumnType
 
 /**
  * Exposed abstract attribute table
@@ -15,10 +15,10 @@ import org.jetbrains.exposed.sql.TextColumnType
  * @param owner The table of attributes owner
  * @param valueColumnType The SQL value column type
  */
-abstract class AttributeTable<V : Comparable<V>>(
+internal abstract class AttributeTable<V : Type>(
     table: String,
     owner: IntIdTable,
-    valueColumnType: ColumnType
+    valueColumnType: IColumnType
 ) : IntIdTable(table) {
     /**
      * The attribute owner
@@ -31,16 +31,13 @@ abstract class AttributeTable<V : Comparable<V>>(
     /**
      * Attribute code (name)
      */
-    val code = varchar("code", codeNameLength).index()
+    val code = varchar("code", CODE_NAME_LENGTH)
     /**
      * Attribute value
      */
-    val value: Column<V> = registerColumn("value", valueColumnType)
+    val value: Column<Type> = registerColumn("value", valueColumnType)
 
     init {
-        if (value.columnType !is TextColumnType) {
-            value.index()
-        }
         @Suppress("LeakingThis")
         uniqueIndex("unique_attr", this.owner, code, index)
     }
@@ -52,6 +49,6 @@ abstract class AttributeTable<V : Comparable<V>>(
         /**
          * Maximum length of attribute code (name)
          */
-        const val codeNameLength = 300
+        const val CODE_NAME_LENGTH = 70
     }
 }

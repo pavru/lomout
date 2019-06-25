@@ -3,13 +3,14 @@ package net.pototskiy.apps.lomout.loader
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
 import org.apache.logging.log4j.core.Logger
 import org.apache.logging.log4j.core.appender.WriterAppender
-import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.filter.LevelRangeFilter
 import org.apache.logging.log4j.core.layout.PatternLayout
 import org.assertj.core.api.Assertions.assertThat
@@ -26,11 +27,12 @@ import java.io.ByteArrayOutputStream
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Load data in production way")
-@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Execution(ExecutionMode.SAME_THREAD)
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class DataLoadingInProductionWayTest {
 
     private lateinit var config: Config
+    private lateinit var repository: EntityRepositoryInterface
     private val logOut = ByteArrayOutputStream()
     private lateinit var appender: WriterAppender
 
@@ -38,7 +40,6 @@ internal class DataLoadingInProductionWayTest {
     internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
-        Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val layout = PatternLayout.newBuilder()
             .withPattern("%level,")
             .build()
@@ -52,20 +53,26 @@ internal class DataLoadingInProductionWayTest {
         )
         appender.start()
         logger.addAppender(appender)
-        Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val util = LoadingDataTestPrepare()
         println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         config = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
-        util.initDataBase(config.entityTypeManager)
+        repository = EntityRepository(config.database, config.entityTypeManager, Level.ERROR)
         PluginContext.config = config
         PluginContext.entityTypeManager = config.entityTypeManager
+        PluginContext.repository = repository
     }
 
+    @AfterAll
+    internal fun tearDownAll() {
+        repository.close()
+    }
+
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ObsoleteCoroutinesApi
     @Test
     @DisplayName("Load data according production config")
     internal fun loadDataTest() {
-        DataLoader.load(config)
+        DataLoader.load(repository, config)
         assertThat(logOut.toString()).isEmpty()
     }
 

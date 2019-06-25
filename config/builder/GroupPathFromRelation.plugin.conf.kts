@@ -1,46 +1,52 @@
 import org.apache.commons.collections4.map.LRUMap
+import org.jetbrains.exposed.dao.EntityID
 import java.lang.ref.WeakReference
 import java.util.Collections.*
 import kotlin.collections.set
 
-class GroupPathFromRelation : AttributeBuilderPlugin<StringType>() {
+class GroupPathFromRelation : AttributeBuilderPlugin<STRING>() {
     var separator: String = "/"
     var root: String = ""
 
-    override fun build(entity: DbEntity): StringType? {
+    override fun build(entity: Entity): STRING? {
         logger.info("test logger")
-        val pathFromCache = pathCache[entity.id.value]?.get()
-        if (pathFromCache != null) return StringType(pathFromCache)
+        val pathFromCache = pathCache[entity.id]?.get()
+        if (pathFromCache != null) return STRING(pathFromCache)
         val eType = entityTypeManager.getEntityType(eTypeName)
             ?: throw AppConfigException(
-                badPlace(entity.entityType),
+                badPlace(entity.type),
                 "There is no group relations information."
             )
         val path = mutableListOf<String>()
         val groupCode = entity.data[groupCodeAttr]
             ?: throw AppConfigException(
-                badPlace(entity.entityType),
+                badPlace(entity.type),
                 "OneC group id '${entity.id}' has not group code attribute."
             )
-        var relationEntity = DbEntity
-            .getByAttribute(eType, codeAttr, groupCode)
-            .firstOrNull()
-            ?: return null
-        var name = relationEntity.readAttribute(nameAttr)?.value as? String
+        var relationEntity = repository.get(
+            eType,
+            mapOf(codeAttr to groupCode),
+            EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+        ) ?: return null
+        var name = relationEntity[nameAttr]?.value as? String
         while (name != null) {
             path.add(name)
-            val parent = relationEntity.readAttribute(parentAttr) as? LongType ?: break
-            relationEntity = DbEntity.getByAttribute(eType, codeAttr, parent).firstOrNull() ?: break
-            name = relationEntity.readAttribute(nameAttr)?.value as? String
+            val parent = relationEntity[parentAttr] as? LONG ?: break
+            relationEntity = repository.get(
+                eType,
+                mapOf(codeAttr to parent),
+                EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+            ) ?: break
+            name = relationEntity[nameAttr]?.value as? String
         }
-        return StringType("$root${path.reversed().joinToString(separator)}").also {
-            pathCache[entity.id.value] = WeakReference(it.value)
+        return STRING("$root${path.reversed().joinToString(separator)}").also {
+            pathCache[entity.id] = WeakReference(it.value)
         }
     }
 
     companion object {
         private val typeManager by lazy { PluginContext.entityTypeManager }
-        private val pathCache = synchronizedMap(LRUMap<Int, WeakReference<String>>(200, 100))
+        private val pathCache = synchronizedMap(LRUMap<EntityID<Int>, WeakReference<String>>(200, 100))
         private const val eTypeName = "onec-group-relation"
         private val relationEntityType by lazy { typeManager[eTypeName] }
         private val groupEntityType by lazy { typeManager["onec-group"] }

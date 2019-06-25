@@ -2,9 +2,9 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.entity.Attribute
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.AttributeListType
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -24,15 +24,15 @@ internal class DefaultAttributeListWriterTest {
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
     private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<AttributeListType>
+    private lateinit var attr: Attribute<ATTRIBUTELIST>
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var outputCell: Cell
-    private val entityTypeManager = EntityTypeManager()
+    private val entityTypeManager = EntityTypeManagerImpl()
 
     @BeforeEach
     internal fun setUp() {
-        attr = entityTypeManager.createAttribute("attr", AttributeListType::class)
-        entity = entityTypeManager.createEntityType("test", emptyList(), false).also {
+        attr = entityTypeManager.createAttribute("attr", ATTRIBUTELIST::class)
+        entity = entityTypeManager.createEntityType("test", false).also {
             entityTypeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
         }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
@@ -52,7 +52,7 @@ internal class DefaultAttributeListWriterTest {
     internal fun writeAttributeListToCellTest() {
         val wb = NestedAttributeWorkbook(null, ',', '"', '=', "test")
         wb.string = "attr1=value1,attr2=value2"
-        val list = AttributeListType(
+        val list = ATTRIBUTELIST(
             mapOf(
                 "attr1" to wb[0][1]!![0]!!,
                 "attr2" to wb[0][1]!![1]!!

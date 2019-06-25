@@ -3,8 +3,8 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.DateType
-import net.pototskiy.apps.lomout.api.entity.isTypeOf
+import net.pototskiy.apps.lomout.api.entity.type.DATE
+import net.pototskiy.apps.lomout.api.entity.type.isTypeOf
 import net.pototskiy.apps.lomout.api.entity.values.doubleToLong
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
 import net.pototskiy.apps.lomout.api.entity.values.longToString
@@ -40,7 +40,7 @@ fun Cell.readeDateTime(
     CellType.BOOL -> null
     CellType.STRING ->
         try {
-            if (attribute.valueType.isTypeOf<DateType>()) {
+            if (attribute.type.isTypeOf<DATE>()) {
                 this.stringValue.stringToDate(locale)
             } else {
                 this.stringValue.stringToDateTime(locale)

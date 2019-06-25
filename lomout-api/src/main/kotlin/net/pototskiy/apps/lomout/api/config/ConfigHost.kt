@@ -65,7 +65,7 @@ class ConfigHost(
                     it.location?.start?.line ?: 0
                 )
                 logger.trace("Exception:", it.exception)
-                logger.trace("Caused:", it.exception?.cause)
+                logger.trace("caused:", it.exception?.cause)
             }
         }.onSuccess {
             compiledScript = it
@@ -89,11 +89,11 @@ class ConfigHost(
                     result.reports.forEach { diagnostic ->
                         if (diagnostic.exception != null || diagnostic.exception?.cause != null) {
                             ((diagnostic.exception?.cause) ?: diagnostic.exception)?.let {
-                                val position = findExceptionPosition(it, File(diagnostic.sourcePath))
+                                val position = findExceptionPosition(it, File(diagnostic.sourcePath ?: ""))
                                 logMessage(
                                     diagnostic.severity,
                                     it.message ?: "",
-                                    File(diagnostic.sourcePath).name,
+                                    File(diagnostic.sourcePath ?: "").name,
                                     position?.line ?: 0
                                 )
                             }
@@ -101,7 +101,7 @@ class ConfigHost(
                             logMessage(
                                 diagnostic.severity,
                                 diagnostic.message,
-                                File(diagnostic.sourcePath).name,
+                                File(diagnostic.sourcePath ?: "").name,
                                 diagnostic.location?.start?.line ?: 0
                             )
                         }

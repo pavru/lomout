@@ -1,6 +1,23 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
+import net.pototskiy.apps.lomout.api.entity.type.DATE
+import net.pototskiy.apps.lomout.api.entity.type.DATELIST
+import net.pototskiy.apps.lomout.api.entity.type.DATETIME
+import net.pototskiy.apps.lomout.api.entity.type.DATETIMELIST
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
+import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
+import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.entity.type.LONGLIST
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
+import net.pototskiy.apps.lomout.api.entity.type.TEXT
+import net.pototskiy.apps.lomout.api.entity.type.Type
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
@@ -23,7 +40,7 @@ internal class AttributeAsCellTest {
 
 //    @BeforeEach
 //    internal fun setUp() {
-//        EntityTypeManager.currentManager = EntityTypeManager()
+//        EntityTypeManagerImpl.currentManager = EntityTypeManagerImpl()
 //    }
 
     @ParameterizedTest
@@ -62,193 +79,254 @@ internal class AttributeAsCellTest {
         val notCompatible: List<(Cell) -> Unit>
     )
 
+    @Suppress("RemoveExplicitTypeArguments")
     companion object {
-        private val typeManager = EntityTypeManager()
+        private val typeManager = EntityTypeManagerImpl()
 
         private val dateFormat = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", null))!!
         private val dateTimeFormat = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", null))!!
         private val dateVal = dateFormat.parseDateTime(dateFormat.print(DateTime.now()))!!
         private val dateTimeVal = dateTimeFormat.parseDateTime(dateTimeFormat.print(DateTime.now()))!!
-        private val stringAttr1 = typeManager.createAttribute("sAttr1", StringType::class)
-        private val stringAttr2 = typeManager.createAttribute("sAttr2", StringType::class)
+        @Suppress("UNCHECKED_CAST")
+        private val stringAttr1 = typeManager.createAttribute(
+            "sAttr1", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
+        private val stringAttr2 = typeManager.createAttribute(
+            "sAttr2", STRING::class,
+            builder = null,
+            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+        )
+        @Suppress("UNCHECKED_CAST")
         private val boolTestData2 = TestData(
-            typeManager.createAttribute("attr2", BooleanType::class) {
-                writer(AttributeWriterWithFunction { value, cell ->
+            typeManager.createAttribute("attr2", BOOLEAN::class,
+                builder = null,
+                reader = defaultReaders[BOOLEAN::class] as AttributeReader<out BOOLEAN>,
+                writer = AttributeWriterWithFunction { value, cell ->
                     cell.setCellValue(value!!.value)
-                })
-            },
+                }),
             false,
-            BooleanType(false),
+            BOOLEAN(false),
             CellType.BOOL,
             { it.booleanValue },
             false.toString(),
-            listOf<(Cell) -> Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
+            listOf<(Cell)->Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
         )
+        @Suppress("UNCHECKED_CAST")
         private val longTestData1 = TestData(
-            typeManager.createAttribute("attr3", LongType::class) {
-                writer(AttributeWriterWithFunction { value, cell ->
+            typeManager.createAttribute("attr3", LONG::class,
+                builder = null,
+                reader = defaultReaders[LONG::class] as AttributeReader<out LONG>,
+                writer = AttributeWriterWithFunction { value, cell ->
                     cell.setCellValue(value!!.value)
-                })
-            },
+                }),
             111L,
-            LongType(111L),
+            LONG(111L),
             CellType.LONG,
             { it.longValue },
             111L.toString(),
-            listOf<(Cell) -> Unit>({ it.booleanValue }, { it.doubleValue }, { it.stringValue })
+            listOf<(Cell)->Unit>({ it.booleanValue }, { it.doubleValue }, { it.stringValue })
         )
 
-        @Suppress("unused")
+        @Suppress("unused", "LongMethod")
         @JvmStatic
         fun testDataSource(): Stream<TestData<*, *>> {
+            @Suppress("UNCHECKED_CAST")
             return Stream.of(
                 TestData(
-                    typeManager.createAttribute("attr1", BooleanType::class) {
-                        writer(AttributeWriterWithFunction { value, cell ->
+                    typeManager.createAttribute("attr1", BOOLEAN::class,
+                        builder = null,
+                        reader = defaultReaders[BOOLEAN::class] as AttributeReader<out BOOLEAN>,
+                        writer = AttributeWriterWithFunction { value, cell ->
                             cell.setCellValue(value!!.value)
-                        })
-                    },
+                        }),
                     true,
-                    BooleanType(true),
+                    BOOLEAN(true),
                     CellType.BOOL,
                     { it.booleanValue },
                     true.toString(),
-                    listOf<(Cell) -> Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.longValue }, { it.doubleValue }, { it.stringValue })
                 ),
                 boolTestData2,
                 longTestData1,
                 TestData(
-                    typeManager.createAttribute("attr4", DoubleType::class) {
-                        writer(AttributeWriterWithFunction { value, cell ->
+                    typeManager.createAttribute("attr4", DOUBLE::class,
+                        builder = null,
+                        reader = defaultReaders[DOUBLE::class] as AttributeReader<out DOUBLE>,
+                        writer = AttributeWriterWithFunction { value, cell ->
                             cell.setCellValue(value!!.value)
-                        })
-                    },
+                        }),
                     11.1,
-                    DoubleType(11.1),
+                    DOUBLE(11.1),
                     CellType.DOUBLE,
                     { it.doubleValue },
                     11.1.toString(),
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr5", StringType::class),
+                    typeManager.createAttribute(
+                        "attr5", STRING::class,
+                        builder = null,
+                        reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                        writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                    ),
                     "test value",
-                    StringType("test value"),
+                    STRING("test value"),
                     CellType.STRING,
                     { it.stringValue },
                     "test value",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr6", TextType::class),
+                    typeManager.createAttribute(
+                        "attr6", TEXT::class,
+                        builder = null,
+                        reader = defaultReaders[TEXT::class] as AttributeReader<out TEXT>,
+                        writer = defaultWriters[TEXT::class] as AttributeWriter<out TEXT>
+                    ),
                     "test value",
-                    TextType("test value"),
+                    TEXT("test value"),
                     CellType.STRING,
                     { it.stringValue },
                     "test value",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr7", DateType::class) {
-                        writer(AttributeWriterWithFunction { value, cell ->
+                    typeManager.createAttribute("attr7", DATE::class,
+                        builder = null,
+                        reader = defaultReaders[DATE::class] as AttributeReader<out DATE>,
+                        writer = AttributeWriterWithFunction { value, cell ->
                             cell.setCellValue(value!!.value)
-                        })
-                    },
+                        }),
                     HSSFDateUtil.getExcelDate(dateVal.toDate()),
-                    DateType(dateVal),
+                    DATE(dateVal),
                     CellType.DOUBLE,
                     { it.doubleValue },
                     dateVal.toString(),
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr8", DateTimeType::class) {
-                        writer(AttributeWriterWithFunction { value, cell ->
+                    typeManager.createAttribute("attr8", DATETIME::class,
+                        builder = null,
+                        reader = defaultReaders[DATETIME::class] as AttributeReader<out DATETIME>,
+                        writer = AttributeWriterWithFunction { value, cell ->
                             cell.setCellValue(value!!.value)
-                        })
-                    },
+                        }),
                     HSSFDateUtil.getExcelDate(dateTimeVal.toDate()),
-                    DateTimeType(dateTimeVal),
+                    DATETIME(dateTimeVal),
                     CellType.DOUBLE,
                     { it.doubleValue },
                     dateTimeVal.toString(),
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.stringValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr9", BooleanListType::class),
+                    typeManager.createAttribute(
+                        "attr9", BOOLEANLIST::class,
+                        builder = null,
+                        reader = defaultReaders[BOOLEANLIST::class] as AttributeReader<out BOOLEANLIST>,
+                        writer = defaultWriters[BOOLEANLIST::class] as AttributeWriter<out BOOLEANLIST>
+                    ),
                     "1,0",
-                    BooleanListType(listOf(BooleanType(true), BooleanType(false))),
+                    BOOLEANLIST(listOf(BOOLEAN(true), BOOLEAN(false))),
                     CellType.STRING,
                     { it.stringValue },
                     "1,0",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr10", LongListType::class),
+                    typeManager.createAttribute(
+                        "attr10", LONGLIST::class,
+                        builder = null,
+                        reader = defaultReaders[LONGLIST::class] as AttributeReader<out LONGLIST>,
+                        writer = defaultWriters[LONGLIST::class] as AttributeWriter<out LONGLIST>
+                    ),
                     "1,2,3",
-                    LongListType(listOf(LongType(1), LongType(2), LongType(3))),
+                    LONGLIST(listOf(LONG(1), LONG(2), LONG(3))),
                     CellType.STRING,
                     { it.stringValue },
                     "1,2,3",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr11", DoubleListType::class),
+                    typeManager.createAttribute(
+                        "attr11", DOUBLELIST::class,
+                        builder = null,
+                        reader = defaultReaders[DOUBLELIST::class] as AttributeReader<out DOUBLELIST>,
+                        writer = defaultWriters[DOUBLELIST::class] as AttributeWriter<out DOUBLELIST>
+                    ),
                     "1.1,2.2",
-                    DoubleListType(listOf(DoubleType(1.1), DoubleType(2.2))),
+                    DOUBLELIST(listOf(DOUBLE(1.1), DOUBLE(2.2))),
                     CellType.STRING,
                     { it.stringValue },
                     "1.1,2.2",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr12", StringListType::class),
+                    typeManager.createAttribute(
+                        "attr12", STRINGLIST::class,
+                        builder = null,
+                        reader = defaultReaders[STRINGLIST::class] as AttributeReader<out STRINGLIST>,
+                        writer = defaultWriters[STRINGLIST::class] as AttributeWriter<out STRINGLIST>
+                    ),
                     "\"str1\"\"\",\"str2\"\"\"",
-                    StringListType(listOf(StringType("str1\""), StringType("str2\""))),
+                    STRINGLIST(listOf(STRING("str1\""), STRING("str2\""))),
                     CellType.STRING,
                     { it.stringValue },
                     "\"str1\"\"\",\"str2\"\"\"",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr13", DateListType::class),
+                    typeManager.createAttribute(
+                        "attr13", DATELIST::class,
+                        builder = null,
+                        reader = defaultReaders[DATELIST::class] as AttributeReader<out DATELIST>,
+                        writer = defaultWriters[DATELIST::class] as AttributeWriter<out DATELIST>
+                    ),
                     "${dateVal.toString(DateTimeFormat.forPattern("d.M.yy"))}," +
                             dateVal.toString(DateTimeFormat.forPattern("d.M.yy")),
-                    DateListType(listOf(DateType(dateVal), DateType(dateVal))),
+                    DATELIST(listOf(DATE(dateVal), DATE(dateVal))),
                     CellType.STRING,
                     { it.stringValue },
                     "$dateVal,$dateVal",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr14", DateTimeListType::class),
+                    typeManager.createAttribute(
+                        "attr14", DATETIMELIST::class,
+                        builder = null,
+                        reader = defaultReaders[DATETIMELIST::class] as AttributeReader<out DATETIMELIST>,
+                        writer = defaultWriters[DATETIMELIST::class] as AttributeWriter<out DATETIMELIST>
+                    ),
                     "${dateTimeVal.toString(DateTimeFormat.forPattern("d.M.yy H:m"))}," +
                             dateTimeVal.toString(DateTimeFormat.forPattern("d.M.yy H:m")),
-                    DateTimeListType(listOf(DateTimeType(dateTimeVal), DateTimeType(dateTimeVal))),
+                    DATETIMELIST(listOf(DATETIME(dateTimeVal), DATETIME(dateTimeVal))),
                     CellType.STRING,
                     { it.stringValue },
                     "$dateTimeVal,$dateTimeVal",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 ),
                 TestData(
-                    typeManager.createAttribute("attr15", AttributeListType::class),
+                    typeManager.createAttribute(
+                        "attr15", ATTRIBUTELIST::class,
+                        builder = null,
+                        reader = defaultReaders[ATTRIBUTELIST::class] as AttributeReader<out ATTRIBUTELIST>,
+                        writer = defaultWriters[ATTRIBUTELIST::class] as AttributeWriter<out ATTRIBUTELIST>
+                    ),
                     "sAttr1=false,sAttr2=111",
-                    AttributeListType(
+                    ATTRIBUTELIST(
                         mapOf(
-                            stringAttr1.name to AttributeAsCell(
-                                stringAttr1,
-                                StringType("false")
-                            ),
-                            stringAttr2.name to AttributeAsCell(
-                                stringAttr2,
-                                StringType("111")
-                            )
+                            stringAttr1.name to AttributeAsCell(stringAttr1, STRING("false")),
+                            stringAttr2.name to AttributeAsCell(stringAttr2, STRING("111"))
                         )
                     ),
                     CellType.STRING,
                     { it.stringValue },
                     "sAttr1=false,sAttr2=111",
-                    listOf<(Cell) -> Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
+                    listOf<(Cell)->Unit>({ it.booleanValue }, { it.longValue }, { it.doubleValue })
                 )
             )
         }

@@ -10,6 +10,10 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
  * @constructor
  */
 class EntityTypeCollection(private val value: List<EntityType>) : List<EntityType> by value {
+    private val index = value.map { it.name to it }.toMap()
+
+    operator fun get(name: String) = index[name]
+
     /**
      * Entity type collection builder
      *
@@ -27,8 +31,8 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          * ```
          * ...
          *  entity("name", isOpen:Boolean) {
-         *      inheritFrom("entity type") {...}
-         *      inheritFrom("entity type") {...}
+         *      copyFrom("entity type") {...}
+         *      copyFrom("entity type") {...}
          *      ...
          *      attribute<Type>("name") {...}
          *      attribute<Type>("name") {...}
@@ -39,7 +43,7 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          * * name — entity type name, must be unique, **mandatory**
          * * isOpen — true — it's allowed to add the attribute from source file automatically,
          *      false — allow only declared attributes for entity type, optional
-         * * [inheritFrom][EntityType.Builder.inheritFrom] — inherit attributes from another entity type, optional
+         * * [copyFrom][EntityType.Builder.copyFrom] — inherit attributes from another entity type, optional
          * * [attribute][EntityType.Builder.attribute] — entity type attribute definition,
          *  **at least one must be defined**
          *
@@ -59,6 +63,7 @@ class EntityTypeCollection(private val value: List<EntityType>) : List<EntityTyp
          *
          * @return EntityTypeCollection
          */
-        fun build(): EntityTypeCollection = EntityTypeCollection(eTypes)
+        fun build(): EntityTypeCollection =
+            EntityTypeCollection(eTypes)
     }
 }

@@ -1,30 +1,23 @@
-package net.pototskiy.apps.lomout.database
+package net.pototskiy.apps.lomout.api.database
 
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
-import net.pototskiy.apps.lomout.api.database.EntityBooleans
-import net.pototskiy.apps.lomout.api.database.EntityDateTimes
-import net.pototskiy.apps.lomout.api.database.EntityDoubles
-import net.pototskiy.apps.lomout.api.database.EntityLongs
-import net.pototskiy.apps.lomout.api.database.EntityTexts
-import net.pototskiy.apps.lomout.api.database.EntityVarchars
 import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object DbSchema {
+internal object DbSchema {
     fun createSchema(entityTypeManager: EntityTypeManager) {
         DbEntityTable.entityTypeManager = entityTypeManager
         transaction {
             SchemaUtils.create(DbEntityTable)
             SchemaUtils.create(
-                EntityVarchars,
+                EntityStrings,
                 EntityLongs,
                 EntityBooleans,
                 EntityDoubles,
                 EntityDateTimes,
+                EntityDates,
                 EntityTexts
             )
-            SchemaUtils.create(PipelineSets)
         }
     }
 }

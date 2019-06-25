@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity
 
+import net.pototskiy.apps.lomout.api.entity.type.Type
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderFunction
 import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
@@ -20,7 +21,7 @@ sealed class AttributeReader<T : Type> {
      * @param input Cell The cell to read value
      * @return T?
      */
-    fun read(attribute: Attribute<out T>, input: Cell): T? {
+    operator fun invoke(attribute: Attribute<out T>, input: Cell): T? {
         return when (this) {
             is AttributeReaderWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)

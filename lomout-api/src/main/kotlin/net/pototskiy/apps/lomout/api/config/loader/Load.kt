@@ -6,7 +6,6 @@ import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.addEntityAttribute
 import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
@@ -160,7 +159,7 @@ data class Load(
             val autoAttrs = fieldSets
                 ?.map { it.fieldToAttr.attributes }
                 ?.flatten()
-                ?.filter { it.auto } ?: emptyList()
+                ?.filter { it.isAuto } ?: emptyList()
             autoAttrs.forEach { helper.typeManager.addEntityAttribute(entityType, it) }
         }
 

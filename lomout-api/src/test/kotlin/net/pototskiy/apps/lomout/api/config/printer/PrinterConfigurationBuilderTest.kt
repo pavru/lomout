@@ -2,11 +2,14 @@ package net.pototskiy.apps.lomout.api.config.printer
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.database.DbEntityTable
-import net.pototskiy.apps.lomout.api.database.EntityStatus
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.StringType
+import net.pototskiy.apps.lomout.api.entity.AttributeReader
+import net.pototskiy.apps.lomout.api.entity.AttributeWriter
+import net.pototskiy.apps.lomout.api.entity.EntityStatus
+import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
+import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -16,25 +19,58 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Execution(ExecutionMode.CONCURRENT)
 @Suppress("TooManyFunctions")
 internal class PrinterConfigurationBuilderTest {
-    private val typeManager = EntityTypeManager().also { manager ->
-        manager.createEntityType("entity1", emptyList(), false).also { type ->
+    private val typeManager = EntityTypeManagerImpl().also { manager ->
+        manager.createEntityType("entity1", false).also { type ->
+            @Suppress("UNCHECKED_CAST")
             manager.initialAttributeSetup(
                 type, AttributeCollection(
                     listOf(
-                        manager.createAttribute("attr1", StringType::class),
-                        manager.createAttribute("attr2", StringType::class),
-                        manager.createAttribute("attr3", StringType::class)
+                        manager.createAttribute(
+                            "attr1",
+                            STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        ),
+                        manager.createAttribute(
+                            "attr2", STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        ),
+                        manager.createAttribute(
+                            "attr3", STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        )
                     )
                 )
             )
         }
-        manager.createEntityType("entity2", emptyList(), false).also { type ->
+        manager.createEntityType("entity2", false).also { type ->
+            @Suppress("UNCHECKED_CAST")
             manager.initialAttributeSetup(
                 type, AttributeCollection(
                     listOf(
-                        manager.createAttribute("attr1", StringType::class),
-                        manager.createAttribute("attr2", StringType::class),
-                        manager.createAttribute("attr3", StringType::class)
+                        manager.createAttribute(
+                            "attr1", STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        ),
+                        manager.createAttribute(
+                            "attr2", STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        ),
+                        manager.createAttribute(
+                            "attr3", STRING::class,
+                            builder = null,
+                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
+                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
+                        )
                     )
                 )
             )
@@ -50,13 +86,13 @@ internal class PrinterConfigurationBuilderTest {
         @Suppress("RedundantWith")
         with(config.lines[0]) {
             assertThat(inputEntities).hasSize(1)
-            assertThat(inputEntities[0].extAttrMaps).hasSize(0)
+            assertThat(inputEntities[0].extAttributes).hasSize(0)
             assertThat(outputFieldSets).isNotNull
             assertThat(outputFieldSets.file.file.id).isEqualTo("id1")
-            assertThat(outputFieldSets.printHead).isTrue()
+            assertThat(outputFieldSets.printHead).isEqualTo(true)
             assertThat(outputFieldSets.fieldSets).hasSize(2)
             assertThat(pipeline).isNotNull
-            assertThat(config.lines.contains(this)).isTrue()
+            assertThat(config.lines.contains(this)).isEqualTo(true)
             assertThat(config.lines.indexOf(this)).isEqualTo(0)
             assertThat(config.lines.lastIndexOf(this)).isEqualTo(0)
             Unit
@@ -144,11 +180,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -172,11 +204,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -204,11 +232,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                     entity("entity2")
                 }
@@ -233,11 +257,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -265,12 +285,10 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
+                        statuses(EntityStatus.UPDATED)
+                        extAttribute<STRING>("extAttr1") {
+                            builder { STRING("stub") }
                         }
-                        extAttribute<StringType>("extAttr1", "attr1")
                     }
                 }
                 output {
@@ -294,11 +312,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -339,11 +353,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 pipeline {
@@ -354,11 +364,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -392,11 +398,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -424,11 +426,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 pipeline {
@@ -439,11 +437,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -471,11 +465,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -503,11 +493,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -530,11 +516,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -562,11 +544,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -581,11 +559,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -613,11 +587,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity1") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {
@@ -641,11 +611,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 input {
                     entity("entity2") {
-                        filter {
-                            with(DbEntityTable) {
-                                it[currentStatus] eq EntityStatus.UPDATED
-                            }
-                        }
+                        statuses(EntityStatus.UPDATED)
                     }
                 }
                 output {

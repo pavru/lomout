@@ -108,28 +108,51 @@ java {
 }
 
 tasks.named<Test>("test") {
-    maxHeapSize = "2G"
-    minHeapSize = "1G"
-    systemProperties(
-        mapOf(
-            "junit.jupiter.execution.parallel.enabled" to "true",
-            "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
+    if (System.getenv("TRAVIS_BUILD_DIR") == null) {
+        maxHeapSize = "2G"
+        minHeapSize = "1G"
+        systemProperties(
+            mapOf(
+                "junit.jupiter.execution.parallel.enabled" to "true",
+                "junit.jupiter.execution.parallel.config.strategy" to "dynamic"
 //    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
+            )
         )
-    )
+        testLogging {
+            events(
+                "passed",
+                "skipped",
+                "failed"/*,
+                "standardOut",
+                "standardError"*/
+            )
+        }
+    } else {
+//        setForkEvery(14)
+        maxHeapSize = "700M"
+        minHeapSize = "300M"
+        systemProperties(
+            mapOf(
+                "junit.jupiter.execution.parallel.enabled" to "flase",
+                "junit.jupiter.execution.parallel.config.strategy" to "fixed",
+                "junit.jupiter.execution.parallel.config.fixed.parallelism" to 1
+//    "junit.jupiter.execution.parallel.mode.default" to "concurrent"
+            )
+        )
+        testLogging {
+            events(
+                /*"passed",*/
+                "skipped",
+                "failed"/*,
+                "standardOut",
+                "standardError"*/
+            )
+        }
+    }
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
     environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
     @Suppress("UnstableApiUsage")
     useJUnitPlatform {
-    }
-    testLogging {
-        events(
-            "passed",
-            "skipped",
-            "failed"/*,
-            "standardOut",
-            "standardError"*/
-        )
     }
 }
 
@@ -148,11 +171,12 @@ dependencies {
         exclude("org.jetbrains.kotlin")
         exclude("org.slf4j")
     }
+    implementation("org.apache.commons", "commons-dbcp2", Versions.dbcp)
     // Excel
     implementation("org.apache.poi", "poi", Versions.poi)
     implementation("org.apache.poi", "poi-ooxml", Versions.poi)
     // CSV
-    implementation("org.apache.commons", "commons-csv", "1.6")
+    implementation("org.apache.commons", "commons-csv", Versions.commonCsv)
     // MySql
     implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
     // Logger
@@ -168,7 +192,9 @@ dependencies {
     implementation(kotlin("script-util"))
 //    implementation(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-jvm-host"))
-//    compileOnly(files("libs/idea.jar"))
+    // Cache
+    implementation("org.cache2k", "cache2k-api", Versions.cache2k)
+    runtimeOnly("org.cache2k", "cache2k-core", Versions.cache2k)
     // Test
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)

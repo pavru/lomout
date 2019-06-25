@@ -3,9 +3,9 @@ package net.pototskiy.apps.lomout.api.config
 import org.jetbrains.kotlin.daemon.common.toHexString
 import java.io.File
 import java.security.MessageDigest
+import kotlin.script.experimental.api.ExternalSourceCode
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.SourceCode
-import kotlin.script.experimental.host.FileScriptSource
 
 /**
  * Script hash creator, including script imports
@@ -24,7 +24,7 @@ class ScriptUniqueHash(
      * @return String?
      */
     fun hash(): String? {
-        if (script !is FileScriptSource) {
+        if (script !is ExternalSourceCode) {
             return null
         }
         val digestWrapper = MessageDigest.getInstance("SHA-1")
@@ -36,8 +36,8 @@ class ScriptUniqueHash(
         return digestWrapper.digest().toHexString()
     }
 
-    private fun updateHashWithTextImports(script: FileScriptSource, digestWrapper: MessageDigest) {
-        val scriptDir = script.file.parentFile
+    private fun updateHashWithTextImports(script: ExternalSourceCode, digestWrapper: MessageDigest) {
+        val scriptDir = File(script.externalLocation.toURI()).parentFile
         digestWrapper.update(script.text.toByteArray())
         @Suppress("GraziInspection")
         val importPattern = Regex("^@file:Import\\s*\\(\\s*\"([^\"]*)\"\\s*\\)")
@@ -46,7 +46,7 @@ class ScriptUniqueHash(
             .forEach {
                 val file = importPattern.matchEntire(it)?.groups?.get(1)?.value
                 if (file != null && File(scriptDir, file).exists() && File(scriptDir, file).exists()) {
-                    updateHashWithTextImports(FileScriptSource(File(scriptDir, file)), digestWrapper)
+                    updateHashWithTextImports(SerializableFileScriptSource(File(scriptDir, file)), digestWrapper)
                 }
             }
     }

@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.VarCharColumnType
  * @property entityTable DbEntityTable The entity table
  * @constructor
  */
-class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType() {
+internal class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType() {
     /**
      * Get SQL type for data
      *
@@ -65,5 +65,5 @@ class EntityTypeColumnType(private val entityTable: DbEntityTable) : ColumnType(
  * @param entityTable DbEntityTable The exposed table
  * @return Column<EntityType>
  */
-fun Table.entityType(name: String, entityTable: DbEntityTable): Column<EntityType> =
+internal fun Table.entityType(name: String, entityTable: DbEntityTable): Column<EntityType> =
     registerColumn(name, EntityTypeColumnType(entityTable))
