@@ -45,7 +45,11 @@ internal class EntityTest {
                     host("localhost")
                     port(3306)
                     user("root")
-                    password("root")
+                    if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                        password("")
+                    } else {
+                        password("root")
+                    }
                 }
             }.build(),
             entityTypeManager,

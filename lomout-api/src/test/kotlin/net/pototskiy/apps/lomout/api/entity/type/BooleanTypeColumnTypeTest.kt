@@ -25,7 +25,11 @@ internal class BooleanTypeColumnTypeTest {
             "jdbc:mysql://127.0.0.1:3306/test_lomout?serverTimezone=${TimeZone.getDefault().id}",
             driver = "com.mysql.cj.jdbc.Driver",
             user = "root",
-            password = "root"
+            password = if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                ""
+            } else {
+                "root"
+            }
         )
     }
 
