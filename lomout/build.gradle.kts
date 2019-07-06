@@ -97,7 +97,6 @@ tasks.named<Test>("test") {
                 "skipped",
                 "failed"
             )
-//        events("passed", "skipped", "failed", "standardOut", "standardError")
         }
     } else {
         testLogging {
@@ -108,24 +107,9 @@ tasks.named<Test>("test") {
                 "standardOut",
                 "standardError"
             )
-//        events("passed", "skipped", "failed", "standardOut", "standardError")
         }
     }
 }
-
-//tasks.withType<KotlinCompile> {
-//    dependsOn += tasks["generateBuildClass"]
-//    kotlinOptions {
-//        jvmTarget = "1.8"
-//        noReflect = false
-//        freeCompilerArgs = freeCompilerArgs + listOf(
-//            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-//            "-Xuse-experimental=kotlin.Experimental",
-//            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-//            "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
-//        )
-//    }
-//}
 
 tasks.withType(JacocoReport::class.java).all {
     reports {

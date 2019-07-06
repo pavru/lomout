@@ -1,5 +1,7 @@
 package net.pototskiy.apps.lomout.loader
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
@@ -72,6 +74,7 @@ internal class DataLoadingTest {
         @BeforeAll
         internal fun initAll() {
             repository.close()
+            runBlocking { delay(1000L) }
             repository = EntityRepository(config.database, Level.ERROR)
             timestampTwo = Documents.timestamp
 
@@ -109,6 +112,7 @@ internal class DataLoadingTest {
             @BeforeAll
             internal fun initAll() {
                 repository.close()
+                runBlocking { delay(1000L) }
                 repository = EntityRepository(config.database, Level.ERROR)
                 timestampThree = Documents.timestamp
 
@@ -159,7 +163,7 @@ internal class DataLoadingTest {
             @Test
             @DisplayName("One entity should be in state CREATED/REMOVED")
             internal fun createdRemovedStateTest() {
-                assertThat(repository.get(entityType,includeDeleted = true).filter {
+                assertThat(repository.get(entityType, includeDeleted = true).filter {
                     it.removed && it.removeTime == timestampThree
                 }.count()).isEqualTo(1)
             }
@@ -173,6 +177,7 @@ internal class DataLoadingTest {
                 @BeforeAll
                 internal fun initAll() {
                     repository.close()
+                    runBlocking { delay(1000L) }
                     repository = EntityRepository(config.database, Level.ERROR)
                     timestampFour = Documents.timestamp
 
@@ -195,7 +200,7 @@ internal class DataLoadingTest {
                 @Test
                 @DisplayName("Five entities should be loaded")
                 internal fun numberOfEntitiesTest() {
-                    assertThat(repository.get(entityType,includeDeleted = true).count()).isEqualTo(5)
+                    assertThat(repository.get(entityType, includeDeleted = true).count()).isEqualTo(5)
                 }
             }
         }
