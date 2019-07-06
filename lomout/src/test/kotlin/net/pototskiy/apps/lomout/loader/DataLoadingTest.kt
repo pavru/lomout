@@ -52,6 +52,7 @@ internal class DataLoadingTest {
         entityType = config.findEntityType("Test_conf${'$'}TestEntityAttributes")!!
         repository.getIDs(entityType, includeDeleted = true).forEach { repository.delete(entityType, it) }
         timestampOne = Documents.timestamp
+        println("timestampOne: $timestampOne")
     }
 
     @AfterAll
@@ -77,6 +78,7 @@ internal class DataLoadingTest {
             runBlocking { delay(1000L) }
             repository = EntityRepository(config.database, Level.ERROR)
             timestampTwo = Documents.timestamp
+            println("timestampTwo: $timestampTwo")
 
             val load = config.loader?.loads?.find {
                 it.entity.simpleName == "TestEntityAttributes" &&
@@ -115,6 +117,7 @@ internal class DataLoadingTest {
                 runBlocking { delay(1000L) }
                 repository = EntityRepository(config.database, Level.ERROR)
                 timestampThree = Documents.timestamp
+                println("timestampThree: $timestampThree")
 
                 val load = config.loader?.loads?.find {
                     it.entity.simpleName == "TestEntityAttributes" &&
@@ -180,6 +183,7 @@ internal class DataLoadingTest {
                     runBlocking { delay(1000L) }
                     repository = EntityRepository(config.database, Level.ERROR)
                     timestampFour = Documents.timestamp
+                    println("timestampFour: $timestampFour")
 
                     val load = config.loader?.loads?.find {
                         it.entity.simpleName == "TestEntityAttributes" &&
