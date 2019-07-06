@@ -304,6 +304,6 @@ class Documents(
         /**
          * Timestamp for the current session.
          */
-        var timestamp: LocalDateTime = LocalDateTime.now().withNano(0)
+        var timestamp: LocalDateTime = LocalDateTime.now().let { it.withNano(it.nano / 1000000) }
     }
 }
