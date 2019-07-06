@@ -39,7 +39,9 @@ class Documents(
         if (instance != null) {
             throw DocumentException("Another instance of Documents is already created.")
         }
-        timestamp = LocalDateTime.now().let { it.withNano(it.nano / 1000000) }
+        timestamp = LocalDateTime.now().let {
+            it.withNano(it.nano / 1000000 * 1000000)
+        }
     }
 
     private val client = KMongo.createClient(
@@ -304,6 +306,8 @@ class Documents(
         /**
          * Timestamp for the current session.
          */
-        var timestamp: LocalDateTime = LocalDateTime.now().let { it.withNano(it.nano / 1000000) }
+        var timestamp: LocalDateTime = LocalDateTime.now().let {
+            it.withNano(it.nano / 1000000 * 1000000)
+        }
     }
 }
