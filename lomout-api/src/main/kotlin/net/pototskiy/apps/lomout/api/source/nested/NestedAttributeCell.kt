@@ -5,7 +5,8 @@ import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
-import org.joda.time.DateTime
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Attribute workbook cell
@@ -105,10 +106,18 @@ class NestedAttributeCell(
     override fun setCellValue(value: Double) = throwNotSupportCellType()
 
     /**
-     * Set cell [DateTime] value
+     * Set cell [LocalDateTime] value
      *
-     * @param value DateTime
+     * @param value The datetime value
      * @return Nothing
      */
-    override fun setCellValue(value: DateTime) = throwNotSupportCellType()
+    override fun setCellValue(value: LocalDateTime) = throwNotSupportCellType()
+
+    /**
+     * Set cell [LocalDate] value
+     *
+     * @param value The date value
+     * @return Nothing
+     */
+    override fun setCellValue(value: LocalDate) = throwNotSupportCellType()
 }

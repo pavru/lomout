@@ -1,15 +1,11 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.AttributeReader
-import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.LONG
-import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -27,31 +23,24 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
-import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultLongReaderTest {
-    private val typeManager = EntityTypeManagerImpl()
+    internal class TestType : Document() {
+        var attr: Long = 0L
+
+        companion object : DocumentMetadata(TestType::class)
+    }
+
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
-    private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<LONG>
+    private var attr = TestType.attributes.getValue("attr")
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
-        @Suppress("UNCHECKED_CAST")
-        attr = typeManager.createAttribute(
-            "attr", LONG::class,
-            builder = null,
-            reader = defaultReaders[LONG::class] as AttributeReader<out LONG>,
-            writer = defaultWriters[LONG::class] as AttributeWriter<out LONG>
-        )
-        entity = typeManager.createEntityType("test", false).also {
-            typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
-        }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -66,11 +55,18 @@ internal class DefaultLongReaderTest {
     }
 
     @Test
+    internal fun readBlankCellTest() {
+        val reader = LongAttributeReader().apply { locale = "en_US" }
+        xlsTestDataCell.setBlank()
+        assertThat(reader.read(attr, inputCell)).isNull()
+    }
+
+    @Test
     internal fun readDoubleCellTest() {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(2.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(2)
+        assertThat(reader.read(attr, inputCell)).isEqualTo(2)
         xlsTestDataCell.setCellValue(2.2)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
         assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(TypeCastException::class.java)
@@ -81,7 +77,7 @@ internal class DefaultLongReaderTest {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         val cell = createCsvCell("11")
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)?.value).isEqualTo(11)
+        assertThat(reader.read(attr, cell)).isEqualTo(11)
     }
 
     @Test
@@ -89,10 +85,10 @@ internal class DefaultLongReaderTest {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(1)
+        assertThat(reader.read(attr, inputCell)).isEqualTo(1)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)?.value).isEqualTo(0)
+        assertThat(reader.read(attr, inputCell)).isEqualTo(0)
     }
 
     @Test
@@ -101,22 +97,23 @@ internal class DefaultLongReaderTest {
         val readerRuRu = LongAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("11")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(11L)
-        assertThat(readerRuRu.read(attr, inputCell)?.value).isEqualTo(11L)
+        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(11L)
+        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(11L)
+        xlsTestDataCell.setCellValue("xxxx")
+        assertThatThrownBy {
+            readerEnUs.read(attr, inputCell)
+        }.isInstanceOf(AppDataException::class.java)
+            .hasMessageContaining("String cannot be parsed to long.")
     }
 
     @Test
     internal fun defaultLongReaderTest() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[LONG::class]
+        val reader = defaultReaders[SupportAttributeType.longType]
         assertThat(reader).isNotNull
-        assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
-        reader as AttributeReaderWithPlugin
-        assertThat(reader.pluginClass).isEqualTo(LongAttributeReader::class)
-        val v = reader.pluginClass.createInstance() as LongAttributeReader
-        @Suppress("UNCHECKED_CAST")
-        v.apply(reader.options as (LongAttributeReader.() -> Unit))
-        assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(reader).isInstanceOf(AttributeReader::class.java)
+        reader as LongAttributeReader
+        assertThat(reader.locale).isEqualTo(DEFAULT_LOCALE_STR)
     }
 
     private fun createCsvCell(value: String): CsvCell {

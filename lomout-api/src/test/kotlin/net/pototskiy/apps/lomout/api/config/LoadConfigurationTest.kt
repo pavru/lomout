@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.config
 
+import net.pototskiy.apps.lomout.api.BuildInfo
 import net.pototskiy.apps.lomout.api.LogCatcher
 import net.pototskiy.apps.lomout.api.NoExitSecurityManager
 import org.apache.logging.log4j.Level
@@ -23,6 +24,14 @@ internal class LoadConfigurationTest {
     @BeforeEach
     internal fun setUp() {
         System.setSecurityManager(NoExitSecurityManager())
+        BuildInfo.dependencies.add(
+            BuildInfo.Dependency(
+                "implementation",
+                "org.cache2k",
+                "org.cache2k",
+                "1.2.2.Final",
+                emptyList()
+            ))
     }
 
     @Suppress("TooGenericExceptionCaught")

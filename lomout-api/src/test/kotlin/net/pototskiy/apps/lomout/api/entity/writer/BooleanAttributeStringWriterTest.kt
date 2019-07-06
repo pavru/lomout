@@ -2,10 +2,14 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithPlugin
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.entity.writer
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.plugable.Writer
+import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
+import net.pototskiy.apps.lomout.api.plugable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -19,12 +23,25 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
 import java.nio.file.Path
-import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class BooleanAttributeStringWriterTest {
-    private lateinit var typeManager: EntityTypeManagerImpl
+
+    internal class TestType : Document() {
+        @Writer(Attr1Writer::class)
+        var attr1: Boolean = false
+        var attr2: Boolean = false
+
+        companion object : DocumentMetadata(TestType::class)
+
+        class Attr1Writer : WriterBuilder {
+            override fun build(): AttributeWriter<out Any?> = createWriter<BooleanAttributeStringWriter> {
+                locale = "en_US"
+            }
+        }
+    }
+
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
@@ -33,7 +50,6 @@ internal class BooleanAttributeStringWriterTest {
 
     @BeforeEach
     internal fun setUp() {
-        typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
         file = tempDir.resolve("attributes.xls").toFile()
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
@@ -48,43 +64,34 @@ internal class BooleanAttributeStringWriterTest {
 
     @Test
     internal fun simpleWriteTest() {
-        val attr = typeManager.createAttribute("attr", BOOLEAN::class,
-            writer = AttributeWriterWithPlugin(BooleanAttributeStringWriter::class) {
-                this as BooleanAttributeStringWriter
-                locale = "en_US"
-            }
-        )
-        val value = BOOLEAN(true)
+        val attr = TestType.attributes.getValue("attr1")
+        val value = true
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<BOOLEAN>)(value, cell)
+        (attr.writer as AttributeWriter<Boolean>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("1")
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<BOOLEAN>)(BOOLEAN(false), cell)
+        (attr.writer as AttributeWriter<Boolean>).write(false, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("0")
     }
 
     @Test
     internal fun writeNullValueTest() {
-        val attr = typeManager.createAttribute("attr", BOOLEAN::class)
+        val attr = TestType.attributes.getValue("attr2")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<BOOLEAN>)(null, cell)
+        (attr.writer as AttributeWriter<Boolean?>).write(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
-        val writer = defaultWriters[BOOLEAN::class]
+        val writer = defaultWriters[SupportAttributeType.booleanType]
         assertThat(writer).isNotNull
-        assertThat(writer).isInstanceOf(AttributeWriterWithPlugin::class.java)
-        writer as AttributeWriterWithPlugin
-        assertThat(writer.pluginClass).isEqualTo(BooleanAttributeStringWriter::class)
-        val v = writer.pluginClass.createInstance() as BooleanAttributeStringWriter
-        @Suppress("UNCHECKED_CAST")
-        v.apply(writer.options as (BooleanAttributeStringWriter.() -> Unit))
-        assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(writer).isInstanceOf(AttributeWriter::class.java)
+        writer as BooleanAttributeStringWriter
+        assertThat(writer.locale).isEqualTo(DEFAULT_LOCALE_STR)
     }
 }

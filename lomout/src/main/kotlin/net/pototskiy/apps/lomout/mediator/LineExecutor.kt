@@ -12,9 +12,8 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
-import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.entity.type.Type
 import org.apache.logging.log4j.Logger
 
 abstract class LineExecutor(protected val repository: EntityRepositoryInterface) {
@@ -24,12 +23,11 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
     private val jobs = mutableListOf<Job>()
     protected var processedRows = 0L
 
-    abstract fun processResultData(data: Map<AnyTypeAttribute, Type>): Long
+    abstract fun processResultData(data: Map<Attribute, Any>): Long
     abstract fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor
 
     @Suppress("TooGenericExceptionCaught", "SpreadOperator")
     open fun executeLine(line: AbstractLine): Long {
-        addExtensionAttributes(line)
         this.line = line
         processedRows = 0L
         try {
@@ -51,30 +49,8 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
             }
         } catch (e: Exception) {
             processException(e)
-        } finally {
-            try {
-                removeExtensionAttributes(line)
-            } catch (e: Exception) {
-                processException(e)
-            }
         }
         return processedRows
-    }
-
-    private fun addExtensionAttributes(line: AbstractLine) {
-        line.inputEntities.forEach { input ->
-            input.extAttributes.forEach {
-                repository.entityTypeManager.addEntityExtAttribute(input.entity, it)
-            }
-        }
-    }
-
-    private fun removeExtensionAttributes(line: AbstractLine) {
-        line.inputEntities.forEach { input ->
-            input.extAttributes.forEach {
-                repository.entityTypeManager.removeEntityExtAttribute(input.entity, it)
-            }
-        }
     }
 
     private suspend fun topLevelInput(line: AbstractLine) =
@@ -82,11 +58,9 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
             line.inputEntities.forEach { input ->
                 var pageNumber = 0
                 do {
-                    @Suppress("SpreadOperator")
-                    val items = repository.getIDs(input.entity, PAGE_SIZE, pageNumber, *input.statuses)
+                    val items = repository.getIDs(input.entity, PAGE_SIZE, pageNumber, input.includeDeleted)
                     items.forEach {
-                        @Suppress("SpreadOperator")
-                        yield(ClassifierElement.Mismatched(repository.get(it, *input.statuses)!!))
+                        yield(ClassifierElement.Mismatched(repository.get(input.entity, it, input.includeDeleted)!!))
                     }
                     pageNumber++
                 } while (items.isNotEmpty())

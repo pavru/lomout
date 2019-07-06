@@ -2,14 +2,9 @@ package net.pototskiy.apps.lomout.api.config.printer
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.AttributeReader
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.EntityStatus
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
-import net.pototskiy.apps.lomout.api.entity.type.STRING
-import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Documents
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -19,62 +14,22 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 @Execution(ExecutionMode.CONCURRENT)
 @Suppress("TooManyFunctions")
 internal class PrinterConfigurationBuilderTest {
-    private val typeManager = EntityTypeManagerImpl().also { manager ->
-        manager.createEntityType("entity1", false).also { type ->
-            @Suppress("UNCHECKED_CAST")
-            manager.initialAttributeSetup(
-                type, AttributeCollection(
-                    listOf(
-                        manager.createAttribute(
-                            "attr1",
-                            STRING::class,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
-                        ),
-                        manager.createAttribute(
-                            "attr2", STRING::class,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
-                        ),
-                        manager.createAttribute(
-                            "attr3", STRING::class,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
-                        )
-                    )
-                )
-            )
-        }
-        manager.createEntityType("entity2", false).also { type ->
-            @Suppress("UNCHECKED_CAST")
-            manager.initialAttributeSetup(
-                type, AttributeCollection(
-                    listOf(
-                        manager.createAttribute(
-                            "attr1", STRING::class,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
-                        ),
-                        manager.createAttribute(
-                            "attr2", STRING::class,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
-                        ),
-                        manager.createAttribute(
-                            "attr3", STRING::class,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<out STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<out STRING>
-                        )
-                    )
-                )
-            )
-        }
+    @Suppress("unused")
+    class Entity1 : Document() {
+        var attr1: String = ""
+        var attr2: String = ""
+        var attr3: String = ""
+
+        companion object : DocumentMetadata(Entity1::class)
+    }
+
+    @Suppress("unused")
+    class Entity2 : Document() {
+        var attr1: String = ""
+        var attr2: String = ""
+        var attr3: String = ""
+
+        companion object : DocumentMetadata(Entity2::class)
     }
 
     @Test
@@ -86,7 +41,6 @@ internal class PrinterConfigurationBuilderTest {
         @Suppress("RedundantWith")
         with(config.lines[0]) {
             assertThat(inputEntities).hasSize(1)
-            assertThat(inputEntities[0].extAttributes).hasSize(0)
             assertThat(outputFieldSets).isNotNull
             assertThat(outputFieldSets.file.file.id).isEqualTo("id1")
             assertThat(outputFieldSets.printHead).isEqualTo(true)
@@ -105,14 +59,6 @@ internal class PrinterConfigurationBuilderTest {
             createConfigurationTooManyInput()
         }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("One and only one input entity is allowed for printer line")
-    }
-
-    @Test
-    internal fun inputHasExtAttrTest() {
-        assertThatThrownBy {
-            createConfigurationWithExtAttr()
-        }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Input entity of printer line cannot have extended attributes")
     }
 
     @Test
@@ -172,16 +118,14 @@ internal class PrinterConfigurationBuilderTest {
     }
 
     private fun createCorrectConfiguration(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 output {
                     file { file("id1"); sheet("test") }
@@ -197,15 +141,13 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { it.match() }
+                    classifier { if (it.entities[0].updateTime == Documents.timestamp) it.match() else it.mismatch() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -217,24 +159,22 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 pipeline {
-                    classifier { it.match() }
+                    classifier { if (it.entities[0].updateTime == Documents.timestamp) it.match() else it.mismatch() }
                     assembler { _, _ -> emptyMap() }
                 }
             }
         }.build()
 
     private fun createConfigurationTooManyInput(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
-                    entity("entity2")
+                    entity(Entity1::class)
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id1"); sheet("test") }
@@ -256,64 +196,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
-                }
-                output {
-                    file { file("id2"); sheet("test") }
-                    printHead = false
-                    outputFields {
-                        main("main") {
-                            field("attr3")
-                        }
-                    }
-                }
-                pipeline {
-                    classifier { it.match() }
-                    assembler { _, _ -> emptyMap() }
-                }
-            }
-        }.build()
-
-    private fun createConfigurationWithExtAttr(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
-            files {
-                file("id1") { path("file1") }
-                file("id2") { path("file2") }
-            }
-            printerLine {
-                input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                        extAttribute<STRING>("extAttr1") {
-                            builder { STRING("stub") }
-                        }
-                    }
-                }
-                output {
-                    file { file("id1"); sheet("test") }
-                    printHead = true
-                    outputFields {
-                        main("main") {
-                            field("attr1") { column(0) }
-                            field("attr2") { column(1) }
-                        }
-                        extra("extra") {
-                            field("attr3") { column(0) }
-                        }
-                    }
-                }
-                pipeline {
-                    classifier { it.match() }
-                    assembler { _, _ -> emptyMap() }
-                }
-            }
-            printerLine {
-                input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -332,7 +215,7 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationInputOutputDisorder(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
@@ -352,9 +235,7 @@ internal class PrinterConfigurationBuilderTest {
                     }
                 }
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 pipeline {
                     classifier { it.match() }
@@ -363,9 +244,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -384,7 +263,7 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationNoInputs(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
@@ -397,9 +276,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -418,16 +295,14 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationNoOutputs(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 pipeline {
                     classifier { it.match() }
@@ -436,9 +311,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -457,16 +330,14 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationNoPipeline(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 output {
                     file { file("id1"); sheet("test") }
@@ -485,16 +356,14 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationNoOutputFile(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 output {
                     printHead = true
@@ -515,9 +384,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -536,16 +403,14 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationNoFieldSet(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 output {
                     file { file("id1"); sheet("test") }
@@ -558,9 +423,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }
@@ -579,16 +442,14 @@ internal class PrinterConfigurationBuilderTest {
         }.build()
 
     private fun createConfigurationWithSheetRegex(): PrinterConfiguration =
-        PrinterConfiguration.Builder(ConfigBuildHelper(typeManager)).apply {
+        PrinterConfiguration.Builder(ConfigBuildHelper()).apply {
             files {
                 file("id1") { path("file1") }
                 file("id2") { path("file2") }
             }
             printerLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity1::class)
                 }
                 output {
                     file { file("id1"); sheet(Regex(".*")) }
@@ -610,9 +471,7 @@ internal class PrinterConfigurationBuilderTest {
             }
             printerLine {
                 input {
-                    entity("entity2") {
-                        statuses(EntityStatus.UPDATED)
-                    }
+                    entity(Entity2::class)
                 }
                 output {
                     file { file("id2"); sheet("test") }

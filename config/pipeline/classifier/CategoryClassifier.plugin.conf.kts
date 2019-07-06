@@ -1,12 +1,15 @@
+import MageCategory_conf.MageCategory
+import OnecGroup_conf.OnecGroup
+
 class CategoryClassifier : PipelineClassifierPlugin() {
     override fun classify(element: ClassifierElement): ClassifierElement {
         try {
             val entities = element.entities
-            val group = entities["onec-group"]
-            val category = entities["mage-category"]
-            val categoryPath = category["__path"]
-            if (categoryPath?.value in rootMageCategories) return element.mismatch()
-            if (group["transformed_path"] == categoryPath) return element.match()
+            val group = entities[OnecGroup::class] as OnecGroup
+            val category = entities[MageCategory::class] as MageCategory
+            val categoryPath = category.__path
+            if (categoryPath in rootMageCategories) return element.mismatch()
+            if (group.transformed_path == categoryPath) return element.match()
             return element.mismatch()
         } catch (e: Exception) {
             throw AppDataException(unknownPlace(), e.message, e)

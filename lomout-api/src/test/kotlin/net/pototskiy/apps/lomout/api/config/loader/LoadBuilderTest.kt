@@ -2,7 +2,8 @@ package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -11,9 +12,16 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class LoadBuilderTest {
-    private val typeManager = EntityTypeManagerImpl()
-    private val helper = ConfigBuildHelper(typeManager)
-    private val entity = typeManager.createEntityType("entity", true)
+    @Suppress("unused")
+    class EntityType: Document() {
+        var f1: String = ""
+        var f2: String = ""
+        var f3: String = ""
+        var f4: String = ""
+        companion object :DocumentMetadata(EntityType::class)
+    }
+    private val helper = ConfigBuildHelper()
+    private val entity = EntityType::class
 
     @Test
     internal fun validateFieldColumnsTest() {
@@ -65,7 +73,8 @@ internal class LoadBuilderTest {
                 }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Source files are not defined for entity type 'entity' loading.")
+            .hasMessageContaining("Source files are not defined for entity type " +
+                    "'net.pototskiy.apps.lomout.api.config.loader.LoadBuilderTest.EntityType' loading.")
     }
 
     @Test
@@ -79,6 +88,7 @@ internal class LoadBuilderTest {
                 fromSources { source { file("file1"); sheet("test") } }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Field set is not defined for entity type 'entity' loading.")
+            .hasMessageContaining("Field set is not defined for entity type " +
+                    "'net.pototskiy.apps.lomout.api.config.loader.LoadBuilderTest.EntityType' loading.")
     }
 }

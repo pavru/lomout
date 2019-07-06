@@ -5,14 +5,17 @@ import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.entity.EntityStatus
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.get
-import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
-import net.pototskiy.apps.lomout.api.entity.type.LONG
-import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.plugable.Writer
+import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
+import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import net.pototskiy.apps.lomout.loader.DataLoader
 import net.pototskiy.apps.lomout.mediator.DataMediator
@@ -26,8 +29,7 @@ import java.io.File
 
 @Suppress("ComplexMethod", "MagicNumber")
 internal class PrinterBasicTest {
-    private val typeManager = EntityTypeManagerImpl()
-    private val helper = ConfigBuildHelper(typeManager)
+    private val helper = ConfigBuildHelper()
     private val testDataDir = System.getenv("TEST_DATA_DIR")
     private val fileName = "$testDataDir/mediator-test-data.xls"
     private val outputName = "../tmp/printer-basic-test.xls"
@@ -39,16 +41,15 @@ internal class PrinterBasicTest {
         val config = createConfiguration()
 
         PluginContext.config = config
-        PluginContext.entityTypeManager = config.entityTypeManager
         PluginContext.scriptFile = File("no-file.conf.kts")
 
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
-        val repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        val repository = EntityRepository(config.database, Level.ERROR)
         PluginContext.repository = repository
-        repository.getIDs(typeManager["entity1"]).forEach { repository.delete(it) }
-        repository.getIDs(typeManager["entity2"]).forEach { repository.delete(it) }
-        repository.getIDs(typeManager["import-data"]).forEach { repository.delete(it) }
+        repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
+        repository.getIDs(Entity2::class).forEach { repository.delete(Entity2::class, it) }
+        repository.getIDs(ImportData::class).forEach { repository.delete(ImportData::class, it) }
         DataLoader.load(repository, config)
         DataMediator.mediate(repository, config)
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
@@ -58,7 +59,8 @@ internal class PrinterBasicTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(log).doesNotContain("[ERROR]")
-        val entities = repository.get(typeManager["import-data"])
+        @Suppress("UNCHECKED_CAST")
+        val entities = repository.get(ImportData::class) as List<ImportData>
         WorkbookFactory.create(File(outputName).toURI().toURL()).use { workbook ->
             val sheet = workbook["test"]
             assertThat(sheet).isNotNull
@@ -68,30 +70,83 @@ internal class PrinterBasicTest {
             assertThat(headRow[1]?.stringValue).isEqualTo("desc")
             assertThat(headRow[2]?.stringValue).isEqualTo("corrected_amount")
             for (i in 1..7 step 2) {
-                val type = entities.first().type
                 val sku = sheet[i + 1]!![0]?.longValue
-                val entity = entities.findLast { it.data[type["sku"]]?.value == sku }!!
+                val entity = entities.findLast { it.sku == sku }!!
                 @Suppress("UsePropertyAccessSyntax")
-                assertThat(sheet[i]!![0]?.doubleValue)
-                    .isNotNull().isEqualTo(entity.data[type["amount"]]!!.value)
+                assertThat(sheet[i]!![0]?.doubleValue).isNotNull().isEqualTo(entity.amount)
                 @Suppress("UsePropertyAccessSyntax")
-                assertThat(sheet[i + 1]!![1]?.stringValue)
-                    .isNotNull().isEqualTo(entity.data[type["desc"]]!!.value)
+                assertThat(sheet[i + 1]!![1]?.stringValue).isNotNull().isEqualTo(entity.desc)
                 @Suppress("UsePropertyAccessSyntax")
-                assertThat(sheet[i + 1]!![2]?.doubleValue)
-                    .isNotNull().isEqualTo(entity.data[type["corrected_amount"]]!!.value)
+                assertThat(sheet[i + 1]!![2]?.doubleValue).isNotNull().isEqualTo(entity.corrected_amount)
             }
         }
         repository.close()
     }
 
+    internal class SimpleLongWriter : AttributeWriter<Long?>(), WriterBuilder {
+        /**
+         * Writer function
+         *
+         * @param value T? The value to write
+         * @param cell Cell The cell to write value
+         */
+        override fun write(value: Long?, cell: Cell) {
+            cell.setCellValue(value!!)
+        }
+
+        override fun build(): AttributeWriter<out Any?> = createWriter<SimpleLongWriter>()
+    }
+
+    internal class SimpleDoubleWriter : AttributeWriter<Double?>(), WriterBuilder {
+        /**
+         * Writer function
+         *
+         * @param value T? The value to write
+         * @param cell Cell The cell to write value
+         */
+        override fun write(value: Double?, cell: Cell) {
+            cell.setCellValue(value!!)
+        }
+
+        override fun build(): AttributeWriter<out Any?> = createWriter<SimpleDoubleWriter>()
+    }
+
+    @Suppress("PropertyName")
+    internal open class Entity1 : Document() {
+        @Key
+        @Writer(SimpleLongWriter::class)
+        var sku: Long = 0L
+        var desc: String = ""
+        @Writer(SimpleDoubleWriter::class)
+        var amount: Double = 0.0
+        @Suppress("VariableNaming")
+        open val corrected_amount: Double
+            get() = amount * 11.0
+
+        companion object : DocumentMetadata(Entity1::class)
+    }
+
+    internal class Entity2 : Entity1() {
+        override val corrected_amount: Double
+            get() = amount * 13.0
+
+        companion object : DocumentMetadata(Entity2::class)
+    }
+
+    internal class ImportData : Entity1() {
+        @Writer(SimpleDoubleWriter::class)
+        override var corrected_amount: Double = 0.0
+
+        companion object : DocumentMetadata(ImportData::class)
+    }
+
     @Suppress("LongMethod")
     private fun createConfiguration() = Config.Builder(helper).apply {
         database {
-            name("test_lomout")
+            name("lomout_test")
             server {
                 host("localhost")
-                port(3306)
+                port(27017)
                 user("root")
                 password(if (System.getenv("TRAVIS_BUILD_DIR") == null) "root" else "")
             }
@@ -100,22 +155,7 @@ internal class PrinterBasicTest {
             files {
                 file("test-data") { path(fileName) }
             }
-            entities {
-                entity("entity1", false) {
-                    attribute<LONG>("sku") {
-                        key()
-                        writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
-                    }
-                    attribute<STRING>("desc")
-                    attribute<DOUBLE>("amount") {
-                        writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
-                    }
-                }
-                entity("entity2", false) {
-                    copyFrom("entity1")
-                }
-            }
-            loadEntity("entity1") {
+            loadEntity(Entity1::class) {
                 fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
                 rowsToSkip(1)
                 keepAbsentForDays(1)
@@ -127,7 +167,7 @@ internal class PrinterBasicTest {
                     }
                 }
             }
-            loadEntity("entity2") {
+            loadEntity(Entity2::class) {
                 fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
                 rowsToSkip(1)
                 keepAbsentForDays(1)
@@ -143,51 +183,30 @@ internal class PrinterBasicTest {
         mediator {
             productionLine {
                 input {
-                    entity("entity1") {
-                        statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
-                        extAttribute<DOUBLE>("corrected_amount") {
-                            builder {
-                                DOUBLE((it["amount"] as DOUBLE).value * 11.0)
-                            }
-                        }
-                    }
-                    entity("entity2") {
-                        statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
-                        extAttribute<DOUBLE>("corrected_amount") {
-                            builder {
-                                DOUBLE((it["amount"] as DOUBLE).value * 13.0)
-                            }
-                        }
-                    }
+                    entity(Entity1::class)
+                    entity(Entity2::class)
                 }
-                output("import-data") {
-                    copyFrom("entity1")
-                    attribute<DOUBLE>("corrected_amount") {
-                        writer { value, cell -> value?.let { cell.setCellValue(it.value) } }
-                    }
-                }
+                output(ImportData::class)
                 pipeline {
                     classifier { element ->
-                        var entity = element.entities.getOrNull("entity1")
+                        var entity = element.entities.getOrNull(Entity1::class)
                         if (entity != null) {
-                            val partnerType = entityTypeManager["entity2"]
+                            val partnerType = Entity2::class
                             val partner = repository.get(
                                 partnerType,
-                                mapOf(partnerType["sku"] to entity["sku"]!!),
-                                EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+                                mapOf(Entity2.attributes.getValue("sku") to entity.getAttribute("sku")!!)
                             )
                             if (partner != null) {
                                 element.match(partner)
                             } else {
                                 element.mismatch()
                             }
-                        } else if (element.entities.getOrNull("entity2") != null) {
-                            entity = element.entities["entity2"]
-                            val partnerType = entityTypeManager["entity1"]
+                        } else if (element.entities.getOrNull(Entity2::class) != null) {
+                            entity = element.entities[Entity2::class]
+                            val partnerType = Entity1::class
                             val partner = repository.get(
                                 partnerType,
-                                mapOf(partnerType["sku"] to entity["sku"]!!),
-                                EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
+                                mapOf(Entity1.attributes.getValue("sku") to entity.getAttribute("sku")!!)
                             )
                             if (partner != null) {
                                 element.skip()
@@ -200,29 +219,31 @@ internal class PrinterBasicTest {
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { target, entities ->
+                            val attrs = target.documentMetadata.attributes
                             mapOf(
-                                target["sku"] to entities[0]["sku"]!!,
-                                target["desc"] to entities[1]["desc"]!!,
-                                target["amount"] to entities[1]["amount"]!!,
-                                target["corrected_amount"] to entities[0]["corrected_amount"]!!
+                                attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
+                                attrs.getValue("desc") to entities[1].getAttribute("desc")!!,
+                                attrs.getValue("amount") to entities[1].getAttribute("amount")!!,
+                                attrs.getValue("corrected_amount") to (entities[0] as Entity1).corrected_amount
                             )
                         }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier {
                             val entities = it.entities
-                            if (entities[0].type.name == "entity2") {
+                            if (entities[0].documentMetadata.klass == Entity2::class) {
                                 it.match()
                             } else {
                                 it.mismatch()
                             }
                         }
                         assembler { target, entities ->
+                            val attrs = target.documentMetadata.attributes
                             mapOf(
-                                target["sku"] to entities[0]["sku"]!!,
-                                target["desc"] to entities[0]["desc"]!!,
-                                target["amount"] to entities[0]["amount"]!!,
-                                target["corrected_amount"] to entities[0]["corrected_amount"]!!
+                                attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
+                                attrs.getValue("desc") to entities[0].getAttribute("desc")!!,
+                                attrs.getValue("amount") to entities[0].getAttribute("amount")!!,
+                                attrs.getValue("corrected_amount") to (entities[0] as Entity2).corrected_amount
                             )
                         }
                     }
@@ -235,9 +256,7 @@ internal class PrinterBasicTest {
             }
             printerLine {
                 input {
-                    entity("import-data") {
-                        statuses(EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED)
-                    }
+                    entity(ImportData::class)
                 }
                 output {
                     file { file("output"); sheet("test") }
@@ -255,8 +274,11 @@ internal class PrinterBasicTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, entities ->
-                        entities.first().data
+                    assembler { target, entities ->
+                        val entity = entities.first()
+                        target.documentMetadata.attributes.values.mapNotNull { attr ->
+                            entity.getAttribute(attr.name)?.let { attr to it }
+                        }.toMap()
                     }
                 }
             }

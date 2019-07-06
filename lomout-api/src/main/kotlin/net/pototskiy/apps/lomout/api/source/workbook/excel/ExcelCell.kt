@@ -2,12 +2,14 @@ package net.pototskiy.apps.lomout.api.source.workbook.excel
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.entity.values.toDate
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Row
-import org.joda.time.DateTime
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Excel source cell
@@ -79,11 +81,20 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
     override fun setCellValue(value: Double) = cell.setCellValue(value)
 
     /**
-     * Set cell [DateTime] value
+     * Set cell [LocalDateTime] value
      *
      * @param value DateTime
      */
-    override fun setCellValue(value: DateTime) = cell.setCellValue(value.toDate())
+    override fun setCellValue(value: LocalDateTime) =
+        cell.setCellValue(value.toDate())
+
+    /**
+     * Set cell [LocalDate] value
+     *
+     * @param value DateTime
+     */
+    override fun setCellValue(value: LocalDate) =
+        cell.setCellValue(value.toDate())
 
     /**
      * Get excel cell value in string presentation

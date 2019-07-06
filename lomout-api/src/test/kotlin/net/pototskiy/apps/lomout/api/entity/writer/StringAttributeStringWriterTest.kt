@@ -1,10 +1,11 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithPlugin
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.entity.writer
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -18,11 +19,15 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
 import java.nio.file.Path
-import kotlin.reflect.full.createInstance
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class StringAttributeStringWriterTest {
-    private lateinit var typeManager: EntityTypeManagerImpl
+    internal class TestType : Document() {
+        var attr: String = ""
+
+        companion object : DocumentMetadata(TestType::class)
+    }
+
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
@@ -31,7 +36,6 @@ internal class StringAttributeStringWriterTest {
 
     @BeforeEach
     internal fun setUp() {
-        typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
         file = tempDir.resolve("attributes.xls").toFile()
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
@@ -46,33 +50,29 @@ internal class StringAttributeStringWriterTest {
 
     @Test
     internal fun simpleWriteTest() {
-        val attr = typeManager.createAttribute("attr", STRING::class)
-        val value = STRING("test")
+        val attr = TestType.attributes.getValue("attr")
+        val value = "test"
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<STRING>)(value, cell)
+        (attr.writer as AttributeWriter<String>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("test")
     }
 
     @Test
     internal fun writeNullValueTest() {
-        val attr = typeManager.createAttribute("attr", STRING::class)
+        val attr = TestType.attributes.getValue("attr")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<STRING>)(null, cell)
+        (attr.writer as AttributeWriter<String?>).write(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
-        val writer = defaultWriters[STRING::class]
+        val writer = defaultWriters[SupportAttributeType.stringType]
         assertThat(writer).isNotNull
-        assertThat(writer).isInstanceOf(AttributeWriterWithPlugin::class.java)
-        writer as AttributeWriterWithPlugin
-        assertThat(writer.pluginClass).isEqualTo(StringAttributeStringWriter::class)
-        val v = writer.pluginClass.createInstance() as StringAttributeStringWriter
-        @Suppress("UNCHECKED_CAST")
-        v.apply(writer.options as (StringAttributeStringWriter.() -> Unit))
+        assertThat(writer).isInstanceOf(StringAttributeStringWriter::class.java)
+        writer as StringAttributeStringWriter
     }
 }

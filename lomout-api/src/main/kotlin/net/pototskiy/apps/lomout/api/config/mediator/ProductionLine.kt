@@ -4,8 +4,9 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.entity.EntityType
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.unknownPlace
+import kotlin.reflect.KClass
 
 /**
  * Mediator production line configuration
@@ -18,7 +19,7 @@ import net.pototskiy.apps.lomout.api.unknownPlace
  */
 class ProductionLine(
     inputEntities: InputEntityCollection,
-    val outputEntity: EntityType,
+    val outputEntity: KClass<out Document>,
     pipeline: Pipeline
 ) : AbstractLine(inputEntities, pipeline) {
     /**
@@ -33,7 +34,7 @@ class ProductionLine(
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var inputs: InputEntityCollection? = null
-        private var output: EntityType? = null
+        private var output: KClass<out Document>? = null
         private var pipeline: Pipeline? = null
 
         /**
@@ -88,41 +89,19 @@ class ProductionLine(
         }
 
         /**
-         * Define production line output entity type
-         *
-         * ```
-         * ...
-         *  output("entity type name") {
-         *      copyFrom("name") {...}
-         *      attribute<Type> {...}
-         *      attribute<Type> {...}
-         *      ...
-         *  }
-         * ...
-         * ```
-         *
-         * @param name String The entity type name
-         * @param block The pipeline output definition
-         */
-        @PublicApi
-        fun output(name: String, block: EntityType.Builder.() -> Unit) {
-            output = EntityType.Builder(helper, name, false).apply(block).build()
-        }
-
-        /**
          * Define production line output as reference to existing entity type
          *
          * ```
          * ...
-         *  output("existing entity type name")
+         *  output(class)
          * ...
          * ```
          *
-         * @param name String The already defined entity type name
+         * @param entityType String The already defined entity type name
          */
         @PublicApi
-        fun output(name: String) {
-            output = helper.typeManager.getEntityType(name)
+        fun output(entityType: KClass<out Document>) {
+            output = entityType
         }
 
         /**

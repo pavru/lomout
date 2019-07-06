@@ -1,10 +1,10 @@
+@file:Suppress("TooManyFunctions")
+
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.badPlace
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.type.DATE
-import net.pototskiy.apps.lomout.api.entity.type.isTypeOf
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.doubleToLong
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
 import net.pototskiy.apps.lomout.api.entity.values.longToString
@@ -13,38 +13,36 @@ import net.pototskiy.apps.lomout.api.entity.values.stringToDate
 import net.pototskiy.apps.lomout.api.entity.values.stringToDateTime
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
+import net.pototskiy.apps.lomout.api.entity.values.toLocalDate
+import net.pototskiy.apps.lomout.api.entity.values.toLocalDateTime
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
-import org.joda.time.DateTime
 import java.text.ParseException
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 /**
- * Read [DateTime] from the cell. Convert non-DateTime values to [DateTime].
+ * Read [LocalDateTime] from the cell. Convert non-DateTime values to [LocalDateTime].
  *
  * @receiver Cell The cell to read
  * @param attribute The destination attribute
  * @param locale The locale for converting
  * @return Read value
- * @throws AppDataException The string value cannot be converted to [DateTime]
+ * @throws AppDataException The string value cannot be converted to [LocalDateTime]
  */
-@Suppress("ComplexMethod")
-fun Cell.readeDateTime(
-    attribute: Attribute<*>,
+fun Cell.readeDateTimeWithLocale(
+    attribute: DocumentMetadata.Attribute,
     locale: Locale
-): DateTime? = when (this.cellType) {
-    CellType.LONG -> DateTime(Date(this.longValue))
-    CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
+): LocalDateTime? = when (this.cellType) {
+    CellType.LONG -> Date(this.longValue).toLocalDateTime()
+    CellType.DOUBLE -> HSSFDateUtil.getJavaDate(this.doubleValue).toLocalDateTime()
     CellType.BOOL -> null
     CellType.STRING ->
         try {
-            if (attribute.type.isTypeOf<DATE>()) {
-                this.stringValue.stringToDate(locale)
-            } else {
-                this.stringValue.stringToDateTime(locale)
-            }
+            this.stringValue.stringToDateTime(locale)
         } catch (e: AppDataException) {
             throw AppDataException(e.place + this + attribute, e.message, e)
         }
@@ -52,24 +50,74 @@ fun Cell.readeDateTime(
 }
 
 /**
- * Read [DateTime] value from the cell. Convert non-[DateTime] values to [DateTime].
+ * Read [LocalDateTime] value from the cell. Convert non-[LocalDateTime] values to [LocalDateTime].
  *
  * @receiver The cell to read
  * @param attribute The destination attribute
  * @param pattern The date-time pattern for converting
  * @return Read value
- * @throws AppDataException The string value cannot be converted to [DateTime]
+ * @throws AppDataException The string value cannot be converted to [LocalDateTime]
  */
-fun Cell.readeDateTime(
-    @Suppress("UNUSED_PARAMETER") attribute: Attribute<*>,
+fun Cell.readeDateTimeWithPattern(
+    @Suppress("UNUSED_PARAMETER") attribute: DocumentMetadata.Attribute,
     pattern: String
-): DateTime? = when (this.cellType) {
-    CellType.LONG -> DateTime(Date(this.longValue))
-    CellType.DOUBLE -> DateTime(HSSFDateUtil.getJavaDate(this.doubleValue))
+): LocalDateTime? = when (this.cellType) {
+    CellType.LONG -> Date(this.longValue).toLocalDateTime()
+    CellType.DOUBLE -> HSSFDateUtil.getJavaDate(this.doubleValue).toLocalDateTime()
     CellType.BOOL -> null
     CellType.STRING ->
         try {
             this.stringValue.stringToDateTime(pattern)
+        } catch (e: AppDataException) {
+            throw AppDataException(e.place + this + attribute, e.message, e)
+        }
+    CellType.BLANK -> null
+}
+
+/**
+ * Read [LocalDate] from the cell. Convert non-DateTime values to [LocalDate].
+ *
+ * @receiver Cell The cell to read
+ * @param attribute The destination attribute
+ * @param locale The locale for converting
+ * @return Read value
+ * @throws AppDataException The string value cannot be converted to [LocalDate]
+ */
+fun Cell.readDateWithLocale(
+    attribute: DocumentMetadata.Attribute,
+    locale: Locale
+): LocalDate? = when (this.cellType) {
+    CellType.LONG -> Date(this.longValue).toLocalDate()
+    CellType.DOUBLE -> HSSFDateUtil.getJavaDate(this.doubleValue).toLocalDate()
+    CellType.BOOL -> null
+    CellType.STRING ->
+        try {
+            this.stringValue.stringToDate(locale)
+        } catch (e: AppDataException) {
+            throw AppDataException(e.place + this + attribute, e.message, e)
+        }
+    CellType.BLANK -> null
+}
+
+/**
+ * Read [LocalDate] value from the cell. Convert non-[LocalDate] values to [LocalDate].
+ *
+ * @receiver The cell to read
+ * @param attribute The destination attribute
+ * @param pattern The date-time pattern for converting
+ * @return Read value
+ * @throws AppDataException The string value cannot be converted to [LocalDate]
+ */
+fun Cell.readDateWithPattern(
+    @Suppress("UNUSED_PARAMETER") attribute: DocumentMetadata.Attribute,
+    pattern: String
+): LocalDate? = when (this.cellType) {
+    CellType.LONG -> Date(this.longValue).toLocalDateTime().toLocalDate()
+    CellType.DOUBLE -> HSSFDateUtil.getJavaDate(this.doubleValue).toLocalDate()
+    CellType.BOOL -> null
+    CellType.STRING ->
+        try {
+            this.stringValue.stringToDate(pattern)
         } catch (e: AppDataException) {
             throw AppDataException(e.place + this + attribute, e.message, e)
         }
@@ -89,8 +137,8 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.BOOL -> this.booleanValue
     CellType.STRING -> try {
         this.stringValue.stringToBoolean(locale)
-    } catch (e: AppDataException) {
-        throw AppDataException(e.place + this, e.message, e)
+    } catch (e: ParseException) {
+        throw AppDataException(badPlace(this), e.message, e)
     }
     CellType.BLANK -> null
 }

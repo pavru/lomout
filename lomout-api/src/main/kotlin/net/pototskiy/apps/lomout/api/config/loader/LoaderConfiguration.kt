@@ -3,20 +3,19 @@ package net.pototskiy.apps.lomout.api.config.loader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.entity.EntityTypeCollection
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.unknownPlace
+import kotlin.reflect.KClass
 
 /**
  * Loader configuration class and builder
  *
  * @property files SourceFileCollection
- * @property entities EntityTypeCollection
  * @property loads LoadCollection
  * @constructor
  */
 data class LoaderConfiguration(
     val files: SourceFileCollection,
-    val entities: EntityTypeCollection,
     val loads: LoadCollection
 ) {
     /**
@@ -24,14 +23,12 @@ data class LoaderConfiguration(
      *
      * @property helper ConfigBuildHelper
      * @property files SourceFileCollection?
-     * @property entities EntityTypeCollection?
      * @property loads MutableList<Load>
      * @constructor
      */
     @ConfigDsl
     class Builder(private val helper: ConfigBuildHelper) {
         private var files: SourceFileCollection? = null
-        private var entities: EntityTypeCollection? = null
         private var loads = mutableListOf<Load>()
 
         /**
@@ -59,28 +56,6 @@ data class LoaderConfiguration(
          */
         fun files(block: SourceFileCollection.Builder.() -> Unit) {
             files = SourceFileCollection.Builder(helper).apply(block).build()
-        }
-
-        /**
-         * Define entities that is loaded by the loader
-         *
-         * ```
-         * ...
-         *  entities {
-         *      entity("type name", isOpen:Boolean) {...}
-         *      entity("type name", isOpen:Boolean) {...}
-         *      ...
-         *  }
-         * ...
-         * ```
-         * * [entity][EntityTypeCollection.Builder.entity] — entity definition, **at least one must be defined**
-         *
-         * @see EntityTypeCollection
-         *
-         * @param block Entities definition
-         */
-        fun entities(block: EntityTypeCollection.Builder.() -> Unit) {
-            this.entities = EntityTypeCollection.Builder(helper).apply(block).build()
         }
 
         /**
@@ -112,10 +87,8 @@ data class LoaderConfiguration(
          * @param entityType The entity type name
          * @param block The entity loading instruction
          */
-        fun loadEntity(entityType: String, block: Load.Builder.() -> Unit) {
-            val entity = helper.typeManager.getEntityType(entityType)
-                ?: throw AppConfigException(unknownPlace(), "Entity is not defined.")
-            loads.add(Load.Builder(helper, entity).apply(block).build())
+        fun loadEntity(entityType: KClass<out Document>, block: Load.Builder.() -> Unit) {
+            loads.add(Load.Builder(helper, entityType).apply(block).build())
         }
 
         /**
@@ -128,7 +101,6 @@ data class LoaderConfiguration(
                 this.files ?: throw AppConfigException(unknownPlace(), "Files is not defined in loader section.")
             return LoaderConfiguration(
                 files,
-                entities ?: throw AppConfigException(unknownPlace(), "At least one entity must be defined."),
                 LoadCollection(loads)
             )
         }

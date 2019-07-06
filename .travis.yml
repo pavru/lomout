@@ -1,11 +1,11 @@
 dist: xenial
-services: mysql
+services: mongodb
 language: java
 git:
   depth: false
-before_install:
-  - mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
-  - mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+#before_install:
+#  - mysql -e "CREATE DATABASE IF NOT EXISTS lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
+#  - mysql -e "CREATE DATABASE IF NOT EXISTS test_lomout CHARACTER SET = 'utf8' COLLATE = 'utf8_general_ci';"
 before_script:
   - sudo service postgresql stop || true
   - sudo service redis stop || true

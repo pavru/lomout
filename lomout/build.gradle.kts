@@ -1,8 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
 import io.gitlab.arturbosch.detekt.detekt
-import org.gradle.plugins.ide.idea.model.Module
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     java
@@ -28,14 +26,14 @@ idea {
                 file("${rootProject.projectDir}/testdata/.")
             )
         )
-        outputDir = file("build/classes/kotlin/main")
-        testOutputDir = file("build/classes/kotlin/test")
-        iml {
-            whenMerged {
-                val iModule = this as Module
-                iModule.dependencies.clear()
-            }
-        }
+//        outputDir = file("build/classes/kotlin/main")
+//        testOutputDir = file("build/classes/kotlin/test")
+//        iml {
+//            whenMerged {
+//                val iModule = this as Module
+//                iModule.dependencies.clear()
+//            }
+//        }
     }
 }
 
@@ -72,12 +70,12 @@ val testdataImplementation: Configuration by configurations.getting {
     extendsFrom(configurations.implementation.get())
 }
 
-tasks.register<GenerateBuildClassTask>("generateBuildClass") {
-    packageName = "net.pototskiy.apps.lomout"
-    objectName = "BuildInfo"
-    addDependenciesOfConfigurations = listOf()
-    this.group = "build"
-}
+//tasks.register<GenerateBuildClassTask>("generateBuildClass") {
+//    packageName = "net.pototskiy.apps.lomout"
+//    objectName = "BuildInfo"
+//    addDependenciesOfConfigurations = listOf()
+//    this.group = "build"
+//}
 
 tasks.named<Test>("test") {
     maxHeapSize = "2G"
@@ -104,7 +102,7 @@ tasks.named<Test>("test") {
     } else {
         testLogging {
             events(
-                /*"passed",*/
+                "passed",
                 "skipped",
                 "failed"
             )
@@ -113,19 +111,19 @@ tasks.named<Test>("test") {
     }
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn += tasks["generateBuildClass"]
-    kotlinOptions {
-        jvmTarget = "1.8"
-        noReflect = false
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-            "-Xuse-experimental=kotlin.Experimental",
-            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
-        )
-    }
-}
+//tasks.withType<KotlinCompile> {
+//    dependsOn += tasks["generateBuildClass"]
+//    kotlinOptions {
+//        jvmTarget = "1.8"
+//        noReflect = false
+//        freeCompilerArgs = freeCompilerArgs + listOf(
+//            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+//            "-Xuse-experimental=kotlin.Experimental",
+//            "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+//            "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi"
+//        )
+//    }
+//}
 
 tasks.withType(JacocoReport::class.java).all {
     reports {
@@ -154,17 +152,10 @@ repositories {
 dependencies {
 
     configImplementation(kotlin("script-util"))
-    configImplementation("lomout", "lomout", "1.0-SNAPSHOT")
-    configImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
-        exclude("org.jetbrains.kotlin")
-        exclude("org.slf4j")
-    }
+    configImplementation(project(":lomout-api"))
+
     testdataImplementation(kotlin("script-util"))
-    testdataImplementation("lomout", "lomout", "1.0-SNAPSHOT")
-    testdataImplementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
-        exclude("org.jetbrains.kotlin")
-        exclude("org.slf4j")
-    }
+    testdataImplementation(project(":lomout-api"))
 
     implementation(fileTree("lib") {
         include("*.jar")
@@ -173,32 +164,27 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)
-// Database
-    implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
-        exclude("org.jetbrains.kotlin")
-        exclude("org.slf4j")
-    }
 // Excel
     implementation("org.apache.poi", "poi", Versions.poi)
     implementation("org.apache.poi", "poi-ooxml", Versions.poi)
-// CSV
+    // CSV
     implementation("org.apache.commons", "commons-csv", Versions.commonCsv)
-// MySql
-    implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
-// Logger
+    // MongoDB
+    implementation("org.litote.kmongo", "kmongo-native", Versions.kmongo)
+    // Logger
     implementation("org.slf4j", "slf4j-api", Versions.slf4j)
     implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", Versions.log4j)
     implementation("org.apache.logging.log4j", "log4j-core", Versions.log4j)
-// Kotlin script
+    // Kotlin script
     runtimeOnly(kotlin("script-runtime"))
-//    implementation(kotlin("compiler-embeddable"))
+    //    implementation(kotlin("compiler-embeddable"))
     implementation(kotlin("script-util"))
     implementation(kotlin("scripting-jvm-host"))
     // Cachw 2k
     implementation("org.cache2k", "cache2k-api", Versions.cache2k)
     runtimeOnly("org.cache2k", "cache2k-core", Versions.cache2k)
-// Test
-// testCompile(group = "junit", name = "junit", version = "4.12")
+    // Test
+    // testCompile(group = "junit", name = "junit", version = "4.12")
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
@@ -206,6 +192,7 @@ dependencies {
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
     // Addon
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
+    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-debug", "1.3.0-M2")
 }
 
 tasks.jacocoTestReport {

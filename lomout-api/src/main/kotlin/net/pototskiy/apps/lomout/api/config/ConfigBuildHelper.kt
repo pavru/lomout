@@ -1,22 +1,25 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileDefinition
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import net.pototskiy.apps.lomout.api.unknownPlace
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.util.*
 
 /**
  * Helper for configuration building
  *
- * @property typeManager The entity type manager
  * @property scopeStack The scope stack
- * @property definedEntities The registrar for define entities
  * @property definedSourceFiles The registrar for defined source fields
  * @constructor
  */
-open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
+open class ConfigBuildHelper {
+    /**
+     * Configuration logger.
+     */
+    val logger: Logger = LogManager.getLogger(CONFIG_LOG_NAME)
 
     private val scopeStack = Stack<String>().apply { push("root") }
     /**
@@ -41,13 +44,11 @@ open class ConfigBuildHelper(val typeManager: EntityTypeManager) {
      */
     fun currentScope(): String = scopeStack.peek()
 
-    private val definedEntities = ConfigObjectRegistrar<EntityType>()
     val definedSourceFiles = ConfigObjectRegistrar<SourceFileDefinition>()
 
     init {
         scopeStack.clear()
         scopeStack.push("root")
-        definedEntities.clear()
         definedSourceFiles.clear()
     }
 

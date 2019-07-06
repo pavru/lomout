@@ -4,10 +4,11 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.joda.time.DateTime
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
@@ -48,7 +49,10 @@ internal class NestedAttributeCellTest {
         assertThatThrownBy { cell?.setCellValue(1.1) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("${NestedAttributeCell::class.simpleName} supports only string type value")
-        assertThatThrownBy { cell?.setCellValue(DateTime.now()) }
+        assertThatThrownBy { cell?.setCellValue(LocalDateTime.now()) }
+            .isInstanceOf(AppDataException::class.java)
+            .hasMessageContaining("${NestedAttributeCell::class.simpleName} supports only string type value")
+        assertThatThrownBy { cell?.setCellValue(LocalDate.now()) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("${NestedAttributeCell::class.simpleName} supports only string type value")
     }

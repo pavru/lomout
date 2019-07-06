@@ -2,7 +2,6 @@ package net.pototskiy.apps.lomout.api.plugable
 
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
 import org.apache.logging.log4j.Logger
 import java.io.File
 
@@ -10,7 +9,6 @@ import java.io.File
  * Plugin context
  *
  * @property config Config
- * @property entityTypeManager EntityTypeManagerImpl
  * @property logger Logger
  */
 interface PluginContextInterface {
@@ -18,10 +16,6 @@ interface PluginContextInterface {
      * Context configuration
      */
     var config: Config
-    /**
-     * Context entity type manager
-     */
-    var entityTypeManager: EntityTypeManager
     /**
      * Context logger
      */

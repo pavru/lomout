@@ -1,11 +1,14 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithPlugin
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.STRING
-import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.entity.writer
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.plugable.Writer
+import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
+import net.pototskiy.apps.lomout.api.plugable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -20,11 +23,34 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
 import java.nio.file.Path
-import kotlin.reflect.full.createInstance
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class StringListAttributeStringWriterTest {
-    private lateinit var typeManager: EntityTypeManagerImpl
+    internal class TestType : Document() {
+        @Writer(Attr1Writer::class)
+        var attr1: List<String> = emptyList()
+        @Writer(Attr2Writer::class)
+        var attr2: List<String> = emptyList()
+        @Suppress("unused")
+        var attr3: List<String> = emptyList()
+
+        companion object : DocumentMetadata(TestType::class)
+
+        class Attr1Writer : WriterBuilder {
+            override fun build(): AttributeWriter<out Any?> = createWriter<StringListAttributeStringWriter> {
+                quote = null
+                delimiter = ','
+            }
+        }
+
+        class Attr2Writer : WriterBuilder {
+            override fun build(): AttributeWriter<out Any?> = createWriter<StringListAttributeStringWriter> {
+                quote = '\''
+                delimiter = ','
+            }
+        }
+    }
+
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
@@ -33,7 +59,6 @@ internal class StringListAttributeStringWriterTest {
 
     @BeforeEach
     internal fun setUp() {
-        typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
         file = tempDir.resolve("attributes.xls").toFile()
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
@@ -48,58 +73,42 @@ internal class StringListAttributeStringWriterTest {
 
     @Test
     internal fun simpleWriteUnquotedTest() {
-        val attr = typeManager.createAttribute("attr", STRINGLIST::class,
-            writer = AttributeWriterWithPlugin(StringListAttributeStringWriter::class) {
-                this as StringListAttributeStringWriter
-                delimiter = ','
-                quote = null
-            }
-        )
-        val value = STRINGLIST(listOf(STRING("test1"), STRING("test2")))
+        val attr = TestType.attributes.getValue(("attr1"))
+        val value = listOf("test1", "test2")
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<STRINGLIST>)(value, cell)
+        (attr.writer as AttributeWriter<List<String>>).write(value, cell)
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.STRING)
         Assertions.assertThat(cell.stringValue).isEqualTo("test1,test2")
     }
 
     @Test
     internal fun simpleWriteQuotedTest() {
-        val attr = typeManager.createAttribute("attr", STRINGLIST::class,
-            writer = AttributeWriterWithPlugin(StringListAttributeStringWriter::class) {
-                this as StringListAttributeStringWriter
-                delimiter = ','
-                quote = '\''
-            }
-        )
-        val value = STRINGLIST(listOf(STRING("test1"), STRING("test2,")))
+        val attr = TestType.attributes.getValue("attr2")
+        val value = listOf("test1", "test2,")
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<STRINGLIST>)(value, cell)
+        (attr.writer as AttributeWriter<List<String>>).write(value, cell)
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.STRING)
         Assertions.assertThat(cell.stringValue).isEqualTo("test1,'test2,'")
     }
 
     @Test
     internal fun writeNullValueTest() {
-        val attr = typeManager.createAttribute("attr", STRINGLIST::class)
+        val attr = TestType.attributes.getValue("attr3")
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<STRINGLIST>)(null, cell)
+        (attr.writer as AttributeWriter<List<String>?>).write(null, cell)
         Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
-        val writer = defaultWriters[STRINGLIST::class]
+        val writer = defaultWriters[SupportAttributeType.stringListType]
         Assertions.assertThat(writer).isNotNull
-        Assertions.assertThat(writer).isInstanceOf(AttributeWriterWithPlugin::class.java)
-        writer as AttributeWriterWithPlugin
-        Assertions.assertThat(writer.pluginClass).isEqualTo(StringListAttributeStringWriter::class)
-        val v = writer.pluginClass.createInstance() as StringListAttributeStringWriter
-        @Suppress("UNCHECKED_CAST")
-        v.apply(writer.options as (StringListAttributeStringWriter.() -> Unit))
-        assertThat(v.delimiter).isEqualTo(',')
-        assertThat(v.quote).isEqualTo('"')
+        Assertions.assertThat(writer).isInstanceOf(StringListAttributeStringWriter::class.java)
+        writer as StringListAttributeStringWriter
+        assertThat(writer.delimiter).isEqualTo(',')
+        assertThat(writer.quote).isEqualTo('"')
     }
 }

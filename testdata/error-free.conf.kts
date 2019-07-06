@@ -1,4 +1,15 @@
-@file:DependsOn("kotlin-stdlib", "org.jetbrains.kotlin", "kotlin-stdlib", "1.3.20")
+//@file:DependsOn("kotlin-stdlib", "org.jetbrains.kotlin", "kotlin-stdlib", "1.3.40")
+
+open class Test : Document() {
+    @Key
+    var attr: String = ""
+
+    companion object : DocumentMetadata(Test::class)
+}
+
+class ImportTest : Test() {
+    companion object : DocumentMetadata(ImportTest::class)
+}
 
 config {
     @Suppress("RedundantExplicitType") val a: Int = 100
@@ -13,12 +24,7 @@ config {
         files {
             file("file-1") { path("test path") }
         }
-        entities {
-            entity("test", false) {
-                attribute<STRING>("attr") { key() }
-            }
-        }
-        loadEntity("test") {
+        loadEntity(Test::class) {
             fromSources {
                 source { file("file-1"); sheet("test"); stopOnEmptyRow() }
             }
@@ -32,11 +38,9 @@ config {
     mediator {
         productionLine {
             input {
-                entity("test")
+                entity(Test::class)
             }
-            output("import-test") {
-                copyFrom("test")
-            }
+            output(ImportTest::class)
             pipeline {
                 assembler { _, _ -> emptyMap() }
             }

@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.source
 
-import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.AttributeCollection
 
 /**
@@ -11,8 +11,8 @@ import net.pototskiy.apps.lomout.api.entity.AttributeCollection
  * @property attributes AttributeCollection
  * @constructor
  */
-data class FieldAttributeMap(private val fieldToAttr: Map<Field, AnyTypeAttribute>) :
-    Map<Field, AnyTypeAttribute> by fieldToAttr {
+data class FieldAttributeMap(private val fieldToAttr: Map<Field, DocumentMetadata.Attribute>) :
+    Map<Field, DocumentMetadata.Attribute> by fieldToAttr {
     /**
      * Fields
      */

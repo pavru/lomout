@@ -1,3 +1,8 @@
+class TestType: Document() {
+    @Key
+    var attr: String = ""
+    companion object: DocumentMetadata(TestType::class)
+}
 config {
     database {
         name("test")
@@ -10,12 +15,7 @@ config {
         files {
             file("file-1") { path("test path") }
         }
-        entities {
-            entity("test", false) {
-                attribute<STRING>("attr") { key() }
-            }
-        }
-        loadEntity("test") {
+        loadEntity(TestType::class) {
             fromSources {
                 source { file("file-2"); sheet("test"); stopOnEmptyRow() }
             }

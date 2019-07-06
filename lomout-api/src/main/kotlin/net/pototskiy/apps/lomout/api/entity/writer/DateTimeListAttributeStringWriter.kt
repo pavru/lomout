@@ -2,31 +2,28 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.type.DATETIMELIST
 import net.pototskiy.apps.lomout.api.entity.values.datetimeToString
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
+import java.time.LocalDateTime
 
 /**
- * Default writer for [DATETIMELIST] attribute
+ * Default writer for **List&lt;LocalDateTime&gt;** attribute
  *
- * @property locale String The value locale, default: system locale
- * @property pattern String? The datetime pattern, optional(use locale)
- * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, default:,
+ * @property locale String The value locale, default: system locale. This is parameter
+ * @property pattern String? The datetime pattern, optional(use locale). This is parameter
+ * @property quote Char? The value quote, optional. This is parameter
+ * @property delimiter Char The list delimiter, default:','. This is parameter
  */
-open class DateTimeListAttributeStringWriter : AttributeWriterPlugin<DATETIMELIST>() {
+open class DateTimeListAttributeStringWriter : AttributeWriter<List<LocalDateTime>?>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
-    override fun write(
-        value: DATETIMELIST?,
-        cell: Cell
-    ) {
+    override fun write(value: List<LocalDateTime>?, cell: Cell) {
         value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
@@ -36,8 +33,8 @@ open class DateTimeListAttributeStringWriter : AttributeWriterPlugin<DATETIMELIS
                         .withRecordSeparator("")
                         .print(writer)
                         .printRecord(list.map { data ->
-                            pattern?.let { data.value.datetimeToString(it) }
-                                ?: data.value.datetimeToString(locale.createLocale())
+                            pattern?.let { data.datetimeToString(it) }
+                                ?: data.datetimeToString(locale.createLocale())
                         })
                 }
                 stream.toString()

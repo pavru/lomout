@@ -5,8 +5,9 @@ import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.entity.EntityType
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.unknownPlace
+import kotlin.reflect.KClass
 
 /**
  * Define entity load configuration
@@ -23,7 +24,7 @@ data class Load(
     val headersRow: Int,
     val rowsToSkip: Int,
     val maxAbsentDays: Int,
-    val entity: EntityType,
+    val entity: KClass<out Document>,
     val sources: SourceDataCollection,
     val fieldSets: FieldSetCollection
 ) {
@@ -42,7 +43,7 @@ data class Load(
     @ConfigDsl
     class Builder(
         private val helper: ConfigBuildHelper,
-        private val entityType: EntityType
+        private val entityType: KClass<out Document>
     ) {
         private var headersRow: Int = UNDEFINED_ROW
         private var rowsToSkip: Int = 0
@@ -121,7 +122,8 @@ data class Load(
                 entityType,
                 headersRow != UNDEFINED_COLUMN,
                 sources,
-                headersRow
+                headersRow,
+                true
             ).apply(block).build()
         }
 
@@ -131,14 +133,13 @@ data class Load(
          * @return Load
          */
         fun build(): Load {
-            refineEntityAttributes()
             val headersRow = this.headersRow
             val rowsToSkip = this.rowsToSkip
             val sources =
                 this.sources
                     ?: throw AppConfigException(
                         unknownPlace(),
-                        "Source files are not defined for entity type '${entityType.name}' loading."
+                        "Source files are not defined for entity type '${entityType.qualifiedName}' loading."
                     )
             validateFieldColumnDefinition()
             return Load(
@@ -150,32 +151,21 @@ data class Load(
                 fieldSets
                     ?: throw AppConfigException(
                         unknownPlace(),
-                        "Field set is not defined for entity type '${entityType.name}' loading."
+                        "Field set is not defined for entity type '${entityType.qualifiedName}' loading."
                     )
             )
         }
 
-        private fun refineEntityAttributes() {
-            val autoAttrs = fieldSets
-                ?.map { it.fieldToAttr.attributes }
-                ?.flatten()
-                ?.filter { it.isAuto } ?: emptyList()
-            autoAttrs.forEach { helper.typeManager.addEntityAttribute(entityType, it) }
-        }
-
         private fun validateFieldColumnDefinition() {
-            var fields =
+            val fields =
                 (fieldSets
                     ?: throw AppConfigException(
                         unknownPlace(),
-                        "Field set is not defined for entity type '${entityType.name}' loading."
+                        "Field set is not defined for entity type '${entityType.qualifiedName}' loading."
                     ))
                     .map { it.fieldToAttr.toList() }
                     .flatten()
                     .toMap()
-            fields = fields
-                .filterNot { it.key.isNested }
-                .filterNot { it.value.isSynthetic }
             if (this.headersRow == UNDEFINED_ROW && fields.any { it.key.column == UNDEFINED_COLUMN }) {
                 throw AppConfigException(
                     unknownPlace(),

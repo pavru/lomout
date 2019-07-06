@@ -5,26 +5,26 @@ package net.pototskiy.apps.lomout.api.entity.values
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.badData
-import net.pototskiy.apps.lomout.api.entity.type.DATE
-import net.pototskiy.apps.lomout.api.entity.type.DATETIME
-import net.pototskiy.apps.lomout.api.entity.type.STRING
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
+import java.time.format.FormatStyle
 import java.util.*
 
 /**
- * Convert string value to [DateTime] (only date part) according to locale
+ * Convert string value to [LocalDate] (only date part) according to locale
  *
  * @receiver The string to convert
  * @param locale The locale for conversion
  * @return Value
- * @throws AppDataException The string cannot be converted to [DateTime]
+ * @throws AppDataException The string cannot be converted to [LocalDate]
  */
-fun String.stringToDate(locale: Locale): DateTime {
-    val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale))
+fun String.stringToDate(locale: Locale): LocalDate {
+    val format = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale)
     return try {
-        format.parseDateTime(this.trim())
-    } catch (e: IllegalArgumentException) {
+        LocalDate.parse(this.trim(), format)
+    } catch (e: DateTimeParseException) {
         throw AppDataException(
             badData(this),
             "String cannot be converted to date with the locale '$locale'.",
@@ -34,55 +34,52 @@ fun String.stringToDate(locale: Locale): DateTime {
 }
 
 /**
- * Convert [STRING] to DateTime (only date part) according to the locale
- *
- * @receiver PersistentString
- * @param locale The locale
- * @return DateTime
- */
-@Suppress("unused")
-fun STRING.stringToDate(locale: Locale): DateTime = this.value.stringToDate(locale)
-
-/**
- * Convert string to [DateTime] according to pattern.
+ * Convert string to [LocalDate] according to pattern.
  *
  * @receiver String
  * @param pattern String
  * @return DateTime
- * @throws AppDataException The string cannot be converted to [DateTime]
+ * @throws AppDataException The string cannot be converted to [LocalDate]
  */
-fun String.stringToDateTime(pattern: String): DateTime {
-    val format = DateTimeFormat.forPattern(pattern)
+fun String.stringToDate(pattern: String): LocalDate {
+    val format = DateTimeFormatter.ofPattern(pattern)
     return try {
-        format.parseDateTime(this.trim())
-    } catch (e: IllegalArgumentException) {
+        LocalDate.parse(this.trim(), format)
+    } catch (e: DateTimeParseException) {
         throw AppDataException(badData(this), "String cannot be converted to date with the pattern '$pattern'.", e)
     }
 }
 
 /**
- * Convert [STRING] to DateTime according to the pattern
+ * Convert string to [LocalDateTime] according to pattern.
  *
- * @receiver PersistentString
- * @param pattern The pattern
+ * @receiver String
+ * @param pattern String
  * @return DateTime
+ * @throws AppDataException The string cannot be converted to [LocalDateTime]
  */
-@Suppress("unused")
-fun STRING.stringToDateTime(pattern: String): DateTime = this.value.stringToDateTime(pattern)
+fun String.stringToDateTime(pattern: String): LocalDateTime {
+    val format = DateTimeFormatter.ofPattern(pattern)
+    return try {
+        LocalDateTime.parse(this.trim(), format)
+    } catch (e: DateTimeParseException) {
+        throw AppDataException(badData(this), "String cannot be converted to date with the pattern '$pattern'.", e)
+    }
+}
 
 /**
- * Convert string to [DateTime] according to locale
+ * Convert string to [LocalDateTime] according to locale
  *
  * @receiver String The string to convert
  * @param locale Locale The locale for conversion
  * @return DateTime
  * @throws AppDataException The string can be converted
  */
-fun String.stringToDateTime(locale: Locale): DateTime {
-    val format = DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", locale))
+fun String.stringToDateTime(locale: Locale): LocalDateTime {
+    val format = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale)
     return try {
-        format.parseDateTime(this.trim())
-    } catch (e: IllegalArgumentException) {
+        LocalDateTime.parse(this.trim(), format)
+    } catch (e: DateTimeParseException) {
         throw AppDataException(
             badData(this),
             "String cannot be converted to date-time with the locale '$locale'.",
@@ -92,71 +89,40 @@ fun String.stringToDateTime(locale: Locale): DateTime {
 }
 
 /**
- * Convert [STRING] to DateTime according to the locale
- *
- * @receiver PersistentString
- * @param locale The locale
- * @return DateTime
- */
-@Suppress("unused")
-fun STRING.stringToDateTime(locale: Locale): DateTime = this.value.stringToDateTime(locale)
-
-/**
- * Convert [DateTime] (date part) to string according to locale
+ * Convert [LocalDate] (date part) to string according to locale
  *
  * @receiver DateTime The value to convert
  * @param locale Locale The locale for conversion
  * @return String
  */
-fun DateTime.dateToString(locale: Locale): String =
-    this.toString(DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("S-", locale)))
+fun LocalDate.dateToString(locale: Locale): String =
+    this.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale))
 
 /**
- * Convert [DATE] to String according to the locale
- *
- * @receiver PersistentDate
- * @param locale The locale
- * @return String
- */
-@Suppress("unused")
-fun DATE.dateToString(locale: Locale): String = this.value.dateToString(locale)
-
-/**
- * Convert [DateTime] to string according to locale
+ * Convert [LocalDateTime] to string according to locale
  *
  * @receiver DateTime The value to convert
  * @param locale Locale The locale for conversion
  * @return String
  */
 @PublicApi
-fun DateTime.datetimeToString(locale: Locale): String =
-    this.toString(DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", locale)))
+fun LocalDateTime.datetimeToString(locale: Locale): String =
+    this.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale))
 
 /**
- * Convert [DATETIME] to String according to the locale
- *
- * @receiver PersistentDateTime
- * @param locale The locale
- * @return String
- */
-@Suppress("unused")
-fun DATETIME.datetimeToString(locale: Locale): String = this.value.datetimeToString(locale)
-
-/**
- * Convert [DateTime] to string according to pattern
+ * Convert [LocalDateTime] to string according to pattern
  *
  * @receiver DateTime The value to convert
  * @param pattern String The pattern for conversion
  * @return String
  */
-fun DateTime.datetimeToString(pattern: String): String = this.toString(pattern)
+fun LocalDateTime.datetimeToString(pattern: String): String = this.format(DateTimeFormatter.ofPattern(pattern))
 
 /**
- * Convert [DATETIME] to String according to the pattern
+ * Convert [LocalDate] to string according to pattern
  *
- * @receiver PersistentDateTime
- * @param pattern The pattern
+ * @receiver DateTime The value to convert
+ * @param pattern String The pattern for conversion
  * @return String
  */
-@Suppress("unused")
-fun DATETIME.datetimeToString(pattern: String): String = this.value.datetimeToString(pattern)
+fun LocalDate.dateToString(pattern: String): String = this.format(DateTimeFormatter.ofPattern(pattern))

@@ -8,8 +8,9 @@ import net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection
 import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
 import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
-import net.pototskiy.apps.lomout.api.entity.EntityType
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.unknownPlace
+import kotlin.reflect.KClass
 
 /**
  * Printer line output definition
@@ -35,7 +36,7 @@ data class PrinterOutput(
      * @constructor
      */
     @ConfigDsl
-    class Builder(private val helper: ConfigBuildHelper, private val entityType: EntityType) {
+    class Builder(private val helper: ConfigBuildHelper, private val entityType: KClass<out Document>) {
         /**
          * Print or not headers, default: true (print)
          */
@@ -99,7 +100,8 @@ data class PrinterOutput(
                 entityType,
                 false,
                 SourceDataCollection(emptyList()),
-                UNDEFINED_ROW
+                UNDEFINED_ROW,
+                false
             ).apply(block).build()
         }
 

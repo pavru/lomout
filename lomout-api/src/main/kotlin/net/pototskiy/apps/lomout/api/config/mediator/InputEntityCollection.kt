@@ -3,7 +3,9 @@ package net.pototskiy.apps.lomout.api.config.mediator
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.unknownPlace
+import kotlin.reflect.KClass
 
 /**
  * Pipeline input entities configuration
@@ -28,30 +30,22 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
          *
          * ```
          * ...
-         *  entity("type name") {
-         *      statuses(...)
-         *      extAttribute("ext attribute name", "regular attribute name") {...}
-         *      extAttribute("ext attribute name", "regular attribute name") {...}
-         *      ...
+         *  entity(entityClass) {
+         *      includeDeleted()
          *  }
          * ...
          * ```
-         * * filter — SQL filter for entities, usually used for filter entity by status, *optional*,
-         *      **only one filter definition is allowed**
-         * * statuses — [net.pototskiy.apps.lomout.api.entity.EntityStatus] — The entity status to get
-         * * extAttribute(...) — define an extended attribute that is function of regular attribute, this attribute
-         *      accessible only in pipelines
+         * * entityClass — The entity type class
+         * * includeDeleted() — Set the flag to include deleted entities
          *
-         * @param name String
+         * @param entityType The entity type class
          * @param block The entity definition
          */
         @ConfigDsl
-        fun entity(name: String, block: InputEntity.Builder.() -> Unit = {}) {
-            val entity = helper.typeManager.getEntityType(name)
-                ?: throw AppConfigException(unknownPlace(), "Entity has not been defined yet.")
+        fun entity(entityType: KClass<out Document>, block: InputEntity.Builder.() -> Unit = {}) {
             entities.add(
                 InputEntity
-                    .Builder(helper, entity)
+                    .Builder(helper, entityType)
                     .apply(block)
                     .build()
             )

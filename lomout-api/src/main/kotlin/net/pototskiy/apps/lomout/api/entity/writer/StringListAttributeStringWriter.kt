@@ -1,22 +1,21 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
-import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
 /**
- * Default writer for [STRINGLIST] attribute
+ * Default writer for **List&lt;String&gt;** attribute
  *
- * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, default:,
+ * @property quote Char? The value quote, optional. This is parameter
+ * @property delimiter Char The list delimiter, default:','. This is parameter
  */
-open class StringListAttributeStringWriter : AttributeWriterPlugin<STRINGLIST>() {
+open class StringListAttributeStringWriter : AttributeWriter<List<String>?>() {
     var quote: Char? = null
     var delimiter: Char = ','
 
-    override fun write(value: STRINGLIST?, cell: Cell) {
+    override fun write(value: List<String>?, cell: Cell) {
         value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
@@ -25,7 +24,7 @@ open class StringListAttributeStringWriter : AttributeWriterPlugin<STRINGLIST>()
                         .withDelimiter(delimiter)
                         .withRecordSeparator("")
                         .print(writer)
-                        .printRecord(list.map { it.value })
+                        .printRecord(list.map { it })
                 }
                 stream.toString()
             }

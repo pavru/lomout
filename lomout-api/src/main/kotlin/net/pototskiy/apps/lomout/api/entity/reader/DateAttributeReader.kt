@@ -2,22 +2,22 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.type.DATE
-import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
+import java.time.LocalDate
 
 /**
- * Default reader for [DATE] attribute
+ * Default reader for [LocalDate] attribute
  *
- * @property locale String The value locale
- * @property pattern String? The value pattern, optional (use locale)
+ * @property locale String The value locale. This is parameter
+ * @property pattern String? The value pattern, optional (use locale). This is parameter
  */
-open class DateAttributeReader : AttributeReaderPlugin<DATE>() {
+open class DateAttributeReader : AttributeReader<LocalDate?>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null
 
-    override fun read(attribute: Attribute<out DATE>, input: Cell): DATE? =
-        (pattern?.let { input.readeDateTime(attribute, it) }
-            ?: input.readeDateTime(attribute, locale.createLocale()))?.let { DATE(it) }
+    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): LocalDate? =
+        (pattern?.let { input.readDateWithPattern(attribute, it) }
+            ?: input.readDateWithLocale(attribute, locale.createLocale()))
 }

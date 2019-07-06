@@ -1,9 +1,13 @@
 @file:Suppress("UnstableApiUsage")
 
+import org.gradle.plugins.ide.idea.model.Module
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     id("com.github.ben-manes.versions") version "0.21.0"
     id("org.sonarqube") version "2.7.1"
     jacoco
+    idea
     kotlin("jvm") version Versions.kotlin
     id("com.gradle.build-scan") version "2.3"
 }
@@ -17,12 +21,55 @@ buildScan {
 }
 
 group = "lomout"
-version = "1.2.1"
+version = "1.3.0"
 
+idea {
+    project {
+        jdkName = "1.8"
+        setLanguageLevel(JavaVersion.VERSION_1_8)
+    }
+}
 subprojects {
     apply {
         plugin("java")
         plugin("jacoco")
+        plugin("idea")
+    }
+    tasks.register<GenerateBuildClassTask>("generateBuildClass") {
+        packageName = when (this.project.name) {
+            "lomout-api" -> "net.pototskiy.apps.lomout.api"
+            else -> "net.pototskiy.apps.lomout"
+        }
+        objectName = "BuildInfo"
+        addDependenciesOfConfigurations = listOf()
+        this.group = "build"
+    }
+    tasks.withType<KotlinCompile> {
+        dependsOn += tasks["generateBuildClass"]
+        kotlinOptions {
+            jvmTarget = "1.8"
+            noReflect = false
+            freeCompilerArgs = freeCompilerArgs + listOf(
+                "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+                "-Xuse-experimental=kotlin.Experimental",
+                "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "-Xuse-experimental=kotlinx.coroutines.ObsoleteCoroutinesApi",
+                "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
+            )
+        }
+    }
+    idea {
+        module {
+            jdkName = "1.8"
+            outputDir = file("$buildDir/classes/kotlin/main")
+            testOutputDir = file("$buildDir/classes/kotlin/test")
+            iml {
+                @Suppress("RedundantSamConstructor")
+                beforeMerged(Action<Module>{
+                    dependencies.clear()
+                })
+            }
+        }
     }
 }
 

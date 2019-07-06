@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.source.workbook.excel
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
+import net.pototskiy.apps.lomout.api.entity.values.toDate
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
@@ -12,9 +13,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.joda.time.DateTime
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Suppress("MagicNumber")
 internal class ExcelWorkbookTest {
@@ -160,9 +162,12 @@ internal class ExcelWorkbookTest {
             val sheet = workbook["Sheet2"]
             val row = sheet[0]!!
             val cell = row.getOrEmptyCell(100)
-            val now = DateTime.now()
-            cell.setCellValue(now)
-            assertThat(cell.doubleValue).isEqualTo(HSSFDateUtil.getExcelDate(now.toDate()))
+            val datetime = LocalDateTime.now()
+            val date = LocalDate.now()
+            cell.setCellValue(datetime)
+            assertThat(cell.doubleValue).isEqualTo(HSSFDateUtil.getExcelDate(datetime.toDate()))
+            cell.setCellValue(date)
+            assertThat(cell.doubleValue).isEqualTo(HSSFDateUtil.getExcelDate(date.toDate()))
             cell.setCellValue("test")
             assertThat(cell.stringValue).isEqualTo("test")
             cell.setCellValue(111L)

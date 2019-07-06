@@ -44,18 +44,17 @@ class PrinterLine(
          * ```
          * ...
          *  input {
-         *      entity("entity_type") {
-         *          filter {...}
-         *          filter<FilterPluginClass> {}
+         *      entity(class) {
+         *          includeDeleted()
          *      }
          *      entity("entity_type") {
-         *          filter {...}
+         *
          *      }
          *  }
          * ...
          * ```
          * * entity — define entity for line input, **at least one entity must be defined**
-         * * entity_type — entity type name
+         * * class — entity type class
          *
          * Printer line generate stream of entity from all defined inputs like SQL UNION
          *
@@ -69,12 +68,6 @@ class PrinterLine(
                     throw AppConfigException(
                         unknownPlace(),
                         "One and only one input entity is allowed for printer line."
-                    )
-                }
-                if (it.first().extAttributes.isNotEmpty()) {
-                    throw AppConfigException(
-                        unknownPlace(),
-                        "Input entity of printer line cannot have extended attributes."
                     )
                 }
             }

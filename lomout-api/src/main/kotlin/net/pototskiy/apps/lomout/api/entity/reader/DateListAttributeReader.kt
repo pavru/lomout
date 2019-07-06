@@ -4,35 +4,33 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.type.DATE
-import net.pototskiy.apps.lomout.api.entity.type.DATELIST
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.stringToDate
-import net.pototskiy.apps.lomout.api.entity.values.stringToDateTime
-import net.pototskiy.apps.lomout.api.plugable.AttributeReaderPlugin
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.apache.commons.csv.CSVFormat
+import java.time.LocalDate
 
 /**
- * Default reader for [DATELIST] attribute
+ * Default reader for **List&lt;LocalDate&gt;** attribute
  *
- * @property locale String The value locale
- * @property pattern String? The value pattern, optional (use locale)
- * @property quote Char? The value quote, optional
- * @property delimiter Char The list delimiter, default:,
+ * @property locale String The value locale. This is parameter
+ * @property pattern String? The value pattern, optional (use locale). This is parameter
+ * @property quote Char? The value quote, optional. This is parameter
+ * @property delimiter Char The list delimiter, default:','. This is parameter
  */
-open class DateListAttributeReader : AttributeReaderPlugin<DATELIST>() {
+open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
     var locale: String = DEFAULT_LOCALE_STR
     var pattern: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
-    override fun read(attribute: Attribute<out DATELIST>, input: Cell): DATELIST? {
+    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<LocalDate>? {
         return when (input.cellType) {
             CellType.STRING -> {
-                val listValue = input.stringValue.reader().use { reader ->
+                input.stringValue.reader().use { reader ->
                     try {
                         CSVFormat.RFC4180
                             .withQuote(quote)
@@ -42,14 +40,13 @@ open class DateListAttributeReader : AttributeReaderPlugin<DATELIST>() {
                             .records
                             .map { it.toList() }.flatten()
                             .map { data ->
-                                DATE(pattern?.let { data.stringToDateTime(it) }
+                                (pattern?.let { data.stringToDate(it) }
                                     ?: data.stringToDate(locale.createLocale()))
                             }
                     } catch (e: AppDataException) {
                         throw AppDataException(badPlace(attribute) + input, e.message, e)
                     }
                 }
-                DATELIST(listValue)
             }
             CellType.BLANK -> null
             else -> throw AppDataException(

@@ -1,9 +1,134 @@
+data class NestedType(
+    var nested1: Long = 0L,
+    var nested2: Long = 0L
+) : Document() {
+
+    companion object : DocumentMetadata(NestedType::class)
+}
+
+open class TestEntityAttributes : Document() {
+    @Key
+    var sku: String = ""
+    var description: String = ""
+    var bool_val: Boolean = false
+
+    class LongValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<LongAttributeReader> {
+            locale = "ru_RU"
+        }
+    }
+
+    @Reader(LongValReaderBuilder::class)
+    var long_val: Long = 0L
+
+    class DoubleValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DoubleAttributeReader> {
+            locale = "ru_RU"
+        }
+    }
+
+    @Reader(DoubleValReaderBuilder::class)
+    var double_val: Double = 0.0
+
+    class DateValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateAttributeReader> {
+            pattern = "d.M.uu"
+        }
+    }
+
+    @Reader(DateValReaderBuilder::class)
+    var date_val: LocalDate = LocalDate.now()
+
+    class DateTimeValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateTimeAttributeReader> {
+            pattern = "d.M.uu H:m"
+        }
+    }
+
+    @Reader(DateTimeValReaderBuilder::class)
+    var datetime_val: LocalDateTime = LocalDateTime.now()
+
+    class StringListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<StringListAttributeReader> {
+            delimiter = ','
+            quote = null
+        }
+    }
+
+    @Reader(StringListReaderBuilder::class)
+    var string_list: List<String> = emptyList()
+
+    class BoolListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<BooleanListAttributeReader> {
+            delimiter = ','
+            quote = null
+        }
+    }
+
+    @Reader(BoolListReaderBuilder::class)
+    var bool_list: List<Boolean> = emptyList()
+
+    class LongListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader> {
+            delimiter = ','
+            quote = null
+        }
+    }
+
+    @Reader(LongListReaderBuilder::class)
+    var long_list: List<Long> = emptyList()
+
+    class DoubleListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DoubleListAttributeReader> {
+            delimiter = '|'; locale = "ru_RU"
+        }
+    }
+
+    @Reader(DoubleListReaderBuilder::class)
+    var double_list: List<Double> = emptyList()
+
+    class DateListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader> {
+            delimiter = ','; quote = null; pattern = "d.M.uu"
+        }
+    }
+
+    @Reader(DateListReaderBuilder::class)
+    var date_list: List<LocalDate> = emptyList()
+
+    class DateTimeListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateTimeListAttributeReader> {
+            delimiter = ','; quote = null; pattern = "d.M.uu H:m"
+        }
+    }
+
+    @Reader(DateTimeListReaderBuilder::class)
+    var datetime_list: List<LocalDateTime> = emptyList()
+
+    class CompoundReader : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
+            delimiter = ','; valueDelimiter = '='; valueQuote = '"'
+        }
+    }
+
+    @Reader(CompoundReader::class)
+    var compound: NestedType = NestedType()
+    var group_code: String? = null
+    var group_name: String? = null
+
+    companion object : DocumentMetadata(TestEntityAttributes::class)
+}
+
+class ImportProduct : TestEntityAttributes() {
+    companion object : DocumentMetadata(TestEntityAttributes::class)
+}
+
 config {
     database {
-        name("test_lomout")
+        name("lomout_test")
         server {
             host("localhost")
-            port(3306)
+            port(27017)
             user("root")
             if (System.getProperty("os.name").toLowerCase().contains("linux")) {
                 password("")
@@ -28,54 +153,7 @@ config {
             file("mage_adv_price") { path("$testDataDir/advanced_pricing.csv") }
             file("mage-stock-source") { path("$testDataDir/stock_sources.csv") }
         }
-        entities {
-            entity("test-entity-attributes", false) {
-                attribute<STRING>("sku") { key() }
-                attribute<TEXT>("description")
-                attribute<BOOLEAN>("bool_val")
-                attribute<LONG>("long_val") {
-                    reader<LongAttributeReader> { locale = "ru_RU" }
-                }
-                attribute<DOUBLE>("double_val") {
-                    reader<DoubleAttributeReader> { locale = "ru_RU" }
-                }
-                attribute<DATE>("date_val") {
-                    reader<DateAttributeReader> { pattern = "d.M.yy" }
-                }
-                attribute<DATETIME>("datetime_val") {
-                    reader<DateTimeAttributeReader> { pattern = "d.M.yy H:m" }
-                }
-                attribute<STRINGLIST>("string_list") {
-                    reader<StringListAttributeReader> { delimiter = ','; quote = null }
-                }
-                attribute<BOOLEANLIST>("bool_list") {
-                    reader<BooleanListAttributeReader> { delimiter = ','; quote = null }
-                }
-                attribute<LONGLIST>("long_list") {
-                    reader<LongListAttributeReader> { delimiter = ','; quote = null }
-                }
-                attribute<DOUBLELIST>("double_list") {
-                    reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = '|'; quote = null }
-                }
-                attribute<DATELIST>("date_list") {
-                    reader<DateListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy" }
-                }
-                attribute<DATETIMELIST>("datetime_list") {
-                    reader<DateTimeListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy H:m" }
-                }
-                attribute<ATTRIBUTELIST>("compound") {
-                    reader<AttributeListReader> {
-                        delimiter = ',';quote = null;valueDelimiter = '=';valueQuote = '"'
-                    }
-                }
-                attribute<LONG>("nested1")
-                attribute<LONG>("nested2")
-
-                attribute<STRING>("group_code") { nullable() }
-                attribute<STRING>("group_name") { nullable() }
-            }
-        }
-        loadEntity("test-entity-attributes") {
+        loadEntity(TestEntityAttributes::class) {
             fromSources { source { file("test-attributes-xls"); sheet("test-stock"); stopOnEmptyRow() } }
             rowsToSkip(3)
             keepAbsentForDays(10)
@@ -95,8 +173,6 @@ config {
                     field("date_list") { column(11) }
                     field("datetime_list") { column(12) }
                     field("compound") { column(13) }
-                    field("nested1") { parent("compound") }
-                    field("nested2") { parent("compound") }
                 }
                 extra("group") {
                     field("group_code") { column(0); pattern("^G[0-9]{3,3}$") }
@@ -104,7 +180,7 @@ config {
                 }
             }
         }
-        loadEntity("test-entity-attributes") {
+        loadEntity(TestEntityAttributes::class) {
             fromSources { source { file("test-attributes-csv"); sheet(CSV_SHEET_NAME); stopOnEmptyRow() } }
             headersRow(2)
             rowsToSkip(3)
@@ -125,8 +201,6 @@ config {
                     field("date_list")
                     field("datetime_list")
                     field("compound")
-                    field("nested1") { parent("compound") }
-                    field("nested2") { parent("compound") }
                 }
                 extra("group") {
                     field("group_code") { column(0); pattern("^G[0-9]{3,3}$") }
@@ -138,11 +212,9 @@ config {
     mediator {
         productionLine {
             input {
-                entity("test-entity-attributes")
+                entity(TestEntityAttributes::class)
             }
-            output("import-product") {
-                copyFrom("test-entity-attributes")
-            }
+            output(ImportProduct::class)
             pipeline {
                 assembler { _, _ -> emptyMap() }
             }

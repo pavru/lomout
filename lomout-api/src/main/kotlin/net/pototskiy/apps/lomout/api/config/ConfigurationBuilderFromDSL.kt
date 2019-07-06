@@ -2,9 +2,9 @@ package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import org.apache.logging.log4j.LogManager
-import org.joda.time.DateTime
-import org.joda.time.Duration
 import java.io.File
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.onFailure
 import kotlin.script.experimental.api.onSuccess
@@ -37,7 +37,7 @@ class ConfigurationBuilderFromDSL(
         }
 
     private fun readConfig(): Config {
-        val startTime = DateTime()
+        val startTime = LocalDateTime.now()
         lateinit var evaluatedConfig: Config
         statusLog.info("Configuration loading has started from file: ${configFile.absolutePath}")
         val ivyFile = getIvyFile(configFile)
@@ -54,7 +54,7 @@ class ConfigurationBuilderFromDSL(
             }
             compileResult.asSuccess()
         }
-        val duration = Duration(startTime, DateTime()).millis.toDouble() / MILLIS_IN_SECOND
+        val duration = Duration.between(startTime, LocalDateTime.now()).seconds
         statusLog.info("Configuration loading has finished, duration: ${duration}s")
         return evaluatedConfig
     }
@@ -66,8 +66,5 @@ class ConfigurationBuilderFromDSL(
         } else {
             null
         }
-    }
-    companion object {
-        private const val MILLIS_IN_SECOND = 1000.0
     }
 }

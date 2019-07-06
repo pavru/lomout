@@ -21,9 +21,9 @@ import net.pototskiy.apps.lomout.printer.DataPrinter
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
-import org.joda.time.DateTime
-import org.joda.time.Duration
 import java.io.File
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlin.system.exitProcess
 
 lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
@@ -37,7 +37,7 @@ fun main(args: Array<String>) {
     if (parseArguments(mainCommand, args)) return
     setLogLevel(mainCommand)
 
-    val startTime = DateTime()
+    val startTime = LocalDateTime.now()
     statusLog.info("Application has started")
     if (!File(mainCommand.configFile.first()).exists()) {
         statusLog.error("File '{}' cannot be found.", mainCommand.configFile.first())
@@ -51,7 +51,6 @@ fun main(args: Array<String>) {
 
     val repository = EntityRepository(
         CONFIG_BUILDER.config.database,
-        CONFIG_BUILDER.config.entityTypeManager,
         Level.toLevel(mainCommand.sqlLogLevel)
     )
     setupPluginContext(File(mainCommand.configFile.first()))
@@ -64,7 +63,7 @@ fun main(args: Array<String>) {
     PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
     CONFIG_BUILDER.config.printer?.let { DataPrinter.print(repository, CONFIG_BUILDER.config) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
-    val duration = Duration(startTime, DateTime()).standardSeconds
+    val duration = Duration.between(startTime, LocalDateTime.now()).seconds
     statusLog.info("Application has finished, duration: ${duration}s")
 }
 
@@ -108,6 +107,5 @@ fun setLogLevel(command: CommandMain) {
  */
 fun setupPluginContext(scriptFile: File) {
     PluginContext.config = CONFIG_BUILDER.config
-    PluginContext.entityTypeManager = CONFIG_BUILDER.config.entityTypeManager
     PluginContext.scriptFile = scriptFile
 }

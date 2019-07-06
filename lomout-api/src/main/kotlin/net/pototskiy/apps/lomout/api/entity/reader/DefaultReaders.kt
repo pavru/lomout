@@ -1,109 +1,71 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.AttributeReader
-import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
-import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
-import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
-import net.pototskiy.apps.lomout.api.entity.type.DATE
-import net.pototskiy.apps.lomout.api.entity.type.DATELIST
-import net.pototskiy.apps.lomout.api.entity.type.DATETIME
-import net.pototskiy.apps.lomout.api.entity.type.DATETIMELIST
-import net.pototskiy.apps.lomout.api.entity.type.DOUBLE
-import net.pototskiy.apps.lomout.api.entity.type.DOUBLELIST
-import net.pototskiy.apps.lomout.api.entity.type.LONG
-import net.pototskiy.apps.lomout.api.entity.type.LONGLIST
-import net.pototskiy.apps.lomout.api.entity.type.STRING
-import net.pototskiy.apps.lomout.api.entity.type.STRINGLIST
-import net.pototskiy.apps.lomout.api.entity.type.TEXT
-import net.pototskiy.apps.lomout.api.entity.type.Type
-import kotlin.reflect.KClass
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.booleanListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.booleanType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.datetimeListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateTimeType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.documentType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.doubleListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.doubleType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
 
 /**
  * Map of default readers
  */
-val defaultReaders = mapOf<KClass<out Type>, AttributeReader<out Type>>(
-    ATTRIBUTELIST::class to AttributeReaderWithPlugin(
-        AttributeListReader::class
-    ) {
-        this as AttributeListReader
+val defaultReaders = mapOf(
+    documentType to DocumentAttributeReader().apply {
         quote = null
         delimiter = ','
         valueQuote = '"'
         valueDelimiter = '='
     },
-    BOOLEAN::class to AttributeReaderWithPlugin(
-        BooleanAttributeReader::class
-    ) {
-        this as BooleanAttributeReader
+    booleanType to BooleanAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
-    BOOLEANLIST::class to AttributeReaderWithPlugin(
-        BooleanListAttributeReader::class
-    ) {
-        this as BooleanListAttributeReader
+    booleanListType to BooleanListAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
-    DATE::class to AttributeReaderWithPlugin(
-        DateAttributeReader::class
-    ) {
-        this as DateAttributeReader
-        pattern = "d.M.yy"
+    dateType to DateAttributeReader().apply {
+        pattern = "d.M.uu"
     },
-    DATELIST::class to AttributeReaderWithPlugin(
-        DateListAttributeReader::class
-    ) {
-        this as DateListAttributeReader
-        pattern = "d.M.yy"
+    dateListType to DateListAttributeReader().apply {
+        pattern = "d.M.uu"
     },
-    DATETIME::class to AttributeReaderWithPlugin(
-        DateTimeAttributeReader::class
-    ) {
-        this as DateTimeAttributeReader
-        pattern = "d.M.yy H:m"
+    dateTimeType to DateTimeAttributeReader().apply {
+        pattern = "d.M.uu H:m"
     },
-    DATETIMELIST::class to AttributeReaderWithPlugin(
-        DateTimeListAttributeReader::class
-    ) {
-        this as DateTimeListAttributeReader
-        pattern = "d.M.yy H:m"
+    datetimeListType to DateTimeListAttributeReader().apply {
+        pattern = "d.M.uu H:m"
     },
-    DOUBLE::class to AttributeReaderWithPlugin(
-        DoubleAttributeReader::class
-    ) {
-        this as DoubleAttributeReader
+    doubleType to DoubleAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
-    DOUBLELIST::class to AttributeReaderWithPlugin(
-        DoubleListAttributeReader::class
-    ) {
-        this as DoubleListAttributeReader
+    doubleListType to DoubleListAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
-    LONG::class to AttributeReaderWithPlugin(
-        LongAttributeReader::class
-    ) {
-        this as LongAttributeReader
+    longType to LongAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
-    LONGLIST::class to AttributeReaderWithPlugin(
-        LongListAttributeReader::class
-    ) {
-        this as LongListAttributeReader
+    longListType to LongListAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
-    STRING::class to AttributeReaderWithPlugin(
-        StringAttributeReader::class
-    ),
-    STRINGLIST::class to AttributeReaderWithPlugin(
-        StringListAttributeReader::class
-    ) {
-        this as StringListAttributeReader
+    intType to IntAttributeReader().apply {
+        locale = DEFAULT_LOCALE_STR
+    },
+    intListType to IntListAttributeReader().apply {
+        locale = DEFAULT_LOCALE_STR
+    },
+    stringType to StringAttributeReader(),
+    stringListType to StringListAttributeReader().apply {
         quote = '"'
         delimiter = ','
-    },
-    TEXT::class to AttributeReaderWithPlugin(
-        TextAttributeReader::class
-    )
+    }
 )

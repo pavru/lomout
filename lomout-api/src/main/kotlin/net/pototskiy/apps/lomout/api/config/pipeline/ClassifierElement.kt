@@ -1,6 +1,6 @@
 package net.pototskiy.apps.lomout.api.config.pipeline
 
-import net.pototskiy.apps.lomout.api.entity.Entity
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
 
 /**
@@ -19,8 +19,14 @@ sealed class ClassifierElement {
      * @constructor
      */
     class Matched(override val entities: EntityCollection) : ClassifierElement() {
+        /**
+         * Constructor for one entity
+         * 
+         * @param entity The entity
+         * @constructor
+         */
         @Suppress("unused")
-        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+        constructor(entity: Document) : this(EntityCollection(listOf(entity)))
     }
 
     /**
@@ -30,8 +36,14 @@ sealed class ClassifierElement {
      * @constructor
      */
     class Mismatched(override val entities: EntityCollection) : ClassifierElement() {
+        /**
+         * Constructor for one entity
+         *
+         * @param entity The entity
+         * @constructor
+         */
         @Suppress("unused")
-        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+        constructor(entity: Document) : this(EntityCollection(listOf(entity)))
     }
 
     /**
@@ -41,8 +53,14 @@ sealed class ClassifierElement {
      * @constructor
      */
     class Skipped(override val entities: EntityCollection) : ClassifierElement() {
+        /**
+         * Constructor for one entity
+         *
+         * @param entity The entity
+         * @constructor
+         */
         @Suppress("unused")
-        constructor(entity: Entity) : this(EntityCollection(listOf(entity)))
+        constructor(entity: Document) : this(EntityCollection(listOf(entity)))
     }
 
     /**
@@ -59,7 +77,7 @@ sealed class ClassifierElement {
      * @param entity The entity to add to element
      * @return Matched
      */
-    fun match(entity: Entity) = Matched(EntityCollection(this.entities.plus(entity)))
+    fun match(entity: Document) = Matched(EntityCollection(this.entities.plus(entity)))
 
     /**
      * Create the matched element
@@ -75,7 +93,7 @@ sealed class ClassifierElement {
      * @param entities Entities to add to element
      * @return Matched
      */
-    fun match(entities: List<Entity>) = Matched(EntityCollection(this.entities.plus(entities)))
+    fun match(entities: List<Document>) = Matched(EntityCollection(this.entities.plus(entities)))
 
     /**
      * Create the element mismatched
