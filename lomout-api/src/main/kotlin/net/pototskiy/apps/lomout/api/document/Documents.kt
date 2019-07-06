@@ -40,7 +40,7 @@ class Documents(
             throw DocumentException("Another instance of Documents is already created.")
         }
         timestamp = LocalDateTime.now().let {
-            it.withNano(it.nano / 1000000 * 1000000)
+            it.withNano(it.nano / MICROSECONDS * MICROSECONDS)
         }
     }
 
@@ -302,12 +302,13 @@ class Documents(
     }
 
     companion object {
+        private const val MICROSECONDS = 1000000
         private var instance: Documents? = null
         /**
          * Timestamp for the current session.
          */
         var timestamp: LocalDateTime = LocalDateTime.now().let {
-            it.withNano(it.nano / 1000000 * 1000000)
+            it.withNano(it.nano / MICROSECONDS * MICROSECONDS)
         }
     }
 }

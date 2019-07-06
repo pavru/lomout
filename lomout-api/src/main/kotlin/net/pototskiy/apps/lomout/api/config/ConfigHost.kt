@@ -50,7 +50,6 @@ class ConfigHost(
      * @return ResultWithDiagnostics<CompiledScript<*>>
      */
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
-//        ivyFile?.let { ConfigScript.ivyFile = it }
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript> {
             ivyFile?.let { file ->
                 dependenciesFromIvyFile(file)

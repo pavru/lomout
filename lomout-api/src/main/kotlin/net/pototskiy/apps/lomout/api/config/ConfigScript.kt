@@ -46,16 +46,6 @@ import kotlin.script.experimental.jvm.util.classpathFromClassloader
 )
 abstract class ConfigScript(private val args: Array<String>) {
     var evaluatedConfig: Config? = null
-
-//    /**
-//     * Companion object
-//     */
-//    companion object {
-//        /**
-//         * Ivy.xml file with additional script dependencies
-//         */
-//        var ivyFile: File? = null
-//    }
 }
 
 /**
