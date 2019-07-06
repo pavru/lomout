@@ -119,7 +119,7 @@ internal class EntityRepositoryTest {
     fun updateTest() {
         val previousTimestamp = Documents.timestamp
         repository.close()
-        runBlocking { kotlinx.coroutines.delay(500) }
+        runBlocking { kotlinx.coroutines.delay(1500) }
         repository = EntityRepository(dbConfig, Level.ERROR)
         val entity = repository.get(type, includeDeleted = true).firstOrNull()
         assertThat(entity).isNotNull

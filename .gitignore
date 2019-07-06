@@ -8,3 +8,6 @@
 /lomout-api/log/
 /tmp/
 /lomout-api/tmp/
+*.ipr
+*.iml
+*.iws

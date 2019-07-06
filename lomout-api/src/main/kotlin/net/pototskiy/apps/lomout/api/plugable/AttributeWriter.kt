@@ -24,6 +24,6 @@ abstract class AttributeWriter<T : Any?> : Plugin() {
  * @param parameter Parameters set block
  * @return W
  */
-inline fun <reified W: AttributeWriter<*>> createWriter(parameter: W.()->Unit = {}): W {
+inline fun <reified W : AttributeWriter<*>> createWriter(parameter: W.() -> Unit = {}): W {
     return W::class.createInstance().apply(parameter)
 }

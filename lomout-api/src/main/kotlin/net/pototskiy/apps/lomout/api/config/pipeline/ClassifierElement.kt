@@ -21,7 +21,7 @@ sealed class ClassifierElement {
     class Matched(override val entities: EntityCollection) : ClassifierElement() {
         /**
          * Constructor for one entity
-         * 
+         *
          * @param entity The entity
          * @constructor
          */

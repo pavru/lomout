@@ -168,5 +168,4 @@ interface EntityRepositoryInterface : AutoCloseable {
      * @param maxAbsentDays The maximum absent days
      */
     fun removeOldEntities(type: KClass<out Document>, maxAbsentDays: Int)
-
 }
