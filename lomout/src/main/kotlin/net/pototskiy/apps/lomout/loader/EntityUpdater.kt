@@ -1,64 +1,48 @@
 package net.pototskiy.apps.lomout.loader
 
-import net.pototskiy.apps.lomout.api.entity.AnyTypeAttribute
-import net.pototskiy.apps.lomout.api.entity.Entity
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED
-import net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED
-import net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED
-import net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
-import net.pototskiy.apps.lomout.api.entity.type.Type
+import kotlin.reflect.KClass
 
 class EntityUpdater(
     private val repository: EntityRepositoryInterface,
-    private val entityType: EntityType
+    private val entityType: KClass<out Document>
 ) {
 
-    fun update(data: Map<AnyTypeAttribute, Type>): Long {
+    fun update(data: Map<Attribute, Any>): Long {
         val processedRows: Long
         var entity = repository.get(
             entityType,
-            data.filterKeys { it.isKey },
-            CREATED, UPDATED, UNCHANGED, REMOVED
+            data.filter { it.key.isKey },
+            includeDeleted = true
         )
-        val filteredData = data.filterNot { it.key.isSynthetic || it.key.type == ATTRIBUTELIST::class }
-        entity?.wasUnchanged()
         if (entity == null) {
             entity = repository.create(entityType)
-            filteredData.forEach { entity[it.key] = it.value }
-            entity.wasCreated()
+            data.forEach { entity.setAttribute(it.key.name, it.value) }
+            repository.update(entity)
             processedRows = 1L
         } else {
-            processedRows = testAndUpdateTypedAttributes(entity, filteredData)
+            entity.touch()
+            processedRows = testAndUpdateTypedAttributes(entity, data)
+            if (processedRows != 0L) {
+                entity.markUpdated()
+                repository.update(entity)
+            } else {
+                repository.updateCommonPart(entity)
+            }
         }
-        repository.update(entity)
         return processedRows
     }
 
-    private fun testAndUpdateTypedAttributes(entity: Entity, data: Map<AnyTypeAttribute, Type>): Long {
+    private fun testAndUpdateTypedAttributes(entity: Document, data: Map<Attribute, Any>): Long {
         var updatedRows = 0L
-        val storeData = entity.data
-        data.keys.union(storeData.keys)
-            .filter { !it.isKey && !it.isSynthetic }.forEach { attr ->
-                val value = data[attr]
-                val storedValue = storeData[attr]
-                if (value != null && storedValue == null || needToUpdate(value, storedValue)) {
-                    entity[attr] = data.getValue(attr)
-                    entity.wasUpdated(true)
-                    updatedRows = 1L
-                } else if (value == null && storedValue != null) {
-                    entity[attr] = null
-                    entity.wasUpdated(true)
-                    updatedRows = 1L
-                }
+        entity.documentMetadata.attributes.values.forEach {
+            if (data.containsKey(it) && entity.getAttribute(it.name) != data[it]) {
+                entity.setAttribute(it.name, data[it])
+                updatedRows = 1L
             }
+        }
         return updatedRows
     }
-
-    private fun needToUpdate(
-        value: Type?,
-        storedValue: Type?
-    ) = value != null && storedValue != null && value != storedValue
 }

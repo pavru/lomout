@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.source.workbook.csv
 
+import net.pototskiy.apps.lomout.api.entity.values.dateToString
 import net.pototskiy.apps.lomout.api.entity.values.datetimeToString
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
 import net.pototskiy.apps.lomout.api.entity.values.longToString
@@ -10,8 +11,9 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Row
-import org.joda.time.DateTime
 import java.text.ParseException
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * CSV workbook cell
@@ -121,8 +123,17 @@ class CsvCell(
      *
      * @param value DateTime
      */
-    override fun setCellValue(value: DateTime) {
+    override fun setCellValue(value: LocalDateTime) {
         backingValue = value.datetimeToString(workbookLocale)
+    }
+
+    /**
+     * Set datetime cell value
+     *
+     * @param value DateTime
+     */
+    override fun setCellValue(value: LocalDate) {
+        backingValue = value.dateToString(workbookLocale)
     }
 
     /**

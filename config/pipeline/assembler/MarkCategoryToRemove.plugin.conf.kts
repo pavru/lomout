@@ -1,14 +1,13 @@
+import MageCategory_conf.MageCategory
+import kotlin.reflect.KClass
+
 class MarkCategoryToRemove : PipelineAssemblerPlugin() {
-    override fun assemble(target: EntityType, entities: EntityCollection): Map<AnyTypeAttribute, Type> {
+    override fun assemble(target: KClass<out Document>, entities: EntityCollection): Map<Attribute, Any> {
         try {
-            val category = entities["mage-category"]
-            val idAttr = category.type.getAttributeOrNull("entity_id")
-                ?: throw AppConfigException(badPlace(target), "Cannot find attribute 'entity_id'.")
-            val removeAttr = target.getAttributeOrNull("remove_flag")
-                ?: throw AppConfigException(badPlace(target), "Cannot find attribute 'remove_flag'.")
+            val category = entities[MageCategory::class] as MageCategory
             return mapOf(
-                idAttr to category["entity_id"]!!,
-                removeAttr to BOOLEAN(true)
+                MageCategory.attributes.getValue("entity_id") to category.entity_id,
+                MageCategory.attributes.getValue("remove_flag") to true
             )
         } catch (e: Exception) {
             throw AppConfigException(badPlace(target), e.message, e)

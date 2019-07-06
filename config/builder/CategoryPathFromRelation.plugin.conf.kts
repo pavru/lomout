@@ -1,44 +1,41 @@
+import MageCategory_conf.MageCategory
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.plugable.PluginContext.repository
 import org.apache.commons.collections4.map.LRUMap
-import org.jetbrains.exposed.dao.EntityID
+import org.bson.types.ObjectId
 import java.lang.ref.WeakReference
 import java.util.Collections.*
-import kotlin.collections.set
 
-class CategoryPathFromRelation : AttributeBuilderPlugin<STRING>() {
-    var separator: String = "/"
-    var root: String = ""
+class CategoryPathFromRelation (
+    private val separator: String = "/",
+    private val root: String = ""
+): AttributeBuilder<String?>() {
 
-    override fun build(entity: Entity): STRING? {
-        val cachedPath = pathCache[entity.id]?.get()
-        if (cachedPath != null) return STRING(cachedPath)
-        val eType = entity.type
+    override fun build(entity: Document): String? {
+        entity as MageCategory
+        val cachedPath = pathCache[entity._id]?.get()
+        if (cachedPath != null) return cachedPath
         val path = mutableListOf<String>()
-        var current: Entity? = entity
-        var name = entity[nameAttr]?.value as String?
+        var current: MageCategory? = entity
+        var name: String? = entity.name
         while (name != null && current != null) {
             path.add(name)
-            val parentId = current[parentAttr] as LONG
+            val parentId = current.parent_id
             current = current.let {
                 repository.get(
-                    eType,
-                    mapOf(idAttr to parentId),
-                    EntityStatus.CREATED, EntityStatus.UPDATED, EntityStatus.UNCHANGED
-                )
+                    MageCategory::class,
+                    mapOf(MageCategory.attributes.getValue("parent_id") to parentId)
+                ) as? MageCategory
             }
-            name = current?.let { it[nameAttr]?.value as? String }
+            name = current?.let { it.name }
         }
-        return STRING("$root${path.reversed().joinToString(separator)}").also {
-            pathCache[entity.id] = WeakReference(it.value)
+        return "$root${path.reversed().joinToString(separator)}".also {
+            pathCache[entity._id] = WeakReference(it)
         }
     }
 
     companion object {
-        private val typeManager by lazy { PluginContext.entityTypeManager }
-        private val pathCache = synchronizedMap(LRUMap<EntityID<Int>, WeakReference<String>>(200, 100))
+        private val pathCache = synchronizedMap(LRUMap<ObjectId, WeakReference<String>>(200, 100))
         private const val eTypeName = "mage-category"
-        private val entityType by lazy { typeManager[eTypeName] }
-        private val nameAttr by lazy { typeManager.getEntityAttribute(entityType, "name")!! }
-        private val idAttr by lazy { typeManager.getEntityAttribute(entityType, "entity_id")!! }
-        private val parentAttr by lazy { typeManager.getEntityAttribute(entityType, "parent_id")!! }
     }
 }

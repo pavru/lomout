@@ -4,19 +4,21 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.createLocale
+import net.pototskiy.apps.lomout.api.entity.values.dateToString
 import net.pototskiy.apps.lomout.api.entity.values.datetimeToString
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.joda.time.DateTime
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.*
 
 @Suppress("MagicNumber")
@@ -134,7 +136,8 @@ internal class CsvWorkbookTest {
                 val sheet = workbook.insertSheet(CSV_SHEET_NAME)
                 val row = sheet.insertRow(0)
                 val cell = row.insertCell(0)
-                val now = DateTime.now()
+                val datetime = LocalDateTime.now()
+                val date = LocalDate.now()
                 assertThat(cell.cellType).isEqualTo(CellType.BLANK)
                 cell.setCellValue("test")
                 assertThat(cell.cellType).isEqualTo(CellType.STRING)
@@ -148,9 +151,12 @@ internal class CsvWorkbookTest {
                 cell.setCellValue(11L)
                 assertThat(cell.cellType).isEqualTo(CellType.LONG)
                 assertThat(cell.longValue).isEqualTo(11L)
-                cell.setCellValue(now)
+                cell.setCellValue(datetime)
                 assertThat(cell.cellType).isEqualTo(CellType.STRING)
-                assertThat(cell.stringValue).isEqualTo(now.datetimeToString(DEFAULT_LOCALE))
+                assertThat(cell.stringValue).isEqualTo(datetime.datetimeToString(DEFAULT_LOCALE))
+                cell.setCellValue(date)
+                assertThat(cell.cellType).isEqualTo(CellType.STRING)
+                assertThat(cell.stringValue).isEqualTo(date.dateToString(DEFAULT_LOCALE))
                 Unit
             }
         } finally {

@@ -62,7 +62,7 @@ open class GenerateBuildClassTask : DefaultTask() {
                 /**
                  * Project dependency
                  */
-                val dependencies = listOf<Dependency>(${dependencies.joinToString(",")})
+                val dependencies = mutableListOf<Dependency>(${dependencies.joinToString(",")})
 
                 /**
                  * Dependency data class

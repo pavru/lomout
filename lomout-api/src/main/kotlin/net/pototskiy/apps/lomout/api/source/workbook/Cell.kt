@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.source.workbook
 
-import org.joda.time.DateTime
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 /**
  * Workbook cell interface
@@ -81,11 +82,18 @@ interface Cell {
     fun setCellValue(value: Double)
 
     /**
-     * Set cell [DateTime] value
+     * Set cell [LocalDateTime] value
      *
      * @param value DateTime
      */
-    fun setCellValue(value: DateTime)
+    fun setCellValue(value: LocalDateTime)
+
+    /**
+     * Set cell [LocalDate] value
+     *
+     * @param value DateTime
+     */
+    fun setCellValue(value: LocalDate)
 
     /**
      * Cell row

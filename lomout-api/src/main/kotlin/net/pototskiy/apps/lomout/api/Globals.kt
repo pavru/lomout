@@ -1,6 +1,5 @@
 package net.pototskiy.apps.lomout.api
 
-import org.joda.time.DateTime
 import java.util.*
 
 /**
@@ -53,15 +52,7 @@ val DEFAULT_LOCALE: Locale = Locale.getDefault()
  * Default system locale in string format
  */
 val DEFAULT_LOCALE_STR: String = DEFAULT_LOCALE.toString()
-/**
- * Processing start timestamp
- */
-val TIMESTAMP = DateTime()
 
-/**
- * Maximum length of entity type name
- */
-const val ENTITY_TYPE_NAME_LENGTH = 50
 /**
  * CSV file sheet name
  */

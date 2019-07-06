@@ -3,10 +3,11 @@ package net.pototskiy.apps.lomout.api.config.loader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.ATTRIBUTELIST
-import net.pototskiy.apps.lomout.api.entity.type.LONG
-import net.pototskiy.apps.lomout.api.entity.type.STRING
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.document.NonAttribute
+import net.pototskiy.apps.lomout.api.document.toAttribute
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -16,9 +17,17 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Execution(ExecutionMode.CONCURRENT)
 internal class FieldSetBuilderTest {
-    private val typeManager = EntityTypeManagerImpl()
-    private val helper = ConfigBuildHelper(typeManager)
-    private val entity = typeManager.createEntityType("test", true)
+    class TestEntity : Document() {
+        @Suppress("unused")
+        var f1: String = ""
+        @NonAttribute
+        var nonAttr: String = ""
+
+        companion object : DocumentMetadata(TestEntity::class)
+    }
+
+    private val helper = ConfigBuildHelper()
+    private val entity = TestEntity::class
 
     @Test
     internal fun noFieldDefinedTest() {
@@ -29,10 +38,13 @@ internal class FieldSetBuilderTest {
             mainSet = true,
             withSourceHeaders = false,
             sources = null,
-            headerRow = null
+            headerRow = null,
+            toAttribute = true
         ).apply {
         }
-        Assertions.assertThatThrownBy { fs.build() }.isInstanceOf(AppConfigException::class.java)
+        Assertions.assertThatThrownBy { fs.build() }
+            .isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("At least one field must be defined for field set.")
     }
 
     @Test
@@ -45,12 +57,14 @@ internal class FieldSetBuilderTest {
                 mainSet = true,
                 withSourceHeaders = false,
                 sources = null,
-                headerRow = null
+                headerRow = null,
+                toAttribute = true
             ).apply {
                 field("f1")
                 field("f1")
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Field 'f1' is already defined.")
     }
 
     @Test
@@ -63,12 +77,155 @@ internal class FieldSetBuilderTest {
                 mainSet = true,
                 withSourceHeaders = false,
                 sources = null,
-                headerRow = null
+                headerRow = null,
+                toAttribute = true
             ).apply {
                 field("f1") { column(0) }
                 field("f2") { column(0) }
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining(
+                "Entity type " +
+                        "'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' has no attribute for the 'f2'"
+            )
+    }
+
+    @Test
+    internal fun fromToAttributeTest() {
+        var set = FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = true
+        ).apply {
+            field("f1") to TestEntity::f1.toAttribute()
+        }.build()
+        assertThat(set.fieldToAttr[set.fields.find { it.name == "f1" }]).isEqualTo(TestEntity::f1.toAttribute())
+        set = FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = false
+        ).apply {
+            field("f1") from TestEntity::f1.toAttribute()
+        }.build()
+        assertThat(set.fieldToAttr[set.fields.find { it.name == "f1" }]).isEqualTo(TestEntity::f1.toAttribute())
+        assertThatThrownBy { FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = true
+        ).apply {
+            field("f1") from TestEntity::f1.toAttribute()
+        }.build() }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Use 'to' mapping operator.")
+        assertThatThrownBy { FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = false
+        ).apply {
+            field("f1") to TestEntity::f1.toAttribute()
+        }.build() }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Use 'from' mapping operator.")
+    }
+
+    @Test
+    internal fun fromToPropertyTest() {
+        var set = FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = true
+        ).apply {
+            field("f1") to TestEntity::f1
+        }.build()
+        assertThat(set.fieldToAttr[set.fields.find { it.name == "f1" }]).isEqualTo(TestEntity::f1.toAttribute())
+        set = FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = false
+        ).apply {
+            field("f1") from TestEntity::f1
+        }.build()
+        assertThat(set.fieldToAttr[set.fields.find { it.name == "f1" }]).isEqualTo(TestEntity::f1.toAttribute())
+        assertThatThrownBy { FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = true
+        ).apply {
+            field("f1") from TestEntity::f1
+        }.build() }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Use 'to' mapping operator.")
+        assertThatThrownBy { FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = true
+        ).apply {
+            field("f1") to TestEntity::nonAttr
+        }.build() }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Attribute 'nonAttr' is not defined.")
+        assertThatThrownBy { FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = false
+        ).apply {
+            field("f1") to TestEntity::f1
+        }.build() }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Use 'from' mapping operator.")
+        assertThatThrownBy { FieldSet.Builder(
+            helper,
+            entity,
+            "test",
+            mainSet = true,
+            withSourceHeaders = false,
+            sources = null,
+            headerRow = null,
+            toAttribute = false
+        ).apply {
+            field("f1") from TestEntity::nonAttr
+        }.build() }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Attribute 'nonAttr' is not defined.")
     }
 
     @Test
@@ -81,15 +238,13 @@ internal class FieldSetBuilderTest {
                 mainSet = true,
                 withSourceHeaders = false,
                 sources = null,
-                headerRow = null
+                headerRow = null,
+                toAttribute = true
             ).apply {
-                field("f1") to attribute("f1")
+                field("f1") to attribute("f10")
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-    }
-
-    @Test
-    internal fun assignAttributeWithNullNameTest() {
+            .hasMessageContaining("Attribute 'f10' is not defined.")
         assertThatThrownBy {
             FieldSet.Builder(
                 helper,
@@ -98,32 +253,13 @@ internal class FieldSetBuilderTest {
                 mainSet = true,
                 withSourceHeaders = false,
                 sources = null,
-                headerRow = null
+                headerRow = null,
+                toAttribute = false
             ).apply {
-                field("f1") to attribute<STRING>(null) {}
+                field("f1") from attribute("f10")
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-    }
-
-    @Test
-    internal fun assignAttributeWithDefinitionTest() {
-        assertThat(
-            FieldSet.Builder(
-                helper,
-                entity,
-                "test",
-                mainSet = true,
-                withSourceHeaders = false,
-                sources = null,
-                headerRow = null
-            ).apply {
-                field("f1") to attribute<STRING>("f2") {}
-            }.build()
-        ).isNotNull
-    }
-
-    @Test
-    internal fun wrongParentTest() {
+            .hasMessageContaining("Attribute 'f10' is not defined.")
         assertThatThrownBy {
             FieldSet.Builder(
                 helper,
@@ -132,17 +268,14 @@ internal class FieldSetBuilderTest {
                 mainSet = true,
                 withSourceHeaders = false,
                 sources = null,
-                headerRow = null
+                headerRow = null,
+                toAttribute = true
             ).apply {
-                field("f1")
-                field("f2") { parent("f3") }
+                field("f1") from attribute("f10")
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-    }
-
-    @Test
-    internal fun cycleNestedParentTest() {
-        assertThat(
+            .hasMessageContaining("Use 'to' mapping operator.")
+        assertThatThrownBy {
             FieldSet.Builder(
                 helper,
                 entity,
@@ -150,13 +283,13 @@ internal class FieldSetBuilderTest {
                 mainSet = true,
                 withSourceHeaders = false,
                 sources = null,
-                headerRow = null
+                headerRow = null,
+                toAttribute = false
             ).apply {
-                field("f1") { } to attribute<ATTRIBUTELIST>("f1") {}
-                field("f2") { parent("f1") } to attribute<ATTRIBUTELIST>("f2") {}
-                field("f3") { parent("f2") } to attribute<ATTRIBUTELIST>("f3") {}
+                field("f1") to attribute("f10")
             }.build()
-        ).isNotNull
+        }.isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("Use 'from' mapping operator.")
     }
 
     @Test
@@ -164,6 +297,19 @@ internal class FieldSetBuilderTest {
         assertThatThrownBy { createConfWithoutMainSet() }
             .isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Field set collection must contain main set")
+    }
+
+    open class EntityType : Document() {
+        @Suppress("unused")
+        @Key
+        var key: Long = 0L
+        var data: String = ""
+
+        companion object : DocumentMetadata(EntityType::class)
+    }
+
+    class OutputType : EntityType() {
+        companion object : DocumentMetadata(OutputType::class)
     }
 
     private fun createConfWithoutMainSet(): Config {
@@ -185,13 +331,7 @@ internal class FieldSetBuilderTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                entities {
-                    entity("entity", false) {
-                        attribute<LONG>("key") { key() }
-                        attribute<STRING>("data")
-                    }
-                }
-                loadEntity("entity") {
+                loadEntity(EntityType::class) {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -205,11 +345,9 @@ internal class FieldSetBuilderTest {
             }
             mediator {
                 productionLine {
-                    output("output") {
-                        copyFrom("entity")
-                    }
+                    output(OutputType::class)
                     input {
-                        entity("entity")
+                        entity(EntityType::class)
                     }
                     pipeline {
                         assembler { _, _ -> emptyMap() }

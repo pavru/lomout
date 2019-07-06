@@ -12,8 +12,8 @@ import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.LogManager
-import org.joda.time.DateTime
-import org.joda.time.Duration
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.concurrent.atomic.*
 
 object DataLoader {
@@ -25,8 +25,7 @@ object DataLoader {
     fun load(repository: EntityRepositoryInterface, config: Config) = runBlocking {
         val loader = config.loader ?: return@runBlocking
         statusLog.info("Data loading has started")
-        repository.cacheStrategy = EntityRepositoryInterface.CacheStrategy.LOADER
-        val startTime = DateTime()
+        val startTime = LocalDateTime.now()
         val jobs = mutableListOf<Job>()
         val orderedLoads = loader.loads.map { load ->
             load.sources.map { it.file to load }
@@ -59,7 +58,7 @@ object DataLoader {
         }
         @Suppress("SpreadOperator")
         joinAll(*jobs.toTypedArray())
-        val duration = Duration(startTime, DateTime()).standardSeconds
+        val duration = Duration.between(startTime, LocalDateTime.now()).seconds
         statusLog.info("Data loading has finished, duration: ${duration}s, rows: ${processedRows.get()}")
     }
 }

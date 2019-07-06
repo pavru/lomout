@@ -56,9 +56,8 @@ internal class DataLoadingInProductionWayTest {
         val util = LoadingDataTestPrepare()
         println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         config = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
-        repository = EntityRepository(config.database, config.entityTypeManager, Level.ERROR)
+        repository = EntityRepository(config.database, Level.ERROR)
         PluginContext.config = config
-        PluginContext.entityTypeManager = config.entityTypeManager
         PluginContext.repository = repository
     }
 

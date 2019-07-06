@@ -25,6 +25,7 @@ import kotlin.script.experimental.api.fileExtension
 import kotlin.script.experimental.api.ide
 import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.jvm.JvmDependency
+import kotlin.script.experimental.jvm.JvmScriptCompilationConfigurationBuilder
 import kotlin.script.experimental.jvm.dependenciesFromClassloader
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvm.updateClasspath
@@ -45,16 +46,6 @@ import kotlin.script.experimental.jvm.util.classpathFromClassloader
 )
 abstract class ConfigScript(private val args: Array<String>) {
     var evaluatedConfig: Config? = null
-
-    /**
-     * Companion object
-     */
-    companion object {
-        /**
-         * Ivy.xml file with additional script dependencies
-         */
-        var ivyFile: File? = null
-    }
 }
 
 /**
@@ -64,8 +55,11 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     displayName("LoMout config script")
     fileExtension("conf.kts")
     baseClass(ConfigScript::class)
+    defaultImports(Import::class, DependsOn::class, Repository::class)
     defaultImports(
         "org.jetbrains.kotlin.script.util.*",
+        "java.time.LocalDate",
+        "java.time.LocalDateTime",
         "net.pototskiy.apps.lomout.api.*",
         "net.pototskiy.apps.lomout.api.config.*",
         "net.pototskiy.apps.lomout.api.config.config",
@@ -75,18 +69,15 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
         "net.pototskiy.apps.lomout.api.config.printer.*",
         "net.pototskiy.apps.lomout.api.plugable.*",
         "net.pototskiy.apps.lomout.api.entity.*",
-        "net.pototskiy.apps.lomout.api.entity.EntityStatus.CREATED",
-        "net.pototskiy.apps.lomout.api.entity.EntityStatus.UPDATED",
-        "net.pototskiy.apps.lomout.api.entity.EntityStatus.UNCHANGED",
-        "net.pototskiy.apps.lomout.api.entity.EntityStatus.REMOVED",
-        "net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface.Companion.REMOVED_ENTITY",
-        "net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface.Companion.ACTUAL_ENTITY",
         "net.pototskiy.apps.lomout.api.entity.reader.*",
         "net.pototskiy.apps.lomout.api.entity.type.*",
         "net.pototskiy.apps.lomout.api.entity.values.*",
         "net.pototskiy.apps.lomout.api.entity.writer.*",
         "net.pototskiy.apps.lomout.api.source.*",
-        "net.pototskiy.apps.lomout.api.source.workbook.*"
+        "net.pototskiy.apps.lomout.api.source.workbook.*",
+        "net.pototskiy.apps.lomout.api.document.*",
+        "net.pototskiy.apps.lomout.api.document.DocumentMetadata.*",
+        "net.pototskiy.apps.lomout.api.document.SupportAttributeType.*"
     )
     compilerOptions(
         "-jvm-target", "1.8",
@@ -95,23 +86,18 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     )
     jvm {
         val logger = MainAndIdeLogger()
-        val classpath = classpathFromClassloader(ConfigScriptCompilationConfiguration::class.java.classLoader)
-        val apiInPlace = classpath?.firstOrNull {
-                it.isDirectory &&
-                        it.absolutePath.contains(Regex("""lomout-api.build.classes.kotlin.main$""")) }
-        val apiInJar = classpath?.firstOrNull {
-                @Suppress("GraziInspection")
-                it.isFile && it.name.contains(Regex("""lomout-api.*\.jar$"""))
-            }
-        if (apiInPlace != null && apiInJar == null) {
-            updateClasspath(listOf(apiInPlace))
+        val libs = if (addApiToClasspath()) {
+            arrayOf("lomout-api")
+        } else {
+            arrayOf("lomout-api", "kmongo-property", "log4j-api", "bson", "kotlin-script-util")
         }
+        @Suppress("SpreadOperator")
         dependenciesFromClassloader(
-            "lomout-api",
+            *libs,
             classLoader = ConfigScriptCompilationConfiguration::class.java.classLoader,
             wholeClasspath = false
         )
-        checkAndGetExternalDeps()
+        dependenciesFromBuildInfo()
             .takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
         this[dependencies]?.forEach { dependency ->
             logger.trace("Script classpath (final): " +
@@ -128,18 +114,31 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
     }
 })
 
-private fun isClassInPath(name: String, classLoader: ClassLoader): Boolean {
-    return try {
-        Class.forName(name, false, classLoader)
-        true
-    } catch (e: ClassNotFoundException) {
-        false
+/**
+ * Add lomout api in classpath from a directory.
+ *
+ * @receiver JvmScriptCompilationConfigurationBuilder
+ * @return True if the api in the jar file
+ */
+private fun JvmScriptCompilationConfigurationBuilder.addApiToClasspath(): Boolean {
+    val classpath = classpathFromClassloader(ConfigScriptCompilationConfiguration::class.java.classLoader)
+    val apiInPlace = classpath?.firstOrNull {
+        it.isDirectory &&
+                it.absolutePath.contains(Regex("""lomout-api.build.classes.kotlin.main$"""))
     }
+    val apiInJar = classpath?.firstOrNull {
+        @Suppress("GraziInspection")
+        it.isFile && it.name.contains(Regex("""lomout-api.*\.jar$"""))
+    }
+    if (apiInPlace != null && apiInJar == null) {
+        updateClasspath(listOf(apiInPlace))
+    }
+    return apiInJar != null
 }
 
-private fun checkAndGetExternalDeps(): List<File> {
+private fun dependenciesFromBuildInfo(): List<File> {
     val logger = MainAndIdeLogger()
-    logger.trace("Try to check and add external dependency")
+    logger.trace("Try to check and add build info dependencies.")
     val resolver = IvyResolver()
     resolver.tryAddRepository(mavenCentral())
     resolver.tryAddRepository(jCenter())
@@ -153,7 +152,26 @@ private fun checkAndGetExternalDeps(): List<File> {
         )?.toList()
         deps.addAll(resolvedArtifacts ?: emptyList())
     }
-    ConfigScript.ivyFile?.let { deps.addAll(resolver.tryResolveExternalDependency(it)) }
+
+    return deps
+}
+
+/**
+ * Create dependency from an ivy.xml file.
+ *
+ * @param ivyFile The ivy file
+ * @return List<File>
+ */
+fun dependenciesFromIvyFile(ivyFile: File): List<File> {
+    val logger = MainAndIdeLogger()
+    logger.trace("Try to check and add dependencies from ivy file.")
+    val resolver = IvyResolver()
+    resolver.tryAddRepository(mavenCentral())
+    resolver.tryAddRepository(jCenter())
+    resolver.tryAddRepository(localMaven())
+    val deps = mutableListOf<File>()
+
+    deps.addAll(resolver.tryResolveExternalDependency(ivyFile))
 
     return deps
 }

@@ -2,10 +2,11 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithPlugin
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.LONG
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.entity.writer
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -19,12 +20,17 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
 import java.nio.file.Path
-import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class LongAttributeStringWriterTest {
-    private lateinit var typeManager: EntityTypeManagerImpl
+
+    internal class TestType : Document() {
+        var attr: Long = 0L
+
+        companion object : DocumentMetadata(TestType::class)
+    }
+
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
@@ -33,7 +39,6 @@ internal class LongAttributeStringWriterTest {
 
     @BeforeEach
     internal fun setUp() {
-        typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
         file = tempDir.resolve("attributes.xls").toFile()
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
@@ -48,34 +53,30 @@ internal class LongAttributeStringWriterTest {
 
     @Test
     internal fun simpleWriteTest() {
-        val attr = typeManager.createAttribute("attr", LONG::class)
-        val value = LONG(111L)
+        val attr = TestType.attributes.getValue("attr")
+        val value = 111L
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LONG>)(value, cell)
+        (attr.writer as AttributeWriter<Long>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("111")
     }
 
     @Test
     internal fun writeNullValueTest() {
-        val attr = typeManager.createAttribute("attr", LONG::class)
+        val attr = TestType.attributes.getValue("attr")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LONG>)(null, cell)
+        (attr.writer as AttributeWriter<Long?>).write(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
-        val writer = defaultWriters[LONG::class]
+        val writer = defaultWriters[SupportAttributeType.longType]
         assertThat(writer).isNotNull
-        assertThat(writer).isInstanceOf(AttributeWriterWithPlugin::class.java)
-        writer as AttributeWriterWithPlugin
-        assertThat(writer.pluginClass).isEqualTo(LongAttributeStringWriter::class)
-        val v = writer.pluginClass.createInstance() as LongAttributeStringWriter
-        @Suppress("UNCHECKED_CAST")
-        v.apply(writer.options as (LongAttributeStringWriter.() -> Unit))
-        assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(writer).isInstanceOf(LongAttributeStringWriter::class.java)
+        writer as LongAttributeStringWriter
+        assertThat(writer.locale).isEqualTo(DEFAULT_LOCALE_STR)
     }
 }

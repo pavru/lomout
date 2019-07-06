@@ -2,8 +2,6 @@
 
 import io.gitlab.arturbosch.detekt.detekt
 import org.jetbrains.dokka.gradle.DokkaTask
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URL
 
 plugins {
     `java-library`
@@ -19,12 +17,12 @@ plugins {
 group = rootProject.group
 version = rootProject.version
 
-idea {
-    module {
-        outputDir = file("build/classes/kotlin/main")
-        testOutputDir = file("build/classes/kotlin/test")
-    }
-}
+//idea {
+//    module {
+//        outputDir = file("build/classes/kotlin/main")
+//        testOutputDir = file("build/classes/kotlin/test")
+//    }
+//}
 
 sourceSets {
     main {
@@ -48,19 +46,16 @@ tasks.withType(DokkaTask::class) {
     samples = listOf()
     jdkVersion = 8
 
-    externalDocumentationLink {
-        url = URL("https://www.joda.org/joda-time/apidocs/")
-    }
 //    noJdkLink = true
 //    noStdlibLink = true
 }
 
-tasks.register<GenerateBuildClassTask>("generateBuildClass") {
-    group = "build"
-    packageName = "net.pototskiy.apps.lomout.api"
-    objectName = "BuildInfo"
-    addDependenciesOfConfigurations = listOf("implementation")
-}
+//tasks.register<GenerateBuildClassTask>("generateBuildClass") {
+//    group = "build"
+//    packageName = "net.pototskiy.apps.lomout.api"
+//    objectName = "BuildInfo"
+//    addDependenciesOfConfigurations = listOf("implementation")
+//}
 
 tasks.register<Jar>("dokkaJar") {
     group = "documentation"
@@ -82,26 +77,37 @@ tasks.jar {
     from(project.the<SourceSetContainer>()["main"].output)
     from({
         configurations.runtimeClasspath.get()
-            .filter { it.name.endsWith("jar") && it.name.contains("ivy") }
+            .filter {
+                it.name.endsWith("jar") &&
+                        (it.name.contains("ivy") ||
+                                it.name.contains("kmongo-property") ||
+                                it.name.contains("log4j-api") ||
+                                it.name.contains("bson") ||
+                                it.name.contains("kotlin-script-util")
+                                )
+            }
             .map { zipTree(it) }
     })
+    from("./src/main") {
+        include("META-INF/**")
+    }
 }
 
 artifacts {
     add("spi", tasks["jar"])
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn += tasks["generateBuildClass"]
-    kotlinOptions {
-        jvmTarget = "1.8"
-        noReflect = false
-        freeCompilerArgs = freeCompilerArgs + listOf(
-            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
-            "-Xuse-experimental=kotlin.Experimental"
-        )
-    }
-}
+//tasks.withType<KotlinCompile> {
+//    dependsOn += tasks["generateBuildClass"]
+//    kotlinOptions {
+//        jvmTarget = "1.8"
+//        noReflect = false
+//        freeCompilerArgs = freeCompilerArgs + listOf(
+//            "-Xuse-experimental=kotlin.contracts.ExperimentalContracts",
+//            "-Xuse-experimental=kotlin.Experimental"
+//        )
+//    }
+//}
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -166,19 +172,13 @@ dependencies {
 
     compileOnly(files("$projectDir/lib/util.jar"))
     implementation("org.apache.ivy", "ivy", Versions.ivy)
-    // Database
-    implementation("org.jetbrains.exposed", "exposed", Versions.exposed) {
-        exclude("org.jetbrains.kotlin")
-        exclude("org.slf4j")
-    }
-    implementation("org.apache.commons", "commons-dbcp2", Versions.dbcp)
     // Excel
     implementation("org.apache.poi", "poi", Versions.poi)
     implementation("org.apache.poi", "poi-ooxml", Versions.poi)
     // CSV
     implementation("org.apache.commons", "commons-csv", Versions.commonCsv)
-    // MySql
-    implementation("mysql", "mysql-connector-java", Versions.mysql.connector)
+    // MongoDB
+    implementation("org.litote.kmongo", "kmongo-native", Versions.kmongo)
     // Logger
     implementation("org.slf4j", "slf4j-api", Versions.slf4j)
     implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", Versions.log4j)

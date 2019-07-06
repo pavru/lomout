@@ -1,3 +1,152 @@
+class TestReader : AttributeReader<String?>(), ReaderBuilder {
+    override fun read(attribute: Attribute, input: Cell): String? {
+        return "test reader function"
+    }
+
+    override fun build(): AttributeReader<out Any?> = createReader<TestReader>()
+}
+
+class TestEntity1 : Document() {
+    @Reader(TestReader::class)
+    var stringAttr1: String = ""
+    @Key
+    var testAttr1: String = ""
+    var booleanAttr1: Boolean? = null
+    var longAttr1: Long = 0
+    var doubleAttr1: Double = 0.0
+
+    companion object : DocumentMetadata(TestEntity1::class)
+}
+
+class NestedType : Document() {
+    var nested1: Int = 0
+    var nested2: Int = 0
+
+    companion object : DocumentMetadata(NestedType::class)
+}
+
+class TestEntity2 : Document() {
+    var stringListAttr2: List<String> = emptyList()
+    var booleanListAttr2: List<Boolean> = emptyList()
+    var longListAttr2: List<Long> = emptyList()
+    var doubleListAttr2: List<Double> = emptyList()
+    var attributeList2: NestedType? = null
+
+    companion object : DocumentMetadata(TestEntity2::class)
+}
+
+open class OnecProduct : Document() {
+    @Key
+    var sku: String = ""
+    var description: String = ""
+    var bool_val: Boolean = false
+
+    class LongValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<LongAttributeReader> {
+            locale = "ru_RU"
+        }
+    }
+
+    @Reader(LongValReaderBuilder::class)
+    var long_val: Long = 0L
+
+    class DoubleValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DoubleAttributeReader> {
+            locale = "ru_RU"
+        }
+    }
+
+    @Reader(DoubleValReaderBuilder::class)
+    var double_val: Double = 0.0
+
+    class DateValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateAttributeReader> {
+            pattern = "d.M.uu"
+        }
+    }
+
+    @Reader(DateValReaderBuilder::class)
+    var date_val: LocalDate = LocalDate.MIN
+
+    class DateTimeValReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateTimeAttributeReader> {
+            pattern = "d.M.uu H:m"
+        }
+    }
+
+    @Reader(DateTimeValReaderBuilder::class)
+    var datetime_val: LocalDateTime = LocalDateTime.MIN
+    class StringListReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<StringListAttributeReader> {
+            delimiter = ';'
+            quote = null
+        }
+    }
+    @Reader(StringListReaderBuilder::class)
+    var string_list: List<String> = emptyList()
+    class BoolListReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<BooleanListAttributeReader> {
+            delimiter = ','
+            quote = null
+        }
+    }
+    @Reader(BoolListReaderBuilder::class)
+    var bool_list: List<Boolean> = emptyList()
+    class LongListReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader>{
+            delimiter = ','
+            quote = null
+        }
+    }
+    @Reader(LongListReaderBuilder::class)
+    var long_list: List<Long> = emptyList()
+    class DoubleListReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DoubleListAttributeReader> {
+            locale = "ru_RU"
+            delimiter = ','
+            quote = null
+        }
+    }
+    @Reader(DoubleListReaderBuilder::class)
+    var double_list: List<Double> = emptyList()
+    class DateListReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader>{
+            delimiter = ','
+            quote = null
+            pattern = "d.M.uu"
+        }
+    }
+    @Reader(DateListReaderBuilder::class)
+    var date_list: List<LocalDate> = emptyList()
+    class DateTimeListReaserBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateTimeListAttributeReader> {
+            delimiter = ','
+            quote = null
+            pattern = "d.M.uu H:m"
+        }
+    }
+    @Reader(DateTimeListReaserBuilder::class)
+    var datetime_list: List<LocalDateTime> = emptyList()
+    class CompoundReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
+            delimiter = ','
+            quote = null
+            valueDelimiter = '='
+            valueQuote = '"'
+        }
+    }
+    @Reader(CompoundReaderBuilder::class)
+    var compound: NestedType = NestedType()
+    var group_code: String? = null
+    var group_name: String? = null
+
+    companion object : DocumentMetadata(OnecProduct::class)
+}
+
+class ImportProduct : OnecProduct() {
+    companion object : DocumentMetadata(ImportProduct::class)
+}
+
 config {
     database {
         name("test_db_name")
@@ -24,70 +173,7 @@ config {
             file("mage_adv_price") { path("$testDataDir/advanced_pricing.csv") }
             file("mage-stock-source") { path("$testDataDir/stock_sources.csv") }
         }
-        entities {
-            entity("test-entity-1", false) {
-                attribute<STRING>("string-attr-1") {
-                    reader { _, _ -> STRING("test reader function") }
-                }
-                attribute<TEXT>("text-attr-1") { key() }
-                attribute<BOOLEAN>("boolean-attr-1") { nullable() }
-                attribute<LONG>("long-attr-1")
-                attribute<DOUBLE>("double-attr-1")
-            }
-            entity("test-entity-2", true) {
-                attribute<STRINGLIST>("string-list-attr-2")
-                attribute<BOOLEANLIST>("boolean-list-attr-2")
-                attribute<LONGLIST>("long-list-attr-2")
-                attribute<DOUBLELIST>("double-list-2")
-                attribute<ATTRIBUTELIST>("attribute-list-2")
-            }
-            entity("onec-product", false) {
-                attribute<STRING>("sku") { key() }
-                attribute<TEXT>("description")
-                attribute<BOOLEAN>("bool_val")
-                attribute<LONG>("long_val") {
-                    reader<LongAttributeReader> { locale = "ru_RU" }
-                }
-                attribute<DOUBLE>("double_val") {
-                    reader<DoubleAttributeReader> { locale = "ru_RU" }
-                }
-                attribute<DATE>("date_val") {
-                    reader<DateAttributeReader> { pattern = "d.M.yy" }
-                }
-                attribute<DATETIME>("datetime_val") {
-                    reader<DateTimeAttributeReader> { pattern = "d.M.yy H:m" }
-                }
-                attribute<STRINGLIST>("string_list") {
-                    reader<StringListAttributeReader> { delimiter = ','; quote = null }
-                }
-                attribute<BOOLEANLIST>("bool_list") {
-                    reader<BooleanListAttributeReader> { delimiter = ','; quote = null }
-                }
-                attribute<LONGLIST>("long_list") {
-                    reader<LongListAttributeReader> { delimiter = ','; quote = null }
-                }
-                attribute<DOUBLELIST>("double_list") {
-                    reader<DoubleListAttributeReader> { locale = "ru_RU";delimiter = '|'; quote = null }
-                }
-                attribute<DATELIST>("date_list") {
-                    reader<DateListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy" }
-                }
-                attribute<DATETIMELIST>("datetime_list") {
-                    reader<DateTimeListAttributeReader> { delimiter = ',';quote = null;pattern = "d.M.yy H:m" }
-                }
-                attribute<ATTRIBUTELIST>("compound") {
-                    reader<AttributeListReader> {
-                        delimiter = ',';quote = null;valueDelimiter = '=';valueQuote = '"'
-                    }
-                }
-                attribute<LONG>("nested1")
-                attribute<LONG>("nested2")
-
-                attribute<STRING>("group_code") { nullable() }
-                attribute<STRING>("group_name") { nullable() }
-            }
-        }
-        loadEntity("onec-product") {
+        loadEntity(OnecProduct::class) {
             fromSources { source { file("test-attributes-xls"); sheet("test-stock"); stopOnEmptyRow() } }
             rowsToSkip(3)
             keepAbsentForDays(10)
@@ -107,8 +193,6 @@ config {
                     field("date_list") { column(11) }
                     field("datetime_list") { column(12) }
                     field("compound") { column(13) }
-                    field("nested1") { parent("compound") }
-                    field("nested2") { parent("compound") }
                 }
                 extra("group") {
                     field("group_code") { column(0); pattern("^G[0-9]{3,3}$") }
@@ -116,7 +200,7 @@ config {
                 }
             }
         }
-        loadEntity("onec-product") {
+        loadEntity(OnecProduct::class) {
             fromSources { source { file("test-attributes-csv"); sheet(CSV_SHEET_NAME); stopOnEmptyRow() } }
             headersRow(2)
             rowsToSkip(3)
@@ -137,8 +221,6 @@ config {
                     field("date_list")
                     field("datetime_list")
                     field("compound")
-                    field("nested1") { parent("compound") }
-                    field("nested2") { parent("compound") }
                 }
                 extra("group") {
                     field("group_code") { column(0); pattern("^G[0-9]{3,3}$") }
@@ -150,24 +232,18 @@ config {
     mediator {
         productionLine {
             input {
-                entity("onec-product") {
-                    statuses(EntityStatus.CREATED,EntityStatus.UPDATED,EntityStatus.UNCHANGED)
-                }
+                entity(OnecProduct::class)
             }
-            output("import-product") {
-                copyFrom("onec-product")
-            }
+            output(ImportProduct::class)
             pipeline {
                 assembler { _, _ -> emptyMap() }
             }
         }
         productionLine {
             input {
-                entity("onec-product") {
-                    statuses(EntityStatus.CREATED,EntityStatus.UPDATED,EntityStatus.UNCHANGED)
-                }
+                entity(OnecProduct::class)
             }
-            output("import-product")
+            output(ImportProduct::class)
             pipeline {
                 assembler { _, _ -> emptyMap() }
             }

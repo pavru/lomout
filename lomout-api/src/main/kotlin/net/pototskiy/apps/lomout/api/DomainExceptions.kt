@@ -31,36 +31,6 @@ open class AppException : Exception {
 }
 
 /**
- * Database (SQL problems) exception
- */
-@Generated
-open class AppDatabaseException : AppException {
-    /**
-     *
-     * @constructor
-     */
-    @Suppress("unused")
-    constructor() : super()
-
-    /**
-     *
-     * @param message String?
-     * @constructor
-     */
-    @Suppress("unused")
-    constructor(message: String?) : super(message)
-
-    /**
-     *
-     * @param message The message
-     * @param cause The cause
-     * @constructor
-     */
-    @Suppress("unused")
-    constructor(message: String?, cause: Throwable?) : super(message, cause)
-}
-
-/**
  * All configuration problems
  */
 @Generated

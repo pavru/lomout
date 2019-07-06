@@ -1,15 +1,16 @@
 package net.pototskiy.apps.lomout.loader
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.Load
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.Documents
+import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.entity.EntityStatus
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManager
-import net.pototskiy.apps.lomout.api.entity.type.STRING
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
 import org.apache.logging.log4j.Level
@@ -17,7 +18,6 @@ import org.apache.logging.log4j.core.config.Configurator
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
 import org.assertj.core.api.Assertions.assertThat
-import org.joda.time.DateTime
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.DisplayName
@@ -28,6 +28,8 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
+import java.time.LocalDateTime
+import kotlin.reflect.KClass
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")
@@ -35,21 +37,22 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class DataLoadingTest {
     private lateinit var config: Config
-    private lateinit var entityType: EntityType
-    private lateinit var typeManager: EntityTypeManager
+    private lateinit var entityType: KClass<out Document>
     private lateinit var repository: EntityRepositoryInterface
+    private lateinit var timestampOne: LocalDateTime
 
     @BeforeAll
     internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val util = LoadingDataTestPrepare()
         config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
-        typeManager = config.entityTypeManager
-        repository = EntityRepository(config.database, typeManager, Level.ERROR)
+        repository = EntityRepository(config.database, Level.ERROR)
         PluginContext.config = config
-        PluginContext.entityTypeManager = config.entityTypeManager
-        entityType = typeManager.getEntityType("test-entity-attributes")!!
-        repository.getIDs(entityType).forEach { repository.delete(it) }
+        @Suppress("UNCHECKED_CAST")
+        entityType = config.findEntityType("Test_conf${'$'}TestEntityAttributes")!!
+        repository.getIDs(entityType, includeDeleted = true).forEach { repository.delete(entityType, it) }
+        timestampOne = Documents.timestamp
+        println("timestampOne: $timestampOne")
     }
 
     @AfterAll
@@ -61,18 +64,24 @@ internal class DataLoadingTest {
     @Test
     @DisplayName("There is no loaded entity")
     internal fun thereIsNoAnyLoadedEntity() {
-        assertThat(repository.get(entityType).count()).isEqualTo(0)
+        assertThat(repository.get(entityType, includeDeleted = true).count()).isEqualTo(0)
     }
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     @DisplayName("Load entity first time")
     internal inner class FirstLoadEntityTest {
-
+        lateinit var timestampTwo: LocalDateTime
         @BeforeAll
         internal fun initAll() {
+            repository.close()
+            runBlocking { delay(1000L) }
+            repository = EntityRepository(config.database, Level.ERROR)
+            timestampTwo = Documents.timestamp
+            println("timestampTwo: $timestampTwo")
+
             val load = config.loader?.loads?.find {
-                it.entity.name == "test-entity-attributes" &&
+                it.entity.simpleName == "TestEntityAttributes" &&
                         it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                         it.sources.first().sheet.definition == "name:test-stock"
             }
@@ -82,15 +91,19 @@ internal class DataLoadingTest {
         @Test
         @DisplayName("Six entities should be loaded")
         internal fun numberOfEntitiesTest() {
-            assertThat(repository.get(entityType).count()).isEqualTo(6)
+            assertThat(repository.get(entityType, includeDeleted = true).count()).isEqualTo(6)
         }
 
         @Test
         @DisplayName("All entities should be in state CREATED/CREATED")
         internal fun createdCreatedStateTest() {
-            repository.get(entityType).forEach {
-                assertThat(it.previousStatus).isEqualTo(EntityStatus.CREATED)
-                assertThat(it.currentStatus).isEqualTo(EntityStatus.CREATED)
+            repository.get(entityType, includeDeleted = true).forEach {
+                println("entity.createTime: ${it.createTime}")
+                assertThat(it.removed).isEqualTo(false)
+                assertThat(it.createTime).isEqualTo(timestampTwo)
+                assertThat(it.updateTime).isEqualTo(timestampTwo)
+                assertThat(it.toucheTime).isEqualTo(timestampTwo)
+                assertThat(it.removeTime).isNull()
             }
         }
 
@@ -98,10 +111,17 @@ internal class DataLoadingTest {
         @Nested
         @DisplayName("Repeat first loading with one removed and one updated entities")
         internal inner class SecondLoadEntityTest {
+            private lateinit var timestampThree: LocalDateTime
             @BeforeAll
             internal fun initAll() {
+                repository.close()
+                runBlocking { delay(1000L) }
+                repository = EntityRepository(config.database, Level.ERROR)
+                timestampThree = Documents.timestamp
+                println("timestampThree: $timestampThree")
+
                 val load = config.loader?.loads?.find {
-                    it.entity.name == "test-entity-attributes" &&
+                    it.entity.simpleName == "TestEntityAttributes" &&
                             it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                             it.sources.first().sheet.definition == "name:test-stock"
                 }
@@ -117,33 +137,38 @@ internal class DataLoadingTest {
             @Test
             @DisplayName("Six entities should be loaded")
             internal fun numberOfEntitiesTes() {
-                assertThat(repository.get(entityType).count()).isEqualTo(6)
+                assertThat(repository.get(entityType, includeDeleted = true).count()).isEqualTo(6)
             }
 
             @Test
             @DisplayName("Four entities should be in state CREATED/UNCHANGED")
             internal fun createdCreatedStateTest() {
-                assertThat(repository.get(entityType).filter {
-                    it.previousStatus == EntityStatus.CREATED &&
-                            it.currentStatus == EntityStatus.UNCHANGED
+                assertThat(repository.get(entityType, includeDeleted = true).filter {
+                    !it.removed &&
+                            it.createTime == timestampTwo &&
+                            it.updateTime == timestampTwo &&
+                            it.toucheTime == timestampThree &&
+                            it.removeTime == null
                 }.count()).isEqualTo(4)
             }
 
             @Test
             @DisplayName("One entity should be in state CREATED/UPDATED")
             internal fun createdUpdatedStateTest() {
-                assertThat(repository.get(entityType).filter {
-                    it.previousStatus == EntityStatus.CREATED &&
-                            it.currentStatus == EntityStatus.UPDATED
+                assertThat(repository.get(entityType, includeDeleted = true).filter {
+                    !it.removed &&
+                            it.createTime == timestampTwo &&
+                            it.updateTime == timestampThree &&
+                            it.toucheTime == timestampThree &&
+                            it.removeTime == null
                 }.count()).isEqualTo(1)
             }
 
             @Test
             @DisplayName("One entity should be in state CREATED/REMOVED")
             internal fun createdRemovedStateTest() {
-                assertThat(repository.get(entityType).filter {
-                    it.previousStatus == EntityStatus.CREATED
-                            && it.currentStatus == EntityStatus.REMOVED
+                assertThat(repository.get(entityType, includeDeleted = true).filter {
+                    it.removed && it.removeTime == timestampThree
                 }.count()).isEqualTo(1)
             }
 
@@ -151,23 +176,28 @@ internal class DataLoadingTest {
             @TestInstance(TestInstance.Lifecycle.PER_CLASS)
             @DisplayName("Repeat first loading with one deleted entity")
             internal inner class ThirdLoadingTest {
+                private lateinit var timestampFour: LocalDateTime
+
                 @BeforeAll
                 internal fun initAll() {
+                    repository.close()
+                    runBlocking { delay(1000L) }
+                    repository = EntityRepository(config.database, Level.ERROR)
+                    timestampFour = Documents.timestamp
+                    println("timestampFour: $timestampFour")
+
                     val load = config.loader?.loads?.find {
-                        it.entity.name == "test-entity-attributes" &&
+                        it.entity.simpleName == "TestEntityAttributes" &&
                                 it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
                                 it.sources.first().sheet.definition == "name:test-stock"
                     }
                     val workbook = getHSSFWorkbook(load!!)
                     val sheet = getHSSFSheet(workbook, load)
                     sheet.removeRow(sheet.getRow(5))
-                    val skuAttr = typeManager.getEntityAttribute(entityType, "sku")!!
-                    val entity = repository.get(
-                        entityType,
-                        mapOf(skuAttr to STRING("2"))
-                    )
+                    val skuAttr = entityType.documentMetadata.attributes.getValue("sku")
+                    val entity = repository.get(entityType, mapOf(skuAttr to "2"), includeDeleted = true)
                     @Suppress("MagicNumber")
-                    entity!!.removed = DateTime().minusDays(11)
+                    entity!!.removeTime = LocalDateTime.now().minusDays(11)
                     repository.update(entity)
                     loadEntities(load, workbook)
                 }
@@ -175,7 +205,7 @@ internal class DataLoadingTest {
                 @Test
                 @DisplayName("Five entities should be loaded")
                 internal fun numberOfEntitiesTest() {
-                    assertThat(repository.get(entityType).count()).isEqualTo(5)
+                    assertThat(repository.get(entityType, includeDeleted = true).count()).isEqualTo(5)
                 }
             }
         }
@@ -194,7 +224,6 @@ internal class DataLoadingTest {
             )
             loader.load()
         }
-        entityType = typeManager.getEntityType("test-entity-attributes")!!
     }
 
     private fun getHSSFWorkbook(load: Load): HSSFWorkbook {

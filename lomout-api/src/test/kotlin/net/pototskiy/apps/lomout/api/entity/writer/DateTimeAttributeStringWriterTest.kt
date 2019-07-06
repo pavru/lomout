@@ -2,17 +2,19 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.AttributeWriterWithPlugin
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.DATETIME
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.entity.writer
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.plugable.Writer
+import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
+import net.pototskiy.apps.lomout.api.plugable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import org.assertj.core.api.Assertions.assertThat
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,12 +23,27 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.io.File
 import java.nio.file.Path
-import kotlin.reflect.full.createInstance
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DateTimeAttributeStringWriterTest {
-    private lateinit var typeManager: EntityTypeManagerImpl
+    internal class TestType : Document() {
+        var attr1: LocalDateTime = LocalDateTime.MIN
+        @Writer(Attr2Writer::class)
+        var attr2: LocalDateTime = LocalDateTime.MIN
+
+        companion object : DocumentMetadata(TestType::class)
+
+        class Attr2Writer : WriterBuilder {
+            override fun build(): AttributeWriter<out Any?> = createWriter<DateTimeAttributeStringWriter> {
+                pattern = null
+            }
+        }
+    }
+
     private lateinit var file: File
     private lateinit var workbook: Workbook
     private lateinit var cell: Cell
@@ -35,7 +52,6 @@ internal class DateTimeAttributeStringWriterTest {
 
     @BeforeEach
     internal fun setUp() {
-        typeManager = EntityTypeManagerImpl()
         @Suppress("GraziInspection")
         file = tempDir.resolve("attributes.xls").toFile()
         workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
@@ -50,61 +66,48 @@ internal class DateTimeAttributeStringWriterTest {
 
     @Test
     internal fun simpleWriteTest() {
-        val attr = typeManager.createAttribute("attr", DATETIME::class)
-        val now = DateTime.now()
-        val value = DATETIME(now)
+        val attr = TestType.attributes.getValue("attr1")
+        val now = LocalDateTime.now()
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<DATETIME>)(value, cell)
+        (attr.writer as AttributeWriter<LocalDateTime>).write(now, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue)
-            .isEqualTo(now.toString(DateTimeFormat.forPattern("d.M.yy H:m")))
+            .isEqualTo(now.format(DateTimeFormatter.ofPattern("d.M.uu H:m")))
     }
 
     @Test
     internal fun simpleWriteLocaleTest() {
-        val attr = typeManager.createAttribute("attr", DATETIME::class,
-            writer = AttributeWriterWithPlugin(
-                DateTimeAttributeStringWriter::class
-            ) {
-                this as DateTimeAttributeStringWriter
-                pattern = null
-            }
-        )
-        val now = DateTime.now()
-        val value = DATETIME(now)
+        val attr = TestType.attributes.getValue("attr2")
+        val now = LocalDateTime.now()
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<DATETIME>)(value, cell)
+        (attr.writer as AttributeWriter<LocalDateTime>).write(now, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue)
             .isEqualTo(
-                now.toString(
-                    DateTimeFormat.forPattern(DateTimeFormat.patternForStyle("SS", DEFAULT_LOCALE))
+                now.format(
+                    DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(DEFAULT_LOCALE)
                 )
             )
     }
 
     @Test
     internal fun writeNullValueTest() {
-        val attr = typeManager.createAttribute("attr", DATETIME::class)
+        val attr = TestType.attributes.getValue("attr1")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<DATETIME>)(null, cell)
+        (attr.writer as AttributeWriter<LocalDateTime?>).write(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
-        val writer = defaultWriters[DATETIME::class]
+        val writer = defaultWriters[SupportAttributeType.dateTimeType]
         assertThat(writer).isNotNull
-        assertThat(writer).isInstanceOf(AttributeWriterWithPlugin::class.java)
-        writer as AttributeWriterWithPlugin
-        assertThat(writer.pluginClass).isEqualTo(DateTimeAttributeStringWriter::class)
-        val v = writer.pluginClass.createInstance() as DateTimeAttributeStringWriter
-        @Suppress("UNCHECKED_CAST")
-        v.apply(writer.options as (DateTimeAttributeStringWriter.() -> Unit))
-        assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
-        assertThat(v.pattern).isEqualTo("d.M.yy H:m")
+        assertThat(writer).isInstanceOf(DateTimeAttributeStringWriter::class.java)
+        writer as DateTimeAttributeStringWriter
+        assertThat(writer.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(writer.pattern).isEqualTo("d.M.uu H:m")
     }
 }

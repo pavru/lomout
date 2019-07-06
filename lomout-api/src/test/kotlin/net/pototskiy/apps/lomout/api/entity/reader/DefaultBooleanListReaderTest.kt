@@ -1,17 +1,10 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.AttributeCollection
-import net.pototskiy.apps.lomout.api.entity.AttributeReader
-import net.pototskiy.apps.lomout.api.entity.AttributeReaderWithPlugin
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.type.BOOLEAN
-import net.pototskiy.apps.lomout.api.entity.type.BOOLEANLIST
-import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -27,32 +20,26 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import java.text.ParseException
-import kotlin.reflect.full.createInstance
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
 internal class DefaultBooleanListReaderTest {
 
-    private val typeManager = EntityTypeManagerImpl()
+    internal class TestType : Document() {
+        var attr: List<Boolean> = emptyList()
+
+        companion object : DocumentMetadata(TestType::class)
+    }
+
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
-    private lateinit var entity: EntityType
-    private lateinit var attr: Attribute<BOOLEANLIST>
+    private var attr = TestType.attributes.getValue("attr")
     private lateinit var xlsTestDataCell: HSSFCell
     private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
         @Suppress("UNCHECKED_CAST")
-        attr = typeManager.createAttribute(
-            "attr", BOOLEANLIST::class,
-            builder = null,
-            reader = defaultReaders[BOOLEANLIST::class] as AttributeReader<out BOOLEANLIST>,
-            writer = defaultWriters[BOOLEANLIST::class] as AttributeWriter<out BOOLEANLIST>
-        )
-        entity = typeManager.createEntityType("test", false).also {
-            typeManager.initialAttributeSetup(it, AttributeCollection(listOf(attr)))
-        }
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -79,13 +66,9 @@ internal class DefaultBooleanListReaderTest {
         val readerEnUs = BooleanListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("true,false, false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)?.value).isEqualTo(
-            BOOLEANLIST(
-                listOf(
-                    BOOLEAN(true), BOOLEAN(false), BOOLEAN(false)
-                )
-            )
-        )
+        assertThat(readerEnUs.read(attr, inputCell))
+            .hasSize(3)
+            .containsExactlyElementsOf(listOf(true, false, false))
     }
 
     @Test
@@ -102,28 +85,17 @@ internal class DefaultBooleanListReaderTest {
         @Suppress("GraziInspection")
         xlsTestDataCell.setCellValue("иСтина,Ложь, ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerRuRU.read(attr, inputCell)?.value).isEqualTo(
-            BOOLEANLIST(
-                listOf(
-                    BOOLEAN(true), BOOLEAN(false), BOOLEAN(false)
-                )
-            )
-        )
+        assertThat(readerRuRU.read(attr, inputCell))
+            .hasSize(3)
+            .containsExactlyElementsOf(listOf(true, false, false))
     }
 
     @Test
     internal fun defaultBooleanListReader() {
         @Suppress("UNCHECKED_CAST")
-        val reader = defaultReaders[BOOLEANLIST::class]
+        val reader = defaultReaders[SupportAttributeType.booleanListType] as? AttributeReader<List<Boolean>>
         assertThat(reader).isNotNull
-        assertThat(reader).isInstanceOf(AttributeReaderWithPlugin::class.java)
-        reader as AttributeReaderWithPlugin
-        assertThat(reader.pluginClass).isEqualTo(BooleanListAttributeReader::class)
-        val v = reader.pluginClass.createInstance() as BooleanListAttributeReader
-        @Suppress("UNCHECKED_CAST")
-        v.apply(reader.options as (BooleanListAttributeReader.() -> Unit))
-        assertThat(v.locale).isEqualTo(DEFAULT_LOCALE_STR)
-        assertThat(v.delimiter).isEqualTo(',')
-        assertThat(v.quote).isNull()
+        assertThat(reader).isInstanceOf(AttributeReader::class.java)
+        reader as AttributeReader<List<Boolean>>
     }
 }

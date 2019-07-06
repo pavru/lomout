@@ -5,10 +5,10 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
-import net.pototskiy.apps.lomout.api.unknownPlace
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
+import net.pototskiy.apps.lomout.api.unknownPlace
 
 /**
  * Read headers from source data files
@@ -38,7 +38,7 @@ private fun readHeaders(
                         "Header row in the has no cell, or the cell is not string type."
                     )
                 }
-                Field(cell.stringValue, c, null, null)
+                Field(cell.stringValue, c, null)
             } ?: throw AppDataException(badPlace(sheet), "Source sheet has no header row.")
         }.flatten()
     }

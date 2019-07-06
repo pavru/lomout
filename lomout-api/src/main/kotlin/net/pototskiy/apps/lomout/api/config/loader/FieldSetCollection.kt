@@ -3,8 +3,9 @@ package net.pototskiy.apps.lomout.api.config.loader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.unknownPlace
-import net.pototskiy.apps.lomout.api.entity.EntityType
+import kotlin.reflect.KClass
 
 /**
  * Field set configuration
@@ -31,10 +32,11 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
     @ConfigDsl
     class Builder(
         private val helper: ConfigBuildHelper,
-        private val entityType: EntityType,
+        private val entityType: KClass<out Document>,
         private val withSourceHeaders: Boolean,
         private val sources: SourceDataCollection?,
-        private val headerRow: Int?
+        private val headerRow: Int?,
+        private val toAttribute: Boolean
     ) {
         private val fieldSets = mutableListOf<FieldSet>()
 
@@ -66,7 +68,8 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
                     true,
                     withSourceHeaders,
                     sources,
-                    headerRow
+                    headerRow,
+                    toAttribute
                 ).apply(block).build()
             )
 
@@ -98,7 +101,8 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
                     false,
                     withSourceHeaders,
                     sources,
-                    headerRow
+                    headerRow,
+                    toAttribute
                 ).apply(block).build()
             )
 

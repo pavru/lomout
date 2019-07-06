@@ -2,13 +2,14 @@
 
 package net.pototskiy.apps.lomout.api
 
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.EntityType
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Row
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
+import kotlin.reflect.KClass
 
 /**
  * Domain exception place.
@@ -34,8 +35,8 @@ import net.pototskiy.apps.lomout.api.source.workbook.Workbook
  * @constructor
  */
 data class DomainExceptionPlace(
-    val entity: EntityType? = null,
-    val attribute: Attribute<*>? = null,
+    val entity: KClass<out Document>? = null,
+    val attribute: DocumentMetadata.Attribute? = null,
     val field: Field? = null,
     val workbook: Workbook? = null,
     val sheet: Sheet? = null,
@@ -50,9 +51,9 @@ data class DomainExceptionPlace(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     fun attributeInfo(): String {
-        val entityType = entity?.name
-            ?: if (attribute?.isAssigned == true) attribute.owner.name else null
-                ?: ""
+        val entityType = entity?.simpleName
+            ?: attribute?.owner?.simpleName
+            ?: ""
         val result = mutableListOf<String>()
         if (attribute?.name != null) result.add("A:'${attribute.name}'")
         if (entityType.isNotEmpty()) result.add("E:'$entityType'")
@@ -163,7 +164,7 @@ data class DomainExceptionPlace(
  * @param entity The entity type
  * @return DomainExceptionPlace
  */
-fun badPlace(entity: EntityType) = DomainExceptionPlace(entity = entity)
+fun badPlace(entity: KClass<out Document>) = DomainExceptionPlace(entity = entity)
 
 /**
  * Create [DomainExceptionPlace] for a bad attribute
@@ -171,7 +172,7 @@ fun badPlace(entity: EntityType) = DomainExceptionPlace(entity = entity)
  * @param attribute The bad attribute
  * @return DomainExceptionPlace
  */
-fun badPlace(attribute: Attribute<*>) = DomainExceptionPlace(attribute = attribute)
+fun badPlace(attribute: DocumentMetadata.Attribute) = DomainExceptionPlace(attribute = attribute)
 
 /**
  * Create [DomainExceptionPlace] for a bad field
@@ -235,7 +236,7 @@ fun unknownPlace() = DomainExceptionPlace()
  * @param entity The entity type
  * @return DomainExceptionPlace
  */
-operator fun DomainExceptionPlace.plus(entity: EntityType) = this.copy(entity = entity)
+operator fun DomainExceptionPlace.plus(entity: KClass<out Document>) = this.copy(entity = entity)
 
 /**
  * Add a bad attribute to the [DomainExceptionPlace]
@@ -244,7 +245,7 @@ operator fun DomainExceptionPlace.plus(entity: EntityType) = this.copy(entity = 
  * @param attribute The bad attribute
  * @return DomainExceptionPlace
  */
-operator fun DomainExceptionPlace.plus(attribute: Attribute<*>) = this.copy(attribute = attribute)
+operator fun DomainExceptionPlace.plus(attribute: DocumentMetadata.Attribute) = this.copy(attribute = attribute)
 
 /**
  * Add a bad field to the [DomainExceptionPlace]

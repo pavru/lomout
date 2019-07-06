@@ -1,20 +1,14 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.Generated
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
-import net.pototskiy.apps.lomout.api.entity.Attribute
-import net.pototskiy.apps.lomout.api.entity.AttributeReader
-import net.pototskiy.apps.lomout.api.entity.AttributeWriter
-import net.pototskiy.apps.lomout.api.entity.EntityType
-import net.pototskiy.apps.lomout.api.entity.reader.defaultReaders
-import net.pototskiy.apps.lomout.api.entity.type.STRING
-import net.pototskiy.apps.lomout.api.entity.type.Type
-import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
 import net.pototskiy.apps.lomout.api.source.FieldCollection
@@ -22,6 +16,8 @@ import net.pototskiy.apps.lomout.api.source.readFieldNamesFromSource
 import net.pototskiy.apps.lomout.api.unknownPlace
 import kotlin.collections.set
 import kotlin.contracts.contract
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 
 /**
  * Field set
@@ -58,15 +54,16 @@ data class FieldSet(
     @ConfigDsl
     class Builder(
         val helper: ConfigBuildHelper,
-        private val entityType: EntityType,
+        private val entityType: KClass<out Document>,
         private val name: String,
         private val mainSet: Boolean = false,
         private val withSourceHeaders: Boolean,
         private val sources: SourceDataCollection?,
-        private val headerRow: Int?
+        private val headerRow: Int?,
+        private val toAttribute: Boolean
     ) {
-        private var fields = mutableMapOf<Field, Attribute<*>>()
-        var lastFieldName: String? = null
+        private var fields = mutableMapOf<Field, DocumentMetadata.Attribute>()
+        private var lastFieldName: String? = null
         private var lastField: Field? = null
 
         /**
@@ -95,60 +92,24 @@ data class FieldSet(
                 addFiled(lastField!!, null)
             }
             this.lastFieldName = name
-            return Field.Builder(name, fields).apply(block).build().also {
+            return Field.Builder(name).apply(block).build().also {
                 lastField = it
             }
         }
 
-        private fun addFiled(field: Field, lastAttribute: Attribute<*>?) {
+        private fun addFiled(field: Field, lastAttribute: DocumentMetadata.Attribute?) {
             if (fields.containsKey(field)) {
                 throw AppConfigException(badPlace(field), "Field '${field.name}' is already defined.")
             }
             @Suppress("UNCHECKED_CAST")
             fields[field] = lastAttribute
-                ?: helper.typeManager.getEntityAttribute(entityType, field.name)
-                        ?: helper.typeManager.createAttribute(
-                    field.name,
-                    STRING::class,
-                    key = false,
-                    nullable = true,
-                    auto = true,
-                    builder = null,
-                    reader = defaultReaders[STRING::class] as AttributeReader<STRING>,
-                    writer = defaultWriters[STRING::class] as AttributeWriter<STRING>
+                ?: entityType.documentMetadata.attributes.values.find { it.fieldName == field.name }
+                        ?: throw AppConfigException(
+                    unknownPlace(), "Entity type '${entityType.qualifiedName}' " +
+                            "has no attribute for the '${field.name}'"
                 )
             this.lastField = null
         }
-
-        /**
-         * Define an attribute for field
-         *
-         * Attribute name equals to field name it's not specified
-         *
-         * ```
-         * ...
-         *  field("name") to attribute {
-         *      nullable()
-         *      reader {...}
-         *  }
-         * ...
-         * ```
-         *
-         * @param name The attribute name
-         * @param block The attribute definition
-         * @return Attribute
-         */
-        @Generated
-        @ConfigDsl
-        inline fun <reified T : Type> attribute(
-            name: String? = lastFieldName,
-            block: Attribute.Builder<T>.() -> Unit
-        ): Attribute<*> =
-            Attribute.Builder(
-                helper,
-                name ?: throw AppConfigException(unknownPlace(), "Attribute name should be defined."),
-                T::class
-            ).apply(block).build()
 
         /**
          * Reference to attribute that is used for the field
@@ -172,7 +133,30 @@ data class FieldSet(
          * @param attribute The field related attribute
          */
         @ConfigDsl
-        infix fun Field.to(attribute: Attribute<*>) = addFiled(this, attribute)
+        infix fun Field.to(attribute: DocumentMetadata.Attribute) {
+            if (!toAttribute) {
+                throw AppConfigException(unknownPlace(), "Use 'from' mapping operator.")
+            }
+            addFiled(this, attribute)
+        }
+
+        /**
+         * Operation to map field to attribute
+         *
+         * @receiver The field
+         * @param attribute The attribute
+         */
+        infix fun Field.to(attribute: KProperty1<out Document, *>) {
+            if (!toAttribute) {
+                throw AppConfigException(unknownPlace(), "Use 'from' mapping operator.")
+            }
+            val attr = entityType.documentMetadata.attributes[attribute.name]
+                ?: throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '%s' is not defined.".format(attribute.name)
+                )
+            addFiled(this, attr)
+        }
 
         /**
          * Operation to map field to attribute
@@ -182,8 +166,65 @@ data class FieldSet(
          */
         @ConfigDsl
         infix fun Field.to(attribute: AttributeWithName) {
-            val attr = helper.typeManager.getEntityAttribute(entityType, attribute.name)
-                ?: throw AppConfigException(unknownPlace(), "Attribute is not defined.")
+            if (!toAttribute) {
+                throw AppConfigException(unknownPlace(), "Use 'from' mapping operator.")
+            }
+            val attr = entityType.documentMetadata.attributes[attribute.name]
+                ?: throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '%s' is not defined.".format(attribute.name)
+                )
+            addFiled(this, attr)
+        }
+
+        /**
+         * Operation to map field to attribute
+         *
+         * @receiver Field
+         * @param attribute The field related attribute
+         */
+        @ConfigDsl
+        infix fun Field.from(attribute: DocumentMetadata.Attribute) {
+            if (toAttribute) {
+                throw AppConfigException(unknownPlace(), "Use 'to' mapping operator.")
+            }
+            addFiled(this, attribute)
+        }
+
+        /**
+         * Operation to map field to attribute
+         *
+         * @receiver The field
+         * @param attribute The attribute
+         */
+        infix fun Field.from(attribute: KProperty1<out Document, *>) {
+            if (toAttribute) {
+                throw AppConfigException(unknownPlace(), "Use 'to' mapping operator.")
+            }
+            val attr = entityType.documentMetadata.attributes[attribute.name]
+                ?: throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '%s' is not defined.".format(attribute.name)
+                )
+            addFiled(this, attr)
+        }
+
+        /**
+         * Operation to map field to attribute
+         *
+         * @receiver Field
+         * @param attribute AttributeWithName
+         */
+        @ConfigDsl
+        infix fun Field.from(attribute: AttributeWithName) {
+            if (toAttribute) {
+                throw AppConfigException(unknownPlace(), "Use 'to' mapping operator.")
+            }
+            val attr = entityType.documentMetadata.attributes[attribute.name]
+                ?: throw AppConfigException(
+                    unknownPlace(),
+                    "Attribute '%s' is not defined.".format(attribute.name)
+                )
             addFiled(this, attr)
         }
 
@@ -209,28 +250,28 @@ data class FieldSet(
             } catch (e: AppConfigException) {
                 throw AppConfigException(e.place, e.message, e)
             }
-            collectedFields.map { field ->
+            collectedFields.mapNotNull { field ->
                 val configuredField = fields.keys.find { it == field }
                 if (configuredField != null) {
                     val attr = fields[configuredField]!!
                     fields.remove(configuredField)
                     Pair(
-                        Field(configuredField.name, field.column, configuredField.regex, configuredField.parent),
+                        Field(configuredField.name, field.column, configuredField.regex),
                         attr
                     )
                 } else {
-                    @Suppress("UNCHECKED_CAST")
-                    val attr = helper.typeManager.getEntityAttribute(entityType, field.name)
-                        ?: helper.typeManager.createAttribute(
-                            field.name, STRING::class,
-                            key = false,
-                            nullable = true,
-                            auto = true,
-                            builder = null,
-                            reader = defaultReaders[STRING::class] as AttributeReader<STRING>,
-                            writer = defaultWriters[STRING::class] as AttributeWriter<STRING>
+                    val attr = entityType.documentMetadata.attributes.values.find { it.fieldName == field.name }
+                    if (attr == null) {
+                        helper.logger.warn(
+                            "Entity type '{}' has no attribute '{}' and field '{}' will be skipped.",
+                            entityType.qualifiedName,
+                            field.name,
+                            field.name
                         )
-                    Pair(field, attr)
+                        null
+                    } else {
+                        Pair(field, attr)
+                    }
                 }
             }.forEach {
                 fields[it.first] = it.second

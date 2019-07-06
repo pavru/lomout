@@ -3,22 +3,31 @@ package net.pototskiy.apps.lomout.api.source
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.entity.EntityTypeManagerImpl
-import net.pototskiy.apps.lomout.api.entity.get
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
 
 @Suppress("MagicNumber")
 internal class HeaderReaderKtTest {
-    private val typeManager = EntityTypeManagerImpl()
-    private val helper = ConfigBuildHelper(typeManager)
+    @Suppress("unused")
+    internal class EntityType : Document() {
+        var h1: String = ""
+        var h2: String = ""
+        var h3: String = ""
+        var h4: String = ""
+
+        companion object : DocumentMetadata(EntityType::class)
+    }
+
+    private val helper = ConfigBuildHelper()
 
     @Test
     internal fun createCorrectConfigurationTest() {
         createConfiguration()
-        assertThat(typeManager["entity1"].attributes).hasSize(4)
-        assertThat(typeManager["entity1"].attributes.map { it.name })
+        assertThat(EntityType.attributes).hasSize(4)
+        assertThat(EntityType.attributes.values.map { it.name })
             .containsExactlyElementsOf(listOf("h1", "h2", "h3", "h4"))
     }
 
@@ -31,7 +40,7 @@ internal class HeaderReaderKtTest {
 
     @Test
     internal fun differentHeadersOrderTest() {
-        assertThatThrownBy { createConfigurationDifferentHeadersOrder()}
+        assertThatThrownBy { createConfigurationDifferentHeadersOrder() }
             .isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining("Sources have different fields or fields in different columns")
     }
@@ -51,10 +60,7 @@ internal class HeaderReaderKtTest {
                 val testDataDir = System.getenv("TEST_DATA_DIR") ?: "../testdata"
                 file("test-data") { path("$testDataDir/headers-from-source-test.xls") }
             }
-            entities {
-                entity("entity1", true) {}
-            }
-            loadEntity("entity1") {
+            loadEntity(EntityType::class) {
                 headersRow(0)
                 fromSources {
                     source { file("test-data"); sheet("Sheet1"); }
@@ -84,10 +90,7 @@ internal class HeaderReaderKtTest {
                 val testDataDir = System.getenv("TEST_DATA_DIR") ?: "../testdata"
                 file("test-data") { path("$testDataDir/headers-from-source-test.xls") }
             }
-            entities {
-                entity("entity1", true) {}
-            }
-            loadEntity("entity1") {
+            loadEntity(EntityType::class) {
                 headersRow(0)
                 fromSources {
                     source { file("test-data"); sheet("Sheet1"); }
@@ -117,10 +120,7 @@ internal class HeaderReaderKtTest {
                 val testDataDir = System.getenv("TEST_DATA_DIR") ?: "../testdata"
                 file("test-data") { path("$testDataDir/headers-from-source-test.xls") }
             }
-            entities {
-                entity("entity1", true) {}
-            }
-            loadEntity("entity1") {
+            loadEntity(EntityType::class) {
                 headersRow(0)
                 fromSources {
                     source { file("test-data"); sheet("Sheet1"); }

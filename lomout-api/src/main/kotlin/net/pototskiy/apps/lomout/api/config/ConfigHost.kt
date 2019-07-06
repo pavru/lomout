@@ -17,6 +17,7 @@ import kotlin.script.experimental.api.enableScriptsInstancesSharing
 import kotlin.script.experimental.api.onFailure
 import kotlin.script.experimental.api.onSuccess
 import kotlin.script.experimental.host.toScriptSource
+import kotlin.script.experimental.jvm.updateClasspath
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
@@ -49,8 +50,13 @@ class ConfigHost(
      * @return ResultWithDiagnostics<CompiledScript<*>>
      */
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
-        ivyFile?.let { ConfigScript.ivyFile = it }
-        val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript>()
+        val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript> {
+            ivyFile?.let { file ->
+                dependenciesFromIvyFile(file)
+                    .takeIf { it.isNotEmpty() }
+                    ?.let { updateClasspath(it) }
+            }
+        }
         val scriptHost = BasicJvmScriptingHost(
             compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File(cacheDir), doNotUseCache))
         )
@@ -109,6 +115,8 @@ class ConfigHost(
                     }
                 }.onSuccess {
                     val eConfig = ((it.returnValue as ResultValue.Value).value as? ConfigScript)?.evaluatedConfig
+                    eConfig?.scriptClassLoader =
+                        (it.returnValue as ResultValue.Value).scriptInstance::class.java.classLoader
                     eConfig?.asSuccess() ?: ResultWithDiagnostics.Failure()
                 }
             } ?: ResultWithDiagnostics.Failure()

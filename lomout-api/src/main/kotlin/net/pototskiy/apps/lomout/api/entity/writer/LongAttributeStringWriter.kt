@@ -2,23 +2,19 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.type.LONG
 import net.pototskiy.apps.lomout.api.entity.values.longToString
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriterPlugin
+import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
- * Default writer for [LONG] attribute
+ * Default writer for [Long] attribute
  *
- * @property locale String The value locale, default: system locale
+ * @property locale String The value locale, default: system locale. This is parameter
  */
-open class LongAttributeStringWriter : AttributeWriterPlugin<LONG>() {
+open class LongAttributeStringWriter : AttributeWriter<Long?>() {
     var locale: String = DEFAULT_LOCALE_STR
 
-    override fun write(
-        value: LONG?,
-        cell: Cell
-    ) {
-        value?.let { cell.setCellValue(it.value.longToString(locale.createLocale())) }
+    override fun write(value: Long?, cell: Cell) {
+        value?.let { cell.setCellValue(it.longToString(locale.createLocale())) }
     }
 }
