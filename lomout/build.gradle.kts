@@ -104,7 +104,9 @@ tasks.named<Test>("test") {
             events(
                 "passed",
                 "skipped",
-                "failed"
+                "failed",
+                "standardOut",
+                "standardError"
             )
 //        events("passed", "skipped", "failed", "standardOut", "standardError")
         }
