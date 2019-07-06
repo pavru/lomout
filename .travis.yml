@@ -11,7 +11,6 @@ before_script:
   - sudo service memcached stop || true
   - sudo service bootlogd stop || true
   - sudo service elasticsearch stop || true
-  - sudo service cassandra stop || true
   - sudo service rsync stop || true
   - sudo service x11-common stop || true
   - sed -i 's/all.zip/bin.zip/g' gradle/wrapper/gradle-wrapper.properties
