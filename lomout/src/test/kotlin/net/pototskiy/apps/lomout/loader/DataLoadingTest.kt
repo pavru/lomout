@@ -98,6 +98,7 @@ internal class DataLoadingTest {
         @DisplayName("All entities should be in state CREATED/CREATED")
         internal fun createdCreatedStateTest() {
             repository.get(entityType, includeDeleted = true).forEach {
+                println("entity.createTime: ${it.createTime}")
                 assertThat(it.removed).isEqualTo(false)
                 assertThat(it.createTime).isEqualTo(timestampTwo)
                 assertThat(it.updateTime).isEqualTo(timestampTwo)
