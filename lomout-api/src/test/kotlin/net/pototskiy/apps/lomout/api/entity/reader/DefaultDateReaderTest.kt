@@ -119,13 +119,16 @@ internal class DefaultDateReaderTest {
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String '7/8/19' cannot be converted to date with the locale 'ru_RU'.")
+        val expectedText = expected.format(
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("ru_RU".createLocale())
+        )
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("ru_RU".createLocale()))
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String '08.07.19' cannot be converted to date with the locale 'en_US'.")
+            .hasMessageContaining("String '$expectedText' cannot be converted to date with the locale 'en_US'.")
         assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
     }
 

@@ -105,6 +105,9 @@ internal class DefaultDateTimeReaderTest {
             .withNano(0)
         val readerEnUs = DateTimeAttributeReader().apply { locale = "en_US" }
         val readerRuRu = DateTimeAttributeReader().apply { locale = "ru_RU" }
+        val expectedText = expected.format(
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("en_US".createLocale())
+        )
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("en_US".createLocale()))
         )
@@ -112,7 +115,7 @@ internal class DefaultDateTimeReaderTest {
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String '7/8/19 7:21 AM' cannot be converted to date-time with the locale 'ru_RU'.")
+            .hasMessageContaining("String '$expectedText' cannot be converted to date-time with the locale 'ru_RU'.")
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("ru_RU".createLocale()))
         )
