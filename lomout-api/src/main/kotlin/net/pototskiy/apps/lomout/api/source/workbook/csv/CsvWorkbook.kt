@@ -3,6 +3,7 @@ package net.pototskiy.apps.lomout.api.source.workbook.csv
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
@@ -49,7 +50,7 @@ abstract class CsvWorkbook(
         if (sheet == CSV_SHEET_NAME) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
-            throw AppDataException(badPlace(this), "CSV file supports only one sheet with the name 'default'.")
+            throw AppDataException(badPlace(this), message("message.error.source.csv.only_default_sheet"))
         }
     }
 
@@ -63,7 +64,7 @@ abstract class CsvWorkbook(
         if (sheet == 0) {
             return CsvSheet(this).also { this.sheet = it }
         } else {
-            throw AppDataException(badPlace(this), "CSV file support only one sheet with the index 0.")
+            throw AppDataException(badPlace(this), message("message.error.source.csv.only_sheet_index_0"))
         }
     }
 

@@ -3,6 +3,7 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.BuildInfo
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.resolver.IvyResolver
 import net.pototskiy.apps.lomout.api.config.resolver.jCenter
 import net.pototskiy.apps.lomout.api.config.resolver.localMaven
@@ -138,7 +139,7 @@ private fun JvmScriptCompilationConfigurationBuilder.addApiToClasspath(): Boolea
 
 private fun dependenciesFromBuildInfo(): List<File> {
     val logger = MainAndIdeLogger()
-    logger.trace("Try to check and add build info dependencies.")
+    logger.trace(message("message.trace.config.buildinfo.dependency.check"))
     val resolver = IvyResolver()
     resolver.tryAddRepository(mavenCentral())
     resolver.tryAddRepository(jCenter())
@@ -164,7 +165,7 @@ private fun dependenciesFromBuildInfo(): List<File> {
  */
 fun dependenciesFromIvyFile(ivyFile: File): List<File> {
     val logger = MainAndIdeLogger()
-    logger.trace("Try to check and add dependencies from ivy file.")
+    logger.trace(message("message.trace.config.ivy.dependency.check"))
     val resolver = IvyResolver()
     resolver.tryAddRepository(mavenCentral())
     resolver.tryAddRepository(jCenter())

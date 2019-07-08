@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import java.text.ParseException
 import java.util.*
 
@@ -20,7 +21,7 @@ fun String.stringToBoolean(locale: Locale): Boolean {
     return if (v in booleanString)
         v in booleanTrueString
     else
-        throw ParseException("Value '$this' cannot be converted to boolean.", 0)
+        throw ParseException(message("message.error.data.string.to_boolean_error", this), 0)
 }
 
 private val stringBooleanMap = mapOf(

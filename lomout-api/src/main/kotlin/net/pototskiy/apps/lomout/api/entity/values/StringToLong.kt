@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.ParsePosition
@@ -20,9 +21,9 @@ fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
     }
     val position = ParsePosition(0)
     val value = format.parse(this.trim(), position)
-        ?: throw ParseException("String cannot be parsed to long.", position.index)
+        ?: throw ParseException(message("message.error.data.string.to_long_error"), position.index)
     if (position.index != this.trim().length) {
-        throw ParseException("String contains extra characters.", position.index)
+        throw ParseException(message("message.error.data.string.to_long_extra"), position.index)
     }
     return value.toLong()
 }

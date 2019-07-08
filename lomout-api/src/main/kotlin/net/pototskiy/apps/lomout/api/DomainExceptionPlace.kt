@@ -2,6 +2,7 @@
 
 package net.pototskiy.apps.lomout.api
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.source.Field
@@ -55,8 +56,8 @@ data class DomainExceptionPlace(
             ?: attribute?.owner?.simpleName
             ?: ""
         val result = mutableListOf<String>()
-        if (attribute?.name != null) result.add("A:'${attribute.name}'")
-        if (entityType.isNotEmpty()) result.add("E:'$entityType'")
+        if (attribute?.name != null) result.add(message("message.exception.place.attribute", attribute.name))
+        if (entityType.isNotEmpty()) result.add(message("message.exception.place.entity_type", entityType))
         return if (result.size > 0) {
             result.joinToString(", ")
         } else {
@@ -78,10 +79,10 @@ data class DomainExceptionPlace(
         val columnNum = cell?.address?.column
         val column = if (columnNum == null) "" else "${columnNum + 1}(${columnNumberToAlpha(columnNum)})"
         val result = mutableListOf<String>()
-        if (workbookName.isNotEmpty()) result.add("W:'$workbookName'")
-        if (sheetName.isNotEmpty()) result.add("S:'$sheetName'")
-        if (rowNumString.isNotEmpty()) result.add("R:'$rowNumString'")
-        if (column.isNotEmpty()) result.add("C:'$column'")
+        if (workbookName.isNotEmpty()) result.add(message("message.exception.place.workbook", workbookName))
+        if (sheetName.isNotEmpty()) result.add(message("message.exception.place.sheet", sheetName))
+        if (rowNumString.isNotEmpty()) result.add(message("message.exception.place.row", rowNumString))
+        if (column.isNotEmpty()) result.add(message("message.exception.place.column", column))
         return if (result.size > 0) {
             result.joinToString(", ")
         } else {
@@ -119,7 +120,7 @@ data class DomainExceptionPlace(
             "${field.column + 1}(${columnNumberToAlpha(field.column)})"
         }
         return if (column.isNotEmpty()) {
-            "F:'${field?.name ?: ""}($column)'"
+            message("message.exception.place.field", "${field?.name ?: ""}($column)")
         } else {
             ""
         }
@@ -132,7 +133,7 @@ data class DomainExceptionPlace(
      */
     @Suppress("MemberVisibilityCanBePrivate")
     fun dataInfo(): String {
-        return if (data == null) "" else "V:'$data(${data::class.simpleName})'"
+        return if (data == null) "" else message("message.exception.place.value", "$data(${data::class.simpleName})")
     }
 
     /**
@@ -151,7 +152,7 @@ data class DomainExceptionPlace(
         if (fieldInfo.isNotEmpty()) result.add(fieldInfo)
         if (dataInfo.isNotEmpty()) result.add(dataInfo)
         return if (result.size > 0) {
-            "Place: ${result.joinToString(", ")}."
+            message("message.exception.place.place", result.joinToString(", "))
         } else {
             ""
         }

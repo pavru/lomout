@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
@@ -43,7 +44,10 @@ data class SourceData(
         @Suppress("unused")
         fun file(id: String) {
             file = helper.definedSourceFiles.findRegistered(id)
-                ?: throw AppConfigException(unknownPlace(), "Source file '$id' is not defined.")
+                ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.load.source.file_not_defined", id)
+                )
         }
 
         /**
@@ -88,7 +92,10 @@ data class SourceData(
          * @return SourceData
          */
         fun build(): SourceData = SourceData(
-            this.file ?: throw AppConfigException(unknownPlace(), "File id is not defined."),
+            this.file ?: throw AppConfigException(
+                unknownPlace(),
+                message("message.error.config.load.source.file_not_defined", "")
+            ),
             this.sheet,
             this.emptyRowBehavior
         )

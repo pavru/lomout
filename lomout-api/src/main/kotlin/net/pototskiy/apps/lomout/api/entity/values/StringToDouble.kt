@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.ParsePosition
@@ -19,12 +20,13 @@ fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
     }
     val position = ParsePosition(0)
     val value = format.parse(this.trim(), position)
-        ?: throw ParseException("String cannot be parsed to double.", position.index)
+        ?: throw ParseException(message("message.error.data.string.to_double_error"), position.index)
     if (position.index != this.trim().length) {
-        throw ParseException("String contains extra characters.", position.index)
+        throw ParseException(message("message.error.data.string.to_double_extra"), position.index)
     }
     return value.toDouble()
 }
+
 /**
  * Convert Double to String according to the locale
  *

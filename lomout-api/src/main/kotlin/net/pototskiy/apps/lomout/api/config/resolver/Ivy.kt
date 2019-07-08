@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.config.resolver
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.MainAndIdeLogger
 import org.apache.ivy.Ivy
 import org.apache.ivy.core.LogOptions
@@ -63,13 +64,16 @@ class IvyResolver : GenericRepositoryWithBridge {
     ): Iterable<File>? =
         with(artifactCoordinates) {
             val artifactId = artifactId()
-            logger.trace("Try to resolve artifact: $artifactId")
+            logger.trace(message("message.trace.config.resolver.try_to_resolve", artifactId))
             val artifact = resolveArtifact(artifactId, excludes)
             if (artifact.isEmpty()) {
-                logger.error("Cannot resolve artifact: artifactId")
+                logger.error(message("message.error.config.resolver.cannot_resolve", artifactId))
             } else {
                 logger.trace(
-                    "Artifact $artifactId is resolved to files: ${artifact.joinToString(",") { it.absolutePath }}"
+                    message(
+                        "message.trace.config.resolver.resolved",
+                        artifactId,
+                        artifact.joinToString(",") { it.absolutePath })
                 )
             }
             if (artifact.isEmpty()) null else artifact
@@ -83,7 +87,7 @@ class IvyResolver : GenericRepositoryWithBridge {
             if (stringCoordinates.isValidParam() && stringCoordinates.count { it == ':' } == 2) {
                 stringCoordinates.split(':')
             } else {
-                error("Unknown set of arguments to maven resolver: $stringCoordinates")
+                error(message("message.error.config.resolver.wrong_maven_args", stringCoordinates))
             }
         }
     }

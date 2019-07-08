@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.config
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import org.apache.logging.log4j.LogManager
 import java.io.File
@@ -39,7 +40,7 @@ class ConfigurationBuilderFromDSL(
     private fun readConfig(): Config {
         val startTime = LocalDateTime.now()
         lateinit var evaluatedConfig: Config
-        statusLog.info("Configuration loading has started from file: ${configFile.absolutePath}")
+        statusLog.info(message("message.info.config.load.start", configFile.absolutePath))
         val ivyFile = getIvyFile(configFile)
         val configHost = ConfigHost(configFile, cacheDir, doNotUseCache, ivyFile)
         configHost.compile().onFailure {
@@ -55,7 +56,7 @@ class ConfigurationBuilderFromDSL(
             compileResult.asSuccess()
         }
         val duration = Duration.between(startTime, LocalDateTime.now()).seconds
-        statusLog.info("Configuration loading has finished, duration: ${duration}s")
+        statusLog.info(message("message.info.config.load.finish", duration))
         return evaluatedConfig
     }
 

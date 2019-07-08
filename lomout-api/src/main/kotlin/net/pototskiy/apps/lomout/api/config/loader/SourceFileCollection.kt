@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.createLocale
@@ -96,7 +97,12 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
              */
             fun build(): Pair<File, Locale> {
                 return Pair(
-                    File(path ?: throw AppConfigException(unknownPlace(), "File path must be defined.")),
+                    File(
+                        path ?: throw AppConfigException(
+                            unknownPlace(),
+                            message("message.error.config.load.file.path_not_defined")
+                        )
+                    ),
                     locale.createLocale()
                 )
             }

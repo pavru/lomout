@@ -5,7 +5,6 @@ import org.apache.poi.ss.usermodel.Cell
 /**
  * Excel row cell iterator
  *
- * @property iterator MutableIterator<(org.apache.poi.ss.usermodel.Cell..org.apache.poi.ss.usermodel.Cell?)>
  * @constructor
  */
 class ExcelCellIterator(row: org.apache.poi.ss.usermodel.Row) : Iterator<ExcelCell> {

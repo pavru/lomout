@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
@@ -113,7 +114,7 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
          */
         fun build(): FieldSetCollection {
             if (!fieldSets.any { it.mainSet }) {
-                throw AppConfigException(unknownPlace(), "Field set collection must contain main set.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.fieldset.no_main_set"))
             }
             return FieldSetCollection(fieldSets)
         }

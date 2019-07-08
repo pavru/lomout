@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
@@ -112,9 +113,9 @@ class EntityLoader(
             is AppDataException -> log.error("{} {}", e.message, e.place.placeInfo())
             else -> {
                 log.error("{} {}", e.message, place.placeInfo())
-                log.trace("Internal error: {}", e.message)
-                log.trace("Thread: {}", Thread.currentThread().name)
-                log.trace("Exception: ", e)
+                log.trace(message("message.error.loader.internal_error"), e.message)
+                log.trace(message("message.error.loader.thread"), Thread.currentThread().name)
+                log.trace(message("message.error.loader.exception"), e)
             }
         }
     }
@@ -130,7 +131,7 @@ class EntityLoader(
             when (emptyRowBehavior) {
                 EmptyRowBehavior.STOP -> {
                     log.info(
-                        "Stop workbook processing according to configuration:{})",
+                        message("message.info.loader.stop_row"),
                         row.sheet.workbook.name,
                         row.sheet.name,
                         row.rowNum + 1
@@ -139,7 +140,7 @@ class EntityLoader(
                 }
                 EmptyRowBehavior.IGNORE -> {
                     log.info(
-                        "Skip empty row according to configuration({}:{}:{})",
+                        message("message.info.loader.skip_row"),
                         row.sheet.workbook.name,
                         row.sheet.name,
                         row.rowNum + 1
@@ -160,7 +161,7 @@ class EntityLoader(
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
             if (v == null || (v is String && v.isBlank())) {
-                throw AppDataException(badPlace(attr), "Attribute is key but has no value.")
+                throw AppDataException(badPlace(attr), message("message.error.loader.data.empty_key"))
             }
         }
     }
@@ -174,7 +175,7 @@ class EntityLoader(
                 ?: if (attr.isNullable) row.getOrEmptyCell(field.column) else null
                     ?: throw AppDataException(
                         badPlace(row) + field + attr,
-                        "There is no requested cell."
+                        message("message.error.loader.data.no_cell")
                     )
             testFieldRegex(field, cell)
             @Suppress("UNCHECKED_CAST")
@@ -182,7 +183,7 @@ class EntityLoader(
                 if (it == null && (!attr.isNullable || attr.isKey)) {
                     throw AppDataException(
                         badPlace(attr) + field + cell,
-                        "Attribute is not nullable and cannot be null."
+                        message("message.error.loader.data.null_to_notnull")
                     )
                 } else if (it != null) {
                     data[attr] = it
@@ -194,7 +195,7 @@ class EntityLoader(
 
     private fun testFieldRegex(field: Field, cell: Cell) {
         if (!field.isMatchToPattern(cell.asString())) {
-            throw AppDataException(badPlace(field) + cell, "Field does not match required regular expression.")
+            throw AppDataException(badPlace(field) + cell, message("message.error.loader.data.field_not_match"))
         }
     }
 
@@ -218,7 +219,7 @@ class EntityLoader(
             val cell = row[field.column]
                 ?: throw AppDataException(
                     badPlace(field) + row,
-                    "The cell does not exist, but it's required for row classification."
+                    message("message.error.loader.data.no_classifier_cell")
                 )
             if (!field.isMatchToPattern(cell.asString())) fit = false
         }

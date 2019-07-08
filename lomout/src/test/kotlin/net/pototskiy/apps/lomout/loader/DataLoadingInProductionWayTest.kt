@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
 import org.apache.logging.log4j.core.Logger
 import org.apache.logging.log4j.core.appender.WriterAppender
+import org.apache.logging.log4j.core.config.Configurator
 import org.apache.logging.log4j.core.filter.LevelRangeFilter
 import org.apache.logging.log4j.core.layout.PatternLayout
 import org.assertj.core.api.Assertions.assertThat
@@ -40,6 +41,7 @@ internal class DataLoadingInProductionWayTest {
     internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
+        Configurator.setLevel(ROOT_LOG_NAME,Level.TRACE)
         val layout = PatternLayout.newBuilder()
             .withPattern("%level,")
             .build()

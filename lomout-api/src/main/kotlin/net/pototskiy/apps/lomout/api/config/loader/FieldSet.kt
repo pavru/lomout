@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.badPlace
@@ -99,14 +100,17 @@ data class FieldSet(
 
         private fun addFiled(field: Field, lastAttribute: DocumentMetadata.Attribute?) {
             if (fields.containsKey(field)) {
-                throw AppConfigException(badPlace(field), "Field '${field.name}' is already defined.")
+                throw AppConfigException(badPlace(field), message("message.error.config.field.exists", field.name))
             }
             @Suppress("UNCHECKED_CAST")
             fields[field] = lastAttribute
                 ?: entityType.documentMetadata.attributes.values.find { it.fieldName == field.name }
                         ?: throw AppConfigException(
-                    unknownPlace(), "Entity type '${entityType.qualifiedName}' " +
-                            "has no attribute for the '${field.name}'"
+                    unknownPlace(), message(
+                        "message.error.config.field.no_attribute",
+                        entityType.qualifiedName,
+                        field.name
+                    )
                 )
             this.lastField = null
         }
@@ -135,7 +139,7 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.to(attribute: DocumentMetadata.Attribute) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), "Use 'from' mapping operator.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_from"))
             }
             addFiled(this, attribute)
         }
@@ -148,12 +152,12 @@ data class FieldSet(
          */
         infix fun Field.to(attribute: KProperty1<out Document, *>) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), "Use 'from' mapping operator.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_from"))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    "Attribute '%s' is not defined.".format(attribute.name)
+                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -167,12 +171,12 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.to(attribute: AttributeWithName) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), "Use 'from' mapping operator.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_from"))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    "Attribute '%s' is not defined.".format(attribute.name)
+                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -186,7 +190,7 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.from(attribute: DocumentMetadata.Attribute) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), "Use 'to' mapping operator.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_to"))
             }
             addFiled(this, attribute)
         }
@@ -199,12 +203,12 @@ data class FieldSet(
          */
         infix fun Field.from(attribute: KProperty1<out Document, *>) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), "Use 'to' mapping operator.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_to"))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    "Attribute '%s' is not defined.".format(attribute.name)
+                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -218,12 +222,12 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.from(attribute: AttributeWithName) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), "Use 'to' mapping operator.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_to"))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    "Attribute '%s' is not defined.".format(attribute.name)
+                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -263,10 +267,12 @@ data class FieldSet(
                     val attr = entityType.documentMetadata.attributes.values.find { it.fieldName == field.name }
                     if (attr == null) {
                         helper.logger.warn(
-                            "Entity type '{}' has no attribute '{}' and field '{}' will be skipped.",
-                            entityType.qualifiedName,
-                            field.name,
-                            field.name
+                            message(
+                                "message.error.config.field.will_be_skipped",
+                                entityType.qualifiedName,
+                                field.name,
+                                field.name
+                            )
                         )
                         null
                     } else {
@@ -283,14 +289,17 @@ data class FieldSet(
             if (dupColumns.any { it.value.size > 1 }) {
                 throw AppConfigException(
                     unknownPlace(),
-                    "Field columns '${dupColumns.filter { it.value.size > 1 }.keys.joinToString(", ")}' are duplicated."
+                    message(
+                        "message.error.config.field.column.duplicated",
+                        dupColumns.filter { it.value.size > 1 }.keys.joinToString(", ")
+                    )
                 )
             }
         }
 
         private fun validateAtOneLeastFieldDefined() {
             if (fields.isEmpty() && !withSourceHeaders) {
-                throw AppConfigException(unknownPlace(), "At least one field must be defined for field set.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.field.no_field"))
             }
         }
     }
@@ -309,7 +318,7 @@ private fun checkSourcesNotNull(sources: SourceDataCollection?) {
         returns() implies (sources != null)
     }
     if (sources == null) {
-        throw AppConfigException(unknownPlace(), "Sources must be defined before source field sets.")
+        throw AppConfigException(unknownPlace(), message("message.error.config.field.define_source"))
     }
 }
 
@@ -318,6 +327,6 @@ private fun checkHeaderRowDefined(headerRow: Int?) {
         returns() implies (headerRow != null)
     }
     if (headerRow == null && headerRow != UNDEFINED_ROW) {
-        throw AppConfigException(unknownPlace(), "Header row must be defined before source field sets.")
+        throw AppConfigException(unknownPlace(), message("message.error.config.field.define_header_row"))
     }
 }

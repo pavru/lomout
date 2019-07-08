@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
@@ -179,5 +180,5 @@ fun Any.config(block: Config.Builder.() -> Unit) {
         val helper = ConfigBuildHelper()
         script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
-        throw AppConfigException(unknownPlace(), "Wrong config script object type.")
+        throw AppConfigException(unknownPlace(), message("message.error.config.bad.object"))
 }

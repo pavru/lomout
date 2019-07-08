@@ -99,6 +99,7 @@ internal class DefaultLongReaderTest {
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(11L)
         assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(11L)
+        @Suppress("GraziInspection", "SpellCheckingInspection")
         xlsTestDataCell.setCellValue("xxxx")
         assertThatThrownBy {
             readerEnUs.read(attr, inputCell)

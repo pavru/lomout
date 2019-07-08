@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
@@ -113,18 +114,30 @@ class ProductionLine(
         fun build(): ProductionLine {
             validatePipeline(
                 pipeline
-                    ?: throw AppConfigException(unknownPlace(), "Production line must have start pipeline.")
+                    ?: throw AppConfigException(
+                        unknownPlace(),
+                        message("message.error.config.pipeline.no_start_pipeline")
+                    )
             )
             return ProductionLine(
-                inputs ?: throw AppConfigException(unknownPlace(), "At least one input entity must be defined."),
-                output ?: throw AppConfigException(unknownPlace(), "Output entity must be defined."),
+                inputs ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.input.one_must_be")
+                ),
+                output ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.output.must_be")
+                ),
                 pipeline!!
             )
         }
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw AppConfigException(unknownPlace(), "Pipeline with the matched child must have assembler.")
+                throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.matched.must_have_assembler")
+                )
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }

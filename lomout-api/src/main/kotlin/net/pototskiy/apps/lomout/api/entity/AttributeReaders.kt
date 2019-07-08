@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.AttributeReaders.readers
@@ -30,7 +31,10 @@ val DocumentMetadata.Attribute.reader: AttributeReader<out Any?>
                 val reader = try {
                     readerFromAnnotation.klass.createInstance().build()
                 } catch (e: IllegalArgumentException) {
-                    throw AppConfigException(badPlace(this), "Reader cannot be created.")
+                    throw AppConfigException(
+                        badPlace(this),
+                        message("message.error.document.attribute.reader_cannot_create")
+                    )
                 }
                 reader
             } else {
@@ -38,7 +42,7 @@ val DocumentMetadata.Attribute.reader: AttributeReader<out Any?>
                     ?.let { defaultReaders[it] }
                     ?: throw AppConfigException(
                         badPlace(this),
-                        "No default reader for an attribute of '${this.typeName}'."
+                        message("message.error.document.attribute.no_default_reader", this.typeName)
                     )
             }
         }

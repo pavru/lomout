@@ -3,12 +3,12 @@ package net.pototskiy.apps.lomout.api.entity
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.DatabaseConfig
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.document.Documents
-import net.pototskiy.apps.lomout.api.toFilter
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
 import org.bson.conversions.Bson
@@ -65,7 +65,7 @@ class EntityRepository(
         return try {
             type.createInstance()
         } catch (e: IllegalArgumentException) {
-            throw AppConfigException(badPlace(type), "Entity type must have only one constructor without parameters.")
+            throw AppConfigException(badPlace(type), message("message.error.document.cannot_create"))
         }
     }
 

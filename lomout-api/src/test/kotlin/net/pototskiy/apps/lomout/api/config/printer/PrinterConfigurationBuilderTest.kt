@@ -66,7 +66,7 @@ internal class PrinterConfigurationBuilderTest {
         assertThatThrownBy {
             createConfigurationNoInputs()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Input entities must be defined")
+            .hasMessageContaining("One and only one input entity is allowed for printer line.")
     }
 
     @Test
@@ -82,7 +82,7 @@ internal class PrinterConfigurationBuilderTest {
         assertThatThrownBy {
             createConfigurationNoOutputs()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Output fields must be defined")
+            .hasMessageContaining("Output entity must be defined.")
     }
 
     @Test
@@ -90,7 +90,7 @@ internal class PrinterConfigurationBuilderTest {
         assertThatThrownBy {
             createConfigurationNoPipeline()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Pipeline must be defined")
+            .hasMessageContaining("Production line must have start pipeline.")
     }
 
     @Test

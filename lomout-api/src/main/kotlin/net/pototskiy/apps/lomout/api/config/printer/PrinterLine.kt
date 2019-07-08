@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.printer
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
@@ -67,7 +68,7 @@ class PrinterLine(
                 if (it.size != 1) {
                     throw AppConfigException(
                         unknownPlace(),
-                        "One and only one input entity is allowed for printer line."
+                        message("message.error.config.print.input_entity")
                     )
                 }
             }
@@ -107,7 +108,10 @@ class PrinterLine(
             this.outputs = PrinterOutput.Builder(
                 helper,
                 inputs?.first()?.entity
-                    ?: throw AppConfigException(unknownPlace(), "Input must be defined before output.")
+                    ?: throw AppConfigException(
+                        unknownPlace(),
+                        message("message.error.config.print.input_before_output")
+                    )
             ).apply(block).build()
         }
 
@@ -172,17 +176,31 @@ class PrinterLine(
          */
         @Suppress("ThrowsCount")
         fun build(): PrinterLine {
-            validatePipeline(pipeline ?: throw AppConfigException(unknownPlace(), "Pipeline must be defined."))
+            validatePipeline(
+                pipeline ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.no_start_pipeline")
+                )
+            )
             return PrinterLine(
-                inputs ?: throw AppConfigException(unknownPlace(), "Input entities must be defined."),
-                outputs ?: throw AppConfigException(unknownPlace(), "Output fields must be defined."),
-                pipeline ?: throw AppConfigException(unknownPlace(), "Pipeline must be defined.")
+                inputs ?: throw AppConfigException(unknownPlace(), message("message.error.config.print.input_entity")),
+                outputs ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.output.must_be")
+                ),
+                pipeline ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.no_start_pipeline")
+                )
             )
         }
 
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
-                throw AppConfigException(unknownPlace(), "Pipeline with the matched child must have assembler.")
+                throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.pipeline.matched.must_have_assembler")
+                )
             }
             for (line in pipeline.pipelines) validatePipeline(line)
         }
