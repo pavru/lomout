@@ -120,11 +120,11 @@ tasks.named<Test>("test") {
     } else {
         testLogging {
             events(
-                "passed",
+                /*"passed",*/
                 "skipped",
-                "failed",
+                "failed"/*,
                 "standardOut",
-                "standardError"
+                "standardError"*/
             )
         }
     }

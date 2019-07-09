@@ -112,6 +112,7 @@ tasks.jar {
     }
     from(rootProject.rootDir) {
         include("LICENSE", "NOTICE")
+        into("/")
     }
 }
 
@@ -148,7 +149,7 @@ tasks.named<Test>("test") {
         )
         testLogging {
             events(
-                "passed",
+                /*"passed",*/
                 "skipped",
                 "failed"/*,
                 "standardOut",

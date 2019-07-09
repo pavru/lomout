@@ -64,7 +64,7 @@ internal class LoadConfigurationTest {
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
-        assertThat(log).contains("Expecting '\"' (compile-error.conf.kts:3)")
+        assertThat(log).containsPattern("""Expecting '"' \(compile-error\.conf\.kts:\d+\)""")
     }
 
     @Suppress("TooGenericExceptionCaught")
@@ -93,7 +93,7 @@ internal class LoadConfigurationTest {
         }
         val log = logCatcher.log
         logCatcher.stopToCatch()
-        assertThat(log).contains("Source file 'file-2' is not defined. (evaluate-error.conf.kts:20)")
+        assertThat(log).containsPattern("""Source file 'file-2' is not defined. \(evaluate-error\.conf\.kts:\d+\)""")
     }
 
     @Suppress("TooGenericExceptionCaught")
