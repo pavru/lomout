@@ -105,6 +105,9 @@ internal class DefaultDateTimeReaderTest {
             .withNano(0)
         val readerEnUs = DateTimeAttributeReader().apply { locale = "en_US" }
         val readerRuRu = DateTimeAttributeReader().apply { locale = "ru_RU" }
+        val expectedText = expected.format(
+            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("en_US".createLocale())
+        )
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("en_US".createLocale()))
         )
@@ -112,7 +115,7 @@ internal class DefaultDateTimeReaderTest {
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String cannot be converted to date-time with the locale")
+            .hasMessageContaining("String '$expectedText' cannot be converted to date-time with the locale 'ru_RU'.")
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("ru_RU".createLocale()))
         )
@@ -130,12 +133,13 @@ internal class DefaultDateTimeReaderTest {
             .withNano(0)
         val readerEnUs = DateTimeAttributeReader().apply { pattern = "M/d/uu a h:m" }
         val readerRuRu = DateTimeAttributeReader().apply { pattern = "d.M.uu a h:m" }
+        val datetimeString = expected.format(DateTimeFormatter.ofPattern("M/d/uu a h:m"))
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("M/d/uu a h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String cannot be converted to date with the pattern")
+            .hasMessageContaining("String '$datetimeString' cannot be converted to date with the pattern 'd.M.uu a h:m'.")
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("d.M.uu a h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)

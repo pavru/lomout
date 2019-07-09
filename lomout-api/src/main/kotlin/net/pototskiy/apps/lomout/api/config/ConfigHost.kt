@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config
 
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.log.toLogLevel
 import org.apache.logging.log4j.LogManager
 import java.io.File
@@ -70,8 +71,8 @@ class ConfigHost(
                     it.sourcePath?.let { path -> File(path).name } ?: configFile.name,
                     it.location?.start?.line ?: 0
                 )
-                logger.trace("Exception:", it.exception)
-                logger.trace("caused:", it.exception?.cause)
+                logger.trace(message("message.word.exception"), it.exception)
+                logger.trace(message("message.word.caused"), it.exception?.cause)
             }
         }.onSuccess {
             compiledScript = it

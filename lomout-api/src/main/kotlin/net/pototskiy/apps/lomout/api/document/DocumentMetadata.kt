@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.document
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
@@ -33,8 +34,12 @@ abstract class DocumentMetadata(val klass: KClass<out Document>) {
             ) {
                 if (!Document.supportedTypes.types.any { property.returnType.isSubtypeOf(it) }) {
                     throw DocumentException(
-                        "Type '${property.returnType}' is not supported for the attribute " +
-                                "'${property.name}' of type '${this::class.qualifiedName}'."
+                        message(
+                            "message.error.document.attribute.not_supported_type",
+                            property.returnType,
+                            property.name,
+                            this::class.qualifiedName
+                        )
                     )
                 }
                 val indexAnnotations = when {
@@ -47,8 +52,7 @@ abstract class DocumentMetadata(val klass: KClass<out Document>) {
                             Document.supportedTypes.listTypes.any { property.returnType.isSubtypeOf(it) })
                 ) {
                     throw DocumentException(
-                        "Key attribute '${property.name} of '${klass.qualifiedName}' " +
-                                "cannot be nullable or has list type."
+                        message("message.error.document.attribute.key_is_nullable", property.name, klass.qualifiedName)
                     )
                 }
                 property.name to Attribute(
@@ -216,8 +220,11 @@ val KClass<out Document>.documentMetadata: DocumentMetadata
     get() {
         return this.companionObjectInstance as? DocumentMetadata
             ?: throw DocumentException(
-                "Document type '${this::class.qualifiedName}' is not well-defined, " +
-                        "there is no companion object of '${DocumentMetadata::class.qualifiedName}'."
+                message(
+                    "message.error.document.no_companion",
+                    this::class.qualifiedName,
+                    DocumentMetadata::class.qualifiedName
+                )
             )
     }
 

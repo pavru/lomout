@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
@@ -50,8 +51,7 @@ open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
             }
             CellType.BLANK -> null
             else -> throw AppDataException(
-                badPlace(input) + attribute,
-                "Cannot read Date list from the cell."
+                badPlace(input) + attribute, message("message.error.data.datelist.cannot_read")
             )
         }
     }

@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.sign
@@ -29,6 +30,6 @@ fun Double.doubleToLong(): Long {
     return if (this.fraction == 0.0) {
         this.floorToLong()
     } else {
-        throw TypeCastException("Double value '$this' has non-zero fraction and cannot be converted to Long.")
+        throw TypeCastException(message("message.error.data.double.non_zero_fraction", this))
     }
 }

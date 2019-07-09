@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.config
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.resolver.FilesAndIvyResolver
 import org.jetbrains.kotlin.script.util.DependsOn
 import org.jetbrains.kotlin.script.util.Import
@@ -72,14 +73,18 @@ class KtsConfigurator : RefineScriptCompilationConfigurationHandler, Serializabl
             if (resolvedClassPath != null && resolvedClassPath.isNotEmpty()) {
                 updateClasspath(resolvedClassPath)
                 logger.trace(
-                    "Classpath updated with: ${resolvedClassPath.joinToString(",") { it.absolutePath }}"
+                    message(
+                        "message.trace.config.classpath.updated",
+                        resolvedClassPath.joinToString(",") { it.absolutePath })
                 )
             }
             if (importedSources.isNotEmpty()) {
                 importScripts.append(importedSources)
                 logger.trace(
-                    "${context.script.name} imports next scripts: " +
-                            importedSources.joinToString(",") { it.name ?: "" }
+                    message(
+                        "message.trace.config.import.script",
+                        context.script.name,
+                        importedSources.joinToString(",") { it.name ?: "" })
                 )
             }
         }

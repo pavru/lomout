@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
@@ -139,7 +140,7 @@ data class Load(
                 this.sources
                     ?: throw AppConfigException(
                         unknownPlace(),
-                        "Source files are not defined for entity type '${entityType.qualifiedName}' loading."
+                        message("message.error.config.load.no_source", entityType.qualifiedName)
                     )
             validateFieldColumnDefinition()
             return Load(
@@ -151,7 +152,7 @@ data class Load(
                 fieldSets
                     ?: throw AppConfigException(
                         unknownPlace(),
-                        "Field set is not defined for entity type '${entityType.qualifiedName}' loading."
+                        message("message.error.config.load.no_fieldset", entityType.qualifiedName)
                     )
             )
         }
@@ -161,7 +162,7 @@ data class Load(
                 (fieldSets
                     ?: throw AppConfigException(
                         unknownPlace(),
-                        "Field set is not defined for entity type '${entityType.qualifiedName}' loading."
+                        message("message.error.config.load.no_fieldset", entityType.qualifiedName)
                     ))
                     .map { it.fieldToAttr.toList() }
                     .flatten()
@@ -169,10 +170,10 @@ data class Load(
             if (this.headersRow == UNDEFINED_ROW && fields.any { it.key.column == UNDEFINED_COLUMN }) {
                 throw AppConfigException(
                     unknownPlace(),
-                    "Dataset has no headers row but " +
-                            "fields '${fields.filter { it.key.column == UNDEFINED_COLUMN }.map { it.value.name }
-                                .joinToString(", ")}' " +
-                            "has no column defined."
+                    message("message.error.config.field.column.not_defined",
+                        fields.filter { it.key.column == UNDEFINED_COLUMN }
+                            .map { it.value.name }.joinToString(", ")
+                    )
                 )
             }
         }

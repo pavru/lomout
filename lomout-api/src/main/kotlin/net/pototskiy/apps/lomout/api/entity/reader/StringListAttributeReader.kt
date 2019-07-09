@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
@@ -35,8 +36,7 @@ open class StringListAttributeReader : AttributeReader<List<String>?>() {
             }
             CellType.BLANK -> null
             else -> throw AppDataException(
-                badPlace(input) + attribute,
-                "Reading String list from the cell is not supported."
+                badPlace(input) + attribute, message("message.error.data.stringlist.reading_not_supported")
             )
         }
     }

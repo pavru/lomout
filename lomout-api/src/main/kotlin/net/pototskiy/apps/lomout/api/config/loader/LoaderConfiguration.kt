@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.loader
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
@@ -98,7 +99,10 @@ data class LoaderConfiguration(
          */
         fun build(): LoaderConfiguration {
             val files =
-                this.files ?: throw AppConfigException(unknownPlace(), "Files is not defined in loader section.")
+                this.files ?: throw AppConfigException(
+                    unknownPlace(),
+                    message("message.error.config.load.file.not_defined")
+                )
             return LoaderConfiguration(
                 files,
                 LoadCollection(loads)

@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.plugable
 
 import net.pototskiy.apps.lomout.api.AppException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
@@ -26,7 +27,7 @@ object PluginContext : PluginContextInterface {
      * Main script file
      */
     override var scriptFile: File
-        get() = bScriptFile ?: throw AppException("Script file is not defined in plugin script.")
+        get() = bScriptFile ?: throw AppException(message("message.error.plugin.bad_script"))
         set(value) {
             bScriptFile = value
         }

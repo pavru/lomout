@@ -5,6 +5,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Indexes
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.PublicApi
 import org.bson.conversions.Bson
 import org.bson.types.ObjectId
@@ -37,7 +38,7 @@ class Documents(
 
     init {
         if (instance != null) {
-            throw DocumentException("Another instance of Documents is already created.")
+            throw DocumentException(message("message.error.document.many_documents_instances"))
         }
         timestamp = LocalDateTime.now().let {
             it.withNano(it.nano / MICROSECONDS * MICROSECONDS)

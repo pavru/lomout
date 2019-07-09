@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.Generated
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import org.apache.logging.log4j.LogManager
 import java.io.File
@@ -61,7 +62,7 @@ class FileBasedScriptCache(
         if (!baseDir.exists()) baseDir.mkdirs()
         val scriptHash = ScriptUniqueHash(script, scriptCompilationConfiguration).hash()
         if (scriptHash == null) {
-            logger.warn("Cannot create the configuration cache.")
+            logger.warn(message("message.error.config.cache.wrong.hash"))
             return
         }
         val file = File(baseDir, scriptHash)

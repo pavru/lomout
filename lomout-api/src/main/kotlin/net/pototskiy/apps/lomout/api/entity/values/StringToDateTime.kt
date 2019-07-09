@@ -3,6 +3,7 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.badData
 import java.time.LocalDate
@@ -27,7 +28,7 @@ fun String.stringToDate(locale: Locale): LocalDate {
     } catch (e: DateTimeParseException) {
         throw AppDataException(
             badData(this),
-            "String cannot be converted to date with the locale '$locale'.",
+            message("message.error.data.string.to_date_locale_error", this, locale),
             e
         )
     }
@@ -46,7 +47,11 @@ fun String.stringToDate(pattern: String): LocalDate {
     return try {
         LocalDate.parse(this.trim(), format)
     } catch (e: DateTimeParseException) {
-        throw AppDataException(badData(this), "String cannot be converted to date with the pattern '$pattern'.", e)
+        throw AppDataException(
+            badData(this),
+            message("message.error.data.string.to_date_pattern_error", this, pattern),
+            e
+        )
     }
 }
 
@@ -63,7 +68,11 @@ fun String.stringToDateTime(pattern: String): LocalDateTime {
     return try {
         LocalDateTime.parse(this.trim(), format)
     } catch (e: DateTimeParseException) {
-        throw AppDataException(badData(this), "String cannot be converted to date with the pattern '$pattern'.", e)
+        throw AppDataException(
+            badData(this),
+            message("message.error.data.string.to_datetime_pattern_error", this, pattern),
+            e
+        )
     }
 }
 
@@ -82,7 +91,7 @@ fun String.stringToDateTime(locale: Locale): LocalDateTime {
     } catch (e: DateTimeParseException) {
         throw AppDataException(
             badData(this),
-            "String cannot be converted to date-time with the locale '$locale'.",
+            message("message.error.data.string.to_datetime_locale_error", this, locale),
             e
         )
     }

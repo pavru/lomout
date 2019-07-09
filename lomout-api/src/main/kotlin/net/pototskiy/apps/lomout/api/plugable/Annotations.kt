@@ -7,7 +7,6 @@ import kotlin.reflect.KClass
  * Attribute reader.
  *
  * @property klass The attribute reader class
- * @property parameters The reader parameters
  * @constructor
  */
 @Retention(AnnotationRetention.RUNTIME)
@@ -19,7 +18,6 @@ annotation class Reader(val klass: KClass<out ReaderBuilder>)
  * Attribute writer.
  *
  * @property klass The attribute writer class
- * @property parameters The writer parameters
  * @constructor
  */
 @Retention(AnnotationRetention.RUNTIME)

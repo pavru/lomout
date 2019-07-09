@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.config
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileDefinition
 import net.pototskiy.apps.lomout.api.unknownPlace
 import org.apache.logging.log4j.LogManager
@@ -74,7 +75,7 @@ open class ConfigBuildHelper {
         fun register(entity: T) {
             val scope = currentScope()
             if (register[scope]?.any { it.name == entity.name } == true)
-                throw AppConfigException(unknownPlace(), "The scope '$scope' already has the object.")
+                throw AppConfigException(unknownPlace(), message("message.error.config.scope.exists", scope))
             register.getOrPut(scope) { mutableListOf() }.add(entity)
         }
 

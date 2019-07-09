@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.source.workbook.csv
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import org.apache.commons.csv.CSVFormat
@@ -50,7 +51,7 @@ class CsvInputWorkbook(
      * @return Sheet
      */
     override fun insertSheet(sheet: String): Sheet {
-        throw AppDataException(badPlace(this), "CSV input workbook does not support sheet insertion.")
+        throw AppDataException(badPlace(this), message("message.error.source.csv.sheet_insert_not_allowed", this.name))
     }
 
     /**
@@ -79,6 +80,6 @@ fun checkThatItIsCsvInputWorkbook(workbook: CsvWorkbook) {
         returns() implies (workbook is CsvInputWorkbook)
     }
     if (workbook !is CsvInputWorkbook) {
-        throw AppDataException(badPlace(workbook), "CSV workbook is in read only mode.")
+        throw AppDataException(badPlace(workbook), message("message.error.source.csv.read_only", workbook.name))
     }
 }

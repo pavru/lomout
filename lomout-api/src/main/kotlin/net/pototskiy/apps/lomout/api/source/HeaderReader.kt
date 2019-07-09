@@ -2,6 +2,7 @@ package net.pototskiy.apps.lomout.api.source
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
@@ -35,11 +36,11 @@ private fun readHeaders(
                 if (cell == null || cell.cellType != CellType.STRING) {
                     throw AppDataException(
                         badPlace(sheet).let { if (cell != null) it + cell else it },
-                        "Header row in the has no cell, or the cell is not string type."
+                        message("message.error.source.header.cell_is_null_or_not_string")
                     )
                 }
                 Field(cell.stringValue, c, null)
-            } ?: throw AppDataException(badPlace(sheet), "Source sheet has no header row.")
+            } ?: throw AppDataException(badPlace(sheet), message("message.error.source.header.has_no_row"))
         }.flatten()
     }
 }
@@ -47,11 +48,11 @@ private fun readHeaders(
 private fun validateAllSourcesCompatible(fieldSets: List<List<Field>>) {
     val fieldSetSizes = fieldSets.groupBy { it.size }
     if (fieldSetSizes.keys.size > 1) {
-        throw AppConfigException(unknownPlace(), "Sources have different number of fields.")
+        throw AppConfigException(unknownPlace(), message("message.error.source.header.different_field_number"))
     }
     val numberOfCombinations = fieldSetSizes.values.first().size
     val fieldSetNameColumn = fieldSets.flatten().groupBy { Pair(it.name, it.column) }
     if (fieldSetNameColumn.values.any { it.size != numberOfCombinations }) {
-        throw AppConfigException(unknownPlace(), "Sources have different fields or fields in different columns.")
+        throw AppConfigException(unknownPlace(), message("message.error.source.header.different_field_column"))
     }
 }

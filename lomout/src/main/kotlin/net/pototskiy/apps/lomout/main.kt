@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander
 import com.beust.jcommander.ParameterException
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
@@ -38,9 +39,9 @@ fun main(args: Array<String>) {
     setLogLevel(mainCommand)
 
     val startTime = LocalDateTime.now()
-    statusLog.info("Application has started")
+    statusLog.info(message("message.info.app.started"))
     if (!File(mainCommand.configFile.first()).exists()) {
-        statusLog.error("File '{}' cannot be found.", mainCommand.configFile.first())
+        statusLog.error(message("message.error.app.config_not_found"), mainCommand.configFile.first())
         exitProcess(1)
     }
     CONFIG_BUILDER = ConfigurationBuilderFromDSL(
@@ -64,7 +65,7 @@ fun main(args: Array<String>) {
     CONFIG_BUILDER.config.printer?.let { DataPrinter.print(repository, CONFIG_BUILDER.config) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     val duration = Duration.between(startTime, LocalDateTime.now()).seconds
-    statusLog.info("Application has finished, duration: ${duration}s")
+    statusLog.info(message("message.info.app.finished", duration))
 }
 
 @Suppress("ReturnCount")

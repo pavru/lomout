@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.config.printer
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileCollection
@@ -88,7 +89,7 @@ data class PrinterConfiguration(
          */
         fun build(): PrinterConfiguration {
             return PrinterConfiguration(
-                files ?: throw AppConfigException(unknownPlace(), "Printer files must be defined."),
+                files ?: throw AppConfigException(unknownPlace(), message("message.error.config.print.no_files")),
                 PrinterLineCollection(lines)
             )
         }

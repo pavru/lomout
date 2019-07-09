@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.source.workbook.excel
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.entity.values.toDate
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -38,7 +39,10 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
                 org.apache.poi.ss.usermodel.CellType.BLANK -> CellType.BLANK
                 org.apache.poi.ss.usermodel.CellType.BOOLEAN -> CellType.BOOL
                 else ->
-                    throw AppDataException(badPlace(this), "Unsupported cell type.")
+                    throw AppDataException(
+                        badPlace(this),
+                        message("message.error.source.excel.unsupported_cell_type", cell.cellType)
+                    )
             }
         }
     override val booleanValue: Boolean
@@ -112,7 +116,10 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
             org.apache.poi.ss.usermodel.CellType.STRING -> cell.stringCellValue
             org.apache.poi.ss.usermodel.CellType.BLANK -> ""
             org.apache.poi.ss.usermodel.CellType.BOOLEAN -> cell.booleanCellValue.toString()
-            else -> throw AppDataException(badPlace(this), "Cell type '${cellType.name}' is not supported.")
+            else -> throw AppDataException(
+                badPlace(this),
+                message("message.error.source.excel.unsupported_cell_type", cell.cellType)
+            )
         }
     }
 }

@@ -174,7 +174,7 @@ internal class DocumentTest {
             DocTypeFive("")
         }.isInstanceOf(DocumentException::class.java)
             .hasMessageContaining(
-                "Wrong document metadata. It must be metadata of '${DocTypeFive::class.qualifiedName}' and " +
+                "Wrong document metadata. It must be metadata of '${DocTypeFive::class.qualifiedName}' and" +
                         " not of '${DocTypeFour::class.qualifiedName}'"
             )
     }

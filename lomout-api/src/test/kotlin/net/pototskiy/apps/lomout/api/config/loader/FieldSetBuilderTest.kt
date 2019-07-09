@@ -85,8 +85,8 @@ internal class FieldSetBuilderTest {
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
             .hasMessageContaining(
-                "Entity type " +
-                        "'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' has no attribute for the 'f2'"
+                "Entity type 'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' " +
+                        "has no attribute for the field 'f2'."
             )
     }
 
@@ -199,7 +199,7 @@ internal class FieldSetBuilderTest {
         ).apply {
             field("f1") to TestEntity::nonAttr
         }.build() }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Attribute 'nonAttr' is not defined.")
+            .hasMessageContaining("Entity type 'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' has no attribute for the field 'nonAttr'.")
         assertThatThrownBy { FieldSet.Builder(
             helper,
             entity,
@@ -225,7 +225,7 @@ internal class FieldSetBuilderTest {
         ).apply {
             field("f1") from TestEntity::nonAttr
         }.build() }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Attribute 'nonAttr' is not defined.")
+            .hasMessageContaining("Entity type 'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' has no attribute for the field 'nonAttr'.")
     }
 
     @Test
@@ -244,7 +244,7 @@ internal class FieldSetBuilderTest {
                 field("f1") to attribute("f10")
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Attribute 'f10' is not defined.")
+            .hasMessageContaining("Entity type 'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' has no attribute for the field 'f10'.")
         assertThatThrownBy {
             FieldSet.Builder(
                 helper,
@@ -259,7 +259,7 @@ internal class FieldSetBuilderTest {
                 field("f1") from attribute("f10")
             }.build()
         }.isInstanceOf(AppConfigException::class.java)
-            .hasMessageContaining("Attribute 'f10' is not defined.")
+            .hasMessageContaining("Entity type 'net.pototskiy.apps.lomout.api.config.loader.FieldSetBuilderTest.TestEntity' has no attribute for the field 'f10'.")
         assertThatThrownBy {
             FieldSet.Builder(
                 helper,

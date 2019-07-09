@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.source.nested
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badData
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.unknownPlace
@@ -36,7 +37,10 @@ class NestedAttributeListParser(
                 parsePairsList(attrReader, result)
             }
         } catch (e: AppDataException) {
-            throw AppDataException(badData(string) + this, "Cannot parse attribute list '$string'.")
+            throw AppDataException(
+                badData(string) + this,
+                message("message.error.source.nested.cannot_parse_string_to_list", string)
+            )
         }
         return result
     }
@@ -68,7 +72,7 @@ class NestedAttributeListParser(
                 ""
             }
         } catch (e: Exception) {
-            throw AppDataException(unknownPlace(), "Cannot parse attribute list.")
+            throw AppDataException(unknownPlace(), message("message.error.source.nested.cannot_parse"))
         }
     }
 }

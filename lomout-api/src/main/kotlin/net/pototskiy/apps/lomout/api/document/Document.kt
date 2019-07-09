@@ -1,5 +1,6 @@
 package net.pototskiy.apps.lomout.api.document
 
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.codecs.pojo.annotations.BsonIgnore
@@ -33,13 +34,19 @@ abstract class Document {
             ?.also {
                 if (it.klass != this::class) {
                     throw DocumentException(
-                        "Wrong document metadata. It must be metadata of '${this::class.qualifiedName}' and " +
-                                " not of '${it.klass.qualifiedName}'"
+                        message(
+                            "message.error.document.wrong_metadata",
+                            this::class.qualifiedName,
+                            it.klass.qualifiedName
+                        )
                     )
                 }
             } ?: throw DocumentException(
-            "Document type '${this::class.qualifiedName}' is not well-defined, " +
-                    "there is no companion object of '${DocumentMetadata::class.qualifiedName}'."
+            message(
+                "message.error.document.no_companion",
+                this::class.qualifiedName,
+                DocumentMetadata::class.qualifiedName
+            )
         )
     }
     @Suppress("PropertyName", "VariableNaming")
@@ -100,7 +107,7 @@ abstract class Document {
     fun setAttribute(attribute: Attribute, value: Any?) = setAttribute(attribute.name, value)
 
     private fun checkAndGetAttribute(name: String) = (documentMetadata.attributes[name]
-        ?: throw DocumentException("Document '${this::class.simpleName}' has no attribute '$name'."))
+        ?: throw DocumentException(message("message.error.document.no_attribute", this::class.simpleName, name)))
 
     /**
      * Get attribute value.
@@ -133,19 +140,21 @@ abstract class Document {
     @Suppress("ThrowsCount")
     private fun checkType(attr: Attribute, value: Any?) {
         if (value == null && !attr.isNullable) {
-            throw DocumentException("Attribute '${attr.name}' of '${this::class.simpleName}' is not nullable.")
+            throw DocumentException(message("message.error.document.set_null", attr.name, this::class.simpleName))
         }
         if (value != null) {
             if (!attr.klass.isInstance(value)) {
                 throw DocumentException(
-                    "Try to set value of '${value::class.qualifiedName}' " +
-                            "to attribute of '${attr.typeName}'."
+                    message("message.error.document.set_wrong_type", value::class.qualifiedName, attr.typeName)
                 )
             }
             if (value is List<*> && value.isNotEmpty() && !attr.listParameter.isInstance(value.first())) {
                 throw DocumentException(
-                    "Try to set value of '${value::class.qualifiedName}<${value.first()!!::class.qualifiedName}>' " +
-                            "to attribute of '${attr.typeName}'."
+                    message(
+                        "message.error.document.set_wrong_type",
+                        "${value::class.qualifiedName}<${value.first()!!::class.qualifiedName}>",
+                        attr.typeName
+                    )
                 )
             }
         }

@@ -1,4 +1,4 @@
-package net.pototskiy.apps.lomout.api
+package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import org.bson.conversions.Bson

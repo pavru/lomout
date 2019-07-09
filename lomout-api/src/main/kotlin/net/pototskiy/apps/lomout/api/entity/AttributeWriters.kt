@@ -1,6 +1,7 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
@@ -30,13 +31,19 @@ val DocumentMetadata.Attribute.writer: AttributeWriter<out Any?>
                 val writer = try {
                     writerFromAnnotation.klass.createInstance().build()
                 } catch (e: IllegalArgumentException) {
-                    throw AppConfigException(badPlace(this), "Cannot create attribute writer.")
+                    throw AppConfigException(
+                        badPlace(this),
+                        message("message.error.document.attribute.writer_cannot_create")
+                    )
                 }
                 writer
             } else {
                 defaultWriters.keys.find { this.type.isSubtypeOf(it) }
                     ?.let { defaultWriters[it] }
-                    ?: throw AppConfigException(badPlace(this), "Unsupported attribute type '${this.typeName}'.")
+                    ?: throw AppConfigException(
+                        badPlace(this),
+                        message("message.error.document.attribute.no_default_writer", this.typeName)
+                    )
             }
         }
     }

@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
@@ -69,11 +70,19 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
 
     private fun processException(e: Exception) {
         when (e) {
-            is AppConfigException -> logger.error("Cannot process entity, {} {}", e.message, e.place.placeInfo())
-            is AppDataException -> logger.error("Cannot process entity, {} {}", e.message, e.place.placeInfo())
-            else -> logger.error("Cannot process entity, {}", e.message)
+            is AppConfigException -> logger.error(
+                message("message.error.mediator.entity_cannot_process"),
+                e.message,
+                e.place.placeInfo()
+            )
+            is AppDataException -> logger.error(
+                message("message.error.mediator.entity_cannot_process"),
+                e.message,
+                e.place.placeInfo()
+            )
+            else -> logger.error(message("message.error.mediator.entity_cannot_process_only_msg"), e.message)
         }
-        logger.trace("Caused by:", e)
+        logger.trace(message("message.error.caused"), e)
     }
 
     companion object {
