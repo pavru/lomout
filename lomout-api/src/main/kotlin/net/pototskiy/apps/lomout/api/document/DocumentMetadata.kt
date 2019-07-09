@@ -144,7 +144,7 @@ abstract class DocumentMetadata(val klass: KClass<out Document>) {
         val annotationIndex = annotations.map { it.annotationClass to it }.toMap()
         /**
          * Equals function
-         * @param other Any?
+         * @param other Other index
          * @return Boolean
          */
         override fun equals(other: Any?): Boolean {

@@ -49,7 +49,7 @@ data class Field(
     /**
      * Is fields are equal
      *
-     * @param other Any?
+     * @param other Other field
      * @return Boolean
      */
     override fun equals(other: Any?): Boolean {

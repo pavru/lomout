@@ -25,14 +25,14 @@ import java.time.LocalDateTime
 /**
  * Workbook cell interface
  *
- * @property address CellAddress
- * @property cellType CellType
- * @property booleanValue Boolean
- * @property longValue Long
- * @property doubleValue Double
- * @property stringValue String
- * @property value Any?
- * @property row Row
+ * @property address The cell address
+ * @property cellType The cell type
+ * @property booleanValue The cell value as Long
+ * @property longValue The cell value as long
+ * @property doubleValue The cell value ad double
+ * @property stringValue The cell value as string
+ * @property value The cell value
+ * @property row The cell row
  */
 interface Cell {
     /**

@@ -125,11 +125,7 @@ data class FieldSet(
             fields[field] = lastAttribute
                 ?: entityType.documentMetadata.attributes.values.find { it.fieldName == field.name }
                         ?: throw AppConfigException(
-                    unknownPlace(), message(
-                        "message.error.config.field.no_attribute",
-                        entityType.qualifiedName,
-                        field.name
-                    )
+                    unknownPlace(), message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, field.name)
                 )
             this.lastField = null
         }
@@ -158,7 +154,7 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.to(attribute: DocumentMetadata.Attribute) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_from"))
+                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
             }
             addFiled(this, attribute)
         }
@@ -171,12 +167,12 @@ data class FieldSet(
          */
         infix fun Field.to(attribute: KProperty1<out Document, *>) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_from"))
+                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
+                    message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -190,12 +186,12 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.to(attribute: AttributeWithName) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_from"))
+                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
+                    message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -209,7 +205,7 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.from(attribute: DocumentMetadata.Attribute) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_to"))
+                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
             }
             addFiled(this, attribute)
         }
@@ -222,12 +218,12 @@ data class FieldSet(
          */
         infix fun Field.from(attribute: KProperty1<out Document, *>) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_to"))
+                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
+                    message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -241,12 +237,12 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.from(attribute: AttributeWithName) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.mapping_operator_to"))
+                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
                     unknownPlace(),
-                    message("message.error.config.field.no_attribute", entityType.qualifiedName, attribute.name)
+                    message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
         }
@@ -330,6 +326,12 @@ data class FieldSet(
      * @constructor
      */
     data class AttributeWithName(val name: String)
+
+    companion object {
+        const val NO_ATTRIBUTE_MESSAGE_KEY = "message.error.config.field.no_attribute"
+        const val MAPPING_OPERATOR_FROM_MESSAGE_KEY = "message.error.config.field.mapping_operator_from"
+        const val MAPPING_OPERATOR_TO_MESSAGE_KEY = "message.error.config.field.mapping_operator_to"
+    }
 }
 
 private fun checkSourcesNotNull(sources: SourceDataCollection?) {

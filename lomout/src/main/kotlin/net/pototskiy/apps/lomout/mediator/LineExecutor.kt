@@ -34,6 +34,7 @@ import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.unknownPlace
 import org.apache.logging.log4j.Logger
 
 abstract class LineExecutor(protected val repository: EntityRepositoryInterface) {
@@ -87,17 +88,18 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
             }
         }
 
+    @SuppressWarnings("kotlin:S1871")
     private fun processException(e: Exception) {
+        val place = when(e) {
+            is AppConfigException -> e.place
+            is AppDataException -> e.place
+            else -> unknownPlace()
+        }
         when (e) {
-            is AppConfigException -> logger.error(
+            is AppConfigException,is AppDataException -> logger.error(
                 message("message.error.mediator.entity_cannot_process"),
                 e.message,
-                e.place.placeInfo()
-            )
-            is AppDataException -> logger.error(
-                message("message.error.mediator.entity_cannot_process"),
-                e.message,
-                e.place.placeInfo()
+                place.placeInfo()
             )
             else -> logger.error(message("message.error.mediator.entity_cannot_process_only_msg"), e.message)
         }
