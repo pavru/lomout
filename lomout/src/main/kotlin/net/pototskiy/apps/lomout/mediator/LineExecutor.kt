@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package net.pototskiy.apps.lomout.mediator
 
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +34,7 @@ import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.unknownPlace
 import org.apache.logging.log4j.Logger
 
 abstract class LineExecutor(protected val repository: EntityRepositoryInterface) {
@@ -68,17 +88,18 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
             }
         }
 
+    @SuppressWarnings("kotlin:S1871")
     private fun processException(e: Exception) {
+        val place = when(e) {
+            is AppConfigException -> e.place
+            is AppDataException -> e.place
+            else -> unknownPlace()
+        }
         when (e) {
-            is AppConfigException -> logger.error(
+            is AppConfigException,is AppDataException -> logger.error(
                 message("message.error.mediator.entity_cannot_process"),
                 e.message,
-                e.place.placeInfo()
-            )
-            is AppDataException -> logger.error(
-                message("message.error.mediator.entity_cannot_process"),
-                e.message,
-                e.place.placeInfo()
+                place.placeInfo()
             )
             else -> logger.error(message("message.error.mediator.entity_cannot_process_only_msg"), e.message)
         }
