@@ -133,12 +133,13 @@ internal class DefaultDateTimeReaderTest {
             .withNano(0)
         val readerEnUs = DateTimeAttributeReader().apply { pattern = "M/d/uu a h:m" }
         val readerRuRu = DateTimeAttributeReader().apply { pattern = "d.M.uu a h:m" }
+        val datetimeString = expected.format(DateTimeFormatter.ofPattern("M/d/uu a h:m"))
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("M/d/uu a h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String '7/8/19 AM 7:21' cannot be converted to date with the pattern 'd.M.uu a h:m'.")
+            .hasMessageContaining("String '$datetimeString' cannot be converted to date with the pattern 'd.M.uu a h:m'.")
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("d.M.uu a h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)

@@ -114,11 +114,14 @@ internal class DefaultDateReaderTest {
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("en_US".createLocale()))
         )
+        val dateString =  expected.format(
+            DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("en_US".createLocale())
+        )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String '7/8/19' cannot be converted to date with the locale 'ru_RU'.")
+            .hasMessageContaining("String '$dateString' cannot be converted to date with the locale 'ru_RU'.")
         val expectedText = expected.format(
             DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("ru_RU".createLocale())
         )
@@ -138,11 +141,12 @@ internal class DefaultDateReaderTest {
         val readerEnUs = DateAttributeReader().apply { pattern = "M/d/yy" }
         val readerRuRu = DateAttributeReader().apply { pattern = "d.M.yy" }
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("M/d/yy")))
+        val dateString = expected.format(DateTimeFormatter.ofPattern("M/d/yy"))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
         assertThatThrownBy { readerRuRu.read(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
-            .hasMessageContaining("String '7/8/19' cannot be converted to date with the pattern 'd.M.yy'.")
+            .hasMessageContaining("String '$dateString' cannot be converted to date with the pattern 'd.M.yy'.")
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("d.M.yy")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
         assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
