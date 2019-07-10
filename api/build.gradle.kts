@@ -77,6 +77,7 @@ tasks.withType(DokkaTask::class) {
 //}
 
 tasks.register<Jar>("dokkaJar") {
+    archiveBaseName.set("lomout-api")
     group = "documentation"
     dependsOn("dokka")
     archiveClassifier.set("javadoc")
@@ -229,6 +230,7 @@ dependencies {
 }
 
 tasks.register<Jar>("sourcesJar") {
+    archiveBaseName.set("lomout-api")
     archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }

@@ -139,8 +139,15 @@ tasks.withType(JacocoReport::class.java).all {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
+application.applicationName = "lomout"
+distributions {
+    main {
+        baseName = "lomout"
+    }
+}
 
 tasks.jar {
+    archiveBaseName.set("lomout")
     manifest {
         attributes("Main-Class" to application.mainClassName)
     }
