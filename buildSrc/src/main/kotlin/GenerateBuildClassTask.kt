@@ -17,6 +17,15 @@
  * under the License.
  */
 
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.ParameterizedTypeName.Companion.parameterizedBy
+import com.squareup.kotlinpoet.PropertySpec
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 import org.gradle.api.DefaultTask
 import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDependency
 import org.gradle.api.tasks.Input
@@ -34,6 +43,17 @@ open class GenerateBuildClassTask : DefaultTask() {
     @TaskAction
     fun generate() {
         val dependencies = mutableListOf<String>()
+        createDecenciesList(dependencies)
+        val dirGenerated = File(
+            "${project.buildDir}/generated/kotlin"
+        )
+        buildFileBuildInfo(dependencies).writeTo(dirGenerated)
+    }
+
+    @Suppress("NestedBlockDepth")
+    private fun createDecenciesList(dependencies: MutableList<String>) {
+        val excludeClassName = ClassName("", buildeExcludeRuleClass().name!!)
+        val dependencyClassName = ClassName("", buildDependencyClass().name!!)
         project.configurations.forEach { configuration ->
             if (configuration.name in addDependenciesOfConfigurations) {
                 configuration.dependencies
@@ -50,67 +70,130 @@ open class GenerateBuildClassTask : DefaultTask() {
                             }
                         }
                         val rules = excludeRules.joinToString(",") {
-                            """ExcludeRule("${it.first}","${it.second}")"""
+                            """${excludeClassName.simpleName}("${it.first}","${it.second}")"""
                         }
                         dependencies.add(
-                            """Dependency("${configuration.name}", "$group", "$name", "$version", listOf<ExcludeRule>($rules))"""
+                            """${dependencyClassName.simpleName}(
+                                |"${configuration.name}", 
+                                |"$group", 
+                                |"$name", 
+                                |"$version", 
+                                |listOf<${excludeClassName.simpleName}>($rules))""".trimMargin()
                         )
                     }
             }
         }
-        val buildClassFile = File(
-            "${project.buildDir}/generated/kotlin/${packageName.replace(".", "/")}/$objectName.kt"
-        )
-        buildClassFile.parentFile.mkdirs()
-        buildClassFile.writeText(
-            """
-            package $packageName
-            /**
-             * Build information class
-             */
-            @Suppress("RemoveExplicitTypeArguments", "MayBeConstant", "unused")
-            object $objectName {
-                /**
-                 * LoMout version
-                 */
-                const val lomoutVersion = "${project.version}"
-                /**
-                 * Kotlin lib version
-                 */
-                const val kotlinVersion = "${Versions.kotlin}"
-                /**
-                 * Project dependency
-                 */
-                val dependencies = mutableListOf<Dependency>(${dependencies.joinToString(",")})
+    }
 
-                /**
-                 * Dependency data class
-                 *
-                 * @property configuration The configuration name
-                 * @property group The group name
-                 * @property name The artifact name
-                 * @property version The version
-                 * @property excludeRules The dependency exclude rules
-                 */
-                data class Dependency(
-                    val configuration: String,
-                    val group: String,
-                    val name: String,
-                    val version: String,
-                    val excludeRules: List<ExcludeRule> = emptyList()
-                )
-                /**
-                 * Dependency exclude rule
-                 *
-                 * @property group The group name
-                 * @property name The artifact name
-                 */
-                data class ExcludeRule(
-                    val group: String = "*",
-                    val name: String = "*"
-                )
-            }
-        """.trimIndent()
+    private fun buildFileBuildInfo(dependencies: List<String>): FileSpec {
+        val dependencyClassSpec = buildDependencyClass()
+        val listOfDeps = ClassName("kotlin.collections", "MutableList").parameterizedBy(
+            ClassName("", dependencyClassSpec.name!!)
         )
+        return FileSpec.builder(packageName, objectName)
+            .addType(
+                TypeSpec.objectBuilder(objectName)
+                    .addType(buildeExcludeRuleClass())
+                    .addType(dependencyClassSpec)
+                    .addProperty(
+                        PropertySpec.builder("lomoutVersion", String::class)
+                            .initializer("%S", project.version.toString())
+                            .build()
+                    )
+                    .addProperty(
+                        PropertySpec.builder("kotlinVersion", String::class)
+                            .initializer("%S", Versions.kotlin)
+                            .build()
+                    )
+                    .addProperty(
+                        PropertySpec.builder("dependencies", listOfDeps)
+                            .initializer("mutableListOf(${dependencies.joinToString(",\n")})")
+                            .build()
+                    )
+                    .addProperty(
+                        PropertySpec.builder("moduleName", String::class)
+                            .initializer("%S", project.name)
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+    }
+
+    private fun buildDependencyClass(): TypeSpec {
+        val excludeRuleClassName = ClassName("", buildeExcludeRuleClass().name!!)
+        val listOfRule = List::class.asClassName().parameterizedBy(excludeRuleClassName)
+
+        return TypeSpec.classBuilder("Dependency")
+            .addModifiers(KModifier.DATA)
+            .primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter("configuration", String::class)
+                    .addParameter("group", String::class)
+                    .addParameter("name", String::class)
+                    .addParameter("version", String::class)
+                    .addParameter(
+                        ParameterSpec.builder("excludeRules", listOfRule)
+                            .defaultValue("emptyList()")
+                            .build()
+                    )
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("configuration", String::class)
+                    .initializer("configuration")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("group", String::class)
+                    .initializer("group")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("name", String::class)
+                    .initializer("name")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("version", String::class)
+                    .initializer("version")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("excludeRules", listOfRule)
+                    .initializer("excludeRules")
+                    .build()
+            )
+            .build()
+    }
+
+    private fun buildeExcludeRuleClass(): TypeSpec {
+        return TypeSpec.classBuilder("ExcludeRule")
+            .addModifiers(KModifier.DATA)
+            .primaryConstructor(
+                FunSpec.constructorBuilder()
+                    .addParameter(
+                        ParameterSpec.builder("group", String::class)
+                            .defaultValue("%S", "*")
+                            .build()
+                    )
+                    .addParameter(
+                        ParameterSpec.builder("name", String::class)
+                            .defaultValue("%S", "*")
+                            .build()
+                    )
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("group", String::class)
+                    .initializer("group")
+                    .build()
+            )
+            .addProperty(
+                PropertySpec.builder("name", String::class)
+                    .initializer("name")
+                    .build()
+            )
+            .build()
     }
 }

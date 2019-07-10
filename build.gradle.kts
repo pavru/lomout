@@ -56,7 +56,7 @@ subprojects {
     }
     tasks.register<GenerateBuildClassTask>("generateBuildClass") {
         packageName = when (this.project.name) {
-            "lomout-api" -> "net.pototskiy.apps.lomout.api"
+            "lomout-config" -> "net.pototskiy.apps.lomout.api"
             else -> "net.pototskiy.apps.lomout"
         }
         objectName = "BuildInfo"
