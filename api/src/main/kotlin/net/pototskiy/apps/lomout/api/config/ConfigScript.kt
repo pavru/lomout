@@ -109,7 +109,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
         val libs = if (addApiToClasspath()) {
             arrayOf("lomout-api")
         } else {
-            arrayOf("lomout-api", "kmongo-property", "log4j-api", "bson", "kotlin-script-util")
+            arrayOf("kmongo-property", "log4j-api", "bson", "kotlin-script-util")
         }
         @Suppress("SpreadOperator")
         dependenciesFromClassloader(
@@ -144,7 +144,7 @@ private fun JvmScriptCompilationConfigurationBuilder.addApiToClasspath(): Boolea
     val classpath = classpathFromClassloader(ConfigScriptCompilationConfiguration::class.java.classLoader)
     val apiInPlace = classpath?.firstOrNull {
         it.isDirectory &&
-                it.absolutePath.contains(Regex("""lomout-api.build.classes.kotlin.main$"""))
+                it.absolutePath.contains(Regex("""${BuildInfo.moduleName}.build.classes.kotlin.main$"""))
     }
     val apiInJar = classpath?.firstOrNull {
         @Suppress("GraziInspection")

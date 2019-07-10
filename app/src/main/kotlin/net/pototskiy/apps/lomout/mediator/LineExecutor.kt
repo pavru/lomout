@@ -90,13 +90,13 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
 
     @SuppressWarnings("kotlin:S1871")
     private fun processException(e: Exception) {
-        val place = when(e) {
+        val place = when (e) {
             is AppConfigException -> e.place
             is AppDataException -> e.place
             else -> unknownPlace()
         }
         when (e) {
-            is AppConfigException,is AppDataException -> logger.error(
+            is AppConfigException, is AppDataException -> logger.error(
                 message("message.error.mediator.entity_cannot_process"),
                 e.message,
                 place.placeInfo()

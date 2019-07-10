@@ -160,15 +160,15 @@ repositories {
 dependencies {
 
     configImplementation(kotlin("script-util"))
-    configImplementation(project(":lomout-api"))
+    configImplementation(project(":api"))
 
     testdataImplementation(kotlin("script-util"))
-    testdataImplementation(project(":lomout-api"))
+    testdataImplementation(project(":api"))
 
     implementation(fileTree("lib") {
         include("*.jar")
     })
-    implementation(project(":lomout-api"))
+    implementation(project(":api"))
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
     implementation("com.beust", "jcommander", Versions.jcommander)

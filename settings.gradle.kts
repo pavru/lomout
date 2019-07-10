@@ -59,6 +59,6 @@ pluginManagement {
 }
 
 include(
-    ":lomout-api",
-    ":lomout"
+    ":api",
+    ":app"
 )

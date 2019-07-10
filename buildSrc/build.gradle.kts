@@ -48,3 +48,6 @@ kotlinDslPluginOptions {
     experimentalWarning.set(false)
 }
 
+dependencies {
+    implementation("com.squareup", "kotlinpoet", "1.3.0")
+}
