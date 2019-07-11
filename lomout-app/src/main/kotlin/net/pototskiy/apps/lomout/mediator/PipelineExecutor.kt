@@ -27,11 +27,17 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import net.pototskiy.apps.lomout.MessageBundle.message
+import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
+import net.pototskiy.apps.lomout.api.errorMessageFromException
+import net.pototskiy.apps.lomout.api.suspectedLocation
+import org.apache.logging.log4j.LogManager
 import kotlin.reflect.KClass
 
 class PipelineExecutor(
@@ -39,9 +45,10 @@ class PipelineExecutor(
     private val inputEntities: InputEntityCollection,
     private val targetEntity: KClass<out Document>
 ) {
-
+    private val logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private val jobs = mutableListOf<Job>()
 
+    @Suppress("ComplexMethod", "TooGenericExceptionCaught")
     suspend fun execute(inputData: Channel<ClassifierElement>): ReceiveChannel<Map<Attribute, Any>> =
         GlobalScope.produce {
             val matchedData: Channel<ClassifierElement> = Channel()
@@ -57,21 +64,29 @@ class PipelineExecutor(
             jobs.add(launch { nextUnMatchedPipe?.execute(unMatchedData)?.consumeEach { send(it) } })
 
             inputData.consumeEach { data ->
-                when (val element = pipeline.classifier(data)) {
-                    is ClassifierElement.Matched -> {
-                        if (nextMatchedPipe != null) {
-                            matchedData.send(element)
-                        } else {
-                            val assembler = pipeline.assembler!!
-                            send(assembler(targetEntity, element.entities))
+                try {
+                    when (val element = pipeline.classifier(data)) {
+                        is ClassifierElement.Matched -> {
+                            if (nextMatchedPipe != null) {
+                                matchedData.send(element)
+                            } else {
+                                val assembler = pipeline.assembler!!
+                                send(assembler(targetEntity, element.entities))
+                            }
+                        }
+                        is ClassifierElement.Skipped -> {
+                            // just drop element
+                        }
+                        else -> if (nextUnMatchedPipe != null) {
+                            unMatchedData.send(element)
                         }
                     }
-                    is ClassifierElement.Skipped -> {
-                        // just drop element
-                    }
-                    else -> if (nextUnMatchedPipe != null) {
-                        unMatchedData.send(element)
-                    }
+                } catch (e: Exception) {
+                    AppDataException(
+                        suspectedLocation(data.entities[0].documentMetadata.klass),
+                        message("message.error.mediator.cannot_classify_element"),
+                        e
+                    ).errorMessageFromException(logger)
                 }
             }
             matchedData.close()

@@ -19,6 +19,8 @@
 
 package net.pototskiy.apps.lomout.api
 
+import org.apache.logging.log4j.Logger
+
 /**
  * Application related exception
  */
@@ -68,6 +70,41 @@ open class AppException : Exception {
 }
 
 /**
+ * Log exception as error
+ *
+ * @receiver Exception
+ * @param logger Logger
+ */
+fun Exception.errorMessageFromException(logger: Logger) {
+    when (this) {
+        is AppException -> logger.error("{} {}", this.message, this.suspectedLocation.describeLocation())
+        else -> logger.error("{}", this.message)
+    }
+    this.causesList { logger.error(it) }
+    logger.trace(MessageBundle.message("message.error.internal_error"), this.message)
+    logger.trace(MessageBundle.message("message.error.thread"), Thread.currentThread().name)
+    logger.trace(MessageBundle.message("message.error.exception"), this)
+}
+
+/**
+ * Log exception as warning
+ *
+ * @receiver Exception
+ * @param logger Logger
+ */
+@Suppress("unused")
+fun Exception.warnMessageFromException(logger: Logger) {
+    when (this) {
+        is AppException -> logger.warn("{} {}", this.message, this.suspectedLocation.describeLocation())
+        else -> logger.warn("{}", this.message)
+    }
+    this.causesList { logger.warn(it) }
+    logger.trace(MessageBundle.message("message.error.internal_error"), this.message)
+    logger.trace(MessageBundle.message("message.error.thread"), Thread.currentThread().name)
+    logger.trace(MessageBundle.message("message.error.exception"), this)
+}
+
+/**
  * Generate exception causes stack
  *
  * @receiver Throwable
@@ -83,7 +120,7 @@ private fun causesList(throwable: Throwable, block: (msg: String) -> Unit) {
     if (exception != null) {
         val message = MessageBundle.message("message.exception.cause_of_upper", exception.message)
         when (exception) {
-            is AppDataException -> block(message + " " + exception.suspectedLocation.placeInfo() + ".")
+            is AppDataException -> block(message + " " + exception.suspectedLocation.describeLocation())
             else -> block(message)
         }
         causesList(exception, block)

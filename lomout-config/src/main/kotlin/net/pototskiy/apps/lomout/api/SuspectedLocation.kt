@@ -70,13 +70,13 @@ data class SuspectedLocation(
      * @return String
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    fun attributeInfo(): String {
+    fun describeAttribute(): String {
         val entityType = entity?.simpleName
             ?: attribute?.owner?.simpleName
             ?: ""
         val result = mutableListOf<String>()
-        if (attribute?.name != null) result.add(message("message.exception.place.attribute", attribute.name))
-        if (entityType.isNotEmpty()) result.add(message("message.exception.place.entity_type", entityType))
+        if (attribute?.name != null) result.add(message("message.exception.location.attribute", attribute.name))
+        if (entityType.isNotEmpty()) result.add(message("message.exception.location.entity_type", entityType))
         return if (result.size > 0) {
             result.joinToString(", ")
         } else {
@@ -90,18 +90,18 @@ data class SuspectedLocation(
      * @return String
      */
     @Suppress("MemberVisibilityCanBePrivate", "ComplexMethod")
-    fun cellInfo(): String {
-        val workbookName = workbookName()
-        val sheetName = sheetName()
+    fun describeCell(): String {
+        val workbookName = describeWorkbook()
+        val sheetName = describeSheet()
         val rowNum = rowNum()
         val rowNumString = if (rowNum == null) "" else (rowNum + 1).toString()
         val columnNum = cell?.address?.column
         val column = if (columnNum == null) "" else "${columnNum + 1}(${columnNumberToAlpha(columnNum)})"
         val result = mutableListOf<String>()
-        if (workbookName.isNotEmpty()) result.add(message("message.exception.place.workbook", workbookName))
-        if (sheetName.isNotEmpty()) result.add(message("message.exception.place.sheet", sheetName))
-        if (rowNumString.isNotEmpty()) result.add(message("message.exception.place.row", rowNumString))
-        if (column.isNotEmpty()) result.add(message("message.exception.place.column", column))
+        if (workbookName.isNotEmpty()) result.add(message("message.exception.location.workbook", workbookName))
+        if (sheetName.isNotEmpty()) result.add(message("message.exception.location.sheet", sheetName))
+        if (rowNumString.isNotEmpty()) result.add(message("message.exception.location.row", rowNumString))
+        if (column.isNotEmpty()) result.add(message("message.exception.location.column", column))
         return if (result.size > 0) {
             result.joinToString(", ")
         } else {
@@ -111,14 +111,14 @@ data class SuspectedLocation(
 
     private fun rowNum() = row?.rowNum ?: cell?.row?.rowNum
 
-    private fun sheetName(): String {
+    private fun describeSheet(): String {
         return (sheet?.name
             ?: row?.sheet?.name
             ?: cell?.row?.sheet?.name
             ?: "")
     }
 
-    private fun workbookName(): String {
+    private fun describeWorkbook(): String {
         return (workbook?.name
             ?: sheet?.workbook?.name
             ?: row?.sheet?.workbook?.name
@@ -132,14 +132,14 @@ data class SuspectedLocation(
      * @return String
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    fun fieldInfo(): String {
+    fun describeField(): String {
         val column = if (field?.column == null) {
             ""
         } else {
             "${field.column + 1}(${columnNumberToAlpha(field.column)})"
         }
         return if (column.isNotEmpty()) {
-            message("message.exception.place.field", "${field?.name ?: ""}($column)")
+            message("message.exception.location.field", "${field?.name ?: ""}($column)")
         } else {
             ""
         }
@@ -151,8 +151,8 @@ data class SuspectedLocation(
      * @return String
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    fun dataInfo(): String {
-        return if (data == null) "" else message("message.exception.place.value", "$data(${data::class.simpleName})")
+    fun describeValue(): String {
+        return if (data == null) "" else message("message.exception.location.value", "$data(${data::class.simpleName})")
     }
 
     /**
@@ -160,18 +160,18 @@ data class SuspectedLocation(
      *
      * @return String
      */
-    fun placeInfo(): String {
-        val attrInfo = attributeInfo()
-        val cellInfo = cellInfo()
-        val fieldInfo = fieldInfo()
-        val dataInfo = dataInfo()
+    fun describeLocation(): String {
+        val attrInfo = describeAttribute()
+        val cellInfo = describeCell()
+        val fieldInfo = describeField()
+        val dataInfo = describeValue()
         val result = mutableListOf<String>()
         if (attrInfo.isNotEmpty()) result.add(attrInfo)
         if (cellInfo.isNotEmpty()) result.add(cellInfo)
         if (fieldInfo.isNotEmpty()) result.add(fieldInfo)
         if (dataInfo.isNotEmpty()) result.add(dataInfo)
         return if (result.size > 0) {
-            message("message.exception.place.place", result.joinToString(", "))
+            message("message.exception.location.location", result.joinToString(", "))
         } else {
             ""
         }

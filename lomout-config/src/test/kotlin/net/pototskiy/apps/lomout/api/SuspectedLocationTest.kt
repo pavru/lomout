@@ -53,16 +53,16 @@ internal class SuspectedLocationTest {
 
     @Test
     internal fun attributeInfo() {
-        assertThat(suspectedLocation().attributeInfo()).isEqualTo("")
+        assertThat(suspectedLocation().describeAttribute()).isEqualTo("")
         val place = suspectedLocation(attr1)
-        assertThat(place.attributeInfo()).isEqualTo("A:'attr1', E:'EntityType1'")
+        assertThat(place.describeAttribute()).isEqualTo("A:'attr1', E:'EntityType1'")
         val place2 = place + EntityType2::class
-        assertThat(place2.attributeInfo()).isEqualTo("A:'attr1', E:'EntityType2'")
+        assertThat(place2.describeAttribute()).isEqualTo("A:'attr1', E:'EntityType2'")
     }
 
     @Test
     fun cellInfo() {
-        assertThat(suspectedLocation().cellInfo()).isEqualTo("")
+        assertThat(suspectedLocation().describeCell()).isEqualTo("")
         val excelWorkbook = HSSFWorkbook()
         excelWorkbook.setFileName(File("test.xls"))
         val workbook = ExcelWorkbook(excelWorkbook)
@@ -73,38 +73,38 @@ internal class SuspectedLocationTest {
         excelRow.createCell(5)
         val cell = row!![5]
         val place = suspectedLocation(cell!!)
-        assertThat(place.cellInfo()).isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
-        assertThat((place + row).cellInfo()).isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
-        assertThat((place + row + sheet).cellInfo())
+        assertThat(place.describeCell()).isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
+        assertThat((place + row).describeCell()).isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
+        assertThat((place + row + sheet).describeCell())
             .isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
-        assertThat((place + row + sheet + workbook).cellInfo())
+        assertThat((place + row + sheet + workbook).describeCell())
             .isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
-        assertThat(suspectedLocation(workbook).cellInfo()).isEqualTo("W:'test.xls'")
-        assertThat((suspectedLocation(workbook) + sheet).cellInfo()).isEqualTo("W:'test.xls', S:'sheet'")
-        assertThat((suspectedLocation(workbook) + sheet + row).cellInfo())
+        assertThat(suspectedLocation(workbook).describeCell()).isEqualTo("W:'test.xls'")
+        assertThat((suspectedLocation(workbook) + sheet).describeCell()).isEqualTo("W:'test.xls', S:'sheet'")
+        assertThat((suspectedLocation(workbook) + sheet + row).describeCell())
             .isEqualTo("W:'test.xls', S:'sheet', R:'4'")
-        assertThat((suspectedLocation(workbook) + sheet + row + cell).cellInfo())
+        assertThat((suspectedLocation(workbook) + sheet + row + cell).describeCell())
             .isEqualTo("W:'test.xls', S:'sheet', R:'4', C:'6(F)'")
     }
 
     @Test
     fun fieldInfo() {
-        assertThat(suspectedLocation().fieldInfo()).isEqualTo("")
+        assertThat(suspectedLocation().describeField()).isEqualTo("")
         val field = Field("field", 5, null)
         val place = suspectedLocation(field)
-        assertThat(place.fieldInfo()).isEqualTo("F:'field(6(F))'")
+        assertThat(place.describeField()).isEqualTo("F:'field(6(F))'")
     }
 
     @Test
     fun dataInfo() {
-        assertThat(suspectedLocation().dataInfo()).isEqualTo("")
-        assertThat(suspectedValue(56L).dataInfo()).isEqualTo("V:'56(Long)'")
+        assertThat(suspectedLocation().describeValue()).isEqualTo("")
+        assertThat(suspectedValue(56L).describeValue()).isEqualTo("V:'56(Long)'")
     }
 
     @Test
     fun placeInfo() {
-        assertThat(suspectedLocation().fieldInfo()).isEqualTo("")
+        assertThat(suspectedLocation().describeField()).isEqualTo("")
         val place = suspectedValue(5.6) + attr2
-        assertThat(place.placeInfo()).isEqualTo("Place: A:'attr2', E:'EntityType2', V:'5.6(Double)'.")
+        assertThat(place.describeLocation()).isEqualTo("Location: A:'attr2', E:'EntityType2', V:'5.6(Double)'.")
     }
 }

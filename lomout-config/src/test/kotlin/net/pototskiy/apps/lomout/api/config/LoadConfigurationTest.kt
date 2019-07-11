@@ -79,7 +79,7 @@ internal class LoadConfigurationTest {
         val log = logCatcher.log
         logCatcher.stopToCatch()
         @Suppress("RegExpRedundantEscape", "GraziInspection")
-        assertThat(log.contains(Regex("^\\[ERROR\\] .* - Script cannot be evaluated$"))).isEqualTo(true)
+        assertThat(log).containsPattern("""\[ERROR\] .* - Script cannot be evaluated""")
     }
 
     @Suppress("TooGenericExceptionCaught")

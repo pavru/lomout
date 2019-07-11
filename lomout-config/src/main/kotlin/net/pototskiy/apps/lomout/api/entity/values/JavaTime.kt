@@ -71,7 +71,7 @@ val LocalDateTime.millis: Long
     get() = this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
 /**
- * Get duration in secondes as Double
+ * Get duration in seconds as Double
  */
 @Suppress("MagicNumber")
 val Duration.secondFractions: Double
