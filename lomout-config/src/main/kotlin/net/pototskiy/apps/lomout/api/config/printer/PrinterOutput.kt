@@ -29,7 +29,7 @@ import net.pototskiy.apps.lomout.api.config.loader.SourceData
 import net.pototskiy.apps.lomout.api.config.loader.SourceDataCollection
 import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -82,7 +82,7 @@ data class PrinterOutput(
         fun file(block: SourceData.Builder.() -> Unit) {
             this.file = SourceData.Builder(helper).apply(block).build()
             if (this.file?.sheet !is SourceSheetDefinitionWithName) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.print.sheet.name.no_regex"))
+                throw AppConfigException(suspectedLocation(), message("message.error.config.print.sheet.name.no_regex"))
             }
         }
 
@@ -133,12 +133,12 @@ data class PrinterOutput(
         fun build(): PrinterOutput {
             return PrinterOutput(
                 file ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.print.out_file_not_defined")
                 ),
                 printHead,
                 fieldSets ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.print.fieldset.not_defined")
                 )
             )

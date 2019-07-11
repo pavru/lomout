@@ -24,7 +24,7 @@ class OnecGroupToLong : LongAttributeReader(), ReaderBuilder {
         try {
             return input.asString().drop(1).stringToLong(locale.createLocale(), false)
         } catch (e: ParseException) {
-            throw AppDataException(badPlace(attribute) + input, e.message, e)
+            throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
         }
     }
 

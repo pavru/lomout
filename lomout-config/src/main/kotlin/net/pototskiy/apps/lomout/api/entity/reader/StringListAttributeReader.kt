@@ -21,7 +21,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
@@ -55,7 +55,7 @@ open class StringListAttributeReader : AttributeReader<List<String>?>() {
             }
             CellType.BLANK -> null
             else -> throw AppDataException(
-                badPlace(input) + attribute, message("message.error.data.stringlist.reading_not_supported")
+                suspectedLocation(input) + attribute, message("message.error.data.stringlist.reading_not_supported")
             )
         }
     }

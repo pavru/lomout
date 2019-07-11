@@ -24,7 +24,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -119,7 +119,7 @@ data class LoaderConfiguration(
         fun build(): LoaderConfiguration {
             val files =
                 this.files ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.load.file.not_defined")
                 )
             return LoaderConfiguration(

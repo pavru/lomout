@@ -31,7 +31,7 @@ class CategoryClassifier : PipelineClassifierPlugin() {
             if (group.transformed_path == categoryPath) return element.match()
             return element.mismatch()
         } catch (e: Exception) {
-            throw AppDataException(unknownPlace(), e.message, e)
+            throw AppDataException(suspectedLocation(), e.message, e)
         }
     }
 

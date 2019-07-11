@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.config.loader.LoaderConfiguration
 import net.pototskiy.apps.lomout.api.config.mediator.MediatorConfiguration
 import net.pototskiy.apps.lomout.api.config.printer.PrinterConfiguration
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 import kotlin.reflect.full.superclasses
 
@@ -199,5 +199,5 @@ fun Any.config(block: Config.Builder.() -> Unit) {
         val helper = ConfigBuildHelper()
         script.evaluatedConfig = Config.Builder(helper).apply(block).build()
     } else
-        throw AppConfigException(unknownPlace(), message("message.error.config.bad.object"))
+        throw AppConfigException(suspectedLocation(), message("message.error.config.bad.object"))
 }

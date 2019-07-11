@@ -32,9 +32,9 @@ import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import kotlin.reflect.KClass
 
 /**
- * Domain exception place.
+ * Domain exception suspectedLocation.
  *
- * Problem place code:
+ * Problem suspectedLocation code:
  * * E — Entity type
  * * A — Attribute
  * * F — Field
@@ -54,7 +54,7 @@ import kotlin.reflect.KClass
  * @property data The problem value
  * @constructor
  */
-data class DomainExceptionPlace(
+data class SuspectedLocation(
     val entity: KClass<out Document>? = null,
     val attribute: DocumentMetadata.Attribute? = null,
     val field: Field? = null,
@@ -156,7 +156,7 @@ data class DomainExceptionPlace(
     }
 
     /**
-     * Generate full place text info
+     * Generate full suspectedLocation text info
      *
      * @return String
      */
@@ -179,147 +179,147 @@ data class DomainExceptionPlace(
 }
 
 /**
- * Create [DomainExceptionPlace] for bad entity type
+ * Create [SuspectedLocation] for bad entity type
  *
  * @param entity The entity type
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(entity: KClass<out Document>) = DomainExceptionPlace(entity = entity)
+fun suspectedLocation(entity: KClass<out Document>) = SuspectedLocation(entity = entity)
 
 /**
- * Create [DomainExceptionPlace] for a bad attribute
+ * Create [SuspectedLocation] for a bad attribute
  *
  * @param attribute The bad attribute
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(attribute: DocumentMetadata.Attribute) = DomainExceptionPlace(attribute = attribute)
+fun suspectedLocation(attribute: DocumentMetadata.Attribute) = SuspectedLocation(attribute = attribute)
 
 /**
- * Create [DomainExceptionPlace] for a bad field
+ * Create [SuspectedLocation] for a bad field
  *
  * @param field The bad field
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(field: Field) = DomainExceptionPlace(field = field)
+fun suspectedLocation(field: Field) = SuspectedLocation(field = field)
 
 /**
- * Create [DomainExceptionPlace] for a bad workbook
+ * Create [SuspectedLocation] for a bad workbook
  *
  * @param workbook The bad workbook
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(workbook: Workbook) = DomainExceptionPlace(workbook = workbook)
+fun suspectedLocation(workbook: Workbook) = SuspectedLocation(workbook = workbook)
 
 /**
- * Create [DomainExceptionPlace] for a bad sheet
+ * Create [SuspectedLocation] for a bad sheet
  *
  * @param sheet The bad sheet
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(sheet: Sheet) = DomainExceptionPlace(sheet = sheet)
+fun suspectedLocation(sheet: Sheet) = SuspectedLocation(sheet = sheet)
 
 /**
- * Create [DomainExceptionPlace] for a bad row
+ * Create [SuspectedLocation] for a bad row
  *
  * @param row The bad workbook row
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(row: Row) = DomainExceptionPlace(row = row)
+fun suspectedLocation(row: Row) = SuspectedLocation(row = row)
 
 /**
- * Create [DomainExceptionPlace] for a bad cell
+ * Create [SuspectedLocation] for a bad cell
  *
  * @param cell The bad workbook cell
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badPlace(cell: Cell) = DomainExceptionPlace(cell = cell)
+fun suspectedLocation(cell: Cell) = SuspectedLocation(cell = cell)
 
 /**
- * Create [DomainExceptionPlace] for bad value
+ * Create [SuspectedLocation] for bad value
  *
  * @param data The bad value
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun badData(data: Any) = DomainExceptionPlace(data = data)
+fun suspectedValue(data: Any) = SuspectedLocation(data = data)
 
 /**
- * Create [DomainExceptionPlace] without any place
+ * Create [SuspectedLocation] without any suspectedLocation
  *
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-fun unknownPlace() = DomainExceptionPlace()
+fun suspectedLocation() = SuspectedLocation()
 
 /**
- * Add bad entity type to the [DomainExceptionPlace]
+ * Add bad entity type to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param entity The entity type
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(entity: KClass<out Document>) = this.copy(entity = entity)
+operator fun SuspectedLocation.plus(entity: KClass<out Document>) = this.copy(entity = entity)
 
 /**
- * Add a bad attribute to the [DomainExceptionPlace]
+ * Add a bad attribute to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param attribute The bad attribute
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(attribute: DocumentMetadata.Attribute) = this.copy(attribute = attribute)
+operator fun SuspectedLocation.plus(attribute: DocumentMetadata.Attribute) = this.copy(attribute = attribute)
 
 /**
- * Add a bad field to the [DomainExceptionPlace]
+ * Add a bad field to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param field The bad field
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(field: Field) = this.copy(field = field)
+operator fun SuspectedLocation.plus(field: Field) = this.copy(field = field)
 
 /**
- * Add a bad workbook to the [DomainExceptionPlace]
+ * Add a bad workbook to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param workbook The bad workbook
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(workbook: Workbook) = this.copy(workbook = workbook)
+operator fun SuspectedLocation.plus(workbook: Workbook) = this.copy(workbook = workbook)
 
 /**
- * Add a bad sheet to the [DomainExceptionPlace]
+ * Add a bad sheet to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param sheet The bad sheet
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(sheet: Sheet) = this.copy(sheet = sheet)
+operator fun SuspectedLocation.plus(sheet: Sheet) = this.copy(sheet = sheet)
 
 /**
- * Add a bad row to the [DomainExceptionPlace]
+ * Add a bad row to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param row The bad workbook row
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(row: Row) = this.copy(row = row)
+operator fun SuspectedLocation.plus(row: Row) = this.copy(row = row)
 
 /**
- * Add a bad cell to the [DomainExceptionPlace]
+ * Add a bad cell to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param cell The bad workbook cell
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(cell: Cell) = this.copy(cell = cell)
+operator fun SuspectedLocation.plus(cell: Cell) = this.copy(cell = cell)
 
 /**
- * Add bad value to the [DomainExceptionPlace]
+ * Add bad value to the [SuspectedLocation]
  *
- * @receiver DomainExceptionPlace
+ * @receiver SuspectedLocation
  * @param data The bad value
- * @return DomainExceptionPlace
+ * @return SuspectedLocation
  */
-operator fun DomainExceptionPlace.plus(data: Any) = this.copy(data = data)
+operator fun SuspectedLocation.plus(data: Any) = this.copy(data = data)
 
 /**
  * Convert column number to column alpha name

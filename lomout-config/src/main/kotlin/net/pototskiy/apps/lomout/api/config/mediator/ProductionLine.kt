@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -134,17 +134,17 @@ class ProductionLine(
             validatePipeline(
                 pipeline
                     ?: throw AppConfigException(
-                        unknownPlace(),
+                        suspectedLocation(),
                         message("message.error.config.pipeline.no_start_pipeline")
                     )
             )
             return ProductionLine(
                 inputs ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.input.one_must_be")
                 ),
                 output ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.output.must_be")
                 ),
                 pipeline!!
@@ -154,7 +154,7 @@ class ProductionLine(
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
                 throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.matched.must_have_assembler")
                 )
             }

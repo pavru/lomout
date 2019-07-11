@@ -37,7 +37,7 @@ class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
             }
             data[target.documentMetadata.attributes.getValue("remove_flag")] = false
         } catch (e: Exception) {
-            throw AppDataException(badPlace(target), e.message, e)
+            throw AppDataException(suspectedLocation(target), e.message, e)
         }
         return data
     }

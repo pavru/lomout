@@ -23,7 +23,7 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.config.DatabaseConfig
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
@@ -84,7 +84,7 @@ class EntityRepository(
         return try {
             type.createInstance()
         } catch (e: IllegalArgumentException) {
-            throw AppConfigException(badPlace(type), message("message.error.document.cannot_create"))
+            throw AppConfigException(suspectedLocation(type), message("message.error.document.cannot_create"))
         }
     }
 

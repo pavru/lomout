@@ -22,7 +22,7 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.doubleToLong
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
@@ -63,7 +63,7 @@ fun Cell.readeDateTimeWithLocale(
         try {
             this.stringValue.stringToDateTime(locale)
         } catch (e: AppDataException) {
-            throw AppDataException(e.place + this + attribute, e.message, e)
+            throw AppDataException(e.suspectedLocation + this + attribute, e.message, e)
         }
     CellType.BLANK -> null
 }
@@ -88,7 +88,7 @@ fun Cell.readeDateTimeWithPattern(
         try {
             this.stringValue.stringToDateTime(pattern)
         } catch (e: AppDataException) {
-            throw AppDataException(e.place + this + attribute, e.message, e)
+            throw AppDataException(e.suspectedLocation + this + attribute, e.message, e)
         }
     CellType.BLANK -> null
 }
@@ -113,7 +113,7 @@ fun Cell.readDateWithLocale(
         try {
             this.stringValue.stringToDate(locale)
         } catch (e: AppDataException) {
-            throw AppDataException(e.place + this + attribute, e.message, e)
+            throw AppDataException(e.suspectedLocation + this + attribute, e.message, e)
         }
     CellType.BLANK -> null
 }
@@ -138,7 +138,7 @@ fun Cell.readDateWithPattern(
         try {
             this.stringValue.stringToDate(pattern)
         } catch (e: AppDataException) {
-            throw AppDataException(e.place + this + attribute, e.message, e)
+            throw AppDataException(e.suspectedLocation + this + attribute, e.message, e)
         }
     CellType.BLANK -> null
 }
@@ -157,7 +157,7 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
     CellType.STRING -> try {
         this.stringValue.stringToBoolean(locale)
     } catch (e: ParseException) {
-        throw AppDataException(badPlace(this), e.message, e)
+        throw AppDataException(suspectedLocation(this), e.message, e)
     }
     CellType.BLANK -> null
 }
@@ -177,7 +177,7 @@ fun Cell.readDouble(locale: Locale, groupingUsed: Boolean): Double? = when (this
     CellType.STRING -> try {
         this.stringValue.stringToDouble(locale, groupingUsed)
     } catch (e: ParseException) {
-        throw AppDataException(badPlace(this), e.message, e)
+        throw AppDataException(suspectedLocation(this), e.message, e)
     }
     CellType.BLANK -> null
 }
@@ -197,7 +197,7 @@ fun Cell.readLong(locale: Locale, groupingUsed: Boolean): Long? = when (this.cel
     CellType.STRING -> try {
         this.stringValue.stringToLong(locale, groupingUsed)
     } catch (e: ParseException) {
-        throw AppDataException(badPlace(this), e.message, e)
+        throw AppDataException(suspectedLocation(this), e.message, e)
     }
     CellType.BLANK -> null
 }

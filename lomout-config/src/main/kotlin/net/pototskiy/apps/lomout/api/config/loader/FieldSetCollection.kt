@@ -24,7 +24,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -133,7 +133,7 @@ data class FieldSetCollection(private val sets: List<FieldSet>) : List<FieldSet>
          */
         fun build(): FieldSetCollection {
             if (!fieldSets.any { it.mainSet }) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.fieldset.no_main_set"))
+                throw AppConfigException(suspectedLocation(), message("message.error.config.fieldset.no_main_set"))
             }
             return FieldSetCollection(fieldSets)
         }

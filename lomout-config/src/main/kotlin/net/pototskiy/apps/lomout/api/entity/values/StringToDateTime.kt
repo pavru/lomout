@@ -24,7 +24,7 @@ package net.pototskiy.apps.lomout.api.entity.values
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.PublicApi
-import net.pototskiy.apps.lomout.api.badData
+import net.pototskiy.apps.lomout.api.suspectedValue
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -46,7 +46,7 @@ fun String.stringToDate(locale: Locale): LocalDate {
         LocalDate.parse(this.trim(), format)
     } catch (e: DateTimeParseException) {
         throw AppDataException(
-            badData(this),
+            suspectedValue(this),
             message("message.error.data.string.to_date_locale_error", this, locale),
             e
         )
@@ -67,7 +67,7 @@ fun String.stringToDate(pattern: String): LocalDate {
         LocalDate.parse(this.trim(), format)
     } catch (e: DateTimeParseException) {
         throw AppDataException(
-            badData(this),
+            suspectedValue(this),
             message("message.error.data.string.to_date_pattern_error", this, pattern),
             e
         )
@@ -88,7 +88,7 @@ fun String.stringToDateTime(pattern: String): LocalDateTime {
         LocalDateTime.parse(this.trim(), format)
     } catch (e: DateTimeParseException) {
         throw AppDataException(
-            badData(this),
+            suspectedValue(this),
             message("message.error.data.string.to_datetime_pattern_error", this, pattern),
             e
         )
@@ -109,7 +109,7 @@ fun String.stringToDateTime(locale: Locale): LocalDateTime {
         LocalDateTime.parse(this.trim(), format)
     } catch (e: DateTimeParseException) {
         throw AppDataException(
-            badData(this),
+            suspectedValue(this),
             message("message.error.data.string.to_datetime_locale_error", this, locale),
             e
         )

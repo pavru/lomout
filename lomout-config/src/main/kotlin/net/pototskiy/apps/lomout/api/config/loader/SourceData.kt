@@ -26,7 +26,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithPattern
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 
 /**
  * Source data configuration
@@ -64,7 +64,7 @@ data class SourceData(
         fun file(id: String) {
             file = helper.definedSourceFiles.findRegistered(id)
                 ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.load.source.file_not_defined", id)
                 )
         }
@@ -112,7 +112,7 @@ data class SourceData(
          */
         fun build(): SourceData = SourceData(
             this.file ?: throw AppConfigException(
-                unknownPlace(),
+                suspectedLocation(),
                 message("message.error.config.load.source.file_not_defined", "")
             ),
             this.sheet,

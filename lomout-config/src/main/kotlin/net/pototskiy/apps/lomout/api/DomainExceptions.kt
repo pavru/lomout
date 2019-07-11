@@ -25,11 +25,18 @@ package net.pototskiy.apps.lomout.api
 @Generated
 open class AppException : Exception {
     /**
+     * Exception suspectedLocation
+     */
+    val suspectedLocation: SuspectedLocation
+
+    /**
      *
      * @constructor
      */
     @Suppress("unused")
-    constructor() : super()
+    constructor(suspectedLocation: SuspectedLocation = suspectedLocation()) : super() {
+        this.suspectedLocation = suspectedLocation
+    }
 
     /**
      *
@@ -37,7 +44,9 @@ open class AppException : Exception {
      * @constructor
      */
     @Suppress("unused")
-    constructor(message: String?) : super(message)
+    constructor(suspectedLocation: SuspectedLocation = suspectedLocation(), message: String?) : super(message) {
+        this.suspectedLocation = suspectedLocation
+    }
 
     /**
      *
@@ -46,7 +55,29 @@ open class AppException : Exception {
      * @constructor
      */
     @Suppress("unused")
-    constructor(message: String?, cause: Throwable?) : super(message, cause)
+    constructor(suspectedLocation: SuspectedLocation = suspectedLocation(), message: String?, cause: Throwable?) : super(
+        message,
+        cause
+    ) {
+        this.suspectedLocation = suspectedLocation
+    }
+}
+
+@JvmName("throwable_cause_list")
+fun Throwable.causesList(block: (msg: String) -> Unit) {
+    causesList(this, block)
+}
+
+private fun causesList(throwable: Throwable, block: (msg: String) -> Unit) {
+    val exception = throwable.cause
+    if (exception != null) {
+        val message = MessageBundle.message("message.exception.cause_of_upper", exception.message)
+        when (exception) {
+            is AppDataException -> block(message + " " + exception.suspectedLocation.placeInfo() + ".")
+            else -> block(message)
+        }
+        causesList(exception, block)
+    }
 }
 
 /**
@@ -55,18 +86,11 @@ open class AppException : Exception {
 @Generated
 open class AppConfigException : AppException {
     /**
-     * Exception place
-     */
-    val place: DomainExceptionPlace
-
-    /**
      *
      * @constructor
      */
     @Suppress("unused")
-    constructor(place: DomainExceptionPlace) : super() {
-        this.place = place
-    }
+    constructor(place: SuspectedLocation) : super(place)
 
     /**
      *
@@ -74,9 +98,7 @@ open class AppConfigException : AppException {
      * @constructor
      */
     @Suppress("unused")
-    constructor(place: DomainExceptionPlace, message: String?) : super(message) {
-        this.place = place
-    }
+    constructor(place: SuspectedLocation, message: String?) : super(place, message)
 
     /**
      *
@@ -85,9 +107,7 @@ open class AppConfigException : AppException {
      * @constructor
      */
     @Suppress("unused")
-    constructor(place: DomainExceptionPlace, message: String?, cause: Throwable?) : super(message, cause) {
-        this.place = place
-    }
+    constructor(place: SuspectedLocation, message: String?, cause: Throwable?) : super(place, message, cause)
 }
 
 /**
@@ -96,18 +116,11 @@ open class AppConfigException : AppException {
 @Generated
 open class AppDataException : AppException {
     /**
-     * Exception place
-     */
-    val place: DomainExceptionPlace
-
-    /**
      *
      * @constructor
      */
     @Suppress("unused")
-    constructor(place: DomainExceptionPlace) : super() {
-        this.place = place
-    }
+    constructor(place: SuspectedLocation) : super(place)
 
     /**
      *
@@ -115,9 +128,7 @@ open class AppDataException : AppException {
      * @constructor
      */
     @Suppress("unused")
-    constructor(place: DomainExceptionPlace, message: String?) : super(message) {
-        this.place = place
-    }
+    constructor(place: SuspectedLocation, message: String?) : super(place, message)
 
     /**
      *
@@ -126,7 +137,5 @@ open class AppDataException : AppException {
      * @constructor
      */
     @Suppress("unused")
-    constructor(place: DomainExceptionPlace, message: String?, cause: Throwable?) : super(message, cause) {
-        this.place = place
-    }
+    constructor(place: SuspectedLocation, message: String?, cause: Throwable?) : super(place, message, cause)
 }

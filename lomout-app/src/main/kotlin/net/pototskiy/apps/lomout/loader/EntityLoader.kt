@@ -25,12 +25,12 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.MessageBundle.message
-import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
-import net.pototskiy.apps.lomout.api.DomainExceptionPlace
+import net.pototskiy.apps.lomout.api.SuspectedLocation
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
+import net.pototskiy.apps.lomout.api.causesList
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.FieldSet
 import net.pototskiy.apps.lomout.api.config.loader.Load
@@ -93,10 +93,10 @@ class EntityLoader(
             try {
                 processRow(row)
             } catch (e: AppException) {
-                rowException(badPlace(row), e)
+                rowException(suspectedLocation(row), e)
                 continue
             } catch (e: Exception) {
-                rowException(badPlace(row), e)
+                rowException(suspectedLocation(row), e)
                 continue
             }
         }
@@ -119,24 +119,22 @@ class EntityLoader(
             val data = getData(row, rowFiledSet.fieldToAttr).toMutableMap()
             plusAdditionalData(data)
             validateKeyFieldData(data, rowFiledSet.fieldToAttr)
-            updateChanel.send(UpdaterData(row, data, badPlace(row) + loadConfig.entity))
+            updateChanel.send(UpdaterData(row, data, suspectedLocation(row) + loadConfig.entity))
         } else {
             val data = getData(row, rowFiledSet.fieldToAttr)
             extraData[rowFiledSet.name] = data
         }
     }
 
-    private fun rowException(place: DomainExceptionPlace, e: Exception) {
+    private fun rowException(place: SuspectedLocation, e: Exception) {
         when (e) {
-            is AppConfigException -> log.error("{} {}", e.message, e.place.placeInfo())
-            is AppDataException -> log.error("{} {}", e.message, e.place.placeInfo())
-            else -> {
-                log.error("{} {}", e.message, place.placeInfo())
-                log.trace(message("message.error.loader.internal_error"), e.message)
-                log.trace(message("message.error.loader.thread"), Thread.currentThread().name)
-                log.trace(message("message.error.loader.exception"), e)
-            }
+            is AppException -> log.error("{} {}", e.message, e.suspectedLocation.placeInfo())
+            else -> log.error("{} {}", e.message, place.placeInfo())
         }
+        e.causesList { log.error(it) }
+        log.trace(message("message.error.loader.internal_error"), e.message)
+        log.trace(message("message.error.loader.thread"), Thread.currentThread().name)
+        log.trace(message("message.error.loader.exception"), e)
     }
 
     private fun plusAdditionalData(data: MutableMap<Attribute, Any>) =
@@ -180,7 +178,7 @@ class EntityLoader(
         keyFields.forEach { (_, attr) ->
             val v = data[attr]
             if (v == null || (v is String && v.isBlank())) {
-                throw AppDataException(badPlace(attr), message("message.error.loader.data.empty_key"))
+                throw AppDataException(suspectedLocation(attr), message("message.error.loader.data.empty_key"))
             }
         }
     }
@@ -193,7 +191,7 @@ class EntityLoader(
             val cell = row[field.column]
                 ?: if (attr.isNullable) row.getOrEmptyCell(field.column) else null
                     ?: throw AppDataException(
-                        badPlace(row) + field + attr,
+                        suspectedLocation(row) + field + attr,
                         message("message.error.loader.data.no_cell")
                     )
             testFieldRegex(field, cell)
@@ -201,7 +199,7 @@ class EntityLoader(
             (attr.reader as AttributeReader<Any?>).read(attr, cell).also {
                 if (it == null && (!attr.isNullable || attr.isKey)) {
                     throw AppDataException(
-                        badPlace(attr) + field + cell,
+                        suspectedLocation(attr) + field + cell,
                         message("message.error.loader.data.null_to_notnull")
                     )
                 } else if (it != null) {
@@ -214,7 +212,7 @@ class EntityLoader(
 
     private fun testFieldRegex(field: Field, cell: Cell) {
         if (!field.isMatchToPattern(cell.asString())) {
-            throw AppDataException(badPlace(field) + cell, message("message.error.loader.data.field_not_match"))
+            throw AppDataException(suspectedLocation(field) + cell, message("message.error.loader.data.field_not_match"))
         }
     }
 
@@ -237,7 +235,7 @@ class EntityLoader(
         for (field in set.fields.filter { field -> field.regex != null }) {
             val cell = row[field.column]
                 ?: throw AppDataException(
-                    badPlace(field) + row,
+                    suspectedLocation(field) + row,
                     message("message.error.loader.data.no_classifier_cell")
                 )
             if (!field.isMatchToPattern(cell.asString())) fit = false
@@ -248,7 +246,7 @@ class EntityLoader(
     private data class UpdaterData(
         val row: Row,
         val data: Map<Attribute, Any>,
-        val place: DomainExceptionPlace
+        val place: SuspectedLocation
     )
 
     companion object {

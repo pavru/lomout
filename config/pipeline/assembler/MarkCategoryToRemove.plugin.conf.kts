@@ -29,7 +29,7 @@ class MarkCategoryToRemove : PipelineAssemblerPlugin() {
                 MageCategory.attributes.getValue("remove_flag") to true
             )
         } catch (e: Exception) {
-            throw AppConfigException(badPlace(target), e.message, e)
+            throw AppConfigException(suspectedLocation(target), e.message, e)
         }
     }
 }
