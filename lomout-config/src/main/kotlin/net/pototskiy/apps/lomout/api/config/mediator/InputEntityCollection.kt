@@ -78,7 +78,10 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
          */
         fun build(): InputEntityCollection {
             if (entities.isEmpty()) {
-                throw AppConfigException(suspectedLocation(), message("message.error.config.pipeline.input.one_must_be"))
+                throw AppConfigException(
+                    suspectedLocation(),
+                    message("message.error.config.pipeline.input.one_must_be")
+                )
             }
             return InputEntityCollection(entities)
         }

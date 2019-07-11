@@ -93,25 +93,30 @@ open class GenerateBuildClassTask : DefaultTask() {
         return FileSpec.builder(packageName, objectName)
             .addType(
                 TypeSpec.objectBuilder(objectName)
+                    .addKdoc("Build info object")
                     .addType(buildeExcludeRuleClass())
                     .addType(dependencyClassSpec)
                     .addProperty(
                         PropertySpec.builder("lomoutVersion", String::class)
+                            .addKdoc("LoMout application version")
                             .initializer("%S", project.version.toString())
                             .build()
                     )
                     .addProperty(
                         PropertySpec.builder("kotlinVersion", String::class)
+                            .addKdoc("Used Kotlin version")
                             .initializer("%S", Versions.kotlin)
                             .build()
                     )
                     .addProperty(
                         PropertySpec.builder("dependencies", listOfDeps)
+                            .addKdoc("List of dependency to use in script")
                             .initializer("mutableListOf(${dependencies.joinToString(",\n")})")
                             .build()
                     )
                     .addProperty(
                         PropertySpec.builder("moduleName", String::class)
+                            .addKdoc("Gradle module name")
                             .initializer("%S", project.name)
                             .build()
                     )
@@ -125,6 +130,15 @@ open class GenerateBuildClassTask : DefaultTask() {
         val listOfRule = List::class.asClassName().parameterizedBy(excludeRuleClassName)
 
         return TypeSpec.classBuilder("Dependency")
+            .addKdoc("""
+                Dependency definition
+                
+                @property configuration The source configuration of dependency
+                @property group The dependency group(org) name
+                @property name The dependency module(artifact) name
+                @property version The artifact version
+                @property excludeRules The dependencies list to exclude
+            """.trimIndent().trimMargin())
             .addModifiers(KModifier.DATA)
             .primaryConstructor(
                 FunSpec.constructorBuilder()
@@ -169,6 +183,12 @@ open class GenerateBuildClassTask : DefaultTask() {
 
     private fun buildeExcludeRuleClass(): TypeSpec {
         return TypeSpec.classBuilder("ExcludeRule")
+            .addKdoc("""
+                Dependency exclude rule
+                
+                @property group The dependency group(org) name
+                @property name The dependency module(artifact) name
+                """.trimIndent().trimMargin())
             .addModifiers(KModifier.DATA)
             .primaryConstructor(
                 FunSpec.constructorBuilder()

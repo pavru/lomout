@@ -22,8 +22,8 @@ package net.pototskiy.apps.lomout.api.source.workbook.csv
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVParser
 import java.io.InputStreamReader
@@ -70,7 +70,10 @@ class CsvInputWorkbook(
      * @return Sheet
      */
     override fun insertSheet(sheet: String): Sheet {
-        throw AppDataException(suspectedLocation(this), message("message.error.source.csv.sheet_insert_not_allowed", this.name))
+        throw AppDataException(
+            suspectedLocation(this),
+            message("message.error.source.csv.sheet_insert_not_allowed", this.name)
+        )
     }
 
     /**
@@ -99,6 +102,9 @@ fun checkThatItIsCsvInputWorkbook(workbook: CsvWorkbook) {
         returns() implies (workbook is CsvInputWorkbook)
     }
     if (workbook !is CsvInputWorkbook) {
-        throw AppDataException(suspectedLocation(workbook), message("message.error.source.csv.read_only", workbook.name))
+        throw AppDataException(
+            suspectedLocation(workbook),
+            message("message.error.source.csv.read_only", workbook.name)
+        )
     }
 }

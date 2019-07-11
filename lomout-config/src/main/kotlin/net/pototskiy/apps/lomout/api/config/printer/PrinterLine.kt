@@ -202,7 +202,10 @@ class PrinterLine(
                 )
             )
             return PrinterLine(
-                inputs ?: throw AppConfigException(suspectedLocation(), message("message.error.config.print.input_entity")),
+                inputs ?: throw AppConfigException(
+                    suspectedLocation(),
+                    message("message.error.config.print.input_entity")
+                ),
                 outputs ?: throw AppConfigException(
                     suspectedLocation(),
                     message("message.error.config.pipeline.output.must_be")

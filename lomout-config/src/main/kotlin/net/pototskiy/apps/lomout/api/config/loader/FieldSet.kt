@@ -23,7 +23,6 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
@@ -33,6 +32,7 @@ import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
 import net.pototskiy.apps.lomout.api.source.FieldCollection
 import net.pototskiy.apps.lomout.api.source.readFieldNamesFromSource
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.collections.set
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
@@ -118,7 +118,10 @@ data class FieldSet(
 
         private fun addFiled(field: Field, lastAttribute: DocumentMetadata.Attribute?) {
             if (fields.containsKey(field)) {
-                throw AppConfigException(suspectedLocation(field), message("message.error.config.field.exists", field.name))
+                throw AppConfigException(
+                    suspectedLocation(field),
+                    message("message.error.config.field.exists", field.name)
+                )
             }
             @Suppress("UNCHECKED_CAST")
             fields[field] = lastAttribute
@@ -327,9 +330,9 @@ data class FieldSet(
     data class AttributeWithName(val name: String)
 
     companion object {
-        const val NO_ATTRIBUTE_MESSAGE_KEY = "message.error.config.field.no_attribute"
-        const val MAPPING_OPERATOR_FROM_MESSAGE_KEY = "message.error.config.field.mapping_operator_from"
-        const val MAPPING_OPERATOR_TO_MESSAGE_KEY = "message.error.config.field.mapping_operator_to"
+        private const val NO_ATTRIBUTE_MESSAGE_KEY = "message.error.config.field.no_attribute"
+        private const val MAPPING_OPERATOR_FROM_MESSAGE_KEY = "message.error.config.field.mapping_operator_from"
+        private const val MAPPING_OPERATOR_TO_MESSAGE_KEY = "message.error.config.field.mapping_operator_to"
     }
 }
 

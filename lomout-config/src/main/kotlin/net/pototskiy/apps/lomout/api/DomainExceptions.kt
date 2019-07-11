@@ -55,7 +55,11 @@ open class AppException : Exception {
      * @constructor
      */
     @Suppress("unused")
-    constructor(suspectedLocation: SuspectedLocation = suspectedLocation(), message: String?, cause: Throwable?) : super(
+    constructor(
+        suspectedLocation: SuspectedLocation = suspectedLocation(),
+        message: String?,
+        cause: Throwable?
+    ) : super(
         message,
         cause
     ) {
@@ -63,6 +67,12 @@ open class AppException : Exception {
     }
 }
 
+/**
+ * Generate exception causes stack
+ *
+ * @receiver Throwable
+ * @param block Block to process cause message
+ */
 @JvmName("throwable_cause_list")
 fun Throwable.causesList(block: (msg: String) -> Unit) {
     causesList(this, block)
