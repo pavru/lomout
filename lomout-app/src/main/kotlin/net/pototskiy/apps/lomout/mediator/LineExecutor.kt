@@ -27,14 +27,14 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.MessageBundle.message
-import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.errorMessageFromException
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.Logger
 
 abstract class LineExecutor(protected val repository: EntityRepositoryInterface) {
@@ -60,7 +60,11 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                         try {
                             processedRows += processResultData(it)
                         } catch (e: AppException) {
-                            processException(e)
+                            AppDataException(
+                                suspectedLocation(),
+                                message("message.error.mediator.cannot_process_entity"),
+                                e
+                            ).errorMessageFromException(logger)
                         }
                     }
                 })
@@ -69,7 +73,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                 joinAll(*jobs.toTypedArray())
             }
         } catch (e: Exception) {
-            processException(e)
+            e.errorMessageFromException(logger)
         }
         return processedRows
     }
@@ -87,24 +91,6 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                 } while (items.isNotEmpty())
             }
         }
-
-    @SuppressWarnings("kotlin:S1871")
-    private fun processException(e: Exception) {
-        val place = when (e) {
-            is AppConfigException -> e.place
-            is AppDataException -> e.place
-            else -> unknownPlace()
-        }
-        when (e) {
-            is AppConfigException, is AppDataException -> logger.error(
-                message("message.error.mediator.entity_cannot_process"),
-                e.message,
-                place.placeInfo()
-            )
-            else -> logger.error(message("message.error.mediator.entity_cannot_process_only_msg"), e.message)
-        }
-        logger.trace(message("message.error.caused"), e)
-    }
 
     companion object {
         const val PAGE_SIZE = 1000

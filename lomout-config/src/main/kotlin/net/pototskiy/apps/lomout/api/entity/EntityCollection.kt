@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.entity
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -43,7 +43,7 @@ class EntityCollection(private val data: List<Document>) : List<Document> by dat
     operator fun get(type: KClass<out Document>): Document {
         return entityMap[type]
             ?: throw AppDataException(
-                unknownPlace(),
+                suspectedLocation(),
                 message("message.error.pipeline.no_entity_in_collection", type.qualifiedName)
             )
     }

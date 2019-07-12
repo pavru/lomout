@@ -24,7 +24,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileCollection
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 
 /**
  * Printer part configuration
@@ -108,7 +108,7 @@ data class PrinterConfiguration(
          */
         fun build(): PrinterConfiguration {
             return PrinterConfiguration(
-                files ?: throw AppConfigException(unknownPlace(), message("message.error.config.print.no_files")),
+                files ?: throw AppConfigException(suspectedLocation(), message("message.error.config.print.no_files")),
                 PrinterLineCollection(lines)
             )
         }

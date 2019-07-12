@@ -34,7 +34,7 @@ open class GroupToCategoryPath : AttributeBuilder<String?>() {
             ) as? OnecGroupExtended
             return entityExtInfo?.magento_path
         } catch (e: Exception) {
-            throw AppConfigException(badPlace(entity::class), e.message, e)
+            throw AppConfigException(suspectedLocation(entity::class), e.message, e)
         }
     }
 }

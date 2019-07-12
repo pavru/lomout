@@ -21,7 +21,7 @@ package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
@@ -51,7 +51,7 @@ val DocumentMetadata.Attribute.writer: AttributeWriter<out Any?>
                     writerFromAnnotation.klass.createInstance().build()
                 } catch (e: IllegalArgumentException) {
                     throw AppConfigException(
-                        badPlace(this),
+                        suspectedLocation(this),
                         message("message.error.document.attribute.writer_cannot_create")
                     )
                 }
@@ -60,7 +60,7 @@ val DocumentMetadata.Attribute.writer: AttributeWriter<out Any?>
                 defaultWriters.keys.find { this.type.isSubtypeOf(it) }
                     ?.let { defaultWriters[it] }
                     ?: throw AppConfigException(
-                        badPlace(this),
+                        suspectedLocation(this),
                         message("message.error.document.attribute.no_default_writer", this.typeName)
                     )
             }

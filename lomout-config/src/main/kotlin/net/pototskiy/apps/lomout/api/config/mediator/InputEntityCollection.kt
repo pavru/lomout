@@ -24,7 +24,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -78,7 +78,10 @@ data class InputEntityCollection(private val entities: List<InputEntity>) : List
          */
         fun build(): InputEntityCollection {
             if (entities.isEmpty()) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.pipeline.input.one_must_be"))
+                throw AppConfigException(
+                    suspectedLocation(),
+                    message("message.error.config.pipeline.input.one_must_be")
+                )
             }
             return InputEntityCollection(entities)
         }

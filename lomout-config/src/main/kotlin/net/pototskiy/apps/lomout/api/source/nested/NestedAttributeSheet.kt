@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.source.nested
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.source.workbook.Row
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -49,7 +49,7 @@ class NestedAttributeSheet(
         when (row) {
             0 -> (workbook as NestedAttributeWorkbook).cells[0]
             1 -> (workbook as NestedAttributeWorkbook).cells[1]
-            else -> throw AppDataException(badPlace(this), message("message.error.source.nested.only_2_rows"))
+            else -> throw AppDataException(suspectedLocation(this), message("message.error.source.nested.only_2_rows"))
         },
         this
     )
@@ -76,7 +76,7 @@ class NestedAttributeSheet(
         when (row) {
             0 -> (workbook as NestedAttributeWorkbook).cells[0]
             1 -> (workbook as NestedAttributeWorkbook).cells[1]
-            else -> throw AppDataException(badPlace(this), "Attribute workbook has only 2 rows.")
+            else -> throw AppDataException(suspectedLocation(this), "Attribute workbook has only 2 rows.")
         },
         this
     )

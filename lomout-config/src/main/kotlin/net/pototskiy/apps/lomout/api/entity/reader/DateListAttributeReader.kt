@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.stringToDate
@@ -64,13 +64,13 @@ open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
                                     ?: data.stringToDate(locale.createLocale()))
                             }
                     } catch (e: AppDataException) {
-                        throw AppDataException(badPlace(attribute) + input, e.message, e)
+                        throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
                     }
                 }
             }
             CellType.BLANK -> null
             else -> throw AppDataException(
-                badPlace(input) + attribute, message("message.error.data.datelist.cannot_read")
+                suspectedLocation(input) + attribute, message("message.error.data.datelist.cannot_read")
             )
         }
     }

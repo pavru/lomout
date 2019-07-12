@@ -52,7 +52,7 @@ val spiImplementation: Configuration by configurations.creating {
 }
 
 tasks.withType(DokkaTask::class) {
-    moduleName = "lomout-api"
+    moduleName = "lomout-config"
     outputFormat = "html"
     outputDirectory = "$buildDir/javadoc"
     samples = listOf()
@@ -198,7 +198,7 @@ dependencies {
 }
 
 tasks.register<Jar>("sourcesJar") {
-    archiveBaseName.set("lomout-api")
+    archiveBaseName.set("lomout-config")
     archiveClassifier.set("sources")
     from(sourceSets.main.get().allSource)
 }

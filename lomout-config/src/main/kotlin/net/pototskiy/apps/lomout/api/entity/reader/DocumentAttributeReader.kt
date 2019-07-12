@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.reader
@@ -65,7 +65,7 @@ open class DocumentAttributeReader : AttributeReader<Document?>() {
                     attribute.klass.createInstance() as Document
                 } catch (e: IllegalArgumentException) {
                     throw AppConfigException(
-                        badPlace(attribute) + input, message("message.error.data.document.cannot_create")
+                        suspectedLocation(attribute) + input, message("message.error.data.document.cannot_create")
                     )
                 }
                 val metaData = doc.documentMetadata
@@ -81,7 +81,7 @@ open class DocumentAttributeReader : AttributeReader<Document?>() {
             }
             CellType.BLANK -> null
             else -> throw AppDataException(
-                badPlace(input) + attribute,
+                suspectedLocation(input) + attribute,
                 message("message.error.data.document.cannot_read")
             )
         }

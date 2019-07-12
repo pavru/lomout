@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import java.io.File
 import java.util.*
 
@@ -118,7 +118,7 @@ data class SourceFileCollection(private val files: List<SourceFileDefinition>) :
                 return Pair(
                     File(
                         path ?: throw AppConfigException(
-                            unknownPlace(),
+                            suspectedLocation(),
                             message("message.error.config.load.file.path_not_defined")
                         )
                     ),

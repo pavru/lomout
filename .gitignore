@@ -1,16 +1,16 @@
 # Created by .ignore support plugin
 
 /.idea/
-/app/log/
+/lomout-app/log/
 /log/lomout.log
-/app/tmp/
+/lomout-app/tmp/
 /.scannerwork/
-/api/log/
+/lomout-config/log/
 /tmp/
-/api/tmp/
+/lomout-config/tmp/
 *.ipr
 *.iml
 *.iws
 /build
-/api/build
-/app/build
+/lomout-config/build
+/lomout-app/build

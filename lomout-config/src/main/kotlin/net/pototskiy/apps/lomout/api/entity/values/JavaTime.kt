@@ -71,10 +71,10 @@ val LocalDateTime.millis: Long
     get() = this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
 /**
- * Get duration in secondes as Double
+ * Get duration in seconds as Double
  */
 @Suppress("MagicNumber")
-val Duration.secondFractions: Double
+val Duration.secondWithFractions: Double
     get() {
-        return this.nano.toDouble() / 1000000000.0
+        return this.seconds.toDouble() + this.nano.toDouble() / 1000000000.0
     }

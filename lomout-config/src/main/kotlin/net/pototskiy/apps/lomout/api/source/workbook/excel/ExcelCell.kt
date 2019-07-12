@@ -21,7 +21,7 @@ package net.pototskiy.apps.lomout.api.source.workbook.excel
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.entity.values.toDate
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
@@ -59,7 +59,7 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
                 org.apache.poi.ss.usermodel.CellType.BOOLEAN -> CellType.BOOL
                 else ->
                     throw AppDataException(
-                        badPlace(this),
+                        suspectedLocation(this),
                         message("message.error.source.excel.unsupported_cell_type", cell.cellType)
                     )
             }
@@ -136,7 +136,7 @@ class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
             org.apache.poi.ss.usermodel.CellType.BLANK -> ""
             org.apache.poi.ss.usermodel.CellType.BOOLEAN -> cell.booleanCellValue.toString()
             else -> throw AppDataException(
-                badPlace(this),
+                suspectedLocation(this),
                 message("message.error.source.excel.unsupported_cell_type", cell.cellType)
             )
         }

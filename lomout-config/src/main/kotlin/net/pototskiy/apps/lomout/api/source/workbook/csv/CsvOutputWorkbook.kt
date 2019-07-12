@@ -23,7 +23,7 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
@@ -75,7 +75,7 @@ class CsvOutputWorkbook(
      */
     override fun insertSheet(sheet: String): Sheet {
         if (sheet != CSV_SHEET_NAME) {
-            throw AppDataException(badPlace(this), message("message.error.source.csv.only_default_sheet"))
+            throw AppDataException(suspectedLocation(this), message("message.error.source.csv.only_default_sheet"))
         }
         return CsvSheet(this).also { this.sheet = it }
     }
@@ -107,6 +107,6 @@ fun checkThatItIsCsvOutputWorkbook(workbook: CsvWorkbook) {
         returns() implies (workbook is CsvOutputWorkbook)
     }
     if (workbook !is CsvOutputWorkbook) {
-        throw AppDataException(badPlace(workbook), message("message.error.source.csv.read_only"))
+        throw AppDataException(suspectedLocation(workbook), message("message.error.source.csv.read_only"))
     }
 }

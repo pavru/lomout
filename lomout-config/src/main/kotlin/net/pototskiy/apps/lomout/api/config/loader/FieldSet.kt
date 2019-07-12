@@ -23,7 +23,6 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
 import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
-import net.pototskiy.apps.lomout.api.badPlace
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
@@ -33,7 +32,7 @@ import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
 import net.pototskiy.apps.lomout.api.source.FieldCollection
 import net.pototskiy.apps.lomout.api.source.readFieldNamesFromSource
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.collections.set
 import kotlin.contracts.contract
 import kotlin.reflect.KClass
@@ -119,13 +118,16 @@ data class FieldSet(
 
         private fun addFiled(field: Field, lastAttribute: DocumentMetadata.Attribute?) {
             if (fields.containsKey(field)) {
-                throw AppConfigException(badPlace(field), message("message.error.config.field.exists", field.name))
+                throw AppConfigException(
+                    suspectedLocation(field),
+                    message("message.error.config.field.exists", field.name)
+                )
             }
             @Suppress("UNCHECKED_CAST")
             fields[field] = lastAttribute
                 ?: entityType.documentMetadata.attributes.values.find { it.fieldName == field.name }
                         ?: throw AppConfigException(
-                    unknownPlace(), message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, field.name)
+                    suspectedLocation(), message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, field.name)
                 )
             this.lastField = null
         }
@@ -154,7 +156,7 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.to(attribute: DocumentMetadata.Attribute) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
+                throw AppConfigException(suspectedLocation(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
             }
             addFiled(this, attribute)
         }
@@ -167,11 +169,11 @@ data class FieldSet(
          */
         infix fun Field.to(attribute: KProperty1<out Document, *>) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
+                throw AppConfigException(suspectedLocation(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
@@ -186,11 +188,11 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.to(attribute: AttributeWithName) {
             if (!toAttribute) {
-                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
+                throw AppConfigException(suspectedLocation(), message(MAPPING_OPERATOR_FROM_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
@@ -205,7 +207,7 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.from(attribute: DocumentMetadata.Attribute) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
+                throw AppConfigException(suspectedLocation(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
             }
             addFiled(this, attribute)
         }
@@ -218,11 +220,11 @@ data class FieldSet(
          */
         infix fun Field.from(attribute: KProperty1<out Document, *>) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
+                throw AppConfigException(suspectedLocation(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
@@ -237,11 +239,11 @@ data class FieldSet(
         @ConfigDsl
         infix fun Field.from(attribute: AttributeWithName) {
             if (toAttribute) {
-                throw AppConfigException(unknownPlace(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
+                throw AppConfigException(suspectedLocation(), message(MAPPING_OPERATOR_TO_MESSAGE_KEY))
             }
             val attr = entityType.documentMetadata.attributes[attribute.name]
                 ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message(NO_ATTRIBUTE_MESSAGE_KEY, entityType.qualifiedName, attribute.name)
                 )
             addFiled(this, attr)
@@ -267,7 +269,7 @@ data class FieldSet(
             val collectedFields = try {
                 readFieldNamesFromSource(sources, headerRow)
             } catch (e: AppConfigException) {
-                throw AppConfigException(e.place, e.message, e)
+                throw AppConfigException(e.suspectedLocation, e.message, e)
             }
             collectedFields.mapNotNull { field ->
                 val configuredField = fields.keys.find { it == field }
@@ -303,7 +305,7 @@ data class FieldSet(
             val dupColumns = fields.keys.filter { it.column != UNDEFINED_COLUMN }.groupBy { it.column }
             if (dupColumns.any { it.value.size > 1 }) {
                 throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message(
                         "message.error.config.field.column.duplicated",
                         dupColumns.filter { it.value.size > 1 }.keys.joinToString(", ")
@@ -314,7 +316,7 @@ data class FieldSet(
 
         private fun validateAtOneLeastFieldDefined() {
             if (fields.isEmpty() && !withSourceHeaders) {
-                throw AppConfigException(unknownPlace(), message("message.error.config.field.no_field"))
+                throw AppConfigException(suspectedLocation(), message("message.error.config.field.no_field"))
             }
         }
     }
@@ -328,9 +330,9 @@ data class FieldSet(
     data class AttributeWithName(val name: String)
 
     companion object {
-        const val NO_ATTRIBUTE_MESSAGE_KEY = "message.error.config.field.no_attribute"
-        const val MAPPING_OPERATOR_FROM_MESSAGE_KEY = "message.error.config.field.mapping_operator_from"
-        const val MAPPING_OPERATOR_TO_MESSAGE_KEY = "message.error.config.field.mapping_operator_to"
+        private const val NO_ATTRIBUTE_MESSAGE_KEY = "message.error.config.field.no_attribute"
+        private const val MAPPING_OPERATOR_FROM_MESSAGE_KEY = "message.error.config.field.mapping_operator_from"
+        private const val MAPPING_OPERATOR_TO_MESSAGE_KEY = "message.error.config.field.mapping_operator_to"
     }
 }
 
@@ -339,7 +341,7 @@ private fun checkSourcesNotNull(sources: SourceDataCollection?) {
         returns() implies (sources != null)
     }
     if (sources == null) {
-        throw AppConfigException(unknownPlace(), message("message.error.config.field.define_source"))
+        throw AppConfigException(suspectedLocation(), message("message.error.config.field.define_source"))
     }
 }
 
@@ -348,6 +350,6 @@ private fun checkHeaderRowDefined(headerRow: Int?) {
         returns() implies (headerRow != null)
     }
     if (headerRow == null && headerRow != UNDEFINED_ROW) {
-        throw AppConfigException(unknownPlace(), message("message.error.config.field.define_header_row"))
+        throw AppConfigException(suspectedLocation(), message("message.error.config.field.define_header_row"))
     }
 }

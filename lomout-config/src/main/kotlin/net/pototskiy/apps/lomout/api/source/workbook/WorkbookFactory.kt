@@ -73,7 +73,7 @@ class WorkbookFactory {
                         CsvOutputWorkbook(source, format, workbookLocale)
                 }
                 else ->
-                    throw AppException("Unsupported source file format, file '$fileName'.")
+                    throw AppException(message = "Unsupported source file format, file '$fileName'.")
             }
         }
 

@@ -26,7 +26,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 
 /**
  * Printer line
@@ -86,7 +86,7 @@ class PrinterLine(
             this.inputs?.let {
                 if (it.size != 1) {
                     throw AppConfigException(
-                        unknownPlace(),
+                        suspectedLocation(),
                         message("message.error.config.print.input_entity")
                     )
                 }
@@ -128,7 +128,7 @@ class PrinterLine(
                 helper,
                 inputs?.first()?.entity
                     ?: throw AppConfigException(
-                        unknownPlace(),
+                        suspectedLocation(),
                         message("message.error.config.print.input_before_output")
                     )
             ).apply(block).build()
@@ -197,18 +197,21 @@ class PrinterLine(
         fun build(): PrinterLine {
             validatePipeline(
                 pipeline ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.no_start_pipeline")
                 )
             )
             return PrinterLine(
-                inputs ?: throw AppConfigException(unknownPlace(), message("message.error.config.print.input_entity")),
+                inputs ?: throw AppConfigException(
+                    suspectedLocation(),
+                    message("message.error.config.print.input_entity")
+                ),
                 outputs ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.output.must_be")
                 ),
                 pipeline ?: throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.no_start_pipeline")
                 )
             )
@@ -217,7 +220,7 @@ class PrinterLine(
         private fun validatePipeline(pipeline: Pipeline) {
             if (pipeline.pipelines.isEmpty() && pipeline.assembler == null) {
                 throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.pipeline.matched.must_have_assembler")
                 )
             }

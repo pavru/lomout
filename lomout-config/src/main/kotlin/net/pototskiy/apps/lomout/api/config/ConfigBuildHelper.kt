@@ -23,7 +23,7 @@ import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.CONFIG_LOG_NAME
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.config.loader.SourceFileDefinition
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.util.*
@@ -94,7 +94,7 @@ open class ConfigBuildHelper {
         fun register(entity: T) {
             val scope = currentScope()
             if (register[scope]?.any { it.name == entity.name } == true)
-                throw AppConfigException(unknownPlace(), message("message.error.config.scope.exists", scope))
+                throw AppConfigException(suspectedLocation(), message("message.error.config.scope.exists", scope))
             register.getOrPut(scope) { mutableListOf() }.add(entity)
         }
 

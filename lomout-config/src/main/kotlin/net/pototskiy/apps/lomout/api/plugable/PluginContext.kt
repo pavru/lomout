@@ -46,7 +46,7 @@ object PluginContext : PluginContextInterface {
      * Main script file
      */
     override var scriptFile: File
-        get() = bScriptFile ?: throw AppException(message("message.error.plugin.bad_script"))
+        get() = bScriptFile ?: throw AppException(message = message("message.error.plugin.bad_script"))
         set(value) {
             bScriptFile = value
         }

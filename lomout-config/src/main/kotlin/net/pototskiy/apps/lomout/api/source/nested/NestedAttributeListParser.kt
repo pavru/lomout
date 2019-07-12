@@ -21,9 +21,9 @@ package net.pototskiy.apps.lomout.api.source.nested
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badData
+import net.pototskiy.apps.lomout.api.suspectedValue
 import net.pototskiy.apps.lomout.api.plus
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
@@ -57,7 +57,7 @@ class NestedAttributeListParser(
             }
         } catch (e: AppDataException) {
             throw AppDataException(
-                badData(string) + this,
+                suspectedValue(string) + this,
                 message("message.error.source.nested.cannot_parse_string_to_list", string)
             )
         }
@@ -91,7 +91,7 @@ class NestedAttributeListParser(
                 ""
             }
         } catch (e: Exception) {
-            throw AppDataException(unknownPlace(), message("message.error.source.nested.cannot_parse"))
+            throw AppDataException(suspectedLocation(), message("message.error.source.nested.cannot_parse"))
         }
     }
 }

@@ -26,7 +26,7 @@ import net.pototskiy.apps.lomout.api.UNDEFINED_ROW
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.unknownPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.KClass
 
 /**
@@ -158,7 +158,7 @@ data class Load(
             val sources =
                 this.sources
                     ?: throw AppConfigException(
-                        unknownPlace(),
+                        suspectedLocation(),
                         message("message.error.config.load.no_source", entityType.qualifiedName)
                     )
             validateFieldColumnDefinition()
@@ -170,7 +170,7 @@ data class Load(
                 sources,
                 fieldSets
                     ?: throw AppConfigException(
-                        unknownPlace(),
+                        suspectedLocation(),
                         message("message.error.config.load.no_fieldset", entityType.qualifiedName)
                     )
             )
@@ -180,7 +180,7 @@ data class Load(
             val fields =
                 (fieldSets
                     ?: throw AppConfigException(
-                        unknownPlace(),
+                        suspectedLocation(),
                         message("message.error.config.load.no_fieldset", entityType.qualifiedName)
                     ))
                     .map { it.fieldToAttr.toList() }
@@ -188,7 +188,7 @@ data class Load(
                     .toMap()
             if (this.headersRow == UNDEFINED_ROW && fields.any { it.key.column == UNDEFINED_COLUMN }) {
                 throw AppConfigException(
-                    unknownPlace(),
+                    suspectedLocation(),
                     message("message.error.config.field.column.not_defined",
                         fields.filter { it.key.column == UNDEFINED_COLUMN }
                             .map { it.value.name }.joinToString(", ")

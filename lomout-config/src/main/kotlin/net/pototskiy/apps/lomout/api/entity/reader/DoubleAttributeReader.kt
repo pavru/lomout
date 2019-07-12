@@ -42,7 +42,7 @@ open class DoubleAttributeReader : AttributeReader<Double?>() {
         try {
             return input.readDouble(locale.createLocale(), groupingUsed)?.let { it }
         } catch (e: AppDataException) {
-            throw AppDataException(e.place + attribute, e.message, e)
+            throw AppDataException(e.suspectedLocation + attribute, e.message, e)
         }
     }
 }

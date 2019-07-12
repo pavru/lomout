@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.badPlace
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
@@ -63,14 +63,14 @@ open class LongListAttributeReader : AttributeReader<List<Long>?>() {
                             it.stringToLong(locale.createLocale(), groupingUsed)
                         }
                 } catch (e: ParseException) {
-                    throw AppDataException(badPlace(attribute) + input, e.message, e)
+                    throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
                 }
             }
         }
         CellType.BLANK -> null
         CellType.LONG -> listOf(input.longValue)
         else -> throw AppDataException(
-            badPlace(input) + attribute, message("message.error.data.longlist.reading_not_supported")
+            suspectedLocation(input) + attribute, message("message.error.data.longlist.reading_not_supported")
         )
     }
 }
