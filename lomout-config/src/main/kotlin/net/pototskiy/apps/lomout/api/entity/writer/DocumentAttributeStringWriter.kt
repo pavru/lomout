@@ -34,12 +34,14 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  * @property delimiter Char The pair list delimiter, default:','. This is parameter
  * @property valueQuote Char? The value quote, optional. This is parameter
  * @property valueDelimiter Char The delimiter between name and value, default:','. This is parameter
+ * @property serializeNull True — all attribute including null will be written to cell
  */
 open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
     var quote: Char? = null
     var delimiter: Char = ','
     var valueQuote: Char? = null
     var valueDelimiter: Char = '='
+    var serializeNull: Boolean = true
 
     override fun write(value: Document?, cell: Cell) {
         val workbook = NestedAttributeWorkbook(quote, delimiter, valueQuote, valueDelimiter, "attributeWriter")
@@ -47,10 +49,13 @@ open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
         val rows = arrayOf(sheet[0], sheet[1])
         var column = 0
         value?.documentMetadata?.attributes?.values?.forEach {
-            rows[0].insertCell(column).setCellValue(it.name)
-            @Suppress("UNCHECKED_CAST")
-            (it.writer as AttributeWriter<Any?>).write(value.getAttribute(it.name), rows[1].insertCell(column))
-            column++
+            val attrValue = value.getAttribute(it.name)
+            if (attrValue != null || serializeNull) {
+                rows[0].insertCell(column).setCellValue(it.name)
+                @Suppress("UNCHECKED_CAST")
+                (it.writer as AttributeWriter<Any?>).write(attrValue, rows[1].insertCell(column))
+                column++
+            }
         }
         cell.setCellValue(workbook.string)
     }

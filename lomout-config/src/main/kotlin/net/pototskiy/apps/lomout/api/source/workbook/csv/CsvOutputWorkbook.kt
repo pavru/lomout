@@ -23,8 +23,8 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileOutputStream
@@ -44,8 +44,8 @@ import kotlin.contracts.contract
 class CsvOutputWorkbook(
     private val writer: OutputStreamWriter,
     csvFormat: CSVFormat,
-    workbookLocale: Locale = DEFAULT_LOCALE
-) : CsvWorkbook(workbookLocale) {
+    locale: Locale = DEFAULT_LOCALE
+) : CsvWorkbook(locale) {
 
     /**
      * Constructor.

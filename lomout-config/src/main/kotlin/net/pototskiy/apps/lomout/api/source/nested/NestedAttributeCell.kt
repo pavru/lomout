@@ -21,12 +21,13 @@ package net.pototskiy.apps.lomout.api.source.nested
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 /**
  * Attribute workbook cell
@@ -47,9 +48,10 @@ import java.time.LocalDateTime
 class NestedAttributeCell(
     override val address: CellAddress,
     private var backingValue: String,
-    override val row: NestedAttributeRow
+    override val row: NestedAttributeRow,
+    cellLocale: Locale? = null
 ) : Cell {
-
+    override val locale: Locale = cellLocale ?: row.sheet.workbook.locale
     /**
      * Get cell value as string
      *

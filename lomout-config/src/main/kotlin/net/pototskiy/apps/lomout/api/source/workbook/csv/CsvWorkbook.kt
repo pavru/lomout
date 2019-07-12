@@ -23,9 +23,9 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -33,7 +33,7 @@ import java.util.*
 /**
  * CSV source file workbook
  *
- * @property workbookLocale Locale
+ * @property locale Locale
  * @property sheet CsvSheet?
  * @property sourceURL URL
  * @property name String
@@ -41,7 +41,7 @@ import java.util.*
  * @constructor
  */
 abstract class CsvWorkbook(
-    val workbookLocale: Locale = DEFAULT_LOCALE
+    override val locale: Locale = DEFAULT_LOCALE
 ) : Workbook {
 
     var sheet: CsvSheet? = null

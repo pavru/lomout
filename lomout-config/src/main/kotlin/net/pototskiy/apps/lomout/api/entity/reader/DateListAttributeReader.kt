@@ -20,9 +20,7 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.stringToDate
@@ -30,6 +28,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.commons.csv.CSVFormat
 import java.time.LocalDate
 
@@ -42,7 +41,7 @@ import java.time.LocalDate
  * @property delimiter Char The list delimiter, default:','. This is parameter
  */
 open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
-    var locale: String = DEFAULT_LOCALE_STR
+    var locale: String? = null
     var pattern: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
@@ -61,7 +60,7 @@ open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
                             .map { it.toList() }.flatten()
                             .map { data ->
                                 (pattern?.let { data.stringToDate(it) }
-                                    ?: data.stringToDate(locale.createLocale()))
+                                    ?: data.stringToDate(locale?.createLocale() ?: input.locale))
                             }
                     } catch (e: AppDataException) {
                         throw AppDataException(suspectedLocation(attribute) + input, e.message, e)

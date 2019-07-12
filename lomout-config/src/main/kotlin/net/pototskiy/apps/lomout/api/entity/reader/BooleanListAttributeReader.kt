@@ -20,9 +20,7 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.stringToBoolean
@@ -30,6 +28,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.commons.csv.CSVFormat
 
 /**
@@ -40,7 +39,7 @@ import org.apache.commons.csv.CSVFormat
  * @property delimiter Char The list delimiter, default:','. This is parameter
  */
 open class BooleanListAttributeReader : AttributeReader<List<Boolean>?>() {
-    var locale: String = DEFAULT_LOCALE_STR
+    var locale: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
@@ -55,7 +54,7 @@ open class BooleanListAttributeReader : AttributeReader<List<Boolean>?>() {
                         .parse(reader)
                         .records
                         .map { it.toList() }.flatten()
-                        .map { it.stringToBoolean(locale.createLocale()) }
+                        .map { it.stringToBoolean(locale?.createLocale() ?: input.locale) }
                 }
             }
             CellType.BLANK -> null

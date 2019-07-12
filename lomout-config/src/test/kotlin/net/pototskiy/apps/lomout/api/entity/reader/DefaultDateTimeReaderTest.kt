@@ -20,7 +20,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
@@ -184,7 +183,7 @@ internal class DefaultDateTimeReaderTest {
         assertThat(reader).isNotNull
         assertThat(reader).isInstanceOf(AttributeReader::class.java)
         reader as DateTimeAttributeReader
-        assertThat(reader.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(reader.locale).isNull()
         assertThat(reader.pattern).isEqualTo("d.M.uu H:m")
     }
 

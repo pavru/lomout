@@ -17,6 +17,27 @@
  * under the License.
  */
 
+import net.pototskiy.apps.lomout.api.entity.reader.BooleanAttributeReader
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -48,6 +69,12 @@ open class TestEntityAttributes : Document() {
     @Key
     var sku: String = ""
     var description: String = ""
+    class BooleanValReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<BooleanAttributeReader> {
+            locale = "en_US"
+        }
+    }
+    @Reader(BooleanValReaderBuilder::class)
     var bool_val: Boolean = false
 
     class LongValReaderBuilder : ReaderBuilder {
@@ -98,6 +125,7 @@ open class TestEntityAttributes : Document() {
 
     class BoolListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<BooleanListAttributeReader> {
+            locale = "en_US"
             delimiter = ','
             quote = null
         }
@@ -178,7 +206,7 @@ config {
     loader {
         files {
             val testDataDir = System.getenv("TEST_DATA_DIR")
-            file("test-attributes-xls") { path("$testDataDir/test.attributes.xls") }
+            file("test-attributes-xls") { path("$testDataDir/test.attributes.xls"); locale("ru_RU") }
             file("test-attributes-csv") {
                 path("$testDataDir/test.attributes.csv")
                 locale("ru_RU")

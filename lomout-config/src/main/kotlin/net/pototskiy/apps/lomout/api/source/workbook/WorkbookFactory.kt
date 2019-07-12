@@ -58,12 +58,12 @@ class WorkbookFactory {
                 "xls" -> {
                     val wb = hssfWorkbook(forInput, source)
                     wb.setFileName(File(source.file))
-                    ExcelWorkbook(wb, forInput)
+                    ExcelWorkbook(wb, forInput, workbookLocale)
                 }
                 "xlsx", "xlsm" -> {
                     val wb = xssfWorkbook(forInput, source)
                     wb.setFileName(File(source.file))
-                    ExcelWorkbook(wb, forInput)
+                    ExcelWorkbook(wb, forInput, workbookLocale)
                 }
                 "csv" -> {
                     val format = CSVFormat.RFC4180.withEscape('\\')

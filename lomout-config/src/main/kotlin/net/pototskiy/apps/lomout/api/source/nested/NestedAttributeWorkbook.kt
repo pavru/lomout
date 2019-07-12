@@ -19,10 +19,12 @@
 
 package net.pototskiy.apps.lomout.api.source.nested
 
+import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
+import java.util.*
 
 /**
  * Workbook to work with nested attribute
@@ -46,7 +48,8 @@ class NestedAttributeWorkbook(
     delimiter: Char,
     valueQuote: Char?,
     valueDelimiter: Char,
-    private val attributeName: String
+    private val attributeName: String,
+    override val locale: Locale = DEFAULT_LOCALE
 ) : Workbook {
     private val parser = NestedAttributeListParser(quote, delimiter, valueQuote, valueDelimiter)
     private val printer = NestedAttributeListPrinter(quote, delimiter, valueQuote, valueDelimiter)

@@ -21,6 +21,7 @@ package net.pototskiy.apps.lomout.api.source.workbook
 
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 /**
  * Workbook cell interface
@@ -35,6 +36,10 @@ import java.time.LocalDateTime
  * @property row The cell row
  */
 interface Cell {
+    /**
+     * Cell locale
+     */
+    val locale: Locale
     /**
      * Cell address (row,column)
      */

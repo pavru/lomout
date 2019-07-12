@@ -20,6 +20,7 @@
 package net.pototskiy.apps.lomout.api.source.workbook
 
 import java.io.Closeable
+import java.util.*
 
 /**
  * Source data workbook interface
@@ -36,6 +37,11 @@ interface Workbook : Iterable<Sheet>, Closeable {
      * Workbook type
      */
     val type: WorkbookType
+
+    /**
+     * Workbook default locale
+     */
+    val locale: Locale
 
     /**
      * Get sheet by name
