@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.entity.values.secondFractions
+import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.errorMessageFromException
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
@@ -66,7 +66,7 @@ object DataMediator {
                 logger.debug(message("message.debug.mediator.finish_entity"), line.outputEntity.qualifiedName)
             }
         }
-        val duration = Duration.between(startTime, LocalDateTime.now()).secondFractions
+        val duration = Duration.between(startTime, LocalDateTime.now()).secondWithFractions
         statusLog.info(message("message.info.mediator.finished", duration, processedRows.get()))
     }
 }

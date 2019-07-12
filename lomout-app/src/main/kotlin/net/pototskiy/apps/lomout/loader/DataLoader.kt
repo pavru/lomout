@@ -30,7 +30,7 @@ import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.entity.values.secondFractions
+import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
@@ -79,7 +79,7 @@ object DataLoader {
         }
         @Suppress("SpreadOperator")
         joinAll(*jobs.toTypedArray())
-        val duration = Duration.between(startTime, LocalDateTime.now()).secondFractions
+        val duration = Duration.between(startTime, LocalDateTime.now()).secondWithFractions
         statusLog.info(message("message.info.loader.finished", duration, processedRows.get()))
     }
 }
