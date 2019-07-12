@@ -20,9 +20,7 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
@@ -30,6 +28,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.commons.csv.CSVFormat
 import java.text.ParseException
 
@@ -43,7 +42,7 @@ import java.text.ParseException
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class LongListAttributeReader : AttributeReader<List<Long>?>() {
-    var locale: String = DEFAULT_LOCALE_STR
+    var locale: String? = null
     var quote: Char? = null
     var groupingUsed: Boolean = false
     var delimiter: Char = ','
@@ -60,7 +59,7 @@ open class LongListAttributeReader : AttributeReader<List<Long>?>() {
                         .records
                         .map { it.toList() }.flatten()
                         .map {
-                            it.stringToLong(locale.createLocale(), groupingUsed)
+                            it.stringToLong(locale?.createLocale() ?: input.locale, groupingUsed)
                         }
                 } catch (e: ParseException) {
                     throw AppDataException(suspectedLocation(attribute) + input, e.message, e)

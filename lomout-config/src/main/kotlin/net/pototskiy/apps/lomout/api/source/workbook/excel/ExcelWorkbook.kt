@@ -19,9 +19,11 @@
 
 package net.pototskiy.apps.lomout.api.source.workbook.excel
 
+import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
+import java.util.*
 
 /**
  * Excel workbook source file
@@ -35,7 +37,8 @@ import net.pototskiy.apps.lomout.api.source.workbook.WorkbookType
  */
 class ExcelWorkbook<T : org.apache.poi.ss.usermodel.Workbook>(
     private val workbook: T,
-    private val forInput: Boolean = true
+    private val forInput: Boolean = true,
+    override val locale: Locale = DEFAULT_LOCALE
 ) : Workbook {
     override val name: String
         get() = workbook.getFileName()

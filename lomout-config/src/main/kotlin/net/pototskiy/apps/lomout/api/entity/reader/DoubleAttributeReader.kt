@@ -20,7 +20,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
@@ -35,12 +34,12 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class DoubleAttributeReader : AttributeReader<Double?>() {
-    var locale: String = DEFAULT_LOCALE_STR
+    var locale: String? = null
     var groupingUsed: Boolean = false
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Double? {
         try {
-            return input.readDouble(locale.createLocale(), groupingUsed)?.let { it }
+            return input.readDouble(locale?.createLocale(), groupingUsed)?.let { it }
         } catch (e: AppDataException) {
             throw AppDataException(e.suspectedLocation + attribute, e.message, e)
         }

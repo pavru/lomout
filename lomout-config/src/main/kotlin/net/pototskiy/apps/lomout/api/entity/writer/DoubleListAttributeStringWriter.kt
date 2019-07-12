@@ -19,7 +19,6 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
@@ -35,7 +34,7 @@ import java.io.ByteArrayOutputStream
  * @property delimiter Char The list delimiter, default:','. This is parameter
  */
 open class DoubleListAttributeStringWriter : AttributeWriter<List<Double>?>() {
-    var locale: String = DEFAULT_LOCALE_STR
+    var locale: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
 
@@ -48,7 +47,7 @@ open class DoubleListAttributeStringWriter : AttributeWriter<List<Double>?>() {
                         .withDelimiter(delimiter)
                         .withRecordSeparator("")
                         .print(writer)
-                        .printRecord(list.map { it.doubleToString(locale.createLocale()) })
+                        .printRecord(list.map { it.doubleToString(locale?.createLocale() ?: cell.locale) })
                 }
                 stream.toString()
             }

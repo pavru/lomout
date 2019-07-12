@@ -20,7 +20,6 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
@@ -124,7 +123,7 @@ internal class DateAttributeStringWriterTest {
         assertThat(writer).isNotNull
         assertThat(writer).isInstanceOf(DateAttributeStringWriter::class.java)
         writer as DateAttributeStringWriter
-        assertThat(writer.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(writer.locale).isNull()
         assertThat(writer.pattern).isEqualTo("d.M.uu")
     }
 }

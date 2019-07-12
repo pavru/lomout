@@ -33,6 +33,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Row
 import java.text.ParseException
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 /**
  * CSV workbook cell
@@ -53,8 +54,10 @@ import java.time.LocalDateTime
 class CsvCell(
     private val backingAddress: CellAddress,
     private var backingValue: String,
-    private val backingRow: CsvRow
+    private val backingRow: CsvRow,
+    cellLocale: Locale? = null
 ) : Cell {
+    override val locale: Locale = cellLocale ?: backingRow.sheet.workbook.locale
     /**
      * In case of dell is number this flag indicates is it grouping.
      */
@@ -90,7 +93,7 @@ class CsvCell(
     override val stringValue: String
         get() = backingValue
 
-    private val workbookLocale = (backingRow.sheet.workbook as CsvWorkbook).workbookLocale
+    private val workbookLocale = (backingRow.sheet.workbook as CsvWorkbook).locale
 
     /**
      * Get cell value as string

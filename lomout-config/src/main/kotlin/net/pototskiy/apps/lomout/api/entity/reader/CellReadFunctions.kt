@@ -22,7 +22,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.doubleToLong
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
@@ -37,6 +36,7 @@ import net.pototskiy.apps.lomout.api.entity.values.toLocalDateTime
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.poi.hssf.usermodel.HSSFDateUtil
 import java.text.ParseException
 import java.time.LocalDate
@@ -54,14 +54,14 @@ import java.util.*
  */
 fun Cell.readeDateTimeWithLocale(
     attribute: DocumentMetadata.Attribute,
-    locale: Locale
+    locale: Locale?
 ): LocalDateTime? = when (this.cellType) {
     CellType.LONG -> Date(this.longValue).toLocalDateTime()
     CellType.DOUBLE -> HSSFDateUtil.getJavaDate(this.doubleValue).toLocalDateTime()
     CellType.BOOL -> null
     CellType.STRING ->
         try {
-            this.stringValue.stringToDateTime(locale)
+            this.stringValue.stringToDateTime(locale ?: this.locale)
         } catch (e: AppDataException) {
             throw AppDataException(e.suspectedLocation + this + attribute, e.message, e)
         }
@@ -104,14 +104,14 @@ fun Cell.readeDateTimeWithPattern(
  */
 fun Cell.readDateWithLocale(
     attribute: DocumentMetadata.Attribute,
-    locale: Locale
+    locale: Locale?
 ): LocalDate? = when (this.cellType) {
     CellType.LONG -> Date(this.longValue).toLocalDate()
     CellType.DOUBLE -> HSSFDateUtil.getJavaDate(this.doubleValue).toLocalDate()
     CellType.BOOL -> null
     CellType.STRING ->
         try {
-            this.stringValue.stringToDate(locale)
+            this.stringValue.stringToDate(locale ?: this.locale)
         } catch (e: AppDataException) {
             throw AppDataException(e.suspectedLocation + this + attribute, e.message, e)
         }
@@ -150,12 +150,12 @@ fun Cell.readDateWithPattern(
  * @param locale The locale for converting
  * @return The value
  */
-fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
+fun Cell.readBoolean(locale: Locale?): Boolean? = when (this.cellType) {
     CellType.LONG -> this.longValue != 0L
     CellType.DOUBLE -> this.doubleValue != 0.0
     CellType.BOOL -> this.booleanValue
     CellType.STRING -> try {
-        this.stringValue.stringToBoolean(locale)
+        this.stringValue.stringToBoolean(locale ?: this.locale)
     } catch (e: ParseException) {
         throw AppDataException(suspectedLocation(this), e.message, e)
     }
@@ -170,12 +170,12 @@ fun Cell.readBoolean(locale: Locale): Boolean? = when (this.cellType) {
  * @return The value
  */
 @Suppress("ComplexMethod")
-fun Cell.readDouble(locale: Locale, groupingUsed: Boolean): Double? = when (this.cellType) {
+fun Cell.readDouble(locale: Locale?, groupingUsed: Boolean): Double? = when (this.cellType) {
     CellType.LONG -> this.longValue.toDouble()
     CellType.DOUBLE -> this.doubleValue
     CellType.BOOL -> if (this.booleanValue) 1.0 else 0.0
     CellType.STRING -> try {
-        this.stringValue.stringToDouble(locale, groupingUsed)
+        this.stringValue.stringToDouble(locale ?: this.locale, groupingUsed)
     } catch (e: ParseException) {
         throw AppDataException(suspectedLocation(this), e.message, e)
     }
@@ -190,12 +190,12 @@ fun Cell.readDouble(locale: Locale, groupingUsed: Boolean): Double? = when (this
  * @return Long?
  */
 @Suppress("ComplexMethod")
-fun Cell.readLong(locale: Locale, groupingUsed: Boolean): Long? = when (this.cellType) {
+fun Cell.readLong(locale: Locale?, groupingUsed: Boolean): Long? = when (this.cellType) {
     CellType.LONG -> this.longValue
     CellType.DOUBLE -> this.doubleValue.doubleToLong()
     CellType.BOOL -> if (this.booleanValue) 1L else 0L
     CellType.STRING -> try {
-        this.stringValue.stringToLong(locale, groupingUsed)
+        this.stringValue.stringToLong(locale ?: this.locale, groupingUsed)
     } catch (e: ParseException) {
         throw AppDataException(suspectedLocation(this), e.message, e)
     }
@@ -209,9 +209,9 @@ fun Cell.readLong(locale: Locale, groupingUsed: Boolean): Long? = when (this.cel
  * @param locale Locale The locale for converting
  * @return String?
  */
-fun Cell.readString(locale: Locale): String? = when (this.cellType) {
-    CellType.LONG -> this.longValue.longToString(locale)
-    CellType.DOUBLE -> this.doubleValue.doubleToString(locale)
+fun Cell.readString(locale: Locale?): String? = when (this.cellType) {
+    CellType.LONG -> this.longValue.longToString(locale ?: this.locale)
+    CellType.DOUBLE -> this.doubleValue.doubleToString(locale ?: this.locale)
     CellType.BOOL -> if (this.booleanValue) "1" else "0"
     CellType.STRING -> this.stringValue
     CellType.BLANK -> null

@@ -21,15 +21,16 @@ package net.pototskiy.apps.lomout.api.source.workbook.excel
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.entity.values.toDate
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellAddress
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Row
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.*
 
 /**
  * Excel source cell
@@ -44,7 +45,8 @@ import java.time.LocalDateTime
  * @property row Row
  * @constructor
  */
-class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell) : Cell {
+class ExcelCell(private val cell: org.apache.poi.ss.usermodel.Cell, cellLocale: Locale? = null) : Cell {
+    override val locale = cellLocale ?: ExcelRow(cell.row).sheet.workbook.locale
     override val address: CellAddress
         get() = CellAddress(cell.rowIndex, cell.columnIndex)
     override val cellType: CellType

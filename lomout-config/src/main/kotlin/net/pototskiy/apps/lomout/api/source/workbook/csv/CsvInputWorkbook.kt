@@ -42,8 +42,8 @@ import kotlin.contracts.contract
 class CsvInputWorkbook(
     private val reader: InputStreamReader,
     csvFormat: CSVFormat,
-    workbookLocale: Locale = DEFAULT_LOCALE
-) : CsvWorkbook(workbookLocale) {
+    locale: Locale = DEFAULT_LOCALE
+) : CsvWorkbook(locale) {
 
     /**
      * Constructor
