@@ -27,6 +27,7 @@ import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import net.pototskiy.apps.lomout.MessageBundle
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
@@ -71,7 +72,15 @@ class PipelineExecutor(
                                 matchedData.send(element)
                             } else {
                                 val assembler = pipeline.assembler!!
-                                send(assembler(targetEntity, element.entities))
+                                try {
+                                    send(assembler(targetEntity, element.entities))
+                                }catch (e: Exception) {
+                                    AppDataException(
+                                        suspectedLocation(targetEntity),
+                                        MessageBundle.message("message.error.mediator.cannot_assemble_entity"),
+                                        e
+                                    ).errorMessageFromException(logger)
+                                }
                             }
                         }
                         is ClassifierElement.Skipped -> {
