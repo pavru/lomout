@@ -37,6 +37,7 @@ open class LongListAttributeStringWriter : AttributeWriter<List<Long>?>() {
     var locale: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
+    var groupingUsed: Boolean = false
 
     override fun write(value: List<Long>?, cell: Cell) {
         value?.let { list ->
@@ -47,7 +48,9 @@ open class LongListAttributeStringWriter : AttributeWriter<List<Long>?>() {
                         .withDelimiter(delimiter)
                         .withRecordSeparator("")
                         .print(writer)
-                        .printRecord(list.map { it.longToString(locale?.createLocale() ?: cell.locale) })
+                        .printRecord(list.map {
+                            it.longToString(locale?.createLocale() ?: cell.locale, groupingUsed)
+                        })
                 }
                 stream.toString()
             }

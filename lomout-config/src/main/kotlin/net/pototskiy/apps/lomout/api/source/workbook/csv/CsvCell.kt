@@ -128,7 +128,7 @@ class CsvCell(
      * @param value Long
      */
     override fun setCellValue(value: Long) {
-        backingValue = value.longToString(workbookLocale)
+        backingValue = value.longToString(workbookLocale, isNumberGroupingUsed)
     }
 
     /**
@@ -137,7 +137,7 @@ class CsvCell(
      * @param value Double
      */
     override fun setCellValue(value: Double) {
-        backingValue = value.doubleToString(workbookLocale)
+        backingValue = value.doubleToString(workbookLocale, isNumberGroupingUsed)
     }
 
     /**

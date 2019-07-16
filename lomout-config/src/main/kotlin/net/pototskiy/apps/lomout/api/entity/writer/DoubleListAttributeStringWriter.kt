@@ -37,6 +37,7 @@ open class DoubleListAttributeStringWriter : AttributeWriter<List<Double>?>() {
     var locale: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
+    var groupingUsed: Boolean = false
 
     override fun write(value: List<Double>?, cell: Cell) {
         value?.let { list ->
@@ -47,7 +48,9 @@ open class DoubleListAttributeStringWriter : AttributeWriter<List<Double>?>() {
                         .withDelimiter(delimiter)
                         .withRecordSeparator("")
                         .print(writer)
-                        .printRecord(list.map { it.doubleToString(locale?.createLocale() ?: cell.locale) })
+                        .printRecord(list.map {
+                            it.doubleToString(locale?.createLocale() ?: cell.locale, groupingUsed)
+                        })
                 }
                 stream.toString()
             }

@@ -19,8 +19,8 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
@@ -60,7 +60,7 @@ internal class LongAttributeStringWriterTest {
     internal fun setUp() {
         @Suppress("GraziInspection")
         file = tempDir.resolve("attributes.xls").toFile()
-        workbook = WorkbookFactory.create(file.toURI().toURL(), DEFAULT_LOCALE, false)
+        workbook = WorkbookFactory.create(file.toURI().toURL(), "en_US".createLocale(), false)
         cell = workbook.insertSheet("test").insertRow(0).insertCell(0)
     }
 
@@ -79,6 +79,16 @@ internal class LongAttributeStringWriterTest {
         (attr.writer as AttributeWriter<Long>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("111")
+
+        LongAttributeStringWriter().write(111222L, cell)
+        assertThat(cell.stringValue).isEqualTo("111222")
+        LongAttributeStringWriter().apply { groupingUsed = true }.write(111222L, cell)
+        assertThat(cell.stringValue).isEqualTo("111,222")
+        LongAttributeStringWriter().apply {
+            groupingUsed = true
+            locale = "ru_RU"
+        }.write(111222L, cell)
+        assertThat(cell.stringValue).isEqualTo("111 222")
     }
 
     @Test
