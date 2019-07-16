@@ -31,8 +31,13 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 open class IntAttributeStringWriter : AttributeWriter<Int?>() {
     var locale: String? = null
+    var groupingUsed: Boolean = false
 
     override fun write(value: Int?, cell: Cell) {
-        value?.let { cell.setCellValue(it.toLong().longToString(locale?.createLocale() ?: cell.locale)) }
+        value?.let {
+            cell.setCellValue(
+                it.toLong().longToString(locale?.createLocale() ?: cell.locale, groupingUsed)
+            )
+        }
     }
 }

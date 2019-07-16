@@ -37,6 +37,7 @@ open class IntListAttributeStringWriter : AttributeWriter<List<Int>?>() {
     var locale: String? = null
     var quote: Char? = null
     var delimiter: Char = ','
+    var groupingUsed: Boolean = false
 
     override fun write(value: List<Int>?, cell: Cell) {
         value?.let { list ->
@@ -47,7 +48,9 @@ open class IntListAttributeStringWriter : AttributeWriter<List<Int>?>() {
                         .withDelimiter(delimiter)
                         .withRecordSeparator("")
                         .print(writer)
-                        .printRecord(list.map { it.toLong().longToString(locale?.createLocale() ?: cell.locale) })
+                        .printRecord(list.map {
+                            it.toLong().longToString(locale?.createLocale() ?: cell.locale, groupingUsed)
+                        })
                 }
                 stream.toString()
             }

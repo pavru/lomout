@@ -31,8 +31,9 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 open class LongAttributeStringWriter : AttributeWriter<Long?>() {
     var locale: String? = null
+    var groupingUsed: Boolean = false
 
     override fun write(value: Long?, cell: Cell) {
-        value?.let { cell.setCellValue(it.longToString(locale?.createLocale() ?: cell.locale)) }
+        value?.let { cell.setCellValue(it.longToString(locale?.createLocale() ?: cell.locale, groupingUsed)) }
     }
 }

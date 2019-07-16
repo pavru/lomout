@@ -31,7 +31,8 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 open class StringAttributeReader : AttributeReader<String?>() {
     var locale: String? = null
+    var numberGroupingUsed: Boolean = false
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): String? =
-        input.readString(locale?.createLocale())?.let { it }
+        input.readString(locale?.createLocale(), numberGroupingUsed)?.let { it }
 }

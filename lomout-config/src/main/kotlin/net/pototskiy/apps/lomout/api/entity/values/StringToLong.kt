@@ -54,7 +54,9 @@ fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
  * @param locale Locale
  * @return String
  */
-fun Long.longToString(locale: Locale): String {
-    val format = NumberFormat.getIntegerInstance(locale)
+fun Long.longToString(locale: Locale, groupingUsed: Boolean): String {
+    val format = NumberFormat.getIntegerInstance(locale).apply {
+        isGroupingUsed = groupingUsed
+    }
     return format.format(this)
 }

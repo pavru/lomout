@@ -53,7 +53,9 @@ fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
  * @param locale Locale
  * @return String
  */
-fun Double.doubleToString(locale: Locale): String {
-    val format = NumberFormat.getNumberInstance(locale)
+fun Double.doubleToString(locale: Locale, groupingUsed: Boolean): String {
+    val format = NumberFormat.getNumberInstance(locale).apply {
+        isGroupingUsed = groupingUsed
+    }
     return format.format(this)
 }
