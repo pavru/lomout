@@ -19,8 +19,11 @@
 
 package net.pototskiy.apps.lomout.api.config.mediator
 
+import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.MessageBundle
 import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.config.ConfigDsl
+import net.pototskiy.apps.lomout.api.suspectedLocation
 
 /**
  * Mediator configuration
@@ -69,7 +72,28 @@ data class MediatorConfiguration(
          * @return MediatorConfiguration
          */
         fun build(): MediatorConfiguration {
+            checkCycling()
             return MediatorConfiguration(ProductionLineCollection(lines))
+        }
+
+        private fun checkCycling() {
+            val visitedLines = mutableMapOf<ProductionLine, Boolean>()
+            fun visitChain(line: ProductionLine) {
+                if (visitedLines[line] == true) {
+                    throw AppConfigException(
+                        suspectedLocation(),
+                        MessageBundle.message("message.error.config.pipeline.line_cycling")
+                    )
+                }
+                visitedLines[line] = true
+                line.inputEntities.forEach { entity ->
+                    lines.findLast { it.outputEntity == entity.entity }?.let { visitChain(it) }
+                }
+            }
+            lines.forEach {
+                visitedLines.clear()
+                visitChain(it)
+            }
         }
     }
 }

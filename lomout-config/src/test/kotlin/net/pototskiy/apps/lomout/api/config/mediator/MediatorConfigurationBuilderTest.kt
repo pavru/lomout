@@ -127,6 +127,20 @@ internal class MediatorConfigurationBuilderTest {
             .hasMessageContaining("Pipeline with the matched child must have assembler")
     }
 
+    @Test
+    internal fun lineSelfCyclingTest() {
+        assertThatThrownBy { createConfLineSelfCycling() }
+            .isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("There is production line cycling dependency.")
+    }
+
+    @Test
+    internal fun lineCyclingTest() {
+        assertThatThrownBy { createConfLineCycling() }
+            .isInstanceOf(AppConfigException::class.java)
+            .hasMessageContaining("There is production line cycling dependency.")
+    }
+
     private fun createConf(): MediatorConfiguration {
         return MediatorConfiguration.Builder(helper).apply {
             productionLine {
@@ -202,6 +216,50 @@ internal class MediatorConfigurationBuilderTest {
                         classifier { it.match() }
                         pipeline(Pipeline.CLASS.UNMATCHED) {}
                         assembler { _, _ -> emptyMap() }
+                    }
+                }
+            }
+        }.build()
+    }
+
+    private fun createConfLineSelfCycling(): MediatorConfiguration {
+        return MediatorConfiguration.Builder(helper).apply {
+            productionLine {
+                output(InputEntity1::class)
+                input {
+                    entity(InputEntity1::class)
+                }
+                pipeline {
+                    assembler { _, _ ->
+                        emptyMap()
+                    }
+                }
+            }
+        }.build()
+    }
+
+    private fun createConfLineCycling(): MediatorConfiguration {
+        return MediatorConfiguration.Builder(helper).apply {
+            productionLine {
+                output(InputEntity1::class)
+                input {
+                    entity(InputEntity2::class)
+                }
+                pipeline {
+                    assembler { _, _ ->
+                        emptyMap()
+                    }
+                }
+            }
+            productionLine {
+                output(InputEntity2::class)
+                input {
+                    entity(ImportOutput1::class)
+                    entity(InputEntity1::class)
+                }
+                pipeline {
+                    assembler { _, _ ->
+                        emptyMap()
                     }
                 }
             }

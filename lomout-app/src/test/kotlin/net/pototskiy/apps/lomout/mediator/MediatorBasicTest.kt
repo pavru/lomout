@@ -19,6 +19,7 @@
 
 package net.pototskiy.apps.lomout.mediator
 
+import net.pototskiy.apps.lomout.LogCatcher
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
@@ -100,11 +101,26 @@ internal class MediatorBasicTest {
         assertThat(sku22.amount).isEqualTo(entities2.find { it.sku == 22L }!!.amount)
         assertThat(sku22.corrected_amount).isEqualTo(entities2.find { it.sku == 22L }!!.amount * 13.0)
 
-        @Suppress("UNCHECKED_CAST") val importEntities2 = repository.get(ImportDataUnion::class) as List<ImportDataUnion>
+        @Suppress("UNCHECKED_CAST") val importEntities2 =
+            repository.get(ImportDataUnion::class) as List<ImportDataUnion>
         assertThat(importEntities2).hasSize(4)
         assertThat(importEntities2.map { it.sku })
             .containsAnyElementsOf(listOf(21L, 22L, 1L, 2L))
         repository.close()
+    }
+
+    @Test
+    internal fun multipleLinesTest() {
+        val config = createComplexMediatorConfig()
+        PluginContext.config = config
+        PluginContext.scriptFile = File("no-file.conf.kts")
+        val repository = EntityRepository(config.database, Level.ERROR)
+        val catcher = LogCatcher()
+        catcher.startToCatch(Level.OFF, Level.ERROR)
+        DataMediator.mediate(repository, config)
+        val log = catcher.log
+        catcher.stopToCatch()
+        assertThat(log).isEmpty()
     }
 
     @Suppress("PropertyName")
@@ -297,6 +313,62 @@ internal class MediatorBasicTest {
 
                             )
                         }
+                    }
+                }
+            }
+        }.build()
+    }
+
+    private fun createComplexMediatorConfig(): Config {
+        return Config.Builder(helper).apply {
+            database {
+                name("lomout_test")
+                server {
+                    host("localhost")
+                    port(27017)
+                    user("root")
+                    if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                        password("")
+                    } else {
+                        password("root")
+                    }
+                }
+            }
+            mediator {
+                productionLine {
+                    output(Entity1::class)
+                    input {
+                        entity(Entity2::class)
+                    }
+                    pipeline {
+                        assembler { _, _ -> emptyMap() }
+                    }
+                }
+                productionLine {
+                    output(Entity1::class)
+                    input {
+                        entity(ImportData::class)
+                    }
+                    pipeline {
+                        assembler { _, _ -> emptyMap() }
+                    }
+                }
+                productionLine {
+                    output(ImportDataUnion::class)
+                    input {
+                        entity(Entity1::class)
+                    }
+                    pipeline {
+                        assembler { _, _ -> emptyMap() }
+                    }
+                }
+                productionLine {
+                    output(Unknown::class)
+                    input {
+                        entity(Entity1::class)
+                    }
+                    pipeline {
+                        assembler { _, _ -> emptyMap() }
                     }
                 }
             }
