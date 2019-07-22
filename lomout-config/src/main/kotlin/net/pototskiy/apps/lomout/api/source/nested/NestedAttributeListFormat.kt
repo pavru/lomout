@@ -34,8 +34,10 @@ import org.apache.commons.csv.QuoteMode
 open class NestedAttributeListFormat(
     private val quote: Char?,
     private val delimiter: Char,
+    private val escape: Char?,
     private val valueQuote: Char?,
-    private val valueDelimiter: Char
+    private val valueDelimiter: Char,
+    private val valueEscape: Char?
 ) {
     /**
      * CSV format for name-value pairs list
@@ -46,13 +48,8 @@ open class NestedAttributeListFormat(
         var format = CSVFormat.RFC4180
             .withRecordSeparator("")
             .withDelimiter(delimiter)
-        if (quote != null) {
-            format = format.withQuote(quote)
-            format = format.withEscape('\\')
-        } else {
-            format = format.withEscape('\\')
-            format = format.withQuoteMode(QuoteMode.NONE)
-        }
+        format = escape?.let { format.withEscape(escape) } ?: format.withEscape(null)
+        format = quote?.let { format.withQuote(quote) } ?: format.withQuoteMode(QuoteMode.NONE)
         return format
     }
 
@@ -65,13 +62,8 @@ open class NestedAttributeListFormat(
         var format = CSVFormat.RFC4180
             .withRecordSeparator("")
             .withDelimiter(valueDelimiter)
-        if (valueQuote != null) {
-            format = format.withQuote(valueQuote)
-            format = format.withEscape('\\')
-        } else {
-            format = format.withEscape('\\')
-            format = format.withQuoteMode(QuoteMode.NONE)
-        }
+        format = valueEscape?.let { format.withEscape(valueEscape) } ?: format.withEscape(null)
+        format = valueQuote?.let { format.withQuote(valueQuote) } ?: format.withQuoteMode(QuoteMode.NONE)
         return format
     }
 }

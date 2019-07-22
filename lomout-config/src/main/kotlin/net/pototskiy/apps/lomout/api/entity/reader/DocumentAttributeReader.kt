@@ -22,7 +22,6 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.reader
@@ -31,6 +30,7 @@ import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import kotlin.reflect.full.createInstance
 
 /**
@@ -44,8 +44,10 @@ import kotlin.reflect.full.createInstance
 open class DocumentAttributeReader : AttributeReader<Document?>() {
     var quote: Char? = null
     var delimiter: Char = ','
+    var escape: Char? = '\\'
     var valueQuote: Char? = '"'
     var valueDelimiter: Char = '='
+    var valueEscape: Char? = '\\'
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Document? {
         return when (input.cellType) {
@@ -54,8 +56,10 @@ open class DocumentAttributeReader : AttributeReader<Document?>() {
                 val attrs = NestedAttributeWorkbook(
                     quote,
                     delimiter,
+                    escape,
                     valueQuote,
                     valueDelimiter,
+                    valueEscape,
                     attribute.name
                 )
                 attrs.string = input.stringValue

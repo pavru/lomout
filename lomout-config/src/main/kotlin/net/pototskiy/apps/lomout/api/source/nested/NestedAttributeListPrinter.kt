@@ -33,9 +33,11 @@ import java.io.StringWriter
 class NestedAttributeListPrinter(
     quote: Char?,
     delimiter: Char,
+    escape: Char?,
     valueQuote: Char?,
-    valueDelimiter: Char
-) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
+    valueDelimiter: Char,
+    valueEscape: Char?
+) : NestedAttributeListFormat(quote, delimiter, escape, valueQuote, valueDelimiter, valueEscape) {
 
     /**
      * Convert map of attributes(name→value) to string

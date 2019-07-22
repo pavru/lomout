@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test
 internal class NestedAttributeListParserTest {
     @Test
     internal fun parseCorrectDataTest() {
-        val parser = NestedAttributeListParser(null, ',', null, '=')
+        val parser = NestedAttributeListParser(null, ',', '\\', null, '=', '\\')
         val v = parser.parse("attr1=value1,attr2=value2")
         assertThat(v).containsAllEntriesOf(
             mapOf(
@@ -37,7 +37,7 @@ internal class NestedAttributeListParserTest {
 
     @Test
     internal fun parseNoValueDataTest() {
-        val parser = NestedAttributeListParser(null, ',', null, '=')
+        val parser = NestedAttributeListParser(null, ',', '\\', null, '=', '\\')
         val v = parser.parse("attr1=,attr2=")
         assertThat(v).containsAllEntriesOf(
             mapOf(
@@ -49,7 +49,7 @@ internal class NestedAttributeListParserTest {
 
     @Test
     internal fun parseNoNameDataTest() {
-        val parser = NestedAttributeListParser(null, ',', null, '=')
+        val parser = NestedAttributeListParser(null, ',', '\\', null, '=', '\\')
         val v = parser.parse("=value1,=value2")
         assertThat(v).containsAllEntriesOf(
             mapOf(
@@ -61,7 +61,7 @@ internal class NestedAttributeListParserTest {
 
     @Test
     internal fun parseNoDataTest() {
-        val parser = NestedAttributeListParser(null, ',', null, '=')
+        val parser = NestedAttributeListParser(null, ',', '\\', null, '=', '\\')
         val v = parser.parse("=,=")
         assertThat(v).containsAllEntriesOf(
             mapOf(

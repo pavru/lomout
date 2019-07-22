@@ -39,12 +39,23 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
     var quote: Char? = null
     var delimiter: Char = ','
+    var escape: Char? = '\\'
     var valueQuote: Char? = null
     var valueDelimiter: Char = '='
+    var valueEscape: Char? = '\\'
+    @Suppress("MemberVisibilityCanBePrivate")
     var serializeNull: Boolean = true
 
     override fun write(value: Document?, cell: Cell) {
-        val workbook = NestedAttributeWorkbook(quote, delimiter, valueQuote, valueDelimiter, "attributeWriter")
+        val workbook = NestedAttributeWorkbook(
+            quote,
+            delimiter,
+            escape,
+            valueQuote,
+            valueDelimiter,
+            valueEscape,
+            "attributeWriter"
+        )
         val sheet = workbook[CSV_SHEET_NAME] as NestedAttributeSheet
         val rows = arrayOf(sheet[0], sheet[1])
         var column = 0

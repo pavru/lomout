@@ -21,9 +21,9 @@ package net.pototskiy.apps.lomout.api.source.nested
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedValue
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.suspectedLocation
+import net.pototskiy.apps.lomout.api.suspectedValue
 import org.apache.commons.csv.CSVRecord
 import java.io.StringReader
 
@@ -39,9 +39,11 @@ import java.io.StringReader
 class NestedAttributeListParser(
     quote: Char?,
     delimiter: Char,
+    escape: Char?,
     valueQuote: Char?,
-    valueDelimiter: Char
-) : NestedAttributeListFormat(quote, delimiter, valueQuote, valueDelimiter) {
+    valueDelimiter: Char,
+    valueEscape: Char?
+) : NestedAttributeListFormat(quote, delimiter, escape, valueQuote, valueDelimiter, valueEscape) {
 
     /**
      * Parse list string to map of name→value

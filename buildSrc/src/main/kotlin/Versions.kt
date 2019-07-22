@@ -28,7 +28,7 @@ object Versions {
     const val ivy = "2.5.0-rc1"
     const val guava = "27.1-jre"
     const val jcommander = "1.71"
-    const val junit5 = "5.5.0"
+    const val junit5 = "5.5.1"
     const val assertj = "3.12.2"
     const val log4j = "2.12.0"
     const val slf4j = "1.8.0-beta4"
