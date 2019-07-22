@@ -41,7 +41,7 @@ object DataMediator {
     private val processedRows = AtomicLong(0L)
 
     fun mediate(repository: EntityRepositoryInterface, config: Config) {
-        val mediator = config.mediator ?: return
+        config.mediator ?: return
         statusLog.info(message("message.info.mediator.started"))
         val startTime = LocalDateTime.now()
         sortProductionLines(config).forEach { line ->

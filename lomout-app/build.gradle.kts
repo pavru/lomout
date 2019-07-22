@@ -184,7 +184,7 @@ dependencies {
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
     // Addon
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
-    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-debug", "1.3.0-M2")
+    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-debug", "1.3.0-RC")
 }
 
 tasks.jacocoTestReport {

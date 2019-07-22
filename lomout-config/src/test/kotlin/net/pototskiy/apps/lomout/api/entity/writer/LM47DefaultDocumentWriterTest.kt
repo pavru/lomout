@@ -25,7 +25,6 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.plugable.Writer
 import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
 import net.pototskiy.apps.lomout.api.plugable.createWriter
-import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -40,7 +39,7 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Execution(ExecutionMode.CONCURRENT)
-internal class DefaultDocumentWriterTest {
+internal class LM47DefaultDocumentWriterTest {
     internal class NestedType : Document() {
         var attr1: String = ""
         var attr2: String = ""
@@ -85,19 +84,38 @@ internal class DefaultDocumentWriterTest {
     }
 
     @Test
-    internal fun writeAttributeListToCellTest() {
-        val wb = NestedAttributeWorkbook(null, ',', '\\', '"', '=', '\\', "test")
-        wb.string = "attr1=value1,attr2=value2"
+    internal fun withEscapeTest() {
         val doc = NestedType().apply {
-            attr1 = "value1"
+            attr1 = "value1,value1.1"
             attr2 = "value2"
         }
         val writer = DocumentAttributeStringWriter().apply {
             delimiter = ','
-            valueQuote = '"'
+            quote = null
+            escape = '\\'
+            valueQuote = null
             valueDelimiter = '='
+            valueEscape = '\\'
         }
         writer.write(doc, outputCell)
-        assertThat(outputCell.stringValue).isEqualTo("attr1=value1,attr2=value2")
+        assertThat(outputCell.stringValue).isEqualTo("attr1=value1\\,value1.1,attr2=value2")
+    }
+
+    @Test
+    internal fun withQuoteTest() {
+        val doc = NestedType().apply {
+            attr1 = "value1,value1.1"
+            attr2 = "value2"
+        }
+        val writer = DocumentAttributeStringWriter().apply {
+            delimiter = ','
+            quote = '"'
+            escape = null
+            valueQuote = '\''
+            valueDelimiter = '='
+            valueEscape = null
+        }
+        writer.write(doc, outputCell)
+        assertThat(outputCell.stringValue).isEqualTo("\"attr1=value1,value1.1\",attr2=value2")
     }
 }

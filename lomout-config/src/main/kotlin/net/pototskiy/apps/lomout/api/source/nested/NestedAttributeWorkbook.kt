@@ -46,13 +46,15 @@ import java.util.*
 class NestedAttributeWorkbook(
     quote: Char?,
     delimiter: Char,
+    escape: Char?,
     valueQuote: Char?,
     valueDelimiter: Char,
+    valueEscape: Char?,
     private val attributeName: String,
     override val locale: Locale = DEFAULT_LOCALE
 ) : Workbook {
-    private val parser = NestedAttributeListParser(quote, delimiter, valueQuote, valueDelimiter)
-    private val printer = NestedAttributeListPrinter(quote, delimiter, valueQuote, valueDelimiter)
+    private val parser = NestedAttributeListParser(quote, delimiter, escape, valueQuote, valueDelimiter, valueEscape)
+    private val printer = NestedAttributeListPrinter(quote, delimiter, escape, valueQuote, valueDelimiter, valueEscape)
 
     /**
      * Cell of name-value pair

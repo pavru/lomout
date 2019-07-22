@@ -28,7 +28,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class AttributeListPrinterTest {
     @Test
     internal fun simplePrint1Test() {
-        val printer = NestedAttributeListPrinter(null, ',', null, '=')
+        val printer = NestedAttributeListPrinter(null, ',', '\\', null, '=', '\\')
         assertThat(
             printer.print(
                 mapOf(
@@ -42,7 +42,7 @@ internal class AttributeListPrinterTest {
 
     @Test
     internal fun simplePrint2Test() {
-        val printer = NestedAttributeListPrinter(null, ',', '"', '=')
+        val printer = NestedAttributeListPrinter(null, ',', '\\', '"', '=', '\\')
         assertThat(
             printer.print(
                 mapOf(

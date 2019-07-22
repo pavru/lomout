@@ -17,15 +17,10 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.entity.writer
+package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createWriter
-import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -39,8 +34,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 
+@Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
-internal class DefaultDocumentWriterTest {
+internal class LM47DefaultDocumentAttributeReaderTest {
     internal class NestedType : Document() {
         var attr1: String = ""
         var attr2: String = ""
@@ -49,25 +45,16 @@ internal class DefaultDocumentWriterTest {
     }
 
     internal class TestType : Document() {
-        @Writer(AttrWriter::class)
         var attr: NestedType = NestedType()
 
         companion object : DocumentMetadata(TestType::class)
-
-        class AttrWriter : WriterBuilder {
-            override fun build(): AttributeWriter<out Any?> = createWriter<DocumentAttributeStringWriter> {
-                quote = null
-                delimiter = ','
-                valueQuote = '"'
-                valueDelimiter = '='
-            }
-        }
     }
 
     private lateinit var xlsWorkbook: HSSFWorkbook
     private lateinit var workbook: Workbook
+    private var attr = TestType.attributes.getValue("attr")
     private lateinit var xlsTestDataCell: HSSFCell
-    private lateinit var outputCell: Cell
+    private lateinit var inputCell: Cell
 
     @BeforeEach
     internal fun setUp() {
@@ -75,8 +62,8 @@ internal class DefaultDocumentWriterTest {
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
         xlsTestDataCell = xlsSheet.createRow(0).createCell(0)
-        workbook = ExcelWorkbook(xlsWorkbook, false)
-        outputCell = workbook["test-data"][0]!![0]!!
+        workbook = ExcelWorkbook(xlsWorkbook)
+        inputCell = workbook["test-data"][0]!![0]!!
     }
 
     @AfterEach
@@ -85,19 +72,53 @@ internal class DefaultDocumentWriterTest {
     }
 
     @Test
-    internal fun writeAttributeListToCellTest() {
-        val wb = NestedAttributeWorkbook(null, ',', '\\', '"', '=', '\\', "test")
-        wb.string = "attr1=value1,attr2=value2"
-        val doc = NestedType().apply {
-            attr1 = "value1"
-            attr2 = "value2"
-        }
-        val writer = DocumentAttributeStringWriter().apply {
+    internal fun withEscapeTest() {
+        val reader = DocumentAttributeReader().apply {
             delimiter = ','
-            valueQuote = '"'
+            quote = null
             valueDelimiter = '='
+            valueQuote = null
+            valueEscape = '\\'
         }
-        writer.write(doc, outputCell)
-        assertThat(outputCell.stringValue).isEqualTo("attr1=value1,attr2=value2")
+        xlsTestDataCell.setCellValue("attr1=value1\\,value1.1,attr2=value2")
+        val list = reader.read(attr, inputCell)
+        assertThat(list).isNotNull
+        list as NestedType
+        assertThat(list.attr1).isEqualTo("value1,value1.1")
+        assertThat(list.attr2).isEqualTo("value2")
+    }
+
+    @Test
+    internal fun withEscapeWrongTest() {
+        val reader = DocumentAttributeReader().apply {
+            delimiter = ','
+            quote = null
+            valueDelimiter = '='
+            valueQuote = null
+            valueEscape = '\\'
+        }
+        xlsTestDataCell.setCellValue("attr1=value1,value1.1,attr2=value2")
+        val list = reader.read(attr, inputCell)
+        assertThat(list).isNotNull
+        list as NestedType
+        assertThat(list.attr1).isEqualTo("value1")
+        assertThat(list.attr2).isEqualTo("value2")
+    }
+
+    @Test
+    internal fun withQuoteNoEscapeTest() {
+        val reader = DocumentAttributeReader().apply {
+            delimiter = ','
+            quote = '\''
+            valueDelimiter = '='
+            valueQuote = '\''
+            valueEscape = null
+        }
+        xlsTestDataCell.setCellValue("'attr1=value1,value1.1',attr2=value2")
+        val list = reader.read(attr, inputCell)
+        assertThat(list).isNotNull
+        list as NestedType
+        assertThat(list.attr1).isEqualTo("value1,value1.1")
+        assertThat(list.attr2).isEqualTo("value2")
     }
 }
