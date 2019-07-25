@@ -52,6 +52,7 @@ lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
 @ObsoleteCoroutinesApi
 @Suppress("ReturnCount")
 fun main(args: Array<String>) {
+    configureAnsiSupportForLog()
     val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     val mainCommand = CommandMain()
     if (parseArguments(mainCommand, args)) return
@@ -85,6 +86,12 @@ fun main(args: Array<String>) {
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     val duration = Duration.between(startTime, LocalDateTime.now()).seconds
     statusLog.info(message("message.info.app.finished", duration))
+}
+
+private fun configureAnsiSupportForLog() {
+    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        System.setProperty("log4j.skipJansi", "false")
+    }
 }
 
 @Suppress("ReturnCount")
