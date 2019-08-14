@@ -106,7 +106,6 @@ internal class EntityLoaderAddTest {
         val matches = Regex("""^.*\[ERROR].*/ by zero.*$""", RegexOption.MULTILINE)
             .findAll(log).toList()
         assertThat(matches).isNotNull
-        println("matches.size: ${matches.size}")
         assertThat(matches).hasSize(3)
         repository.close()
     }
