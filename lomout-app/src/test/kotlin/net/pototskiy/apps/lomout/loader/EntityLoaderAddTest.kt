@@ -81,7 +81,7 @@ internal class EntityLoaderAddTest {
         assertThat(entities).hasSize(0)
         @Suppress("RegExpRedundantEscape", "GraziInspection")
         val matches = Regex(
-            "^\\[ERROR\\].*There is no requested cell. Location: .*$",
+            """^.*\[ERROR].*There is no requested cell. Location: .*$""",
             RegexOption.MULTILINE
         )
             .findAll(log).toList()
@@ -126,7 +126,7 @@ internal class EntityLoaderAddTest {
         assertThat(entities).hasSize(0)
         @Suppress("RegExpRedundantEscape", "GraziInspection")
         val matches = Regex(
-            "^\\[ERROR\\].*Field does not match required regular expression. Location: .*$",
+            """^.*\[ERROR].*Field does not match required regular expression. Location: .*$""",
             RegexOption.MULTILINE
         )
             .findAll(log).toList()
@@ -149,7 +149,7 @@ internal class EntityLoaderAddTest {
         catcher.stopToCatch()
         assertThat(entities).hasSize(2)
         @Suppress("RegExpRedundantEscape", "GraziInspection") val matches = Regex(
-            "^\\[ERROR\\].*Attribute is key but has no value. Location: .*$",
+            """^.*\[ERROR].*Attribute is key but has no value. Location: .*$""",
             RegexOption.MULTILINE
         ).findAll(log).toList()
         assertThat(matches).isNotNull
