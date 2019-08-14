@@ -74,7 +74,7 @@ class PipelineExecutor(
                                 val assembler = pipeline.assembler!!
                                 try {
                                     send(assembler(targetEntity, element.entities))
-                                }catch (e: Exception) {
+                                } catch (e: Exception) {
                                     AppDataException(
                                         suspectedLocation(targetEntity),
                                         MessageBundle.message("message.error.mediator.cannot_assemble_entity"),
