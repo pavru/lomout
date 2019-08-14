@@ -31,6 +31,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  */
 open class StringAttributeReader : AttributeReader<String?>() {
     var locale: String? = null
+    @Suppress("MemberVisibilityCanBePrivate")
     var numberGroupingUsed: Boolean = false
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): String? =

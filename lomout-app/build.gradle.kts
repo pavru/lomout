@@ -167,6 +167,7 @@ dependencies {
     implementation("org.slf4j", "slf4j-api", Versions.slf4j)
     implementation("org.apache.logging.log4j", "log4j-slf4j18-impl", Versions.log4j)
     implementation("org.apache.logging.log4j", "log4j-core", Versions.log4j)
+    implementation("org.fusesource.jansi", "jansi", "1.18")
     // Kotlin script
     runtimeOnly(kotlin("script-runtime"))
     //    implementation(kotlin("compiler-embeddable"))

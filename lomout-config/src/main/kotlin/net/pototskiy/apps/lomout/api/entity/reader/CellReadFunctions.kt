@@ -210,7 +210,7 @@ fun Cell.readLong(locale: Locale?, groupingUsed: Boolean): Long? = when (this.ce
  * @return String?
  */
 fun Cell.readString(locale: Locale?, groupingUsed: Boolean): String? = when (this.cellType) {
-    CellType.LONG -> this.longValue.longToString(locale ?: this.locale,groupingUsed)
+    CellType.LONG -> this.longValue.longToString(locale ?: this.locale, groupingUsed)
     CellType.DOUBLE -> this.doubleValue.doubleToString(locale ?: this.locale, groupingUsed)
     CellType.BOOL -> if (this.booleanValue) "1" else "0"
     CellType.STRING -> this.stringValue
