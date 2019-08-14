@@ -86,6 +86,7 @@ internal class EntityLoaderAddTest {
         )
             .findAll(log).toList()
         assertThat(matches).isNotNull
+        println("matches.size: ${matches.size}")
         assertThat(matches).hasSize(3)
         repository.close()
     }
