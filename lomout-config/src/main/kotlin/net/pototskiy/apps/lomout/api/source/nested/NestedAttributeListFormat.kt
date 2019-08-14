@@ -44,26 +44,21 @@ open class NestedAttributeListFormat(
      *
      * @return CSVFormat
      */
-    protected fun getAttrFormat(): CSVFormat {
-        var format = CSVFormat.RFC4180
-            .withRecordSeparator("")
-            .withDelimiter(delimiter)
-        format = escape?.let { format.withEscape(escape) } ?: format.withEscape(null)
-        format = quote?.let { format.withQuote(quote) } ?: format.withQuoteMode(QuoteMode.NONE)
-        return format
-    }
+    protected fun getAttrFormat(): CSVFormat = createFormat(delimiter, quote, escape)
 
     /**
      * Get CSV format for name value
      *
      * @return CSVFormat
      */
-    protected fun getNameValueFormat(): CSVFormat {
+    protected fun getNameValueFormat(): CSVFormat = createFormat(valueDelimiter, valueQuote, valueEscape)
+
+    private fun createFormat(delimiter: Char, quote: Char?, escape: Char?): CSVFormat {
         var format = CSVFormat.RFC4180
             .withRecordSeparator("")
-            .withDelimiter(valueDelimiter)
-        format = valueEscape?.let { format.withEscape(valueEscape) } ?: format.withEscape(null)
-        format = valueQuote?.let { format.withQuote(valueQuote) } ?: format.withQuoteMode(QuoteMode.NONE)
+            .withDelimiter(delimiter)
+        format = escape?.let { format.withEscape(it) } ?: format.withEscape(null)
+        format = quote?.let { format.withQuote(it) } ?: format.withQuoteMode(QuoteMode.NONE)
         return format
     }
 }

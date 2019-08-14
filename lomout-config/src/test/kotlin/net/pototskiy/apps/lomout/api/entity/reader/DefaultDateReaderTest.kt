@@ -20,7 +20,6 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
@@ -133,7 +132,7 @@ internal class DefaultDateReaderTest {
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("en_US".createLocale()))
         )
-        val dateString =  expected.format(
+        val dateString = expected.format(
             DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("en_US".createLocale())
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)

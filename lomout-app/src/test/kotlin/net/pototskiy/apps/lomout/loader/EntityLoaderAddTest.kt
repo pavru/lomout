@@ -103,8 +103,7 @@ internal class EntityLoaderAddTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
-        @Suppress("RegExpRedundantEscape")
-        val matches = Regex("""^\[ERROR\].*\/ by zero.*$""", RegexOption.MULTILINE)
+        val matches = Regex("""^\[ERROR].*/ by zero.*$""", RegexOption.MULTILINE)
             .findAll(log).toList()
         assertThat(matches).isNotNull
         assertThat(matches).hasSize(3)

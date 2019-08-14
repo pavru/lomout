@@ -44,6 +44,7 @@ import kotlin.reflect.full.createInstance
 open class DocumentAttributeReader : AttributeReader<Document?>() {
     var quote: Char? = null
     var delimiter: Char = ','
+    @Suppress("MemberVisibilityCanBePrivate")
     var escape: Char? = '\\'
     var valueQuote: Char? = '"'
     var valueDelimiter: Char = '='
