@@ -14,3 +14,5 @@
 /build
 /lomout-config/build
 /lomout-app/build
+/buildSrc/build
+.gradle/
