@@ -103,7 +103,7 @@ internal class EntityLoaderAddTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
-        val matches = Regex("""^\[ERROR].*/ by zero.*$""", RegexOption.MULTILINE)
+        val matches = Regex("""^.*\[ERROR].*/ by zero.*$""", RegexOption.MULTILINE)
             .findAll(log).toList()
         assertThat(matches).isNotNull
         println("matches.size: ${matches.size}")
