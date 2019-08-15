@@ -26,6 +26,7 @@ import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.document.NonAttribute
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.document.toAttribute
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -369,7 +370,7 @@ internal class FieldSetBuilderTest {
                         entity(EntityType::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }

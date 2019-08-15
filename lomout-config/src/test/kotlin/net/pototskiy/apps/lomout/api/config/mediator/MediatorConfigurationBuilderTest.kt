@@ -24,6 +24,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.documentMetadata
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.bson.codecs.pojo.annotations.BsonIgnore
@@ -154,11 +155,11 @@ internal class MediatorConfigurationBuilderTest {
                         it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier { it.match() }
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -174,11 +175,11 @@ internal class MediatorConfigurationBuilderTest {
                         it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier { it.match() }
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -210,12 +211,12 @@ internal class MediatorConfigurationBuilderTest {
                         it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier { it.match() }
                         pipeline(Pipeline.CLASS.UNMATCHED) {}
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -231,7 +232,7 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     assembler { _, _ ->
-                        emptyMap()
+                        emptyDocumentData()
                     }
                 }
             }
@@ -247,7 +248,7 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     assembler { _, _ ->
-                        emptyMap()
+                        emptyDocumentData()
                     }
                 }
             }
@@ -259,7 +260,7 @@ internal class MediatorConfigurationBuilderTest {
                 }
                 pipeline {
                     assembler { _, _ ->
-                        emptyMap()
+                        emptyDocumentData()
                     }
                 }
             }

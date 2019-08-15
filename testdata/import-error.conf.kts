@@ -19,6 +19,8 @@
 
 @file:Import("absent-file.plugin.conf.kts")
 
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
+
 config {
     database {
         name("test")
@@ -56,7 +58,7 @@ config {
                 copyFrom("test")
             }
             pipeline {
-                assembler { _, _ -> emptyMap() }
+                assembler { _, _ -> emptyDocumentData() }
             }
         }
 

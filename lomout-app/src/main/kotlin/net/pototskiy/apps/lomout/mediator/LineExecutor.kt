@@ -31,6 +31,7 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.errorMessageFromException
@@ -44,7 +45,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
     private val jobs = mutableListOf<Job>()
     protected var processedRows = 0L
 
-    abstract fun processResultData(data: Map<Attribute, Any>): Long
+    abstract fun processResultData(data: DocumentData): Long
     abstract fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor
 
     @Suppress("TooGenericExceptionCaught", "SpreadOperator")

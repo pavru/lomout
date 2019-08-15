@@ -25,6 +25,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plugable.Reader
@@ -249,7 +250,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -295,7 +296,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -342,7 +343,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity2::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -406,7 +407,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity3::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -452,7 +453,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity4::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }
@@ -502,7 +503,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }

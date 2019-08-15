@@ -48,6 +48,7 @@ import OnecGroupExtended_conf.OnecGroupExtended
 import OnecGroupRelation_conf.OnecGroupRelation
 import OnecGroup_conf.OnecGroup
 import OnecProduct_conf.OnecProduct
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 
 config {
     database {
@@ -236,10 +237,10 @@ config {
                     it.match()
                 }
                 pipeline(Pipeline.CLASS.MATCHED) {
-                    assembler { _, _ -> emptyMap() }
+                    assembler { _, _ -> emptyDocumentData() }
                 }
                 pipeline(Pipeline.CLASS.UNMATCHED) {
-                    assembler { _, _ -> emptyMap() }
+                    assembler { _, _ -> emptyDocumentData() }
                 }
             }
         }
