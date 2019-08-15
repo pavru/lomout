@@ -25,6 +25,7 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.reader.DocumentAttributeReader
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
@@ -159,7 +160,7 @@ internal class NestedFieldLoadingTest {
                         entity(Entity::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }

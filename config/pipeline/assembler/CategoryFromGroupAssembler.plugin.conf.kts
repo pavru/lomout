@@ -18,11 +18,13 @@
  */
 
 import OnecGroup_conf.OnecGroup
+import net.pototskiy.apps.lomout.api.document.DocumentData
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import kotlin.reflect.KClass
 
 class CategoryFromGroupAssembler : PipelineAssemblerPlugin() {
-    override fun assemble(target: KClass<out Document>, entities: EntityCollection): Map<Attribute, Any> {
-        val data = mutableMapOf<Attribute, Any>()
+    override fun assemble(target: KClass<out Document>, entities: EntityCollection): DocumentData {
+        val data = emptyDocumentData()
         entities.getOrNull(OnecGroup::class)?.let { onec ->
             target.documentMetadata.attributes.values.forEach { attr ->
                 onec.getAttribute(attr)?.let { data[attr] = it }

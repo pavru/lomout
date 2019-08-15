@@ -29,7 +29,9 @@ import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.document.documentData
 import net.pototskiy.apps.lomout.api.document.documentMetadata
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.loader.DataLoader
@@ -255,7 +257,7 @@ internal class MediatorBasicTest {
                         pipeline(Pipeline.CLASS.MATCHED) {
                             assembler { target, entities ->
                                 val attrs = target.documentMetadata.attributes
-                                mapOf(
+                                documentData(
                                     attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
                                     attrs.getValue("desc") to entities[1].getAttribute("desc")!!,
                                     attrs.getValue("amount") to entities[1].getAttribute("amount")!!,
@@ -274,7 +276,7 @@ internal class MediatorBasicTest {
                             }
                             assembler { target, entities ->
                                 val attrs = target.documentMetadata.attributes
-                                mapOf(
+                                documentData(
                                     attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
                                     attrs.getValue("desc") to entities[0].getAttribute("desc")!!,
                                     attrs.getValue("amount") to entities[0].getAttribute("amount")!!,
@@ -301,7 +303,7 @@ internal class MediatorBasicTest {
                         }
                         assembler { target, entities ->
                             val attrs = target.documentMetadata.attributes
-                            mapOf(
+                            documentData(
                                 attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
                                 attrs.getValue("desc") to entities[0].getAttribute("desc")!!,
                                 attrs.getValue("amount") to entities[0].getAttribute("amount")!!,
@@ -341,7 +343,7 @@ internal class MediatorBasicTest {
                         entity(Entity2::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
                 productionLine {
@@ -350,7 +352,7 @@ internal class MediatorBasicTest {
                         entity(ImportData::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
                 productionLine {
@@ -359,7 +361,7 @@ internal class MediatorBasicTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
                 productionLine {
@@ -368,7 +370,7 @@ internal class MediatorBasicTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyMap() }
+                        assembler { _, _ -> emptyDocumentData() }
                     }
                 }
             }

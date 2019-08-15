@@ -18,13 +18,14 @@
  */
 
 import MageCategory_conf.MageCategory
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import kotlin.reflect.KClass
 
 class MarkCategoryToRemove : PipelineAssemblerPlugin() {
-    override fun assemble(target: KClass<out Document>, entities: EntityCollection): Map<Attribute, Any> {
+    override fun assemble(target: KClass<out Document>, entities: EntityCollection): DocumentData {
         try {
             val category = entities[MageCategory::class] as MageCategory
-            return mapOf(
+            return documentData(
                 MageCategory.attributes.getValue("entity_id") to category.entity_id,
                 MageCategory.attributes.getValue("remove_flag") to true
             )

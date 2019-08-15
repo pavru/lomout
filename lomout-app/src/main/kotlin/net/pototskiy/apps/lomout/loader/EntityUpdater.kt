@@ -20,6 +20,7 @@
 package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import kotlin.reflect.KClass
@@ -29,7 +30,7 @@ class EntityUpdater(
     private val entityType: KClass<out Document>
 ) {
 
-    fun update(data: Map<Attribute, Any>): Long {
+    fun update(data: DocumentData): Long {
         val processedRows: Long
         var entity = repository.get(
             entityType,

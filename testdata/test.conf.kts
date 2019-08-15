@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.reader.BooleanAttributeReader
 
 /*
@@ -282,7 +283,7 @@ config {
             }
             output(ImportProduct::class)
             pipeline {
-                assembler { _, _ -> emptyMap() }
+                assembler { _, _ -> emptyDocumentData() }
             }
         }
     }

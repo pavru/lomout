@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.printer
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.printer.PrinterLine
-import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.mediator.LineExecutor
 import net.pototskiy.apps.lomout.mediator.PipelineExecutor
@@ -34,7 +34,7 @@ class PrinterLineExecutor(repository: EntityRepositoryInterface) : LineExecutor(
     override val logger: Logger = LogManager.getLogger(PRINTER_LOG_NAME)
     private lateinit var printer: EntityPrinter
 
-    override fun processResultData(data: Map<Attribute, Any>): Long =
+    override fun processResultData(data: DocumentData): Long =
         if (data.isEmpty()) {
             0L
         } else {

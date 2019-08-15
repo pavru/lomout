@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.mediator
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.mediator.ProductionLine
-import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.loader.EntityUpdater
 import org.apache.logging.log4j.LogManager
@@ -33,7 +33,7 @@ class ProductionLineExecutor(repository: EntityRepositoryInterface) : LineExecut
     override val logger: Logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private lateinit var entityUpdater: EntityUpdater
 
-    override fun processResultData(data: Map<Attribute, Any>): Long =
+    override fun processResultData(data: DocumentData): Long =
         if (data.isEmpty()) {
             0L
         } else {

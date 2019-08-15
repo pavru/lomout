@@ -31,7 +31,9 @@ import net.pototskiy.apps.lomout.api.SuspectedLocation
 import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.config.loader.FieldSet
 import net.pototskiy.apps.lomout.api.config.loader.Load
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.errorMessageFromException
@@ -61,7 +63,7 @@ class EntityLoader(
     private val updateChanel = Channel<UpdaterData>(CHANEL_CAPACITY)
 
     private lateinit var updater: EntityUpdater
-    private val extraData = mutableMapOf<String, Map<Attribute, Any>>()
+    private val extraData = mutableMapOf<String, DocumentData>()
     private var fieldSets = loadConfig.fieldSets
     private var eType = loadConfig.entity
 
@@ -111,7 +113,7 @@ class EntityLoader(
     private suspend fun processRow(row: Row) {
         val rowFiledSet = findRowFieldSet(row)
         if (rowFiledSet.mainSet) {
-            val data = getData(row, rowFiledSet.fieldToAttr).toMutableMap()
+            val data = getData(row, rowFiledSet.fieldToAttr)
             plusAdditionalData(data)
             validateKeyFieldData(data, rowFiledSet.fieldToAttr)
             updateChanel.send(UpdaterData(row, data, suspectedLocation(row) + loadConfig.entity))
@@ -121,7 +123,7 @@ class EntityLoader(
         }
     }
 
-    private fun plusAdditionalData(data: MutableMap<Attribute, Any>) =
+    private fun plusAdditionalData(data: DocumentData) =
         extraData.forEach { (_, gData) -> data.putAll(gData) }
 
     private fun checkEmptyRow(
@@ -168,8 +170,8 @@ class EntityLoader(
     }
 
     @Suppress("ComplexMethod", "ThrowsCount")
-    private fun getData(row: Row, fields: FieldAttributeMap): Map<Attribute, Any> {
-        val data: MutableMap<Attribute, Any> = mutableMapOf()
+    private fun getData(row: Row, fields: FieldAttributeMap): DocumentData {
+        val data: DocumentData = emptyDocumentData()
 
         fields.forEach { (field, attr) ->
             val cell = row[field.column]
@@ -232,7 +234,7 @@ class EntityLoader(
 
     private data class UpdaterData(
         val row: Row,
-        val data: Map<Attribute, Any>,
+        val data: DocumentData,
         val place: SuspectedLocation
     )
 

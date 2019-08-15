@@ -19,6 +19,8 @@
 
 @file:DependsOn("test", "group", "absent-file.plugin.conf.kts", "1.0")
 
+import net.pototskiy.apps.lomout.api.document.emptyDocumentData
+
 config {
     database {
         name("test_lomout")
@@ -56,7 +58,7 @@ config {
                 inheritFrom("test")
             }
             pipeline {
-                assembler { _, _ -> emptyMap() }
+                assembler { _, _ -> emptyDocumentData() }
             }
         }
 
