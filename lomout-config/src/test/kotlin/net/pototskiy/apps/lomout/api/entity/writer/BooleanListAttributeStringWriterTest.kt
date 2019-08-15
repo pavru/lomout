@@ -64,14 +64,14 @@ internal class BooleanListAttributeStringWriterTest {
         class Attr1Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<BooleanListAttributeStringWriter> {
                 delimiter = ','
-                quote = null
+                quotes = null
             }
         }
 
         class Attr2Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<BooleanListAttributeStringWriter> {
                 delimiter = ','
-                quote = '\''
+                quotes = '\''
             }
         }
     }
@@ -128,6 +128,6 @@ internal class BooleanListAttributeStringWriterTest {
         assertThat(writer).isInstanceOf(BooleanListAttributeStringWriter::class.java)
         writer as BooleanListAttributeStringWriter
         assertThat(writer.delimiter).isEqualTo(',')
-        assertThat(writer.quote).isNull()
+        assertThat(writer.quotes).isNull()
     }
 }

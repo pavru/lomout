@@ -23,9 +23,9 @@ import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.booleanListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.booleanType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateTimeType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.datetimeListType
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateTimeType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.documentType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.doubleListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.doubleType
@@ -84,7 +84,7 @@ val defaultWriters = mapOf(
     },
     stringType to StringAttributeStringWriter(),
     stringListType to StringListAttributeStringWriter().apply {
-        quote = '"'
+        quotes = '"'
         delimiter = ','
     }
 )

@@ -20,10 +20,10 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.createLocale
+import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.dateToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
-import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 
@@ -32,23 +32,20 @@ import java.time.LocalDate
  *
  * @property locale String The date locale, default system locale. This is parameter
  * @property pattern String? The date pattern, optional. This is parameter
- * @property quote Char? The value quotes. This is parameter
+ * @property quotes Char? The value quotes. This is parameter
  * @property delimiter Char The list delimiter, default:','. This is parameter
  */
 open class DateListAttributeStringWriter : AttributeWriter<List<LocalDate>?>() {
     var locale: String? = null
     var pattern: String? = null
-    var quote: Char? = null
+    var quotes: Char? = null
     var delimiter: Char = ','
 
     override fun write(value: List<LocalDate>?, cell: Cell) {
         value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
-                    CSVFormat.RFC4180
-                        .withQuote(quote)
-                        .withDelimiter(delimiter)
-                        .withRecordSeparator("")
+                    CSVValueFormat(delimiter, quotes, '\\').format
                         .print(writer)
                         .printRecord(list.map { data ->
                             pattern?.let { data.dateToString(it) }

@@ -174,23 +174,27 @@ class EntityLoader(
         val data: DocumentData = emptyDocumentData()
 
         fields.forEach { (field, attr) ->
-            val cell = row[field.column]
-                ?: if (attr.isNullable) row.getOrEmptyCell(field.column) else null
-                    ?: throw AppDataException(
-                        suspectedLocation(row) + field + attr,
-                        message("message.error.loader.data.no_cell")
-                    )
-            testFieldRegex(field, cell)
-            @Suppress("UNCHECKED_CAST")
-            (attr.reader as AttributeReader<Any?>).read(attr, cell).also {
-                if (it == null && (!attr.isNullable || attr.isKey)) {
-                    throw AppDataException(
-                        suspectedLocation(attr) + field + cell,
-                        message("message.error.loader.data.null_to_notnull")
-                    )
-                } else if (it != null) {
-                    data[attr] = it
+            try {
+                val cell = row[field.column]
+                    ?: if (attr.isNullable) row.getOrEmptyCell(field.column) else null
+                        ?: throw AppDataException(
+                            suspectedLocation(row) + field + attr,
+                            message("message.error.loader.data.no_cell")
+                        )
+                testFieldRegex(field, cell)
+                @Suppress("UNCHECKED_CAST")
+                (attr.reader as AttributeReader<Any?>).read(attr, cell).also {
+                    if (it == null && (!attr.isNullable || attr.isKey)) {
+                        throw AppDataException(
+                            suspectedLocation(attr) + field + cell + attr,
+                            message("message.error.loader.data.null_to_notnull")
+                        )
+                    } else if (it != null) {
+                        data[attr] = it
+                    }
                 }
+            } catch (e: AppDataException) {
+                throw AppDataException(e.suspectedLocation + field + attr, e.message)
             }
         }
         return data

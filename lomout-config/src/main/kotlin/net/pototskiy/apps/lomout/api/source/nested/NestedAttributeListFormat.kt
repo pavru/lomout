@@ -19,46 +19,54 @@
 
 package net.pototskiy.apps.lomout.api.source.nested
 
+import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.QuoteMode
 
 /**
  * Nested attribute list format
  *
- * @property quote Char? The name-value pair quote, null — no quote
- * @property delimiter Char The name-value pair delimiter
- * @property valueQuote Char? The value quote, null — no quote
- * @property valueDelimiter Char The name value delimiter
+ * @param delimiter The attribute csv delimiter
+ * @param quotes The attribute csv quotes, null - no quotes
+ * @param escape The attribute csv escape symbol, null - double quotes are used
+ * @property valueCSVFormat The name-value pair csv format
  * @constructor
  */
 open class NestedAttributeListFormat(
-    private val quote: Char?,
-    private val delimiter: Char,
-    private val escape: Char?,
-    private val valueQuote: Char?,
-    private val valueDelimiter: Char,
-    private val valueEscape: Char?
-) {
+    delimiter: Char,
+    quotes: Char?,
+    escape: Char?,
+    private val valueCSVFormat: CSVValueFormat
+) : CSVValueFormat(delimiter, quotes, escape) {
+    /**
+     * Secondary constructor with full csv specification
+     *
+     * @param delimiter The attribute csv delimiter
+     * @param quotes The attribute csv quotes, null - no quotes
+     * @param escape The attribute csv escape symbol, null - double quotes are used
+     * @param valueDelimiter The name-value csv delimiter
+     * @param valueQuotes The attribute value csv quotes, null - no quotes
+     * @param valueEscape The attribute value csv escape symbol, null - double quotes are used
+     */
+    constructor(
+        delimiter: Char,
+        quotes: Char?,
+        escape: Char?,
+        valueDelimiter: Char,
+        valueQuotes: Char?,
+        valueEscape: Char?
+    ) : this(delimiter, quotes, escape, CSVValueFormat(valueDelimiter, valueQuotes, valueEscape))
+
     /**
      * CSV format for name-value pairs list
      *
      * @return CSVFormat
      */
-    protected fun getAttrFormat(): CSVFormat = createFormat(delimiter, quote, escape)
+    protected fun getAttrFormat(): CSVFormat = format
 
     /**
      * Get CSV format for name value
      *
      * @return CSVFormat
      */
-    protected fun getNameValueFormat(): CSVFormat = createFormat(valueDelimiter, valueQuote, valueEscape)
-
-    private fun createFormat(delimiter: Char, quote: Char?, escape: Char?): CSVFormat {
-        var format = CSVFormat.RFC4180
-            .withRecordSeparator("")
-            .withDelimiter(delimiter)
-        format = escape?.let { format.withEscape(it) } ?: format.withEscape(null)
-        format = quote?.let { format.withQuote(it) } ?: format.withQuoteMode(QuoteMode.NONE)
-        return format
-    }
+    protected fun getNameValueFormat(): CSVFormat = valueCSVFormat.format
 }

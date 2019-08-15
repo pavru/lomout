@@ -84,7 +84,7 @@ val defaultReaders = mapOf(
     },
     stringType to StringAttributeReader(),
     stringListType to StringListAttributeReader().apply {
-        quote = '"'
+        quotes = '"'
         delimiter = ','
     }
 )

@@ -138,7 +138,8 @@ open class OnecProduct : Document() {
     class StringListReaderBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<StringListAttributeReader> {
             delimiter = ';'
-            quote = null
+            quotes = null
+            escape = '\\'
         }
     }
     @Reader(StringListReaderBuilder::class)
@@ -146,7 +147,7 @@ open class OnecProduct : Document() {
     class BoolListReaderBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<BooleanListAttributeReader> {
             delimiter = ','
-            quote = null
+            quotes = null
         }
     }
     @Reader(BoolListReaderBuilder::class)
@@ -154,7 +155,7 @@ open class OnecProduct : Document() {
     class LongListReaderBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader>{
             delimiter = ','
-            quote = null
+            quotes = null
         }
     }
     @Reader(LongListReaderBuilder::class)
@@ -163,7 +164,7 @@ open class OnecProduct : Document() {
         override fun build(): AttributeReader<out Any?> = createReader<DoubleListAttributeReader> {
             locale = "ru_RU"
             delimiter = ','
-            quote = null
+            quotes = null
         }
     }
     @Reader(DoubleListReaderBuilder::class)
@@ -171,7 +172,7 @@ open class OnecProduct : Document() {
     class DateListReaderBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader>{
             delimiter = ','
-            quote = null
+            quotes = null
             pattern = "d.M.uu"
         }
     }
@@ -180,7 +181,7 @@ open class OnecProduct : Document() {
     class DateTimeListReaserBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateTimeListAttributeReader> {
             delimiter = ','
-            quote = null
+            quotes = null
             pattern = "d.M.uu H:m"
         }
     }

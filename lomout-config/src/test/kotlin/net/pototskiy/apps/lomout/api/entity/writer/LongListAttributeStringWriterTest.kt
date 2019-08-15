@@ -57,14 +57,14 @@ internal class LongListAttributeStringWriterTest {
 
         class Attr1Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<LongListAttributeStringWriter> {
-                quote = null
+                quotes = null
                 delimiter = ','
             }
         }
 
         class Attr2Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<LongListAttributeStringWriter> {
-                quote = '\''
+                quotes = '\''
                 delimiter = ','
             }
         }
@@ -128,6 +128,6 @@ internal class LongListAttributeStringWriterTest {
         assertThat(writer).isInstanceOf(LongListAttributeStringWriter::class.java)
         writer as LongListAttributeStringWriter
         assertThat(writer.delimiter).isEqualTo(',')
-        assertThat(writer.quote).isNull()
+        assertThat(writer.quotes).isNull()
     }
 }

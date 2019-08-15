@@ -57,14 +57,14 @@ internal class DoubleListAttributeStringWriterTest {
 
         class Attr1Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<DoubleListAttributeStringWriter> {
-                quote = null
+                quotes = null
                 delimiter = ','
             }
         }
 
         class Attr2Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<DoubleListAttributeStringWriter> {
-                quote = '\''
+                quotes = '\''
                 delimiter = ','
             }
         }
@@ -128,6 +128,6 @@ internal class DoubleListAttributeStringWriterTest {
         assertThat(writer).isInstanceOf(DoubleListAttributeStringWriter::class.java)
         writer as DoubleListAttributeStringWriter
         assertThat(writer.delimiter).isEqualTo(',')
-        assertThat(writer.quote).isNull()
+        assertThat(writer.quotes).isNull()
     }
 }

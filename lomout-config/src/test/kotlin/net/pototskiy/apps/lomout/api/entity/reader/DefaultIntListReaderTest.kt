@@ -106,7 +106,7 @@ internal class DefaultIntListReaderTest {
         reader as IntListAttributeReader
         assertThat(reader.locale).isEqualTo(DEFAULT_LOCALE_STR)
         assertThat(reader.delimiter).isEqualTo(',')
-        assertThat(reader.quote).isNull()
+        assertThat(reader.quotes).isNull()
     }
 
     class TestDocParameters : Document() {

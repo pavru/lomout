@@ -57,14 +57,15 @@ internal class StringListAttributeStringWriterTest {
 
         class Attr1Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<StringListAttributeStringWriter> {
-                quote = null
+                quotes = null
                 delimiter = ','
+                escape = '\\'
             }
         }
 
         class Attr2Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<StringListAttributeStringWriter> {
-                quote = '\''
+                quotes = '\''
                 delimiter = ','
             }
         }
@@ -128,6 +129,6 @@ internal class StringListAttributeStringWriterTest {
         Assertions.assertThat(writer).isInstanceOf(StringListAttributeStringWriter::class.java)
         writer as StringListAttributeStringWriter
         assertThat(writer.delimiter).isEqualTo(',')
-        assertThat(writer.quote).isEqualTo('"')
+        assertThat(writer.quotes).isEqualTo('"')
     }
 }

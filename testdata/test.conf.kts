@@ -117,7 +117,8 @@ open class TestEntityAttributes : Document() {
     class StringListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<StringListAttributeReader> {
             delimiter = ','
-            quote = null
+            quotes = null
+            escape = '\\'
         }
     }
 
@@ -128,7 +129,7 @@ open class TestEntityAttributes : Document() {
         override fun build(): AttributeReader<out Any?> = createReader<BooleanListAttributeReader> {
             locale = "en_US"
             delimiter = ','
-            quote = null
+            quotes = null
         }
     }
 
@@ -138,7 +139,7 @@ open class TestEntityAttributes : Document() {
     class LongListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader> {
             delimiter = ','
-            quote = null
+            quotes = null
         }
     }
 
@@ -156,7 +157,7 @@ open class TestEntityAttributes : Document() {
 
     class DateListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader> {
-            delimiter = ','; quote = null; pattern = "d.M.uu"
+            delimiter = ','; quotes = null; pattern = "d.M.uu"
         }
     }
 
@@ -165,7 +166,7 @@ open class TestEntityAttributes : Document() {
 
     class DateTimeListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateTimeListAttributeReader> {
-            delimiter = ','; quote = null; pattern = "d.M.uu H:m"
+            delimiter = ','; quotes = null; pattern = "d.M.uu H:m"
         }
     }
 

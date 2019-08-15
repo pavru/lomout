@@ -100,6 +100,6 @@ internal class DefaultLongListReaderTest {
         reader as LongListAttributeReader
         assertThat(reader.locale).isEqualTo(DEFAULT_LOCALE_STR)
         assertThat(reader.delimiter).isEqualTo(',')
-        assertThat(reader.quote).isNull()
+        assertThat(reader.quotes).isNull()
     }
 }
