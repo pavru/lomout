@@ -105,7 +105,8 @@ internal class DateTimeListAttributeStringWriterTest {
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         println("datetime list: ${cell.asString()}")
         assertThat(cell.stringValue).isEqualTo(
-            "${now1.datetimeToString(DEFAULT_LOCALE)},${now2.datetimeToString(DEFAULT_LOCALE)}"
+            now1.datetimeToString(DEFAULT_LOCALE).replace(",", """\,""") + "," +
+                    now2.datetimeToString(DEFAULT_LOCALE).replace(",", """\,""")
         )
     }
 
