@@ -195,6 +195,8 @@ class EntityLoader(
                 }
             } catch (e: AppDataException) {
                 throw AppDataException(e.suspectedLocation + field + attr, e.message)
+            } catch (e: Exception) {
+                throw AppDataException(suspectedLocation(field) + attr, e.message)
             }
         }
         return data
