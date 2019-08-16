@@ -17,36 +17,41 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.loader
+package net.pototskiy.apps.lomout
 
-import java.io.FileDescriptor
-import java.security.Permission
+import com.ginsberg.junit.exit.ExpectSystemExitWithStatus
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
-internal class NoExitSecurityManager() : SecurityManager() {
-    override fun checkPermission(perm: Permission) {
-        //allow everything
+internal class MainKtTest {
+
+    @BeforeEach
+    fun setUp() {
     }
 
-    override fun checkPermission(perm: Permission, context: Any) {
-        //allow everything
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    internal fun mainNoArgsTest() {
+        main(arrayOf(""))
     }
 
-    override fun checkRead(fd: FileDescriptor?) {
-        //allow everything
+    @Test
+    internal fun peoductionWayMainTest() {
+        main(arrayOf("--process", System.getenv("PRODUCTION_CONFIG")))
     }
 
-    override fun checkRead(file: String?) {
-        //allow everything
+    @Test
+    @ExpectSystemExitWithStatus(1)
+    internal fun wrongParametersTest() {
+        main(arrayOf("--this wrong paramter for test"))
     }
 
-    override fun checkPropertiesAccess() {
-        // allow all
+    @Test
+    internal fun getHelpTest() {
+        main(arrayOf("--help"))
     }
-
-    override fun checkExit(status: Int) {
-        if (status != 0)
-            throw ExitException(status)
-        else
-            super.checkExit(status)
+    @Test
+    internal fun getVersionTest() {
+        main(arrayOf("--version"))
     }
 }

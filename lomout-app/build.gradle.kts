@@ -183,9 +183,10 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", Versions.junit5)
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.assertj", "assertj-core", Versions.assertj)
+    testImplementation("com.ginsberg:junit5-system-exit:1.0.0")
     // Addon
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${Versions.detekt}")
-    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-debug", "1.3.0-RC")
+    testImplementation("org.jetbrains.kotlinx", "kotlinx-coroutines-debug", "1.3.0-RC2")
 }
 
 tasks.jacocoTestReport {

@@ -103,7 +103,6 @@ internal class DateTimeListAttributeStringWriterTest {
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<List<LocalDateTime>>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
-        println("datetime list: ${cell.asString()}")
         assertThat(cell.stringValue).isEqualTo(
             now1.datetimeToString(DEFAULT_LOCALE).replace(",", """\,""") + "," +
                     now2.datetimeToString(DEFAULT_LOCALE).replace(",", """\,""")
