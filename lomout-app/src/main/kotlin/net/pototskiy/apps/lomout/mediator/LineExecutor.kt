@@ -32,7 +32,6 @@ import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.DocumentData
-import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.errorMessageFromException
 import net.pototskiy.apps.lomout.api.suspectedLocation

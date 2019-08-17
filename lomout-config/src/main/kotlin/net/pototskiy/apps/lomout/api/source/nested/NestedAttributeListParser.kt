@@ -43,7 +43,7 @@ class NestedAttributeListParser(
     valueQuote: Char?,
     valueDelimiter: Char,
     valueEscape: Char?
-) : NestedAttributeListFormat(quote, delimiter, escape, valueQuote, valueDelimiter, valueEscape) {
+) : NestedAttributeListFormat(delimiter, quote, escape, valueDelimiter, valueQuote, valueEscape) {
 
     /**
      * Parse list string to map of name→value

@@ -20,22 +20,22 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.createLocale
+import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.longToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
-import org.apache.commons.csv.CSVFormat
 import java.io.ByteArrayOutputStream
 
 /**
  * Default writer for **List&lt;Int&gt;** attribute
  *
  * @property locale String The value locale, default system locale. This is parameter
- * @property quote Char? The value quote, optional. This is parameter
+ * @property quotes Char? The value quote, optional. This is parameter
  * @property delimiter Char The list delimiter, default:','. This is parameter
  */
 open class IntListAttributeStringWriter : AttributeWriter<List<Int>?>() {
     var locale: String? = null
-    var quote: Char? = null
+    var quotes: Char? = null
     var delimiter: Char = ','
     var groupingUsed: Boolean = false
 
@@ -43,10 +43,7 @@ open class IntListAttributeStringWriter : AttributeWriter<List<Int>?>() {
         value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
-                    CSVFormat.RFC4180
-                        .withQuote(quote)
-                        .withDelimiter(delimiter)
-                        .withRecordSeparator("")
+                    CSVValueFormat(delimiter, quotes, '\\').format
                         .print(writer)
                         .printRecord(list.map {
                             it.toLong().longToString(locale?.createLocale() ?: cell.locale, groupingUsed)

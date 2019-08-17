@@ -21,6 +21,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.createCsvCell
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
@@ -28,10 +29,7 @@ import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
-import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvCell
-import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvInputWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
-import org.apache.commons.csv.CSVFormat
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory
@@ -127,6 +125,15 @@ internal class DefaultLongReaderTest {
     }
 
     @Test
+    internal fun readWithWorkbookLocaleTest() {
+        xlsTestDataCell.setCellValue("3")
+        val reader = LongAttributeReader().apply {
+            locale = null
+        }
+        assertThat(reader.read(attr, inputCell)).isEqualTo(3L)
+    }
+
+    @Test
     internal fun defaultLongReaderTest() {
         @Suppress("UNCHECKED_CAST")
         val reader = defaultReaders[SupportAttributeType.longType]
@@ -134,12 +141,5 @@ internal class DefaultLongReaderTest {
         assertThat(reader).isInstanceOf(AttributeReader::class.java)
         reader as LongAttributeReader
         assertThat(reader.locale).isEqualTo(DEFAULT_LOCALE_STR)
-    }
-
-    private fun createCsvCell(value: String): CsvCell {
-        val reader = value.byteInputStream().reader()
-        CsvInputWorkbook(reader, CSVFormat.RFC4180).use {
-            return it[0][0][0]!!
-        }
     }
 }

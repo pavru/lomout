@@ -52,7 +52,7 @@ open class MageCategory : Document() {
     var gen_store_id: Long = 0L
     class GenProductsReader : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader> {
-            delimiter = '|'; quote = null
+            delimiter = '|'; quotes = null
         }
     }
     @Reader(GenProductsReader::class)

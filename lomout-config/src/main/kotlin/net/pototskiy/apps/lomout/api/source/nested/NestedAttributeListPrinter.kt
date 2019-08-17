@@ -37,7 +37,7 @@ class NestedAttributeListPrinter(
     valueQuote: Char?,
     valueDelimiter: Char,
     valueEscape: Char?
-) : NestedAttributeListFormat(quote, delimiter, escape, valueQuote, valueDelimiter, valueEscape) {
+) : NestedAttributeListFormat(delimiter, quote, escape, valueDelimiter, valueQuote, valueEscape) {
 
     /**
      * Convert map of attributes(name→value) to string

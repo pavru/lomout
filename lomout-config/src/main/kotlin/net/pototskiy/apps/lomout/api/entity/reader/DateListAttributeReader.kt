@@ -23,13 +23,13 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.stringToDate
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.suspectedLocation
-import org.apache.commons.csv.CSVFormat
 import java.time.LocalDate
 
 /**
@@ -37,13 +37,13 @@ import java.time.LocalDate
  *
  * @property locale String The value locale. This is parameter
  * @property pattern String? The value pattern, optional (use locale). This is parameter
- * @property quote Char? The value quote, optional. This is parameter
+ * @property quotes Char? The value quote, optional. This is parameter
  * @property delimiter Char The list delimiter, default:','. This is parameter
  */
 open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
     var locale: String? = null
     var pattern: String? = null
-    var quote: Char? = null
+    var quotes: Char? = null
     var delimiter: Char = ','
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<LocalDate>? {
@@ -51,10 +51,7 @@ open class DateListAttributeReader : AttributeReader<List<LocalDate>?>() {
             CellType.STRING -> {
                 input.stringValue.reader().use { reader ->
                     try {
-                        CSVFormat.RFC4180
-                            .withQuote(quote)
-                            .withDelimiter(delimiter)
-                            .withRecordSeparator("")
+                        CSVValueFormat(delimiter, quotes, '\\').format
                             .parse(reader)
                             .records
                             .map { it.toList() }.flatten()

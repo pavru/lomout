@@ -60,14 +60,14 @@ internal class DateTimeListAttributeStringWriterTest {
         class Attr1Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<DateTimeListAttributeStringWriter> {
                 delimiter = ','
-                quote = null
+                quotes = null
             }
         }
 
         class Attr2Writer : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<DateTimeListAttributeStringWriter> {
                 delimiter = ','
-                quote = '\''
+                quotes = '\''
                 pattern = "d.M.uu H:m"
             }
         }
@@ -104,7 +104,8 @@ internal class DateTimeListAttributeStringWriterTest {
         (attr.writer as AttributeWriter<List<LocalDateTime>>).write(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo(
-            "${now1.datetimeToString(DEFAULT_LOCALE)},${now2.datetimeToString(DEFAULT_LOCALE)}"
+            now1.datetimeToString(DEFAULT_LOCALE).replace(",", """\,""") + "," +
+                    now2.datetimeToString(DEFAULT_LOCALE).replace(",", """\,""")
         )
     }
 
@@ -139,7 +140,7 @@ internal class DateTimeListAttributeStringWriterTest {
         assertThat(writer).isInstanceOf(DateTimeListAttributeStringWriter::class.java)
         writer as DateTimeListAttributeStringWriter
         assertThat(writer.delimiter).isEqualTo(',')
-        assertThat(writer.quote).isNull()
+        assertThat(writer.quotes).isNull()
         assertThat(writer.pattern).isEqualTo("d.M.uu H:m")
     }
 }

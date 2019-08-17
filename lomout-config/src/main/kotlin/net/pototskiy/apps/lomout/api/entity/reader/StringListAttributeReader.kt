@@ -21,32 +21,30 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
-import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
-import org.apache.commons.csv.CSVFormat
+import net.pototskiy.apps.lomout.api.suspectedLocation
 
 /**
  * Default reader for **List&lt;String&gt;** attribute
  *
- * @property quote Char? The value quote, optional. This is parameter
+ * @property quotes Char? The value quote, optional. This is parameter
  * @property delimiter Char The list delimiter: default:','. This is parameter
  */
 open class StringListAttributeReader : AttributeReader<List<String>?>() {
-    var quote: Char? = null
+    var quotes: Char? = null
     var delimiter: Char = ','
+    var escape: Char? = null
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<String>? {
         return when (input.cellType) {
             CellType.STRING -> {
                 input.stringValue.reader().use { reader ->
-                    CSVFormat.RFC4180
-                        .withQuote(quote)
-                        .withDelimiter(delimiter)
-                        .withRecordSeparator("")
+                    CSVValueFormat(delimiter, quotes, escape).format
                         .parse(reader)
                         .records
                         .map { it.toList() }.flatten()

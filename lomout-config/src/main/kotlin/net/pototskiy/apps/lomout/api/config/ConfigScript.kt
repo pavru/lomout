@@ -117,8 +117,7 @@ object ConfigScriptCompilationConfiguration : ScriptCompilationConfiguration({
             classLoader = ConfigScriptCompilationConfiguration::class.java.classLoader,
             wholeClasspath = false
         )
-        dependenciesFromBuildInfo()
-            .takeIf { it.isNotEmpty() }?.let { updateClasspath(it) }
+        updateClasspath(dependenciesFromBuildInfo())
         this[dependencies]?.forEach { dependency ->
             logger.trace("Script classpath (final): " +
                     (dependency as JvmDependency)
