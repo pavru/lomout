@@ -118,6 +118,15 @@ internal class DefaultDoubleReaderTest {
     }
 
     @Test
+    internal fun readWithWorkbookLocaleTest() {
+        xlsTestDataCell.setCellValue("3.3")
+        val reader = DoubleAttributeReader().apply {
+            locale = null
+        }
+        assertThat(reader.read(attr, inputCell)).isEqualTo(3.3)
+    }
+
+    @Test
     internal fun defaultDoubleReaderTest() {
         @Suppress("UNCHECKED_CAST")
         val reader = defaultReaders[SupportAttributeType.doubleType]

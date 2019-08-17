@@ -169,7 +169,7 @@ class EntityLoader(
         }
     }
 
-    @Suppress("ComplexMethod", "ThrowsCount")
+    @Suppress("ComplexMethod", "ThrowsCount", "TooGenericExceptionCaught")
     private fun getData(row: Row, fields: FieldAttributeMap): DocumentData {
         val data: DocumentData = emptyDocumentData()
 

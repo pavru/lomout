@@ -71,11 +71,7 @@ class ConfigHost(
      */
     fun compile(): ResultWithDiagnostics<CompiledScript<*>> {
         val compilationConfiguration = createJvmCompilationConfigurationFromTemplate<ConfigScript> {
-            ivyFile?.let { file ->
-                dependenciesFromIvyFile(file)
-                    .takeIf { it.isNotEmpty() }
-                    ?.let { updateClasspath(it) }
-            }
+            ivyFile?.let { updateClasspath(dependenciesFromIvyFile(it)) }
         }
         val scriptHost = BasicJvmScriptingHost(
             compiler = JvmScriptCompiler(cache = FileBasedScriptCache(File(cacheDir), doNotUseCache))
@@ -87,7 +83,7 @@ class ConfigHost(
                 logMessage(
                     it.severity,
                     it.message,
-                    it.sourcePath?.let { path -> File(path).name } ?: configFile.name,
+                    configFile.name,
                     it.location?.start?.line ?: 0
                 )
                 logger.trace(message("message.word.exception"), it.exception)
@@ -113,24 +109,20 @@ class ConfigHost(
                     enableScriptsInstancesSharing()
                 }).onFailure { result ->
                     result.reports.forEach { diagnostic ->
-                        if (diagnostic.exception != null || diagnostic.exception?.cause != null) {
-                            ((diagnostic.exception?.cause) ?: diagnostic.exception)?.let {
-                                val position = findExceptionPosition(it, File(diagnostic.sourcePath ?: ""))
-                                logMessage(
-                                    diagnostic.severity,
-                                    it.message ?: "",
-                                    File(diagnostic.sourcePath ?: "").name,
-                                    position?.line ?: 0
-                                )
-                            }
-                        } else {
+                        ((diagnostic.exception?.cause) ?: diagnostic.exception)?.let {
+                            val position = findExceptionPosition(it, File(diagnostic.sourcePath ?: ""))
                             logMessage(
                                 diagnostic.severity,
-                                diagnostic.message,
+                                it.message ?: "",
                                 File(diagnostic.sourcePath ?: "").name,
-                                diagnostic.location?.start?.line ?: 0
+                                position?.line ?: 0
                             )
-                        }
+                        } ?: logMessage(
+                            diagnostic.severity,
+                            diagnostic.message,
+                            File(diagnostic.sourcePath ?: "").name,
+                            diagnostic.location?.start?.line ?: 0
+                        )
                         logger.trace(diagnostic.message, diagnostic.exception)
                     }
                 }.onSuccess {

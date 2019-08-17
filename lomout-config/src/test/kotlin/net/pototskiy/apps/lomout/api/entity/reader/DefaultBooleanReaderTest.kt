@@ -174,6 +174,7 @@ internal class DefaultBooleanReaderTest {
         @Suppress("UNCHECKED_CAST")
         reader as AttributeReader<List<Boolean>>
     }
+
     private fun createCsvCell(value: String): CsvCell {
         val reader = value.byteInputStream().reader()
         CsvInputWorkbook(reader, CSVFormat.RFC4180).use {
