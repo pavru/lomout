@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.loader
 import java.io.FileDescriptor
 import java.security.Permission
 
-internal class NoExitSecurityManager() : SecurityManager() {
+internal class NoExitSecurityManager : SecurityManager() {
     override fun checkPermission(perm: Permission) {
         //allow everything
     }

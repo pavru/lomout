@@ -28,9 +28,11 @@ class DocumentData(private val data: MutableMap<DocumentMetadata.Attribute, Any>
         data[property.toAttribute()] = value
     }
 
+    @Suppress("unused")
     fun getOrDefault(property: KMutableProperty1<Document, *>, defaultValue: Any): Any =
         data.getOrDefault(property.toAttribute(), defaultValue)
 
+    @Suppress("unused")
     fun containsKey(property: KMutableProperty1<Document, *>): Boolean =
         data.containsKey(property.toAttribute())
 }
@@ -38,6 +40,7 @@ class DocumentData(private val data: MutableMap<DocumentMetadata.Attribute, Any>
 fun emptyDocumentData() = DocumentData(mutableMapOf())
 fun documentData(vararg pairs: Pair<DocumentMetadata.Attribute, Any>): DocumentData =
     if (pairs.isNotEmpty()) DocumentData(pairs.toMap().toMutableMap()) else emptyDocumentData()
+
 fun List<Pair<DocumentMetadata.Attribute, Any>>.toDocumentData(): DocumentData =
     DocumentData(this.toMap().toMutableMap())
 
