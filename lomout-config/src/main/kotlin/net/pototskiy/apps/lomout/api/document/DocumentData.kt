@@ -23,17 +23,17 @@ import kotlin.reflect.KMutableProperty1
 
 class DocumentData(private val data: MutableMap<DocumentMetadata.Attribute, Any>) :
     MutableMap<DocumentMetadata.Attribute, Any> by data {
-    operator fun get(property: KMutableProperty1<Document, *>): Any? = data[property.toAttribute()]
-    operator fun set(property: KMutableProperty1<Document, *>, value: Any) {
+    operator fun get(property: KMutableProperty1<out Document, *>): Any? = data[property.toAttribute()]
+    operator fun set(property: KMutableProperty1<out Document, *>, value: Any) {
         data[property.toAttribute()] = value
     }
 
     @Suppress("unused")
-    fun getOrDefault(property: KMutableProperty1<Document, *>, defaultValue: Any): Any =
+    fun getOrDefault(property: KMutableProperty1<out Document, *>, defaultValue: Any): Any =
         data.getOrDefault(property.toAttribute(), defaultValue)
 
     @Suppress("unused")
-    fun containsKey(property: KMutableProperty1<Document, *>): Boolean =
+    fun containsKey(property: KMutableProperty1<out Document, *>): Boolean =
         data.containsKey(property.toAttribute())
 }
 

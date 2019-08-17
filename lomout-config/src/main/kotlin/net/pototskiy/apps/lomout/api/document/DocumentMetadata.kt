@@ -20,6 +20,7 @@
 package net.pototskiy.apps.lomout.api.document
 
 import net.pototskiy.apps.lomout.api.MessageBundle.message
+import kotlin.jvm.internal.MutablePropertyReference1
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
@@ -253,5 +254,6 @@ val KClass<out Document>.documentMetadata: DocumentMetadata
  * @receiver KMutableProperty1<T, *>
  * @return DocumentMetadata.Attribute
  */
-inline fun <reified T : Document> KMutableProperty1<T, *>.toAttribute(): DocumentMetadata.Attribute =
-    T::class.documentMetadata.attributes.getValue(this.name)
+@Suppress("UNCHECKED_CAST")
+fun KMutableProperty1<out Document, *>.toAttribute(): DocumentMetadata.Attribute =
+    ((this as MutablePropertyReference1).owner as KClass<out Document>).documentMetadata.attributes.getValue(this.name)
