@@ -83,7 +83,7 @@ class ConfigHost(
                 logMessage(
                     it.severity,
                     it.message,
-                    configFile.name,
+                    it.sourcePath?.let { path -> File(path).name } ?: configFile.name,
                     it.location?.start?.line ?: 0
                 )
                 logger.trace(message("message.word.exception"), it.exception)
