@@ -122,6 +122,20 @@ internal class MediatorBasicTest {
         assertThat(log).isEmpty()
     }
 
+    @Test
+    internal fun wonrgAssemblerTypeTest() {
+        val config = createConfigurationWrongAssemblerType()
+        PluginContext.config = config
+        PluginContext.scriptFile = File("no-file.conf.kts")
+        val repository = EntityRepository(config.database, Level.ERROR)
+        val catcher = LogCatcher()
+        catcher.startToCatch(Level.OFF, Level.ERROR)
+        DataMediator.mediate(repository, config)
+        val log = catcher.log
+        catcher.stopToCatch()
+        assertThat(log).containsPattern("""^.*\[ERROR].*Assembler produced wrong entity type\.""")
+    }
+
     @Suppress("PropertyName")
     internal open class Entity1 : Document() {
         @Key
@@ -376,4 +390,69 @@ internal class MediatorBasicTest {
             }
         }.build()
     }
+
+    @Suppress("ComplexMethod", "LongMethod")
+    private fun createConfigurationWrongAssemblerType(): Config {
+        return Config.Builder(helper).apply {
+            database {
+                name("lomout_test")
+                server {
+                    host("localhost")
+                    port(27017)
+                    user("root")
+                    if (System.getProperty("os.name").toLowerCase().contains("linux")) {
+                        password("")
+                    } else {
+                        password("root")
+                    }
+                }
+            }
+            loader {
+                files {
+                    val testDataDir = System.getenv("TEST_DATA_DIR")
+                    file("test-data") { path("$testDataDir/mediator-test-data.xls") }
+                }
+                loadEntity(Entity1::class) {
+                    fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
+                    rowsToSkip(1)
+                    keepAbsentForDays(1)
+                    sourceFields {
+                        main("entity1") {
+                            field("sku") { column(0) }
+                            field("desc") { column(1) }
+                            field("amount") { column(2) }
+                        }
+                    }
+                }
+                loadEntity(Entity2::class) {
+                    fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
+                    rowsToSkip(1)
+                    keepAbsentForDays(1)
+                    sourceFields {
+                        main("entity1") {
+                            field("sku") { column(0) }
+                            field("desc") { column(1) }
+                            field("amount") { column(2) }
+                        }
+                    }
+                }
+            }
+            mediator {
+                productionLine {
+                    input {
+                        entity(Entity1::class)
+                        entity(Entity2::class)
+                    }
+                    output(ImportData::class)
+                    pipeline {
+                        classifier { it.match() }
+                        pipeline(Pipeline.CLASS.MATCHED) {
+                            assembler { ImportDataUnion() }
+                        }
+                    }
+                }
+            }
+        }.build()
+    }
+
 }

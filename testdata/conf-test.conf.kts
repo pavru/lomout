@@ -297,7 +297,7 @@ config {
             }
             output(ImportProduct::class)
             pipeline {
-                assembler { Document.emptyDocument }
+                assembler { null }
             }
         }
         productionLine {
@@ -306,7 +306,7 @@ config {
             }
             output(ImportProduct::class)
             pipeline {
-                assembler { Document.emptyDocument }
+                assembler { null }
             }
         }
     }

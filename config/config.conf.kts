@@ -238,10 +238,10 @@ config {
                     it.match()
                 }
                 pipeline(Pipeline.CLASS.MATCHED) {
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
                 pipeline(Pipeline.CLASS.UNMATCHED) {
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
         }

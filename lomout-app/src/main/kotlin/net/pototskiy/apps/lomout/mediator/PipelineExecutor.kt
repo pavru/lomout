@@ -71,7 +71,20 @@ class PipelineExecutor(
                             } else {
                                 val assembler = pipeline.assembler!!
                                 try {
-                                    send(assembler(element.entities))
+                                    assembler(element.entities)?.let { entity ->
+                                        if (entity::class != targetEntity) {
+                                            AppDataException(
+                                                suspectedLocation(targetEntity),
+                                                message(
+                                                    "message.error.mediator.wrong_entity_type",
+                                                    entity::class.qualifiedName,
+                                                    targetEntity.qualifiedName
+                                                )
+                                            ).errorMessageFromException(logger)
+                                        } else {
+                                            send(entity)
+                                        }
+                                    }
                                 } catch (e: Exception) {
                                     AppDataException(
                                         suspectedLocation(targetEntity),
