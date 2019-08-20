@@ -20,9 +20,7 @@
 package net.pototskiy.apps.lomout.api.plugable
 
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
-import kotlin.reflect.KClass
 
 /**
  * Base class for any pipeline assemblers
@@ -35,11 +33,11 @@ abstract class PipelineAssemblerPlugin : Plugin() {
      * @param entities The pipeline entity collection
      * @return The attribute→value map for target entity
      */
-    abstract fun assemble(target: KClass<out Document>, entities: EntityCollection): DocumentData
+    abstract fun assemble(entities: EntityCollection): Document
 }
 
 /**
  * Function type for inline pipeline assembler
  */
 typealias PipelineAssemblerFunction =
-        PluginContextInterface.(target: KClass<out Document>, entities: EntityCollection) -> DocumentData
+        PluginContextInterface.(entities: EntityCollection) -> Document

@@ -58,7 +58,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                 jobs.add(launch(Dispatchers.IO) {
                     pipeline.execute(inputChannel).consumeEach {
                         try {
-                            processedRows += processResultData(it)
+                            processedRows += processResultData(it.documentData)
                         } catch (e: AppException) {
                             AppDataException(
                                 suspectedLocation(),

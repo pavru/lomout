@@ -160,7 +160,7 @@ internal class NestedFieldLoadingTest {
                         entity(Entity::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { Output() }
                     }
                 }
             }

@@ -16,21 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+@file:Import("../../entity/ImportCategory.conf.kts")
 
+import ImportCategory_conf.ImportCategory
 import MageCategory_conf.MageCategory
 import net.pototskiy.apps.lomout.api.document.DocumentData
+import org.jetbrains.kotlin.script.util.Import
 import kotlin.reflect.KClass
 
 class MarkCategoryToRemove : PipelineAssemblerPlugin() {
-    override fun assemble(target: KClass<out Document>, entities: EntityCollection): DocumentData {
+    override fun assemble(entities: EntityCollection): Document {
+        val doc = ImportCategory()
         try {
             val category = entities[MageCategory::class] as MageCategory
-            return documentData(
-                MageCategory.attributes.getValue("entity_id") to category.entity_id,
-                MageCategory.attributes.getValue("remove_flag") to true
-            )
+            doc.entity_id = category.entity_id
+            doc.remove_flag = true
+            return doc
         } catch (e: Exception) {
-            throw AppConfigException(suspectedLocation(target), e.message, e)
+            throw AppConfigException(suspectedLocation(ImportCategory::class), e.message, e)
         }
     }
 }

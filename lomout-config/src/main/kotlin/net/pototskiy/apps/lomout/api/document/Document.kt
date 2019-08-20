@@ -179,11 +179,27 @@ abstract class Document {
         }
     }
 
+    @get:BsonIgnore
+    val documentData: DocumentData
+        get() {
+            return documentMetadata.attributes.values.mapNotNull { attr ->
+                getAttribute(attr)?.let { attr to it }
+            }.toDocumentData()
+        }
+
     companion object {
         private val verifiedMetadata = mutableMapOf<KClass<out Document>, DocumentMetadata>()
         /**
          * Support attribute types.
          */
         val supportedTypes = SupportAttributeType
+        /**
+         * Empty document, document with no attributes
+         */
+        val emptyDocument = EmptyDocument()
+    }
+
+    class EmptyDocument: Document() {
+        companion object: DocumentMetadata(EmptyDocument::class)
     }
 }

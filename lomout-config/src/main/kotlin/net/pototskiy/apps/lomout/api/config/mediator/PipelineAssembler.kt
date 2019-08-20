@@ -20,7 +20,6 @@
 package net.pototskiy.apps.lomout.api.config.mediator
 
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerFunction
 import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
@@ -39,12 +38,12 @@ sealed class PipelineAssembler {
      * @param entities PipelineDataCollection The pipeline input entities
      * @return Map<AnyTypeAttribute, Type?> The target entity attributes
      */
-    operator fun invoke(target: KClass<out Document>, entities: EntityCollection): DocumentData = when (this) {
+    operator fun invoke(entities: EntityCollection): Document = when (this) {
         is PipelineAssemblerWithPlugin -> pluginClass.createInstance().let {
             it.apply(options)
-            it.assemble(target, entities)
+            it.assemble(entities)
         }
-        is PipelineAssemblerWithFunction -> PluginContext.function(target, entities)
+        is PipelineAssemblerWithFunction -> PluginContext.function(entities)
     }
 }
 

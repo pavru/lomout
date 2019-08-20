@@ -16,30 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+@file:Import("../../entity/ImportCategory.conf.kts")
 
+import ImportCategory_conf.ImportCategory
 import MageCategory_conf.MageCategory
 import OnecGroup_conf.OnecGroup
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.emptyDocumentData
+import org.jetbrains.kotlin.script.util.Import
 import kotlin.collections.set
 import kotlin.reflect.KClass
 
 class MatchedCategoryAssembler : PipelineAssemblerPlugin() {
-    override fun assemble(target: KClass<out Document>, entities: EntityCollection): DocumentData {
-        val data = emptyDocumentData()
+    override fun assemble(entities: EntityCollection): Document {
+        val data = ImportCategory()
         try {
             val mageCategory = entities[MageCategory::class] as MageCategory
             val onecGroup = entities[OnecGroup::class]
-            target.documentMetadata.attributes.values.forEach { targetAttr ->
+            data.documentMetadata.attributes.values.forEach { targetAttr ->
                 if (mageCategory.getAttribute(targetAttr.name) != null) {
-                    data[targetAttr] = mageCategory.getAttribute(targetAttr.name)!!
+                    data.setAttribute(targetAttr,mageCategory.getAttribute(targetAttr.name)!!)
                 } else if (onecGroup.getAttribute(targetAttr) != null) {
-                    data[targetAttr] = onecGroup.getAttribute(targetAttr.name)!!
+                    data.setAttribute(targetAttr,onecGroup.getAttribute(targetAttr.name)!!)
                 }
             }
-            data[target.documentMetadata.attributes.getValue("remove_flag")] = false
+            data.remove_flag = false
         } catch (e: Exception) {
-            throw AppDataException(suspectedLocation(target), e.message, e)
+            throw AppDataException(suspectedLocation(ImportCategory::class), e.message, e)
         }
         return data
     }

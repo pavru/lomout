@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 
 /*
@@ -296,7 +297,7 @@ config {
             }
             output(ImportProduct::class)
             pipeline {
-                assembler { _, _ -> emptyDocumentData() }
+                assembler { Document.emptyDocument }
             }
         }
         productionLine {
@@ -305,7 +306,7 @@ config {
             }
             output(ImportProduct::class)
             pipeline {
-                assembler { _, _ -> emptyDocumentData() }
+                assembler { Document.emptyDocument }
             }
         }
     }
