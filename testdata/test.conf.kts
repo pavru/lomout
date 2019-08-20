@@ -284,7 +284,7 @@ config {
             }
             output(ImportProduct::class)
             pipeline {
-                assembler { Document.emptyDocument}
+                assembler { null}
             }
         }
     }

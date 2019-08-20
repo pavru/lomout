@@ -325,7 +325,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
             printerLine {
@@ -343,7 +343,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
         }.build()
@@ -398,7 +398,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
             printerLine {
@@ -416,7 +416,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
         }.build()
@@ -437,7 +437,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
             printerLine {
@@ -455,7 +455,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
         }.build()
@@ -485,7 +485,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
             printerLine {
@@ -503,7 +503,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { Document.emptyDocument }
+                    assembler { null }
                 }
             }
         }.build()

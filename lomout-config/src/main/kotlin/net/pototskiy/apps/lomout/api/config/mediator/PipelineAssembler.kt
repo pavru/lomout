@@ -38,7 +38,7 @@ sealed class PipelineAssembler {
      * @param entities PipelineDataCollection The pipeline input entities
      * @return Map<AnyTypeAttribute, Type?> The target entity attributes
      */
-    operator fun invoke(entities: EntityCollection): Document = when (this) {
+    operator fun invoke(entities: EntityCollection): Document? = when (this) {
         is PipelineAssemblerWithPlugin -> pluginClass.createInstance().let {
             it.apply(options)
             it.assemble(entities)

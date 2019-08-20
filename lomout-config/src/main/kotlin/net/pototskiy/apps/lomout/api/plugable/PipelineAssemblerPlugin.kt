@@ -33,11 +33,11 @@ abstract class PipelineAssemblerPlugin : Plugin() {
      * @param entities The pipeline entity collection
      * @return The attribute→value map for target entity
      */
-    abstract fun assemble(entities: EntityCollection): Document
+    abstract fun assemble(entities: EntityCollection): Document?
 }
 
 /**
  * Function type for inline pipeline assembler
  */
 typealias PipelineAssemblerFunction =
-        PluginContextInterface.(entities: EntityCollection) -> Document
+        PluginContextInterface.(entities: EntityCollection) -> Document?

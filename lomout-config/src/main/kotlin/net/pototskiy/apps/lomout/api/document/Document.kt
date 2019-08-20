@@ -193,13 +193,5 @@ abstract class Document {
          * Support attribute types.
          */
         val supportedTypes = SupportAttributeType
-        /**
-         * Empty document, document with no attributes
-         */
-        val emptyDocument = EmptyDocument()
-    }
-
-    class EmptyDocument: Document() {
-        companion object: DocumentMetadata(EmptyDocument::class)
     }
 }

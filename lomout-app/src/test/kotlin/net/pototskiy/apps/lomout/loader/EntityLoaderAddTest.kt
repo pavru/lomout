@@ -249,7 +249,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { Document.emptyDocument }
+                        assembler { null }
                     }
                 }
             }
@@ -295,7 +295,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { Document.emptyDocument }
+                        assembler { null }
                     }
                 }
             }
@@ -342,7 +342,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity2::class)
                     }
                     pipeline {
-                        assembler { Document.emptyDocument }
+                        assembler { null }
                     }
                 }
             }
@@ -406,7 +406,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity3::class)
                     }
                     pipeline {
-                        assembler { Document.emptyDocument }
+                        assembler { null }
                     }
                 }
             }
@@ -452,7 +452,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity4::class)
                     }
                     pipeline {
-                        assembler { Document.emptyDocument }
+                        assembler { null }
                     }
                 }
             }
@@ -502,7 +502,7 @@ internal class EntityLoaderAddTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { Document.emptyDocument }
+                        assembler { null }
                     }
                 }
             }
