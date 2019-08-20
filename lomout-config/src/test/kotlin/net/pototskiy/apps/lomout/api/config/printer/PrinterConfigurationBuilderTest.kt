@@ -24,7 +24,6 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Documents
-import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Test
@@ -162,7 +161,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { if (it.entities[0].updateTime == Documents.timestamp) it.match() else it.mismatch() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
             printerLine {
@@ -180,7 +179,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { if (it.entities[0].updateTime == Documents.timestamp) it.match() else it.mismatch() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
         }.build()
@@ -211,7 +210,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
             printerLine {
@@ -229,7 +228,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
         }.build()
@@ -259,7 +258,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
             printerLine {
@@ -277,7 +276,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
         }.build()
@@ -291,7 +290,7 @@ internal class PrinterConfigurationBuilderTest {
             printerLine {
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
             printerLine {
@@ -309,7 +308,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { it.first() }
                 }
             }
         }.build()
@@ -326,7 +325,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
             printerLine {
@@ -344,7 +343,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
         }.build()
@@ -399,7 +398,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
             printerLine {
@@ -417,7 +416,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
         }.build()
@@ -438,7 +437,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
             printerLine {
@@ -456,7 +455,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
         }.build()
@@ -486,7 +485,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
             printerLine {
@@ -504,7 +503,7 @@ internal class PrinterConfigurationBuilderTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { _, _ -> emptyDocumentData() }
+                    assembler { Document.emptyDocument }
                 }
             }
         }.build()

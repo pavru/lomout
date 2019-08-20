@@ -24,7 +24,6 @@ import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.documentMetadata
-import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.bson.codecs.pojo.annotations.BsonIgnore
@@ -155,11 +154,11 @@ internal class MediatorConfigurationBuilderTest {
                         it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportOutput1() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier { it.match() }
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportOutput1() }
                     }
                 }
             }
@@ -175,11 +174,11 @@ internal class MediatorConfigurationBuilderTest {
                         it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportOutput1() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier { it.match() }
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportOutput1() }
                     }
                 }
             }
@@ -211,12 +210,12 @@ internal class MediatorConfigurationBuilderTest {
                         it.match()
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportOutput1() }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier { it.match() }
                         pipeline(Pipeline.CLASS.UNMATCHED) {}
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportOutput1() }
                     }
                 }
             }
@@ -231,9 +230,7 @@ internal class MediatorConfigurationBuilderTest {
                     entity(InputEntity1::class)
                 }
                 pipeline {
-                    assembler { _, _ ->
-                        emptyDocumentData()
-                    }
+                    assembler { InputEntity1() }
                 }
             }
         }.build()
@@ -247,9 +244,7 @@ internal class MediatorConfigurationBuilderTest {
                     entity(InputEntity2::class)
                 }
                 pipeline {
-                    assembler { _, _ ->
-                        emptyDocumentData()
-                    }
+                    assembler { InputEntity1() }
                 }
             }
             productionLine {
@@ -259,11 +254,10 @@ internal class MediatorConfigurationBuilderTest {
                     entity(InputEntity1::class)
                 }
                 pipeline {
-                    assembler { _, _ ->
-                        emptyDocumentData()
-                    }
+                    assembler { InputEntity2() }
                 }
             }
         }.build()
     }
 }
+

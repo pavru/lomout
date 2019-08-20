@@ -16,18 +16,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+@file:Import("../../entity/ImportCategory.conf.kts")
 
+import ImportCategory_conf.ImportCategory
 import OnecGroup_conf.OnecGroup
-import net.pototskiy.apps.lomout.api.document.DocumentData
-import net.pototskiy.apps.lomout.api.document.emptyDocumentData
-import kotlin.reflect.KClass
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
+import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
+import org.jetbrains.kotlin.script.util.Import
 
 class CategoryFromGroupAssembler : PipelineAssemblerPlugin() {
-    override fun assemble(target: KClass<out Document>, entities: EntityCollection): DocumentData {
-        val data = emptyDocumentData()
+    override fun assemble(entities: EntityCollection): Document {
+        val data = ImportCategory()
         entities.getOrNull(OnecGroup::class)?.let { onec ->
-            target.documentMetadata.attributes.values.forEach { attr ->
-                onec.getAttribute(attr)?.let { data[attr] = it }
+            data.documentMetadata.attributes.values.forEach { attr ->
+                onec.getAttribute(attr.name)?.let { data.setAttribute(attr, it) }
             }
         }
         return data

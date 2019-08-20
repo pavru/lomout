@@ -370,7 +370,7 @@ internal class FieldSetBuilderTest {
                         entity(EntityType::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { OutputType() }
                     }
                 }
             }

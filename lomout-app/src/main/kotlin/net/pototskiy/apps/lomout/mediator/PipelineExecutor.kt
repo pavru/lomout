@@ -34,7 +34,6 @@ import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.errorMessageFromException
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
@@ -49,7 +48,7 @@ class PipelineExecutor(
     private val jobs = mutableListOf<Job>()
 
     @Suppress("ComplexMethod", "TooGenericExceptionCaught")
-    suspend fun execute(inputData: Channel<ClassifierElement>): ReceiveChannel<DocumentData> =
+    suspend fun execute(inputData: Channel<ClassifierElement>): ReceiveChannel<Document> =
         GlobalScope.produce {
             val matchedData: Channel<ClassifierElement> = Channel()
             val nextMatchedPipe = pipeline.pipelines.find {
@@ -72,7 +71,7 @@ class PipelineExecutor(
                             } else {
                                 val assembler = pipeline.assembler!!
                                 try {
-                                    send(assembler(targetEntity, element.entities))
+                                    send(assembler(element.entities))
                                 } catch (e: Exception) {
                                     AppDataException(
                                         suspectedLocation(targetEntity),

@@ -29,9 +29,6 @@ import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
-import net.pototskiy.apps.lomout.api.document.documentData
-import net.pototskiy.apps.lomout.api.document.documentMetadata
-import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.loader.DataLoader
@@ -255,14 +252,17 @@ internal class MediatorBasicTest {
                             }
                         }
                         pipeline(Pipeline.CLASS.MATCHED) {
-                            assembler { target, entities ->
-                                val attrs = target.documentMetadata.attributes
-                                documentData(
-                                    attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
-                                    attrs.getValue("desc") to entities[1].getAttribute("desc")!!,
-                                    attrs.getValue("amount") to entities[1].getAttribute("amount")!!,
-                                    attrs.getValue("corrected_amount") to (entities[0] as Entity1).corrected_amount
-                                )
+                            assembler { entities ->
+                                val e1 = entities[0] as Entity1
+                                val e2 = entities[1] as Entity2
+                                val ip = ImportData()
+
+                                ip.sku = e1.sku
+                                ip.desc = e2.desc
+                                ip.amount = e2.amount
+                                ip.corrected_amount = e1.corrected_amount
+
+                                ip
                             }
                         }
                         pipeline(Pipeline.CLASS.UNMATCHED) {
@@ -274,14 +274,16 @@ internal class MediatorBasicTest {
                                     it.mismatch()
                                 }
                             }
-                            assembler { target, entities ->
-                                val attrs = target.documentMetadata.attributes
-                                documentData(
-                                    attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
-                                    attrs.getValue("desc") to entities[0].getAttribute("desc")!!,
-                                    attrs.getValue("amount") to entities[0].getAttribute("amount")!!,
-                                    attrs.getValue("corrected_amount") to (entities[0] as Entity2).corrected_amount
-                                )
+                            assembler { entities ->
+                                val e2 = entities[0] as Entity2
+                                val ip = ImportData()
+
+                                ip.sku = e2.sku
+                                ip.desc = e2.desc
+                                ip.amount = e2.amount
+                                ip.corrected_amount = e2.corrected_amount
+
+                                ip
                             }
                         }
                     }
@@ -301,19 +303,17 @@ internal class MediatorBasicTest {
                                 it.mismatch()
                             }
                         }
-                        assembler { target, entities ->
-                            val attrs = target.documentMetadata.attributes
-                            documentData(
-                                attrs.getValue("sku") to entities[0].getAttribute("sku")!!,
-                                attrs.getValue("desc") to entities[0].getAttribute("desc")!!,
-                                attrs.getValue("amount") to entities[0].getAttribute("amount")!!,
-                                attrs.getValue("corrected_amount") to if (entities[0] is Entity1) {
-                                    (entities[0] as Entity1).corrected_amount
-                                } else {
-                                    (entities[0] as Entity2).corrected_amount
-                                }
-
-                            )
+                        assembler { entities ->
+                            val idu = ImportDataUnion()
+                            idu.sku = entities[0].getAttribute("sku") as Long
+                            idu.desc = entities[0].getAttribute("desc") as String
+                            idu.amount = entities[0].getAttribute("amount") as Double
+                            idu.corrected_amount = if (entities[0] is Entity1) {
+                                (entities[0] as Entity1).corrected_amount
+                            } else {
+                                (entities[0] as Entity2).corrected_amount
+                            }
+                            idu
                         }
                     }
                 }
@@ -343,7 +343,7 @@ internal class MediatorBasicTest {
                         entity(Entity2::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { Entity1() }
                     }
                 }
                 productionLine {
@@ -352,7 +352,7 @@ internal class MediatorBasicTest {
                         entity(ImportData::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { Entity1() }
                     }
                 }
                 productionLine {
@@ -361,7 +361,7 @@ internal class MediatorBasicTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { ImportDataUnion() }
                     }
                 }
                 productionLine {
@@ -370,7 +370,7 @@ internal class MediatorBasicTest {
                         entity(Entity1::class)
                     }
                     pipeline {
-                        assembler { _, _ -> emptyDocumentData() }
+                        assembler { Unknown() }
                     }
                 }
             }
