@@ -61,7 +61,7 @@ import kotlin.script.experimental.jvm.util.classpathFromClassloader
 @Suppress("DEPRECATION")
 @KotlinScript(
     displayName = "LoMout config script",
-    fileExtension = ".*\\.conf\\.kts",
+    fileExtension = """.*\.lomout\.kts""",
     compilationConfiguration = LomoutScriptCompilationConfiguration::class
 )
 abstract class LomoutScriptTemplate(private val args: Array<String>) {
