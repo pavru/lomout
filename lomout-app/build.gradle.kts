@@ -91,7 +91,7 @@ tasks.named<Test>("test") {
         )
     )
     environment("TEST_DATA_DIR", "${rootProject.projectDir}/testdata")
-    environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.conf.kts")
+    environment("PRODUCTION_CONFIG", "${rootProject.projectDir}/config/config.lomout.kts")
     useJUnitPlatform()
     if (System.getenv("TRAVIS_BUILD_DIR") == null) {
         testLogging {

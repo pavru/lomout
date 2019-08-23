@@ -23,9 +23,9 @@ import net.pototskiy.apps.lomout.LogCatcher
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
@@ -47,15 +47,15 @@ import java.io.File
 @Execution(ExecutionMode.SAME_THREAD)
 @Suppress("MagicNumber")
 internal class MediatorBasicTest {
-    private val helper = ConfigBuildHelper()
+    private val helper = ScriptBuildHelper()
 
     @Suppress("LongMethod")
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun complexBasicTest() {
         val config = createConfiguration()
-        PluginContext.config = config
-        PluginContext.scriptFile = File("no-file.conf.kts")
+        PluginContext.lomoutScript = config
+        PluginContext.scriptFile = File("no-file.lomout.kts")
 
         System.setProperty("mediation.line.cache.size", "4")
         val repository = EntityRepository(config.database, Level.ERROR)
@@ -111,8 +111,8 @@ internal class MediatorBasicTest {
     @Test
     internal fun multipleLinesTest() {
         val config = createComplexMediatorConfig()
-        PluginContext.config = config
-        PluginContext.scriptFile = File("no-file.conf.kts")
+        PluginContext.lomoutScript = config
+        PluginContext.scriptFile = File("no-file.lomout.kts")
         val repository = EntityRepository(config.database, Level.ERROR)
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
@@ -120,20 +120,6 @@ internal class MediatorBasicTest {
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(log).isEmpty()
-    }
-
-    @Test
-    internal fun wonrgAssemblerTypeTest() {
-        val config = createConfigurationWrongAssemblerType()
-        PluginContext.config = config
-        PluginContext.scriptFile = File("no-file.conf.kts")
-        val repository = EntityRepository(config.database, Level.ERROR)
-        val catcher = LogCatcher()
-        catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataMediator.mediate(repository, config)
-        val log = catcher.log
-        catcher.stopToCatch()
-        assertThat(log).containsPattern("""^.*\[ERROR].*Assembler produced wrong entity type\.""")
     }
 
     @Suppress("PropertyName")
@@ -172,8 +158,8 @@ internal class MediatorBasicTest {
     }
 
     @Suppress("ComplexMethod", "LongMethod")
-    private fun createConfiguration(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfiguration(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -192,7 +178,7 @@ internal class MediatorBasicTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/mediator-test-data.xls") }
                 }
-                loadEntity(Entity1::class) {
+                load<Entity1> {
                     fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -204,7 +190,7 @@ internal class MediatorBasicTest {
                         }
                     }
                 }
-                loadEntity(Entity2::class) {
+                load<Entity2> {
                     fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -218,12 +204,11 @@ internal class MediatorBasicTest {
                 }
             }
             mediator {
-                productionLine {
+                produce<ImportData> {
                     input {
                         entity(Entity1::class)
                         entity(Entity2::class)
                     }
-                    output(ImportData::class)
                     pipeline {
                         classifier { element ->
                             val entities = element.entities
@@ -302,12 +287,11 @@ internal class MediatorBasicTest {
                         }
                     }
                 }
-                productionLine {
+                produce<ImportDataUnion> {
                     input {
                         entity(Entity1::class)
                         entity(Entity2::class)
                     }
-                    output(ImportDataUnion::class)
                     pipeline {
                         classifier {
                             val entities = it.entities
@@ -335,8 +319,8 @@ internal class MediatorBasicTest {
         }.build()
     }
 
-    private fun createComplexMediatorConfig(): Config {
-        return Config.Builder(helper).apply {
+    private fun createComplexMediatorConfig(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -351,8 +335,7 @@ internal class MediatorBasicTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Entity1::class)
+                produce<Entity1> {
                     input {
                         entity(Entity2::class)
                     }
@@ -360,8 +343,7 @@ internal class MediatorBasicTest {
                         assembler { Entity1() }
                     }
                 }
-                productionLine {
-                    output(Entity1::class)
+                produce<Entity1> {
                     input {
                         entity(ImportData::class)
                     }
@@ -369,8 +351,7 @@ internal class MediatorBasicTest {
                         assembler { Entity1() }
                     }
                 }
-                productionLine {
-                    output(ImportDataUnion::class)
+                produce<ImportDataUnion> {
                     input {
                         entity(Entity1::class)
                     }
@@ -378,8 +359,7 @@ internal class MediatorBasicTest {
                         assembler { ImportDataUnion() }
                     }
                 }
-                productionLine {
-                    output(Unknown::class)
+                produce<Unknown> {
                     input {
                         entity(Entity1::class)
                     }
@@ -390,69 +370,4 @@ internal class MediatorBasicTest {
             }
         }.build()
     }
-
-    @Suppress("ComplexMethod", "LongMethod")
-    private fun createConfigurationWrongAssemblerType(): Config {
-        return Config.Builder(helper).apply {
-            database {
-                name("lomout_test")
-                server {
-                    host("localhost")
-                    port(27017)
-                    user("root")
-                    if (System.getProperty("os.name").toLowerCase().contains("linux")) {
-                        password("")
-                    } else {
-                        password("root")
-                    }
-                }
-            }
-            loader {
-                files {
-                    val testDataDir = System.getenv("TEST_DATA_DIR")
-                    file("test-data") { path("$testDataDir/mediator-test-data.xls") }
-                }
-                loadEntity(Entity1::class) {
-                    fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
-                    rowsToSkip(1)
-                    keepAbsentForDays(1)
-                    sourceFields {
-                        main("entity1") {
-                            field("sku") { column(0) }
-                            field("desc") { column(1) }
-                            field("amount") { column(2) }
-                        }
-                    }
-                }
-                loadEntity(Entity2::class) {
-                    fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
-                    rowsToSkip(1)
-                    keepAbsentForDays(1)
-                    sourceFields {
-                        main("entity1") {
-                            field("sku") { column(0) }
-                            field("desc") { column(1) }
-                            field("amount") { column(2) }
-                        }
-                    }
-                }
-            }
-            mediator {
-                productionLine {
-                    input {
-                        entity(Entity1::class)
-                        entity(Entity2::class)
-                    }
-                    output(ImportData::class)
-                    pipeline {
-                        classifier { it.match() }
-                        pipeline(Pipeline.CLASS.MATCHED) {
-                            assembler { ImportDataUnion() }
-                        }
-                    }
-                }
-            }
-        }.build()
-    }
-
 }

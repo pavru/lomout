@@ -23,7 +23,7 @@ import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.errorMessageFromException
@@ -38,8 +38,8 @@ object DataPrinter {
     private val printedRows = AtomicLong(0L)
     private val logger = LogManager.getLogger(PRINTER_LOG_NAME)
 
-    fun print(repository: EntityRepositoryInterface, config: Config) {
-        val printer = config.printer ?: return
+    fun print(repository: EntityRepositoryInterface, lomoutScript: LomoutScript) {
+        val printer = lomoutScript.printer ?: return
         statusLog.info(message("message.info.printer.started"))
         val startTime = LocalDateTime.now()
         val orderedLines = printer.lines.groupBy { it.outputFieldSets.file.file.id }

@@ -20,8 +20,8 @@
 package net.pototskiy.apps.lomout.mediator
 
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
-import net.pototskiy.apps.lomout.api.config.mediator.ProductionLine
+import net.pototskiy.apps.lomout.api.script.mediator.AbstractLine
+import net.pototskiy.apps.lomout.api.script.mediator.ProductionLine
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.loader.EntityUpdater
@@ -41,7 +41,7 @@ class ProductionLineExecutor(repository: EntityRepositoryInterface) : LineExecut
         }
 
     override fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor {
-        line as ProductionLine
+        line as ProductionLine<*>
         return PipelineExecutor(
             line.pipeline,
             line.inputEntities,
@@ -51,7 +51,7 @@ class ProductionLineExecutor(repository: EntityRepositoryInterface) : LineExecut
 
     @Suppress("TooGenericExceptionCaught", "SpreadOperator")
     override fun executeLine(line: AbstractLine): Long {
-        line as ProductionLine
+        line as ProductionLine<*>
         val targetEntityType = line.outputEntity
         entityUpdater = EntityUpdater(repository, targetEntityType)
         return super.executeLine(line)

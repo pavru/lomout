@@ -19,7 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.plugable
 
-import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import org.apache.logging.log4j.Logger
 import java.io.File
@@ -27,14 +27,14 @@ import java.io.File
 /**
  * Plugin context
  *
- * @property config Config
+ * @property lomoutScript Config
  * @property logger Logger
  */
 interface PluginContextInterface {
     /**
      * Context configuration
      */
-    var config: Config
+    var lomoutScript: LomoutScript
     /**
      * Context logger
      */

@@ -20,8 +20,8 @@
 package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.LogCatcher
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.parallel.ResourceLock
 @Suppress("MagicNumber")
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class EntityLoaderAddTest {
-    private val helper = ConfigBuildHelper()
+    private val helper = ScriptBuildHelper()
 
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
@@ -210,8 +210,8 @@ internal class EntityLoaderAddTest {
         companion object : DocumentMetadata(Entity4::class)
     }
 
-    private fun createConfIgnoreEmptyRow(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfIgnoreEmptyRow(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -230,21 +230,20 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                loadEntity(Entity1::class) {
+                load<Entity1> {
                     fromSources { source { file("test-data"); sheet("default"); ignoreEmptyRows() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
                     sourceFields {
                         main("entity") {
                             field("key") { column(0) }
-                            field("data") { column(1) }
+                            field("data") { column(1) } toAttr Entity1::data
                         }
                     }
                 }
             }
             mediator {
-                productionLine {
-                    output(Output1::class)
+                produce<Output1> {
                     input {
                         entity(Entity1::class)
                     }
@@ -256,8 +255,8 @@ internal class EntityLoaderAddTest {
         }.build()
     }
 
-    private fun createConfStopEmptyRow(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfStopEmptyRow(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -276,7 +275,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                loadEntity(Entity1::class) {
+                load<Entity1> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -289,8 +288,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Output1::class)
+                produce<Output1> {
                     input {
                         entity(Entity1::class)
                     }
@@ -302,8 +300,8 @@ internal class EntityLoaderAddTest {
         }.build()
     }
 
-    private fun createConfWithSecondField(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfWithSecondField(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -322,7 +320,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                loadEntity(Entity2::class) {
+                load<Entity2> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -336,8 +334,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Output2::class)
+                produce<Output2> {
                     input {
                         entity(Entity2::class)
                     }
@@ -367,8 +364,8 @@ internal class EntityLoaderAddTest {
         override fun build(): AttributeReader<out Any?> = createReader<DivByZeroReader>()
     }
 
-    private fun createConfZeroDivision(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfZeroDivision(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -387,7 +384,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                loadEntity(Entity3::class) {
+                load<Entity3> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -400,8 +397,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Output3::class)
+                produce<Output3> {
                     input {
                         entity(Entity3::class)
                     }
@@ -413,8 +409,8 @@ internal class EntityLoaderAddTest {
         }.build()
     }
 
-    private fun createConfBlankKeyField(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfBlankKeyField(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -433,7 +429,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test-blank-key.csv") }
                 }
-                loadEntity(Entity4::class) {
+                load<Entity4> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -446,8 +442,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Output1::class)
+                produce<Output1> {
                     input {
                         entity(Entity4::class)
                     }
@@ -459,8 +454,8 @@ internal class EntityLoaderAddTest {
         }.build()
     }
 
-    private fun createConfWithTwoFieldSets(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfWithTwoFieldSets(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -479,7 +474,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                loadEntity(Entity1::class) {
+                load<Entity1> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -496,8 +491,7 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Output1::class)
+                produce<Output1> {
                     input {
                         entity(Entity1::class)
                     }

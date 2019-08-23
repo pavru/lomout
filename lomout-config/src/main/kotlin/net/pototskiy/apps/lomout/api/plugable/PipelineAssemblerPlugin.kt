@@ -25,19 +25,18 @@ import net.pototskiy.apps.lomout.api.entity.EntityCollection
 /**
  * Base class for any pipeline assemblers
  */
-abstract class PipelineAssemblerPlugin : Plugin() {
+abstract class PipelineAssemblerPlugin<out T : Document> : Plugin() {
     /**
      * Assembler function
      *
-     * @param target The target entity type
      * @param entities The pipeline entity collection
-     * @return The attribute→value map for target entity
+     * @return The transient document
      */
-    abstract fun assemble(entities: EntityCollection): Document?
+    abstract fun assemble(entities: EntityCollection): T?
 }
 
 /**
  * Function type for inline pipeline assembler
  */
-typealias PipelineAssemblerFunction =
-        PluginContextInterface.(entities: EntityCollection) -> Document?
+typealias PipelineAssemblerFunction<T> =
+        PluginContextInterface.(entities: EntityCollection) -> T?

@@ -19,29 +19,25 @@
 
 package net.pototskiy.apps.lomout.loader
 
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuilderFromDSL
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import java.io.File
 
 internal class LoadingDataTestPrepare {
-    private lateinit var config: Config
-
-    init {
-//        BasicConfigurator.configure()
-    }
+    private lateinit var lomoutScript: LomoutScript
 
     @Suppress("unused")
-    internal fun loadConfiguration(): Config {
-        config = ConfigurationBuilderFromDSL(
+    internal fun loadConfiguration(): LomoutScript {
+        lomoutScript = ScriptBuilderFromDSL(
             File(this::class.java.classLoader.getResource("test.config.kts").toURI())
-        ).config
-        return config
+        ).lomoutScript
+        return lomoutScript
     }
 
-    internal fun loadConfiguration(file: String): Config {
-        config = ConfigurationBuilderFromDSL(File(file)).config
-        return config
+    internal fun loadConfiguration(file: String): LomoutScript {
+        lomoutScript = ScriptBuilderFromDSL(File(file)).lomoutScript
+        return lomoutScript
     }
 
     @Suppress("unused")

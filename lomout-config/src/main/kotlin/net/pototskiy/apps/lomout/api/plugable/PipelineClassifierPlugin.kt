@@ -20,7 +20,7 @@
 package net.pototskiy.apps.lomout.api.plugable
 
 import net.pototskiy.apps.lomout.api.PublicApi
-import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
+import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
 
 /**
  * Base class for any pipeline classifiers

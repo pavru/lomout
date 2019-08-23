@@ -21,10 +21,10 @@ package net.pototskiy.apps.lomout.loader
 
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.script.LomoutScript
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Filter
@@ -51,7 +51,7 @@ import java.io.ByteArrayOutputStream
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class DataLoadingInProductionWayTest {
 
-    private lateinit var config: Config
+    private lateinit var lomoutScript: LomoutScript
     private lateinit var repository: EntityRepositoryInterface
     private val logOut = ByteArrayOutputStream()
     private lateinit var appender: WriterAppender
@@ -76,9 +76,9 @@ internal class DataLoadingInProductionWayTest {
         logger.addAppender(appender)
         val util = LoadingDataTestPrepare()
         println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
-        config = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
-        repository = EntityRepository(config.database, Level.ERROR)
-        PluginContext.config = config
+        lomoutScript = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
+        repository = EntityRepository(lomoutScript.database, Level.ERROR)
+        PluginContext.lomoutScript = lomoutScript
         PluginContext.repository = repository
     }
 
@@ -92,7 +92,7 @@ internal class DataLoadingInProductionWayTest {
     @Test
     @DisplayName("Load data according production config")
     internal fun loadDataTest() {
-        DataLoader.load(repository, config)
+        DataLoader.load(repository, lomoutScript)
         assertThat(logOut.toString()).isEmpty()
     }
 

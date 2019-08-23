@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.plugable
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -35,7 +35,7 @@ object PluginContext : PluginContextInterface {
     /**
      * Context configuration
      */
-    override lateinit var config: Config
+    override lateinit var lomoutScript: LomoutScript
     /**
      * Context logger
      */

@@ -20,12 +20,11 @@
 package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
-import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.reader.DocumentAttributeReader
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
@@ -43,7 +42,7 @@ import org.junit.jupiter.api.parallel.ResourceLock
 
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class NestedFieldLoadingTest {
-    private val helper = ConfigBuildHelper()
+    private val helper = ScriptBuildHelper()
     @BeforeEach
     internal fun setUp() {
         Configurator.setLevel(ROOT_LOG_NAME, Level.WARN)
@@ -121,8 +120,8 @@ internal class NestedFieldLoadingTest {
     }
 
     @Suppress("LongMethod")
-    private fun createConfStopEmptyRow(): Config {
-        return Config.Builder(helper).apply {
+    private fun createConfStopEmptyRow(): LomoutScript {
+        return LomoutScript.Builder(helper).apply {
             database {
                 name("lomout_test")
                 server {
@@ -141,7 +140,7 @@ internal class NestedFieldLoadingTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-nested-attribute-test.xls") }
                 }
-                loadEntity(Entity::class) {
+                load<Entity> {
                     fromSources { source { file("test-data"); sheet("Sheet1"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -154,8 +153,7 @@ internal class NestedFieldLoadingTest {
                 }
             }
             mediator {
-                productionLine {
-                    output(Output::class)
+                produce<Output> {
                     input {
                         entity(Entity::class)
                     }

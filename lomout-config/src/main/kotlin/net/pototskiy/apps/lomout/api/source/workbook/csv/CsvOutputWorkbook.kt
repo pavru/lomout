@@ -68,7 +68,7 @@ class CsvOutputWorkbook(
     /**
      * Insert sheet to workbook.
      *
-     * Only one sheet with name *default* can be inserted
+     * Only one sheet with the name *default* can be inserted
      *
      * @param sheet The sheet name, must be *default*
      * @return The inserted sheet
