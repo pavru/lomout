@@ -28,9 +28,9 @@ import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.SuspectedLocation
-import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
-import net.pototskiy.apps.lomout.api.config.loader.FieldSet
-import net.pototskiy.apps.lomout.api.config.loader.Load
+import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
+import net.pototskiy.apps.lomout.api.script.loader.FieldSet
+import net.pototskiy.apps.lomout.api.script.loader.Load
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.document.emptyDocumentData
@@ -53,7 +53,7 @@ import kotlin.collections.set
 
 class EntityLoader(
     private val repository: EntityRepositoryInterface,
-    private val loadConfig: Load,
+    private val loadConfig: Load<*>,
     private val emptyRowBehavior: EmptyRowBehavior,
     private val sheet: Sheet
 ) {

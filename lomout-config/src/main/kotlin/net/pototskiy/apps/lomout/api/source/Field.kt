@@ -20,7 +20,7 @@
 package net.pototskiy.apps.lomout.api.source
 
 import net.pototskiy.apps.lomout.api.UNDEFINED_COLUMN
-import net.pototskiy.apps.lomout.api.config.ConfigDsl
+import net.pototskiy.apps.lomout.api.script.LomoutDsl
 
 /**
  * Source data field
@@ -78,7 +78,7 @@ data class Field(
      * @constructor
      * @param name String The field name to build
      */
-    @ConfigDsl
+    @LomoutDsl
     class Builder(private var name: String) {
         private var column: Int? = null
         private var regex: Regex? = null

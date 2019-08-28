@@ -32,7 +32,6 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -95,38 +94,38 @@ internal class StringListAttributeStringWriterTest {
     internal fun simpleWriteUnquotedTest() {
         val attr = TestType.attributes.getValue(("attr1"))
         val value = listOf("test1", "test2")
-        Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
+        assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<List<String>>).write(value, cell)
-        Assertions.assertThat(cell.cellType).isEqualTo(CellType.STRING)
-        Assertions.assertThat(cell.stringValue).isEqualTo("test1,test2")
+        assertThat(cell.cellType).isEqualTo(CellType.STRING)
+        assertThat(cell.stringValue).isEqualTo("test1,test2")
     }
 
     @Test
     internal fun simpleWriteQuotedTest() {
         val attr = TestType.attributes.getValue("attr2")
         val value = listOf("test1", "test2,")
-        Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
+        assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<List<String>>).write(value, cell)
-        Assertions.assertThat(cell.cellType).isEqualTo(CellType.STRING)
-        Assertions.assertThat(cell.stringValue).isEqualTo("test1,'test2,'")
+        assertThat(cell.cellType).isEqualTo(CellType.STRING)
+        assertThat(cell.stringValue).isEqualTo("test1,'test2,'")
     }
 
     @Test
     internal fun writeNullValueTest() {
         val attr = TestType.attributes.getValue("attr3")
-        Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
+        assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<List<String>?>).write(null, cell)
-        Assertions.assertThat(cell.cellType).isEqualTo(CellType.BLANK)
+        assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 
     @Test
     internal fun defaultWriterTest() {
         val writer = defaultWriters[SupportAttributeType.stringListType]
-        Assertions.assertThat(writer).isNotNull
-        Assertions.assertThat(writer).isInstanceOf(StringListAttributeStringWriter::class.java)
+        assertThat(writer).isNotNull
+        assertThat(writer).isInstanceOf(StringListAttributeStringWriter::class.java)
         writer as StringListAttributeStringWriter
         assertThat(writer.delimiter).isEqualTo(',')
         assertThat(writer.quotes).isEqualTo('"')

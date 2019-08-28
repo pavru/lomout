@@ -20,9 +20,9 @@
 package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.EmptyRowBehavior
-import net.pototskiy.apps.lomout.api.config.loader.Load
+import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.loader.Load
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.document.documentMetadata
@@ -57,11 +57,11 @@ import kotlin.reflect.KClass
 @Execution(ExecutionMode.SAME_THREAD)
 internal class LoaderAttributeLoadingTest {
 
-    private lateinit var config: Config
+    private lateinit var lomoutScript: LomoutScript
     private lateinit var skuAttr: Attribute
     private lateinit var codeAttr: Attribute
     private lateinit var nameAttr: Attribute
-    private val loads = mutableMapOf<String, Load>()
+    private val loads = mutableMapOf<String, Load<*>>()
     private lateinit var entityType: KClass<out Document>
     private lateinit var repository: EntityRepositoryInterface
 
@@ -69,21 +69,21 @@ internal class LoaderAttributeLoadingTest {
     internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val util = LoadingDataTestPrepare()
-        config = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.conf.kts")
-        repository = EntityRepository(config.database, Level.ERROR)
-        PluginContext.config = config
+        lomoutScript = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.lomout.kts")
+        repository = EntityRepository(lomoutScript.database, Level.ERROR)
+        PluginContext.lomoutScript = lomoutScript
         PluginContext.repository = repository
         @Suppress("UNCHECKED_CAST")
-        entityType = config.findEntityType("Test_conf${'$'}TestEntityAttributes")!!
+        entityType = lomoutScript.findEntityType("Test_lomout${'$'}TestEntityAttributes")!!
         repository.getIDs(entityType).forEach { repository.delete(entityType, it) }
         @Suppress("UNCHECKED_CAST")
         skuAttr = entityType.documentMetadata.attributes.getValue("sku")
         codeAttr = entityType.documentMetadata.attributes.getValue("group_code")
         nameAttr = entityType.documentMetadata.attributes.getValue("group_name")
-        loads[xlsLoad] = config.loader?.loads?.find {
+        loads[xlsLoad] = lomoutScript.loader?.loads?.find {
             it.entity.simpleName == entityTypeName && it.sources.first().file.file.name == "test.attributes.xls"
         }!!
-        loads[csvLoad] = config.loader?.loads?.find {
+        loads[csvLoad] = lomoutScript.loader?.loads?.find {
             it.entity.simpleName == entityTypeName && it.sources.first().file.file.name == "test.attributes.csv"
         }!!
 

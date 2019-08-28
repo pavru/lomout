@@ -29,8 +29,8 @@ import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
-import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
-import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
+import net.pototskiy.apps.lomout.api.script.mediator.AbstractLine
+import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.errorMessageFromException

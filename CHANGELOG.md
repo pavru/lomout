@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - parameter to switch off script cache usage
 - parameter for script cache location
-- if there is ivy.xml files in the same location as config all dependencies will be added to classpath
+- if there is ivy.xml files in the same location as lomoutScript all dependencies will be added to classpath
 - log information in idea log
 - create gradle task to generate build info class
 - [LM-32](https://camsoft.myjetbrains.com/youtrack/issue/LM-32) plugin context now has script file info

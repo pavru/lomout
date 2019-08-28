@@ -38,9 +38,9 @@ class DocumentData(private val data: MutableMap<DocumentMetadata.Attribute, Any>
 }
 
 fun emptyDocumentData() = DocumentData(mutableMapOf())
+@Suppress("unused")
 fun documentData(vararg pairs: Pair<DocumentMetadata.Attribute, Any>): DocumentData =
     if (pairs.isNotEmpty()) DocumentData(pairs.toMap().toMutableMap()) else emptyDocumentData()
 
 fun List<Pair<DocumentMetadata.Attribute, Any>>.toDocumentData(): DocumentData =
     DocumentData(this.toMap().toMutableMap())
-

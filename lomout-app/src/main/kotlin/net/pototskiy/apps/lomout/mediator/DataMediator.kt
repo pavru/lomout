@@ -23,8 +23,8 @@ import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.mediator.ProductionLine
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.mediator.ProductionLine
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.errorMessageFromException
@@ -40,11 +40,11 @@ object DataMediator {
     private val logger = LogManager.getLogger(PRINTER_LOG_NAME)
     private val processedRows = AtomicLong(0L)
 
-    fun mediate(repository: EntityRepositoryInterface, config: Config) {
-        config.mediator ?: return
+    fun mediate(repository: EntityRepositoryInterface, lomoutScript: LomoutScript) {
+        lomoutScript.mediator ?: return
         statusLog.info(message("message.info.mediator.started"))
         val startTime = LocalDateTime.now()
-        sortProductionLines(config).forEach { line ->
+        sortProductionLines(lomoutScript).forEach { line ->
             logger.debug(message("message.debug.mediator.start_entity"), line.outputEntity.qualifiedName)
             val eType = line.outputEntity
             @Suppress("TooGenericExceptionCaught")
@@ -68,21 +68,21 @@ object DataMediator {
         statusLog.info(message("message.info.mediator.finished", duration, processedRows.get()))
     }
 
-    private fun sortProductionLines(config: Config): List<ProductionLine> {
-        val chains = mutableListOf<List<ProductionLine>>()
-        fun buildCain(line: ProductionLine): List<ProductionLine> {
+    private fun sortProductionLines(lomoutScript: LomoutScript): List<ProductionLine<*>> {
+        val chains = mutableListOf<List<ProductionLine<*>>>()
+        fun buildCain(line: ProductionLine<*>): List<ProductionLine<*>> {
             val chain = mutableListOf(line)
             line.inputEntities.forEach { inputEntity ->
-                config.mediator?.lines?.find { it.outputEntity == inputEntity.entity }?.let {
+                lomoutScript.mediator?.lines?.find { it.outputEntity == inputEntity.entity }?.let {
                     chain.addAll(buildCain(it))
                 }
             }
             return chain
         }
-        config.mediator?.lines?.forEach {
+        lomoutScript.mediator?.lines?.forEach {
             chains.add(buildCain(it).reversed())
         }
-        val sorted = mutableListOf<ProductionLine>()
+        val sorted = mutableListOf<ProductionLine<*>>()
         chains.sortedBy { it.size }.forEach { list ->
             list.forEach { if (!sorted.contains(it)) sorted.add(it) }
         }

@@ -36,14 +36,14 @@ internal class MainKtTest {
     }
 
     @Test
-    internal fun peoductionWayMainTest() {
+    internal fun productionWayMainTest() {
         main(arrayOf("--process", System.getenv("PRODUCTION_CONFIG")))
     }
 
     @Test
     @ExpectSystemExitWithStatus(1)
     internal fun wrongParametersTest() {
-        main(arrayOf("--this wrong paramter for test"))
+        main(arrayOf("--this wrong parameter for test"))
     }
 
     @Test

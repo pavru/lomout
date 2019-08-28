@@ -21,9 +21,9 @@ package net.pototskiy.apps.lomout.printer
 
 import net.pototskiy.apps.lomout.LogCatcher
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
-import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
@@ -47,7 +47,7 @@ import java.io.File
 
 @Suppress("ComplexMethod", "MagicNumber")
 internal class PrinterBasicTest {
-    private val helper = ConfigBuildHelper()
+    private val helper = ScriptBuildHelper()
     private val testDataDir = System.getenv("TEST_DATA_DIR")
     private val fileName = "$testDataDir/mediator-test-data.xls"
     private val outputName = "../tmp/printer-basic-test.xls"
@@ -58,8 +58,8 @@ internal class PrinterBasicTest {
         File("../tmp/$outputName").parentFile.mkdirs()
         val config = createConfiguration()
 
-        PluginContext.config = config
-        PluginContext.scriptFile = File("no-file.conf.kts")
+        PluginContext.lomoutScript = config
+        PluginContext.scriptFile = File("no-file.lomout.kts")
 
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
@@ -159,7 +159,7 @@ internal class PrinterBasicTest {
     }
 
     @Suppress("LongMethod")
-    private fun createConfiguration() = Config.Builder(helper).apply {
+    private fun createConfiguration() = LomoutScript.Builder(helper).apply {
         database {
             name("lomout_test")
             server {
@@ -173,7 +173,7 @@ internal class PrinterBasicTest {
             files {
                 file("test-data") { path(fileName) }
             }
-            loadEntity(Entity1::class) {
+            load<Entity1> {
                 fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
                 rowsToSkip(1)
                 keepAbsentForDays(1)
@@ -185,7 +185,7 @@ internal class PrinterBasicTest {
                     }
                 }
             }
-            loadEntity(Entity2::class) {
+            load<Entity2> {
                 fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
                 rowsToSkip(1)
                 keepAbsentForDays(1)
@@ -199,12 +199,11 @@ internal class PrinterBasicTest {
             }
         }
         mediator {
-            productionLine {
+            produce<ImportData> {
                 input {
                     entity(Entity1::class)
                     entity(Entity2::class)
                 }
-                output(ImportData::class)
                 pipeline {
                     classifier { element ->
                         var entity = element.entities.getOrNull(Entity1::class)
@@ -273,7 +272,7 @@ internal class PrinterBasicTest {
             files {
                 file("output") { path(outputName) }
             }
-            printerLine {
+            print<ImportData> {
                 input {
                     entity(ImportData::class)
                 }
@@ -293,9 +292,7 @@ internal class PrinterBasicTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { entities ->
-                        entities.first()
-                    }
+                    assembler { it.first() as ImportData }
                 }
             }
         }

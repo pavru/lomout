@@ -22,6 +22,7 @@ package net.pototskiy.apps.lomout.mediator
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.channels.produce
@@ -30,17 +31,18 @@ import kotlinx.coroutines.launch
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.mediator.InputEntityCollection
-import net.pototskiy.apps.lomout.api.config.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.config.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.errorMessageFromException
+import net.pototskiy.apps.lomout.api.script.mediator.InputEntityCollection
+import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.script.mediator.PipelineAssembler
+import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
 import kotlin.reflect.KClass
 
 class PipelineExecutor(
-    private val pipeline: Pipeline,
+    private val pipeline: Pipeline<*>,
     private val inputEntities: InputEntityCollection,
     private val targetEntity: KClass<out Document>
 ) {
@@ -71,20 +73,7 @@ class PipelineExecutor(
                             } else {
                                 val assembler = pipeline.assembler!!
                                 try {
-                                    assembler(element.entities)?.let { entity ->
-                                        if (entity::class != targetEntity) {
-                                            AppDataException(
-                                                suspectedLocation(targetEntity),
-                                                message(
-                                                    "message.error.mediator.wrong_entity_type",
-                                                    entity::class.qualifiedName,
-                                                    targetEntity.qualifiedName
-                                                )
-                                            ).errorMessageFromException(logger)
-                                        } else {
-                                            send(entity)
-                                        }
-                                    }
+                                    sendElement(assembler, element)
                                 } catch (e: Exception) {
                                     AppDataException(
                                         suspectedLocation(targetEntity),
@@ -115,4 +104,24 @@ class PipelineExecutor(
             @Suppress("SpreadOperator")
             joinAll(*jobs.toTypedArray())
         }
+
+    private suspend fun ProducerScope<Document>.sendElement(
+        assembler: PipelineAssembler<out Document>,
+        element: ClassifierElement
+    ) {
+        assembler(element.entities)?.let { entity ->
+            if (entity::class != targetEntity) {
+                AppDataException(
+                    suspectedLocation(targetEntity),
+                    message(
+                        "message.error.mediator.wrong_entity_type",
+                        entity::class.qualifiedName,
+                        targetEntity.qualifiedName
+                    )
+                ).errorMessageFromException(logger)
+            } else {
+                send(entity)
+            }
+        }
+    }
 }

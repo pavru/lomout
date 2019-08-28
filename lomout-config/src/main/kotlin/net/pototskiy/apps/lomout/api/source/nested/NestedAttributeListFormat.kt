@@ -38,7 +38,7 @@ open class NestedAttributeListFormat(
     private val valueCSVFormat: CSVValueFormat
 ) : CSVValueFormat(delimiter, quotes, escape) {
     /**
-     * Secondary constructor with full csv specification
+     * The secondary constructor with full csv specification
      *
      * @param delimiter The attribute csv delimiter
      * @param quotes The attribute csv quotes, null - no quotes

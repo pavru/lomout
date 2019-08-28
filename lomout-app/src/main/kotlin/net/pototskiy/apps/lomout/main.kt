@@ -29,9 +29,9 @@ import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.ConfigurationBuilderFromDSL
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.script.ScriptBuilderFromDSL
 import net.pototskiy.apps.lomout.jcommander.CommandHelp
 import net.pototskiy.apps.lomout.jcommander.CommandMain
 import net.pototskiy.apps.lomout.jcommander.CommandVersion
@@ -46,7 +46,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.system.exitProcess
 
-lateinit var CONFIG_BUILDER: ConfigurationBuilderFromDSL
+lateinit var scriptBuilder: ScriptBuilderFromDSL
 
 @ExperimentalCoroutinesApi
 @ObsoleteCoroutinesApi
@@ -64,25 +64,25 @@ fun main(args: Array<String>) {
         statusLog.error(message("message.error.app.config_not_found"), mainCommand.configFile.first())
         exitProcess(1)
     }
-    CONFIG_BUILDER = ConfigurationBuilderFromDSL(
+    scriptBuilder = ScriptBuilderFromDSL(
         File(mainCommand.configFile.first()),
         mainCommand.scriptCacheDir,
         mainCommand.doNotUseScriptCache
     )
 
     val repository = EntityRepository(
-        CONFIG_BUILDER.config.database,
+        scriptBuilder.lomoutScript.database,
         Level.toLevel(mainCommand.sqlLogLevel)
     )
     setupPluginContext(File(mainCommand.configFile.first()))
     PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
     PluginContext.repository = repository
 
-    CONFIG_BUILDER.config.loader?.let { DataLoader.load(repository, CONFIG_BUILDER.config) }
+    scriptBuilder.lomoutScript.loader?.let { DataLoader.load(repository, scriptBuilder.lomoutScript) }
     PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
-    CONFIG_BUILDER.config.mediator?.let { DataMediator.mediate(repository, CONFIG_BUILDER.config) }
+    scriptBuilder.lomoutScript.mediator?.let { DataMediator.mediate(repository, scriptBuilder.lomoutScript) }
     PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
-    CONFIG_BUILDER.config.printer?.let { DataPrinter.print(repository, CONFIG_BUILDER.config) }
+    scriptBuilder.lomoutScript.printer?.let { DataPrinter.print(repository, scriptBuilder.lomoutScript) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     val duration = Duration.between(startTime, LocalDateTime.now()).seconds
     statusLog.info(message("message.info.app.finished", duration))
@@ -90,6 +90,7 @@ fun main(args: Array<String>) {
 
 private fun configureAnsiSupportForLog() {
     if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        @Suppress("GraziInspection")
         System.setProperty("log4j.skipJansi", "false")
     }
 }
@@ -133,6 +134,6 @@ fun setLogLevel(command: CommandMain) {
  * Set plugin context
  */
 fun setupPluginContext(scriptFile: File) {
-    PluginContext.config = CONFIG_BUILDER.config
+    PluginContext.lomoutScript = scriptBuilder.lomoutScript
     PluginContext.scriptFile = scriptFile
 }

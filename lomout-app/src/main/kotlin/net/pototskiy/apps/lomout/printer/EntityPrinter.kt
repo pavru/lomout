@@ -19,9 +19,9 @@
 
 package net.pototskiy.apps.lomout.printer
 
-import net.pototskiy.apps.lomout.api.config.loader.FieldSetCollection
-import net.pototskiy.apps.lomout.api.config.loader.SourceData
-import net.pototskiy.apps.lomout.api.config.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
+import net.pototskiy.apps.lomout.api.script.loader.FieldSetCollection
+import net.pototskiy.apps.lomout.api.script.loader.SourceData
+import net.pototskiy.apps.lomout.api.script.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter

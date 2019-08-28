@@ -28,7 +28,7 @@ plugins {
     jacoco
     idea
     kotlin("jvm") version Versions.kotlin
-    id("com.gradle.build-scan") version "2.4"
+    id("com.gradle.build-scan") version "2.4.1"
 }
 
 buildscript {
@@ -40,7 +40,7 @@ buildScan {
 }
 
 group = "lomout"
-version = "1.3.3"
+version = "1.3.4"
 
 idea {
     project {

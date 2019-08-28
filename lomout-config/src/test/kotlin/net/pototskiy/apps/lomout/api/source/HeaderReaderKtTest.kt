@@ -20,8 +20,8 @@
 package net.pototskiy.apps.lomout.api.source
 
 import net.pototskiy.apps.lomout.api.AppConfigException
-import net.pototskiy.apps.lomout.api.config.Config
-import net.pototskiy.apps.lomout.api.config.ConfigBuildHelper
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import org.assertj.core.api.Assertions.assertThat
@@ -40,7 +40,7 @@ internal class HeaderReaderKtTest {
         companion object : DocumentMetadata(EntityType::class)
     }
 
-    private val helper = ConfigBuildHelper()
+    private val helper = ScriptBuildHelper()
 
     @Test
     internal fun createCorrectConfigurationTest() {
@@ -64,7 +64,7 @@ internal class HeaderReaderKtTest {
             .hasMessageContaining("Sources have different fields or fields in different columns")
     }
 
-    private fun createConfiguration() = Config.Builder(helper).apply {
+    private fun createConfiguration() = LomoutScript.Builder(helper).apply {
         database {
             name("test_lomout")
             server {
@@ -79,7 +79,7 @@ internal class HeaderReaderKtTest {
                 val testDataDir = System.getenv("TEST_DATA_DIR") ?: "../testdata"
                 file("test-data") { path("$testDataDir/headers-from-source-test.xls") }
             }
-            loadEntity(EntityType::class) {
+            load<EntityType> {
                 headersRow(0)
                 fromSources {
                     source { file("test-data"); sheet("Sheet1"); }
@@ -94,7 +94,7 @@ internal class HeaderReaderKtTest {
         }
     }.build()
 
-    private fun createConfigurationDifferentHeadersNumber() = Config.Builder(helper).apply {
+    private fun createConfigurationDifferentHeadersNumber() = LomoutScript.Builder(helper).apply {
         database {
             name("test_lomout")
             server {
@@ -109,7 +109,7 @@ internal class HeaderReaderKtTest {
                 val testDataDir = System.getenv("TEST_DATA_DIR") ?: "../testdata"
                 file("test-data") { path("$testDataDir/headers-from-source-test.xls") }
             }
-            loadEntity(EntityType::class) {
+            load<EntityType> {
                 headersRow(0)
                 fromSources {
                     source { file("test-data"); sheet("Sheet1"); }
@@ -124,7 +124,7 @@ internal class HeaderReaderKtTest {
         }
     }.build()
 
-    private fun createConfigurationDifferentHeadersOrder() = Config.Builder(helper).apply {
+    private fun createConfigurationDifferentHeadersOrder() = LomoutScript.Builder(helper).apply {
         database {
             name("test_lomout")
             server {
@@ -139,7 +139,7 @@ internal class HeaderReaderKtTest {
                 val testDataDir = System.getenv("TEST_DATA_DIR") ?: "../testdata"
                 file("test-data") { path("$testDataDir/headers-from-source-test.xls") }
             }
-            loadEntity(EntityType::class) {
+            load<EntityType> {
                 headersRow(0)
                 fromSources {
                     source { file("test-data"); sheet("Sheet1"); }

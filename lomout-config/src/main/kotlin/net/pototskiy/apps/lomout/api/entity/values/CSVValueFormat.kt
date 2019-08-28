@@ -30,7 +30,7 @@ import org.apache.commons.csv.QuoteMode
  *
  * @property delimiter The csv delimiter
  * @property quotes The csv quotes, null - no quotes
- * @property escape The csv escpae symbol, null - qoubled quotes
+ * @property escape The csv escape symbol, null - doubled quotes
  */
 open class CSVValueFormat(
     val delimiter: Char = ',',

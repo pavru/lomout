@@ -28,7 +28,7 @@ import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.Config
+import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
@@ -43,8 +43,8 @@ object DataLoader {
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
     @ObsoleteCoroutinesApi
-    fun load(repository: EntityRepositoryInterface, config: Config) = runBlocking {
-        val loader = config.loader ?: return@runBlocking
+    fun load(repository: EntityRepositoryInterface, lomoutScript: LomoutScript) = runBlocking {
+        val loader = lomoutScript.loader ?: return@runBlocking
         statusLog.info(message("message.info.loader.started"))
         val startTime = LocalDateTime.now()
         val jobs = mutableListOf<Job>()

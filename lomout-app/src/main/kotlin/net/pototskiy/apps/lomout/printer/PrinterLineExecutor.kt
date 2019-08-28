@@ -20,8 +20,8 @@
 package net.pototskiy.apps.lomout.printer
 
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
-import net.pototskiy.apps.lomout.api.config.mediator.AbstractLine
-import net.pototskiy.apps.lomout.api.config.printer.PrinterLine
+import net.pototskiy.apps.lomout.api.script.mediator.AbstractLine
+import net.pototskiy.apps.lomout.api.script.printer.PrinterLine
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.mediator.LineExecutor
@@ -49,7 +49,7 @@ class PrinterLineExecutor(repository: EntityRepositoryInterface) : LineExecutor(
 
     @Suppress("TooGenericExceptionCaught", "SpreadOperator")
     override fun executeLine(line: AbstractLine): Long {
-        line as PrinterLine
+        line as PrinterLine<*>
         val entityPrinter = EntityPrinter(
             line.outputFieldSets.file,
             line.outputFieldSets.fieldSets,

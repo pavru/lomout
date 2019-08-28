@@ -20,7 +20,7 @@
 
 <!--suppress ALL -->
 <Configuration
-        xmlns="http://logging.apache.org/log4j/2.0/config"
+        xmlns="http://logging.apache.org/log4j/2.0/lomoutScript"
         packages="net.pototskiy.apps.lomout.logger">
     <Appenders>
         <Console name="console" target="SYSTEM_OUT">
@@ -36,7 +36,7 @@
             <AppenderRef ref="logFile"/>
         </Logger>
         <Logger name="net.pototskiy.apps.lomout.status" level="info" additivity="true"/>
-        <Logger name="net.pototskiy.apps.lomout.config" additivity="true"/>
+        <Logger name="net.pototskiy.apps.lomout.lomoutScript" additivity="true"/>
         <Logger name="net.pototskiy.apps.lomout.database" additivity="true"/>
         <Logger name="net.pototskiy.apps.lomout.loader" additivity="true"/>
         <Logger name="net.pototskiy.apps.lomout.mediator" additivity="true"/>

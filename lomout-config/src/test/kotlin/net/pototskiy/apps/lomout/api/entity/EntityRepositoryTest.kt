@@ -20,7 +20,7 @@
 package net.pototskiy.apps.lomout.api.entity
 
 import kotlinx.coroutines.runBlocking
-import net.pototskiy.apps.lomout.api.config.DatabaseConfig
+import net.pototskiy.apps.lomout.api.script.DatabaseConfig
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Documents
