@@ -36,7 +36,7 @@ object Versions {
     const val jline = "3.9.0"
     const val poi = "4.1.0"
     const val commonCsv = "1.7"
-    const val detekt = "1.0.0"
+    const val detekt = "1.0.1"
     const val cache2k = "1.2.3.Final"
     const val jcache = "1.1.1"
     const val hazelcast = "3.12"

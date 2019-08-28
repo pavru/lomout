@@ -226,6 +226,42 @@ internal class DataLoadingTest {
                 internal fun numberOfEntitiesTest() {
                     assertThat(repository.get(entityType, includeDeleted = true).count()).isEqualTo(5)
                 }
+
+                @Nested
+                @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+                @DisplayName("Update entity attribute with null value (LM-54)")
+                internal inner class UpdateWithNullTest {
+                    private lateinit var timestampFive: LocalDateTime
+
+                    @BeforeAll
+                    internal fun initAll() {
+                        repository.close()
+                        runBlocking { delay(1000L) }
+                        repository = EntityRepository(lomoutScript.database, Level.ERROR)
+                        timestampFive = Documents.timestamp
+                        println("timestampFive: $timestampFive")
+
+                        val load = lomoutScript.loader?.loads?.find {
+                            it.entity.simpleName == "TestEntityAttributes" &&
+                                    it.sources.first().file.file.name.endsWith("test.attributes.xls") &&
+                                    it.sources.first().sheet.definition == "name:test-stock"
+                        }
+                        val workbook = getHSSFWorkbook(load!!)
+                        val sheet = getHSSFSheet(workbook, load)
+                        sheet.getRow(4).getCell(4).setBlank()
+                        loadEntities(load, workbook)
+                    }
+
+                    @Test
+                    @DisplayName("double_val attribute should be null")
+                    internal fun numberOfEntitiesTest() {
+                        val skuAttr = entityType.documentMetadata.attributes.getValue("sku")
+                        val entity = repository.get(entityType, mapOf(skuAttr to "1"), includeDeleted = true)
+                        @Suppress("UsePropertyAccessSyntax")
+                        assertThat(entity).isNotNull()
+                        assertThat(entity?.getAttribute("double_val")).isNull()
+                    }
+                }
             }
         }
     }
