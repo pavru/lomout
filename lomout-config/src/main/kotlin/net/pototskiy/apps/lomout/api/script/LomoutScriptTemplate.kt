@@ -42,6 +42,7 @@ import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.dependencies
 import kotlin.script.experimental.api.displayName
 import kotlin.script.experimental.api.fileExtension
+import kotlin.script.experimental.api.filePathPattern
 import kotlin.script.experimental.api.ide
 import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.jvm.JvmDependency
@@ -52,7 +53,7 @@ import kotlin.script.experimental.jvm.updateClasspath
 import kotlin.script.experimental.jvm.util.classpathFromClassloader
 
 /**
- * Config script definition for Kotlin script host
+ * LoMout script definition for Kotlin script host
  *
  * @property args The arguments
  * @property lomoutScript The configuration
@@ -60,7 +61,7 @@ import kotlin.script.experimental.jvm.util.classpathFromClassloader
  */
 @Suppress("DEPRECATION")
 @KotlinScript(
-    displayName = "LoMout config script",
+    displayName = "LoMout script",
     fileExtension = """.*\.lomout\.kts""",
     compilationConfiguration = LomoutScriptCompilationConfiguration::class
 )
@@ -69,11 +70,12 @@ abstract class LomoutScriptTemplate(private val args: Array<String>) {
 }
 
 /**
- * Config script compilation configuration
+ * LoMout script compilation configuration
  */
 object LomoutScriptCompilationConfiguration : ScriptCompilationConfiguration({
     displayName("LoMout script")
     fileExtension("lomout.kts")
+    filePathPattern(""".*\.lomout\.kts""")
     baseClass(LomoutScriptTemplate::class)
     defaultImports(Import::class, DependsOn::class, Repository::class)
     defaultImports(
