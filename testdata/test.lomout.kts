@@ -55,7 +55,7 @@ open class TestEntityAttributes : Document() {
     }
 
     @Reader(DoubleValReaderBuilder::class)
-    var double_val: Double = 0.0
+    var double_val: Double? = 0.0
 
     class DateValReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateAttributeReader> {

@@ -61,6 +61,9 @@ class EntityUpdater(
             if (data.containsKey(it) && entity.getAttribute(it.name) != data[it]) {
                 entity.setAttribute(it.name, data[it])
                 updatedRows = 1L
+            } else if (!data.containsKey(it)) {
+                entity.setAttribute(it.name, null)
+                updatedRows = 1L
             }
         }
         return updatedRows
