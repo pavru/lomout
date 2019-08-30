@@ -23,7 +23,7 @@ import org.gradle.plugins.ide.idea.model.Module
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("com.github.ben-manes.versions") version "0.22.0"
+    id("com.github.ben-manes.versions") version "0.23.0"
     id("org.sonarqube") version "2.7.1"
     jacoco
     idea
@@ -40,7 +40,7 @@ buildScan {
 }
 
 group = "lomout"
-version = "1.3.5"
+version = "1.3.6"
 
 idea {
     project {

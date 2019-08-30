@@ -19,15 +19,11 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
-import net.pototskiy.apps.lomout.api.AppDataException
-import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
-import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
-import net.pototskiy.apps.lomout.api.suspectedLocation
 
 /**
  * Default reader for **List&lt;String&gt;** attribute
@@ -42,8 +38,9 @@ open class StringListAttributeReader : AttributeReader<List<String>?>() {
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<String>? {
         return when (input.cellType) {
-            CellType.STRING -> {
-                input.stringValue.reader().use { reader ->
+            CellType.BLANK -> null
+            else -> {
+                input.asString().reader().use { reader ->
                     CSVValueFormat(delimiter, quotes, escape).format
                         .parse(reader)
                         .records
@@ -51,10 +48,9 @@ open class StringListAttributeReader : AttributeReader<List<String>?>() {
                         .map { it }
                 }
             }
-            CellType.BLANK -> null
-            else -> throw AppDataException(
-                suspectedLocation(input) + attribute, message("message.error.data.stringlist.reading_not_supported")
-            )
+//            else -> throw AppDataException(
+//                suspectedLocation(input) + attribute, message("message.error.data.stringlist.reading_not_supported")
+//            )
         }
     }
 }
