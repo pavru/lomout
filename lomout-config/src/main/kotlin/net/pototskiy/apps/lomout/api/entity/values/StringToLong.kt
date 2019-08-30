@@ -39,12 +39,12 @@ fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
         isGroupingUsed = groupingUsed
     }
     val position = ParsePosition(0)
-    val value = format.parse(this.trim(), position)
+    val value = format.parse(this.trim(), position) as? Long
         ?: throw ParseException(message("message.error.data.string.to_long_error"), position.index)
     if (position.index != this.trim().length) {
         throw ParseException(message("message.error.data.string.to_long_extra"), position.index)
     }
-    return value.toLong()
+    return value
 }
 
 /**
