@@ -45,19 +45,14 @@ import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initIntListVa
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initIntValue
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initLongListValue
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initLongValue
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initPriceListValue
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initPriceValue
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initStringListValue
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initStringValue
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longType
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceListType
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
-import net.pototskiy.apps.lomout.api.document.attribute.Price
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -81,13 +76,9 @@ import java.time.LocalDateTime
  * @property floatListType The float list type
  * @property initFloatListValue The float list init value
  * @property doubleType The double type
- * @property priceType The price type
  * @property initDoubleValue The double init value
- * @property initPriceValue The price init value
  * @property doubleListType The double list type
- * @property priceListType The price list type
  * @property initDoubleListValue The double list init value
- * @property initPriceListValue The price list init value
  * @property stringType The string type
  * @property initStringValue The string init value
  * @property stringListType The string list type
@@ -110,7 +101,6 @@ object SupportAttributeType {
     private val _longType: Long? = null
     private val _floatType: Float? = null
     private val _doubleType: Double? = null
-    private val _priceType: Price? = null
     private val _stringType: String? = null
     private val _datetimeType: LocalDateTime? = null
     private val _dateType: LocalDate? = null
@@ -120,7 +110,6 @@ object SupportAttributeType {
     private val _longListType: List<Long>? = null
     private val _floatListType: List<Float>? = null
     private val _doubleListType: List<Double>? = null
-    private val _priceListType: List<Price>? = null
     private val _stringListType: List<String>? = null
     private val _datetimeListType: List<LocalDateTime>? = null
     private val _dateListType: List<LocalDate>? = null
@@ -135,8 +124,6 @@ object SupportAttributeType {
     const val initFloatValue = 0.0f
     val doubleType = ::_doubleType.returnType
     const val initDoubleValue = 0.0
-    val priceType = ::_priceType.returnType
-    val initPriceValue = Price(0.0)
     val stringType = ::_stringType.returnType
     const val initStringValue = ""
     val dateTimeType = ::_datetimeType.returnType
@@ -155,8 +142,6 @@ object SupportAttributeType {
     val initFloatListValue = emptyList<Float>()
     val doubleListType = ::_doubleListType.returnType
     val initDoubleListValue = emptyList<Double>()
-    val priceListType = ::_priceListType.returnType
-    val initPriceListValue = emptyList<Price>()
     val stringListType = ::_stringListType.returnType
     val initStringListValue = emptyList<String>()
     val datetimeListType = ::_datetimeListType.returnType
@@ -173,7 +158,6 @@ object SupportAttributeType {
         ::_longType.returnType,
         ::_floatType.returnType,
         ::_doubleType.returnType,
-        ::_priceType.returnType,
         ::_stringType.returnType,
         ::_datetimeType.returnType,
         ::_dateType.returnType,
@@ -182,7 +166,6 @@ object SupportAttributeType {
         ::_longListType.returnType,
         ::_floatListType.returnType,
         ::_doubleListType.returnType,
-        ::_priceListType.returnType,
         ::_stringListType.returnType,
         ::_datetimeListType.returnType,
         ::_dateListType.returnType,
@@ -197,7 +180,6 @@ object SupportAttributeType {
         ::_longListType.returnType,
         ::_floatListType.returnType,
         ::_doubleListType.returnType,
-        ::_priceListType.returnType,
         ::_stringListType.returnType,
         ::_datetimeListType.returnType,
         ::_dateListType.returnType

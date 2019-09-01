@@ -33,8 +33,9 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 open class DoubleAttributeStringWriter : AttributeWriter<Double?>() {
     var locale: String? = null
     var groupingUsed: Boolean = false
+    var scale: Int = DEFAULT_BUFFER_SIZE
 
     override fun write(value: Double?, cell: Cell) {
-        value?.let { cell.setCellValue(it.doubleToString(locale?.createLocale() ?: cell.locale, groupingUsed)) }
+        value?.let { cell.setCellValue(it.doubleToString(locale?.createLocale() ?: cell.locale, groupingUsed, scale)) }
     }
 }

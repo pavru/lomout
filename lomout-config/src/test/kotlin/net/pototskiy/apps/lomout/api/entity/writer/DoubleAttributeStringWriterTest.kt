@@ -26,6 +26,9 @@ import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.plugable.Writer
+import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
+import net.pototskiy.apps.lomout.api.plugable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -44,9 +47,16 @@ import java.nio.file.Path
 @Execution(ExecutionMode.CONCURRENT)
 internal class DoubleAttributeStringWriterTest {
     internal class TestType : Document() {
+        @Writer(TestDoubleWriterBuilder::class)
         var attr: Double = 0.0
 
         companion object : DocumentMetadata(TestType::class)
+    }
+
+    internal class TestDoubleWriterBuilder : WriterBuilder {
+        override fun build(): AttributeWriter<out Any?> = createWriter<DoubleAttributeStringWriter> {
+            scale = 3
+        }
     }
 
     private lateinit var file: File
@@ -88,6 +98,19 @@ internal class DoubleAttributeStringWriterTest {
             locale = "ru_RU"
         }.write(111222.333, cell)
         assertThat(cell.stringValue).isEqualTo("111 222,333")
+    }
+
+    @Test
+    internal fun lm57ScaleWriteTest() {
+        val attr = TestType.attributes.getValue("attr")
+        assertThat(cell.cellType).isEqualTo(CellType.BLANK)
+        @Suppress("UNCHECKED_CAST")
+        (attr.writer as AttributeWriter<Double>).write(111.123456, cell)
+        assertThat(cell.cellType).isEqualTo(CellType.STRING)
+        assertThat(cell.stringValue).isEqualTo("111.123")
+        (attr.writer as AttributeWriter<Double>).write(111.123656, cell)
+        assertThat(cell.cellType).isEqualTo(CellType.STRING)
+        assertThat(cell.stringValue).isEqualTo("111.124")
     }
 
     @Test

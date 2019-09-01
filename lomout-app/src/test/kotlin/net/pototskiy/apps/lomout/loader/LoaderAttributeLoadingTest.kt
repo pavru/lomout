@@ -22,7 +22,6 @@ package net.pototskiy.apps.lomout.loader
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
-import net.pototskiy.apps.lomout.api.document.attribute.Price
 import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
@@ -49,7 +48,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.collections.set
-import kotlin.math.pow
 import kotlin.reflect.KClass
 
 @Suppress("TooManyFunctions", "MagicNumber")
@@ -155,33 +153,6 @@ internal class LoaderAttributeLoadingTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @ParameterizedTest
     @ValueSource(strings = [xlsLoad, csvLoad])
-    @DisplayName("Entity price_val attributes should have right value")
-    internal fun entityPriceValTest(loadID: String) {
-        loadEntities(loadID)
-        val attr = attr("price_val")
-        repository.get(entityType).forEach { entity ->
-            val sku = (entity.getAttribute(skuAttr.name) as? String)?.toShort()
-            @Suppress("UsePropertyAccessSyntax")
-            assertThat(sku).isNotNull()
-            val expected = Price(createPrice(sku!!, 6, 1))
-            assertThat(entity.getAttribute(attr.name) as Price).isEqualTo(expected)
-        }
-    }
-
-    private fun createPrice(sku: Short, i: Int, dShift: Short): Double {
-        var result = 0.0
-        for (it in 0..2) {
-            result += sku * 10.0.pow(it)
-        }
-        for (it in 1..i) {
-            result += (sku + dShift) * 10.0.pow(-it)
-        }
-        return result
-    }
-
-    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
-    @ParameterizedTest
-    @ValueSource(strings = [xlsLoad, csvLoad])
     @DisplayName("Entity date_val attributes should have right value")
     internal fun entityDateValTest(loadID: String) {
         loadEntities(loadID)
@@ -268,23 +239,6 @@ internal class LoaderAttributeLoadingTest {
             assertThat(entity.getAttribute(attr.name) as List<Double>)
                 .containsExactlyElementsOf(
                     (10..12).map { ((it + i + 1).toDouble() + ((it + i + 1).toDouble() / 100.0)) }
-                )
-        }
-    }
-
-    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
-    @ParameterizedTest
-    @ValueSource(strings = [xlsLoad, csvLoad])
-    @DisplayName("Entity price_list attributes should have right value")
-    internal fun entityPriceListTest(loadID: String) {
-        loadEntities(loadID)
-        val attr = attr("price_list")
-        repository.get(entityType).forEach { entity ->
-            val sku = (entity.getAttribute("sku") as String).toShort()
-            @Suppress("UNCHECKED_CAST")
-            assertThat(entity.getAttribute(attr.name) as List<Price>)
-                .containsExactlyElementsOf(
-                    (1..3).map { Price(createPrice(sku, 4, it.toShort())) }
                 )
         }
     }

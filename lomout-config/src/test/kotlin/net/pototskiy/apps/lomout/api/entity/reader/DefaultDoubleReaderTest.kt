@@ -89,6 +89,22 @@ internal class DefaultDoubleReaderTest {
     }
 
     @Test
+    internal fun lm57ReadDoubleScaleTest() {
+        val reader = DoubleAttributeReader().apply { locale = "en_US"; scale = 3 }
+        xlsTestDataCell.setCellValue(1.1)
+        assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
+        assertThat(reader.read(attr, inputCell)).isEqualTo(1.1)
+        xlsTestDataCell.setCellValue(1.1234)
+        assertThat(reader.read(attr, inputCell)).isEqualTo(1.123)
+        xlsTestDataCell.setCellValue(1.1236)
+        assertThat(reader.read(attr, inputCell)).isEqualTo(1.124)
+        xlsTestDataCell.setCellValue("1.1234")
+        assertThat(reader.read(attr, inputCell)).isEqualTo(1.123)
+        xlsTestDataCell.setCellValue("1.1236")
+        assertThat(reader.read(attr, inputCell)).isEqualTo(1.124)
+    }
+
+    @Test
     internal fun readLongCellTest() {
         val reader = DoubleAttributeReader().apply { locale = "en_US" }
         val cell = createCsvCell("11")
