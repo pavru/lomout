@@ -39,7 +39,7 @@ class MageProduct : Document() {
     var sku: String = ""
     class AdditionalAttributesReader: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
-            quote = null; valueQuote = '"'; valueDelimiter = '='
+            quotes = null; valueQuote = '"'; valueDelimiter = '='
         }
     }
     @Reader(AdditionalAttributesReader::class)

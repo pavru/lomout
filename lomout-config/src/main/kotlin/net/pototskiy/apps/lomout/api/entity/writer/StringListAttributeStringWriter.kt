@@ -28,7 +28,8 @@ import java.io.ByteArrayOutputStream
  * Default writer for **List&lt;String&gt;** attribute
  *
  * @property quotes Char? The value quote, optional. This is parameter
- * @property delimiter Char The list delimiter, default:','. This is parameter
+ * @property delimiter Char The list delimiter, default:','. This is parameter.
+ * @property escape The escape char like in CSV format. This is parameter.
  */
 open class StringListAttributeStringWriter : AttributeWriter<List<String>?>() {
     var quotes: Char? = null

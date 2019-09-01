@@ -28,6 +28,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  * Default writer for [Long] attribute
  *
  * @property locale String The value locale, default: system locale. This is parameter
+ * @property groupingUsed The flag of digits grouping. This is parameter.
  */
 open class LongAttributeStringWriter : AttributeWriter<Long?>() {
     var locale: String? = null

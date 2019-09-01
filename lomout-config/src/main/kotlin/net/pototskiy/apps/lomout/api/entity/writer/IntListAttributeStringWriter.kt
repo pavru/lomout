@@ -32,6 +32,7 @@ import java.io.ByteArrayOutputStream
  * @property locale String The value locale, default system locale. This is parameter
  * @property quotes Char? The value quote, optional. This is parameter
  * @property delimiter Char The list delimiter, default:','. This is parameter
+ * @property groupingUsed The flag of digits grouping. This is parameter.
  */
 open class IntListAttributeStringWriter : AttributeWriter<List<Int>?>() {
     var locale: String? = null

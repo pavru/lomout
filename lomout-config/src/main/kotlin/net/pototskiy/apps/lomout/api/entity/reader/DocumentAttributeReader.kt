@@ -36,13 +36,15 @@ import kotlin.reflect.full.createInstance
 /**
  * Default reader for [Document] attribute
  *
- * @property quote Char? The name-value pair quote, optional. This is parameter
- * @property delimiter Char The delimiter between pairs, default:','. This is parameter
- * @property valueQuote Char? The value quote, optional. This is parameter
- * @property valueDelimiter Char The delimiter between name and value, default:'='. This is parameter
+ * @property quotes Char? The name-value pair quote, optional. This is parameter.
+ * @property delimiter Char The delimiter between pairs, default:','. This is parameter.
+ * @property valueQuote Char? The value quote, optional. This is parameter.
+ * @property valueDelimiter Char The delimiter between name and value, default:'='. This is parameter.
+ * @property escape The escape char like in CSV format. This is parameter.
+ * @property valueEscape The escape char for value part like in CSV format. This is parameter.
  */
 open class DocumentAttributeReader : AttributeReader<Document?>() {
-    var quote: Char? = null
+    var quotes: Char? = null
     var delimiter: Char = ','
     @Suppress("MemberVisibilityCanBePrivate")
     var escape: Char? = '\\'
@@ -55,7 +57,7 @@ open class DocumentAttributeReader : AttributeReader<Document?>() {
             CellType.STRING -> {
                 if (input.stringValue.isBlank()) return null
                 val attrs = NestedAttributeWorkbook(
-                    quote,
+                    quotes,
                     delimiter,
                     escape,
                     valueQuote,

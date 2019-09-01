@@ -33,6 +33,8 @@ import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
 
@@ -41,7 +43,7 @@ import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
  */
 val defaultWriters = mapOf(
     documentType to DocumentAttributeStringWriter().apply {
-        quote = null
+        quotes = null
         delimiter = ','
         valueQuote = '"'
         valueDelimiter = '='
@@ -68,6 +70,12 @@ val defaultWriters = mapOf(
         locale = DEFAULT_LOCALE_STR
     },
     doubleListType to DoubleListAttributeStringWriter().apply {
+        locale = DEFAULT_LOCALE_STR
+    },
+    priceType to PriceAttributeStringWriter().apply {
+        locale = DEFAULT_LOCALE_STR
+    },
+    priceListType to PriceListAttributeStringWriter().apply {
         locale = DEFAULT_LOCALE_STR
     },
     longType to LongAttributeStringWriter().apply {

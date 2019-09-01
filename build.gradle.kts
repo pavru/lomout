@@ -40,7 +40,7 @@ buildScan {
 }
 
 group = "lomout"
-version = "1.3.6"
+version = "1.3.7"
 
 idea {
     project {

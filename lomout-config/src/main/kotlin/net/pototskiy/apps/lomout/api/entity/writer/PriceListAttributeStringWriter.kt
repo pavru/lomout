@@ -20,34 +20,35 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.createLocale
+import net.pototskiy.apps.lomout.api.document.attribute.Price
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
-import net.pototskiy.apps.lomout.api.entity.values.longToString
+import net.pototskiy.apps.lomout.api.entity.values.priceToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import java.io.ByteArrayOutputStream
 
 /**
- * Default writer for **List&lt;Long&gt;** attribute
+ * Default writer for **List&lt;Price&gt;** attribute
  *
- * @property locale String The value locale, default system locale. This is parameter
+ * @property locale String The value locale. This is parameter
  * @property quotes Char? The value quote, optional. This is parameter
- * @property delimiter Char The list delimiter, default:','. This is parameter.
- * @property groupingUsed The flag of digits grouping.
+ * @property delimiter Char The list delimiter, default:','. This is parameter
+ * @property groupingUsed The flag of digits grouping. This is parameter.
  */
-open class LongListAttributeStringWriter : AttributeWriter<List<Long>?>() {
+open class PriceListAttributeStringWriter : AttributeWriter<List<Price>?>() {
     var locale: String? = null
     var quotes: Char? = null
     var delimiter: Char = ','
     var groupingUsed: Boolean = false
 
-    override fun write(value: List<Long>?, cell: Cell) {
+    override fun write(value: List<Price>?, cell: Cell) {
         value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->
                     CSVValueFormat(delimiter, quotes, '\\').format
                         .print(writer)
                         .printRecord(list.map {
-                            it.longToString(locale?.createLocale() ?: cell.locale, groupingUsed)
+                            it.priceToString(locale?.createLocale() ?: cell.locale, groupingUsed)
                         })
                 }
                 stream.toString()

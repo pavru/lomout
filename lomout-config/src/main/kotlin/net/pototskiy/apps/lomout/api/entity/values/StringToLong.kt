@@ -42,7 +42,7 @@ fun String.stringToLong(locale: Locale, groupingUsed: Boolean): Long {
     val value = format.parse(this.trim(), position) as? Long
         ?: throw ParseException(message("message.error.data.string.to_long_error"), position.index)
     if (position.index != this.trim().length) {
-        throw ParseException(message("message.error.data.string.to_long_extra"), position.index)
+        throw ParseException(message("message.error.data.string.extra_char_error"), position.index)
     }
     return value
 }

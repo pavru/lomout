@@ -19,15 +19,22 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.document.attribute.Price
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
+import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
 import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,16 +43,9 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 
 @Suppress("MagicNumber")
 @Execution(ExecutionMode.CONCURRENT)
-internal class LM47DefaultDocumentAttributeReaderTest {
-    internal class NestedType : Document() {
-        var attr1: String = ""
-        var attr2: String = ""
-
-        companion object : DocumentMetadata(NestedType::class)
-    }
-
+internal class LM56DefaultPriceListReaderTest {
     internal class TestType : Document() {
-        var attr: NestedType = NestedType()
+        var attr: List<Price> = emptyList()
 
         companion object : DocumentMetadata(TestType::class)
     }
@@ -72,53 +72,32 @@ internal class LM47DefaultDocumentAttributeReaderTest {
     }
 
     @Test
-    internal fun withEscapeTest() {
-        val reader = DocumentAttributeReader().apply {
-            delimiter = ','
-            quotes = null
-            valueDelimiter = '='
-            valueQuote = null
-            valueEscape = '\\'
-        }
-        xlsTestDataCell.setCellValue("attr1=value1\\,value1.1,attr2=value2")
-        val list = reader.read(attr, inputCell)
-        assertThat(list).isNotNull
-        list as NestedType
-        assertThat(list.attr1).isEqualTo("value1,value1.1")
-        assertThat(list.attr2).isEqualTo("value2")
+    internal fun readDoubleCellTest() {
+        val reader = PriceListAttributeReader().apply { locale = "en_US" }
+        xlsTestDataCell.setCellValue(1.1)
+        assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
+        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test
-    internal fun withEscapeWrongTest() {
-        val reader = DocumentAttributeReader().apply {
-            delimiter = ','
-            quotes = null
-            valueDelimiter = '='
-            valueQuote = null
-            valueEscape = '\\'
-        }
-        xlsTestDataCell.setCellValue("attr1=value1,value1.1,attr2=value2")
-        val list = reader.read(attr, inputCell)
-        assertThat(list).isNotNull
-        list as NestedType
-        assertThat(list.attr1).isEqualTo("value1")
-        assertThat(list.attr2).isEqualTo("value2")
+    internal fun readStringEnUsCellTest() {
+        val readerEnUs = PriceListAttributeReader().apply { locale = "en_US" }
+        xlsTestDataCell.setCellValue("1.1, 2.2,3.3")
+        assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
+        assertThat(readerEnUs.read(attr, inputCell))
+            .hasSize(3)
+            .containsExactlyElementsOf(listOf(1.1, 2.2, 3.3).map { Price(it) })
     }
 
     @Test
-    internal fun withQuoteNoEscapeTest() {
-        val reader = DocumentAttributeReader().apply {
-            delimiter = ','
-            quotes = '\''
-            valueDelimiter = '='
-            valueQuote = '\''
-            valueEscape = null
-        }
-        xlsTestDataCell.setCellValue("'attr1=value1,value1.1',attr2=value2")
-        val list = reader.read(attr, inputCell)
-        assertThat(list).isNotNull
-        list as NestedType
-        assertThat(list.attr1).isEqualTo("value1,value1.1")
-        assertThat(list.attr2).isEqualTo("value2")
+    internal fun defaultPriceListReader() {
+        @Suppress("UNCHECKED_CAST")
+        val reader = defaultReaders[SupportAttributeType.priceListType]
+        assertThat(reader).isNotNull
+        assertThat(reader).isInstanceOf(AttributeReader::class.java)
+        reader as PriceListAttributeReader
+        assertThat(reader.locale).isEqualTo(DEFAULT_LOCALE_STR)
+        assertThat(reader.delimiter).isEqualTo(',')
+        assertThat(reader.quotes).isNull()
     }
 }

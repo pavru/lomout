@@ -23,9 +23,9 @@ import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.booleanListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.booleanType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateTimeType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.datetimeListType
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.dateTimeType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.documentType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.doubleListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.doubleType
@@ -33,6 +33,8 @@ import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceListType
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
 
@@ -41,7 +43,7 @@ import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
  */
 val defaultReaders = mapOf(
     documentType to DocumentAttributeReader().apply {
-        quote = null
+        quotes = null
         delimiter = ','
         valueQuote = '"'
         valueDelimiter = '='
@@ -68,6 +70,12 @@ val defaultReaders = mapOf(
         locale = DEFAULT_LOCALE_STR
     },
     doubleListType to DoubleListAttributeReader().apply {
+        locale = DEFAULT_LOCALE_STR
+    },
+    priceType to PriceAttributeReader().apply {
+        locale = DEFAULT_LOCALE_STR
+    },
+    priceListType to PriceListAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
     longType to LongAttributeReader().apply {
