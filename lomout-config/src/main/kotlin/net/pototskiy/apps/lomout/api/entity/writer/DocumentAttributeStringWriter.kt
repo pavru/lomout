@@ -30,14 +30,16 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 /**
  * Default writer for [Document] attribute
  *
- * @property quote Char? The name-value pair quote, optional. This is parameter
+ * @property quotes Char? The name-value pair quote, optional. This is parameter
  * @property delimiter Char The pair list delimiter, default:','. This is parameter
  * @property valueQuote Char? The value quote, optional. This is parameter
  * @property valueDelimiter Char The delimiter between name and value, default:','. This is parameter
  * @property serializeNull True — all attribute including null will be written to cell
+ * @property escape The escape char like in CSV format. This is parameter.
+ * @property valueEscape The escape char for value like in CSV format. This is parameter.
  */
 open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
-    var quote: Char? = null
+    var quotes: Char? = null
     var delimiter: Char = ','
     var escape: Char? = '\\'
     var valueQuote: Char? = null
@@ -48,7 +50,7 @@ open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
 
     override fun write(value: Document?, cell: Cell) {
         val workbook = NestedAttributeWorkbook(
-            quote,
+            quotes,
             delimiter,
             escape,
             valueQuote,

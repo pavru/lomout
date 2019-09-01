@@ -28,6 +28,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  * Default reader for [String] attribute
  *
  * @property locale String The value locale, default: system locale. This is parameter
+ * @property numberGroupingUsed The flag of digits grouping. This is parameter.
  */
 open class StringAttributeReader : AttributeReader<String?>() {
     var locale: String? = null

@@ -20,25 +20,22 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.values.longToString
+import net.pototskiy.apps.lomout.api.document.attribute.Price
+import net.pototskiy.apps.lomout.api.entity.values.priceToString
 import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
- * Default writer for [Int] attribute
+ * Default writer for [Price] attribute
  *
- * @property locale String The value locale, default: system locale. This is parameter.
+ * @property locale String The value locale, default: system locale. This is parameter
  * @property groupingUsed The flag of digits grouping. This is parameter.
  */
-open class IntAttributeStringWriter : AttributeWriter<Int?>() {
+open class PriceAttributeStringWriter : AttributeWriter<Price?>() {
     var locale: String? = null
     var groupingUsed: Boolean = false
 
-    override fun write(value: Int?, cell: Cell) {
-        value?.let {
-            cell.setCellValue(
-                it.toLong().longToString(locale?.createLocale() ?: cell.locale, groupingUsed)
-            )
-        }
+    override fun write(value: Price?, cell: Cell) {
+        value?.let { cell.setCellValue(it.priceToString(locale?.createLocale() ?: cell.locale, groupingUsed)) }
     }
 }

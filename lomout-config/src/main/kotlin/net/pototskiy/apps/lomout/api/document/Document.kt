@@ -179,6 +179,9 @@ abstract class Document {
         }
     }
 
+    /**
+     * Get document attributes as [DocumentData]
+     */
     @get:BsonIgnore
     val documentData: DocumentData
         get() {

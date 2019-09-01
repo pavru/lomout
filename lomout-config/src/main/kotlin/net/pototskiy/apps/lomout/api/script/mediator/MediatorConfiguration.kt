@@ -51,15 +51,13 @@ data class MediatorConfiguration(
          *
          * ```
          * ...
-         *  crossProductionLine {
+         *  produce<Type> {
          *      input {...}
-         *      output {...}
          *      pipeline {...}
          *  }
          * ...
          * ```
          * * [input][ProductionLine.Builder.input] — define input entities, **mandatory**
-         * * [output][ProductionLine.Builder.output] — define new output entity or reference to existing, **mandatory**
          * * [pipeline][ProductionLine.Builder.pipeline] — define root pipeline of production line, **mandatory**
          *
          * @param block The production line definition

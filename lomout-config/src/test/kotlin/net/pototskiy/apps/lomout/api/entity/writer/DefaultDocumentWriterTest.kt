@@ -56,7 +56,7 @@ internal class DefaultDocumentWriterTest {
 
         class AttrWriter : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<DocumentAttributeStringWriter> {
-                quote = null
+                quotes = null
                 delimiter = ','
                 valueQuote = '"'
                 valueDelimiter = '='

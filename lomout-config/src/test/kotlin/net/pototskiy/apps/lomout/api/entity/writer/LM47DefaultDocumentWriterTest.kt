@@ -55,7 +55,7 @@ internal class LM47DefaultDocumentWriterTest {
 
         class AttrWriter : WriterBuilder {
             override fun build(): AttributeWriter<out Any?> = createWriter<DocumentAttributeStringWriter> {
-                quote = null
+                quotes = null
                 delimiter = ','
                 valueQuote = '"'
                 valueDelimiter = '='
@@ -91,7 +91,7 @@ internal class LM47DefaultDocumentWriterTest {
         }
         val writer = DocumentAttributeStringWriter().apply {
             delimiter = ','
-            quote = null
+            quotes = null
             escape = '\\'
             valueQuote = null
             valueDelimiter = '='
@@ -109,7 +109,7 @@ internal class LM47DefaultDocumentWriterTest {
         }
         val writer = DocumentAttributeStringWriter().apply {
             delimiter = ','
-            quote = '"'
+            quotes = '"'
             escape = null
             valueQuote = '\''
             valueDelimiter = '='

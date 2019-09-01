@@ -17,7 +17,13 @@
  * under the License.
  */
 
+import net.pototskiy.apps.lomout.api.document.attribute.Price
 import net.pototskiy.apps.lomout.api.entity.reader.BooleanAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.PriceAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.PriceListAttributeReader
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.plugable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.plugable.createReader
 
 data class NestedType(
     var nested1: Long = 0L,
@@ -56,6 +62,14 @@ open class TestEntityAttributes : Document() {
 
     @Reader(DoubleValReaderBuilder::class)
     var double_val: Double? = 0.0
+
+    class PriceValReaderBuilder: ReaderBuilder {
+        override fun build(): AttributeReader<Price?> = createReader<PriceAttributeReader> {
+            locale = "ru_RU"
+        }
+    }
+    @Reader(PriceValReaderBuilder::class)
+    var price_val: Price? = Price(0.0)
 
     class DateValReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateAttributeReader> {
@@ -116,6 +130,13 @@ open class TestEntityAttributes : Document() {
     @Reader(DoubleListReaderBuilder::class)
     var double_list: List<Double> = emptyList()
 
+    class PriceListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out List<Price>?> = createReader<PriceListAttributeReader> {
+            delimiter = '|'; locale = "ru_RU"
+        }
+    }
+    @Reader(PriceListReaderBuilder::class)
+    var price_list: List<Price>? = emptyList()
     class DateListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader> {
             delimiter = ','; quotes = null; pattern = "d.M.uu"
@@ -202,6 +223,8 @@ script {
                     field("date_list") { column(11) }
                     field("datetime_list") { column(12) }
                     field("compound") { column(13) }
+                    field("price_val") {column(14)}
+                    field("price_list") {column(15)}
                 }
                 extra("group") {
                     field("group_code") { column(0); pattern("^G[0-9]{3,3}$") }

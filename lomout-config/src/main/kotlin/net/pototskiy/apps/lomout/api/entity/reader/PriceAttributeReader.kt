@@ -17,28 +17,32 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.entity.writer
+package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.entity.values.longToString
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.attribute.Price
+import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
- * Default writer for [Int] attribute
+ * Default reader for [Price] attribute
  *
- * @property locale String The value locale, default: system locale. This is parameter.
- * @property groupingUsed The flag of digits grouping. This is parameter.
+ * @property locale The value locale: default: system locale. This is parameter
+ * @property groupingUsed Indicate that number uses digit grouping. This is parameter
  */
-open class IntAttributeStringWriter : AttributeWriter<Int?>() {
+@Suppress("MemberVisibilityCanBePrivate")
+open class PriceAttributeReader : AttributeReader<Price?>() {
     var locale: String? = null
     var groupingUsed: Boolean = false
 
-    override fun write(value: Int?, cell: Cell) {
-        value?.let {
-            cell.setCellValue(
-                it.toLong().longToString(locale?.createLocale() ?: cell.locale, groupingUsed)
-            )
+    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Price? {
+        try {
+            return input.readPrice(locale?.createLocale(), groupingUsed)?.let { it }
+        } catch (e: AppDataException) {
+            throw AppDataException(e.suspectedLocation + attribute, e.message, e)
         }
     }
 }

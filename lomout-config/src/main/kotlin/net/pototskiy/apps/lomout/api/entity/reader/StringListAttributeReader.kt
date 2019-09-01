@@ -30,6 +30,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.CellType
  *
  * @property quotes Char? The value quote, optional. This is parameter
  * @property delimiter Char The list delimiter: default:','. This is parameter
+ * @property escape The escape char like in CSV format. This is parameter.
  */
 open class StringListAttributeReader : AttributeReader<List<String>?>() {
     var quotes: Char? = null
@@ -48,9 +49,6 @@ open class StringListAttributeReader : AttributeReader<List<String>?>() {
                         .map { it }
                 }
             }
-//            else -> throw AppDataException(
-//                suspectedLocation(input) + attribute, message("message.error.data.stringlist.reading_not_supported")
-//            )
         }
     }
 }

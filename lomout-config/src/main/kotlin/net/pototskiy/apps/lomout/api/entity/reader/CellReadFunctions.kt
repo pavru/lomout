@@ -23,6 +23,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.attribute.Price
 import net.pototskiy.apps.lomout.api.entity.values.doubleToLong
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
 import net.pototskiy.apps.lomout.api.entity.values.longToString
@@ -31,6 +32,7 @@ import net.pototskiy.apps.lomout.api.entity.values.stringToDate
 import net.pototskiy.apps.lomout.api.entity.values.stringToDateTime
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
+import net.pototskiy.apps.lomout.api.entity.values.stringToPrice
 import net.pototskiy.apps.lomout.api.entity.values.toLocalDate
 import net.pototskiy.apps.lomout.api.entity.values.toLocalDateTime
 import net.pototskiy.apps.lomout.api.plus
@@ -176,6 +178,26 @@ fun Cell.readDouble(locale: Locale?, groupingUsed: Boolean): Double? = when (thi
     CellType.BOOL -> if (this.booleanValue) 1.0 else 0.0
     CellType.STRING -> try {
         this.stringValue.stringToDouble(locale ?: this.locale, groupingUsed)
+    } catch (e: ParseException) {
+        throw AppDataException(suspectedLocation(this), e.message, e)
+    }
+    CellType.BLANK -> null
+}
+
+/**
+ * Read Price value from the cell. Convert non-Price values to Price.
+ *
+ * @receiver The cell to read
+ * @param locale The locale for converting
+ * @return The value
+ */
+@Suppress("ComplexMethod")
+fun Cell.readPrice(locale: Locale?, groupingUsed: Boolean): Price? = when (this.cellType) {
+    CellType.LONG -> Price(this.longValue.toDouble())
+    CellType.DOUBLE -> Price(this.doubleValue)
+    CellType.BOOL -> Price(if (this.booleanValue) 1.0 else 0.0)
+    CellType.STRING -> try {
+        this.stringValue.stringToPrice(locale ?: this.locale, groupingUsed)
     } catch (e: ParseException) {
         throw AppDataException(suspectedLocation(this), e.message, e)
     }

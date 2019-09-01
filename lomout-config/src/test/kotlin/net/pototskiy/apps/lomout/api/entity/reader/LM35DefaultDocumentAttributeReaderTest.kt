@@ -77,7 +77,7 @@ internal class LM35DefaultDocumentAttributeReaderTest {
     internal fun readeAttributeListFromBlankTest() {
         val reader = DocumentAttributeReader().apply {
             delimiter = ','
-            quote = null
+            quotes = null
             valueDelimiter = '='
             valueQuote = '\''
         }
@@ -89,7 +89,7 @@ internal class LM35DefaultDocumentAttributeReaderTest {
     internal fun readAttributeListDoubleCellTest() {
         val reader = DocumentAttributeReader().apply {
             delimiter = ','
-            quote = null
+            quotes = null
             valueDelimiter = '='
             valueQuote = '\''
         }

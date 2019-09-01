@@ -152,7 +152,7 @@ open class OnecProduct : Document() {
     class CompoundReaderBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
             delimiter = ','
-            quote = null
+            quotes = null
             valueDelimiter = '='
             valueQuote = '"'
         }
