@@ -22,6 +22,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.entity.values.DEFAULT_DOUBLE_SCALE
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -31,15 +32,17 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
  *
  * @property locale The value locale: default: system locale. This is parameter
  * @property groupingUsed Indicate that number uses digit grouping. This is parameter
+ * @property scale The double decimal scale. This is parameter.
  */
 @Suppress("MemberVisibilityCanBePrivate")
 open class DoubleAttributeReader : AttributeReader<Double?>() {
     var locale: String? = null
     var groupingUsed: Boolean = false
+    var scale: Int = DEFAULT_DOUBLE_SCALE
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Double? {
         try {
-            return input.readDouble(locale?.createLocale(), groupingUsed)?.let { it }
+            return input.readDouble(locale?.createLocale(), groupingUsed, scale)?.let { it }
         } catch (e: AppDataException) {
             throw AppDataException(e.suspectedLocation + attribute, e.message, e)
         }

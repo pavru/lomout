@@ -33,8 +33,6 @@ import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.intType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.longType
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceListType
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType.priceType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringListType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.stringType
 
@@ -70,12 +68,6 @@ val defaultReaders = mapOf(
         locale = DEFAULT_LOCALE_STR
     },
     doubleListType to DoubleListAttributeReader().apply {
-        locale = DEFAULT_LOCALE_STR
-    },
-    priceType to PriceAttributeReader().apply {
-        locale = DEFAULT_LOCALE_STR
-    },
-    priceListType to PriceListAttributeReader().apply {
         locale = DEFAULT_LOCALE_STR
     },
     longType to LongAttributeReader().apply {

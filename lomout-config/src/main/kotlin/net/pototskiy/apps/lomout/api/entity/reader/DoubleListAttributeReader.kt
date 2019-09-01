@@ -24,6 +24,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
+import net.pototskiy.apps.lomout.api.entity.values.DEFAULT_DOUBLE_SCALE
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
 import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
@@ -46,6 +47,7 @@ open class DoubleListAttributeReader : AttributeReader<List<Double>?>() {
     var quotes: Char? = null
     var delimiter: Char = ','
     var groupingUsed: Boolean = false
+    var scale: Int = DEFAULT_DOUBLE_SCALE
 
     override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<Double>? =
         when (input.cellType) {
@@ -56,7 +58,7 @@ open class DoubleListAttributeReader : AttributeReader<List<Double>?>() {
                             .parse(reader)
                             .records
                             .map { it.toList() }.flatten()
-                            .map { it.stringToDouble(locale?.createLocale() ?: input.locale, groupingUsed) }
+                            .map { it.stringToDouble(locale?.createLocale() ?: input.locale, groupingUsed, scale) }
                     } catch (e: ParseException) {
                         throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
                     }

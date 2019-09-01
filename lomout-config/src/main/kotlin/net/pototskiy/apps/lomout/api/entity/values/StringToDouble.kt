@@ -20,10 +20,14 @@
 package net.pototskiy.apps.lomout.api.entity.values
 
 import net.pototskiy.apps.lomout.api.MessageBundle.message
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.NumberFormat
 import java.text.ParseException
 import java.text.ParsePosition
 import java.util.*
+
+const val DEFAULT_DOUBLE_SCALE = 10
 
 /**
  * Convert String to Double according to the locale
@@ -33,7 +37,7 @@ import java.util.*
  * @return Double?
  * @throws java.text.ParseException
  */
-fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
+fun String.stringToDouble(locale: Locale, groupingUsed: Boolean, scale: Int = DEFAULT_DOUBLE_SCALE): Double {
     val format = NumberFormat.getInstance(locale).apply {
         isGroupingUsed = groupingUsed
     }
@@ -43,7 +47,7 @@ fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
     if (position.index != this.trim().length) {
         throw ParseException(message("message.error.data.string.extra_char_error"), position.index)
     }
-    return value.toDouble()
+    return BigDecimal(value.toDouble()).setScale(scale, RoundingMode.HALF_UP).toDouble()
 }
 
 /**
@@ -53,9 +57,9 @@ fun String.stringToDouble(locale: Locale, groupingUsed: Boolean): Double {
  * @param locale Locale
  * @return String
  */
-fun Double.doubleToString(locale: Locale, groupingUsed: Boolean): String {
+fun Double.doubleToString(locale: Locale, groupingUsed: Boolean, scale: Int = DEFAULT_DOUBLE_SCALE): String {
     val format = NumberFormat.getNumberInstance(locale).apply {
         isGroupingUsed = groupingUsed
     }
-    return format.format(this)
+    return format.format(BigDecimal(this).setScale(scale, RoundingMode.HALF_UP).toDouble())
 }
