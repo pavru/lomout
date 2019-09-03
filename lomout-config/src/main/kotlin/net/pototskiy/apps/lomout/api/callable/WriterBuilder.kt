@@ -17,17 +17,17 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
 /**
- * Attribute reader builder interface
+ * Attribute writer builder interface
  *
  */
-interface ReaderBuilder {
+interface WriterBuilder {
     /**
-     * Builder reader
+     * Build writer
      *
-     * @return AttributeReader<out Any?>
+     * @return AttributeWriter<out Any?>
      */
-    fun build(): AttributeReader<out Any?>
+    fun build(): AttributeWriter<out Any?>
 }

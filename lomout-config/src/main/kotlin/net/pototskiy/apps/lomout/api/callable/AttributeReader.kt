@@ -17,32 +17,34 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import kotlin.reflect.full.createInstance
 
 /**
- * Base class for any attribute writer plugins
+ * Base class for any attribute reader plugins
  *
- * @param T The attribute value to write to cell
+ * @param T The value type to return
  */
-abstract class AttributeWriter<T : Any?> : Plugin() {
+abstract class AttributeReader<T : Any?> : Callable() {
     /**
-     * Writer function
+     * Reader function
      *
-     * @param value T? The value to write
-     * @param cell Cell The cell to write value
+     * @param attribute Attribute<out T> The attribute to read
+     * @param input Cell The cell to read attribute value
+     * @return T? The read value
      */
-    abstract fun write(value: T, cell: Cell)
+    abstract fun read(attribute: DocumentMetadata.Attribute, input: Cell): T
 }
 
 /**
- * Create attribute writer and apply parameters
+ * Create attribute reader and apply parameters
  *
- * @param parameter Parameters set block
- * @return W
+ * @param parameters Parameters set block
+ * @return R
  */
-inline fun <reified W : AttributeWriter<*>> createWriter(parameter: W.() -> Unit = {}): W {
-    return W::class.createInstance().apply(parameter)
+inline fun <reified R : AttributeReader<*>> createReader(parameters: R.() -> Unit = {}): R {
+    return R::class.createInstance().apply(parameters)
 }

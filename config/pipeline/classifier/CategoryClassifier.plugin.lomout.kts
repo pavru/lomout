@@ -19,8 +19,12 @@
 
 import MageCategory_lomout.MageCategory
 import OnecGroup_lomout.OnecGroup
+import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.callable.PipelineClassifier
+import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
+import net.pototskiy.apps.lomout.api.suspectedLocation
 
-class CategoryClassifier : PipelineClassifierPlugin() {
+class CategoryClassifier : PipelineClassifier() {
     override fun classify(element: ClassifierElement): ClassifierElement {
         try {
             val entities = element.entities

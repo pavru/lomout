@@ -20,13 +20,24 @@
 @file:Import("../builder/CategoryPathFromRelation.plugin.lomout.kts")
 
 import CategoryPathFromRelation_plugin_lomout.CategoryPathFromRelation
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.callable.createReader
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.entity.reader.DateTimeAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.LongListAttributeReader
 import org.bson.codecs.pojo.annotations.BsonIgnore
+import org.jetbrains.kotlin.script.util.Import
+import java.time.LocalDateTime
 
 open class MageCategory : Document() {
     var entity_type_id: Long? = null
     var name: String = ""
     var attribute_set_id: Long = 0L
-    class DateTimeReaderBuilder: ReaderBuilder{
+    class DateTimeReaderBuilder: ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateTimeAttributeReader> {
             pattern = "u-M-d H:m:s"
         }

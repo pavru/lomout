@@ -37,7 +37,7 @@ import net.pototskiy.apps.lomout.api.document.emptyDocumentData
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.errorMessageFromException
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap

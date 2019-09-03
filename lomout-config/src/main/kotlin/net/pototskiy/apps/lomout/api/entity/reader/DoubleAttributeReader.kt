@@ -23,7 +23,7 @@ import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.DEFAULT_DOUBLE_SCALE
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 

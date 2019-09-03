@@ -20,6 +20,11 @@
 @file:Import("../reader/OnecGroupToLong.plugin.lomout.kts")
 
 import OnecGroupToLong_plugin_lomout.OnecGroupToLong
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Key
+import org.jetbrains.kotlin.script.util.Import
 
 class OnecGroupExtended : Document() {
     @Key

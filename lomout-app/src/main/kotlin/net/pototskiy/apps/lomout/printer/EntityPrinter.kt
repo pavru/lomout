@@ -24,7 +24,7 @@ import net.pototskiy.apps.lomout.api.script.loader.SourceData
 import net.pototskiy.apps.lomout.api.script.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import java.io.Closeable

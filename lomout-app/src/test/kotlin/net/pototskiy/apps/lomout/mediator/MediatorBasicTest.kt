@@ -30,7 +30,7 @@ import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.loader.DataLoader
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.core.config.Configurator
@@ -54,12 +54,12 @@ internal class MediatorBasicTest {
     @Test
     internal fun complexBasicTest() {
         val config = createConfiguration()
-        PluginContext.lomoutScript = config
-        PluginContext.scriptFile = File("no-file.lomout.kts")
+        CallableContext.lomoutScript = config
+        CallableContext.scriptFile = File("no-file.lomout.kts")
 
         System.setProperty("mediation.line.cache.size", "4")
         val repository = EntityRepository(config.database, Level.ERROR)
-        PluginContext.repository = repository
+        CallableContext.repository = repository
         repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
         repository.getIDs(Entity2::class).forEach { repository.delete(Entity2::class, it) }
         repository.getIDs(ImportData::class).forEach { repository.delete(ImportData::class, it) }
@@ -111,8 +111,8 @@ internal class MediatorBasicTest {
     @Test
     internal fun multipleLinesTest() {
         val config = createComplexMediatorConfig()
-        PluginContext.lomoutScript = config
-        PluginContext.scriptFile = File("no-file.lomout.kts")
+        CallableContext.lomoutScript = config
+        CallableContext.scriptFile = File("no-file.lomout.kts")
         val repository = EntityRepository(config.database, Level.ERROR)
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)

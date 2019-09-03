@@ -19,18 +19,18 @@
 
 package net.pototskiy.apps.lomout.api.script.mediator
 
+import net.pototskiy.apps.lomout.api.callable.CallableContext
+import net.pototskiy.apps.lomout.api.callable.PipelineAssemblerFunction
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
-import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerFunction
-import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+import net.pototskiy.apps.lomout.api.callable.PipelineAssembler as PipelineAssemblerCallable
 
 /**
  * Abstract pipeline assembler
  */
-sealed class PipelineAssembler<T : Document> {
+sealed class Assembler<T : Document> {
     /**
      * Assembler function
      *
@@ -39,12 +39,12 @@ sealed class PipelineAssembler<T : Document> {
      */
     @Suppress("UNCHECKED_CAST")
     operator fun invoke(entities: EntityCollection): Document? = when (this) {
-        is PipelineAssemblerWithPlugin<*> -> (pluginClass as KClass<PipelineAssemblerPlugin<T>>)
+        is AssemblerWithCallable<*> -> (pluginClass as KClass<PipelineAssemblerCallable<T>>)
             .createInstance().let {
-                it.apply(options as (PipelineAssemblerPlugin<T>.() -> Unit))
+                it.apply(options as (PipelineAssemblerCallable<T>.() -> Unit))
                 it.assemble(entities)
             }
-        is PipelineAssemblerWithFunction<*> -> PluginContext.function(entities)
+        is AssemblerWithFunction<*> -> CallableContext.function(entities)
     }
 }
 
@@ -55,10 +55,10 @@ sealed class PipelineAssembler<T : Document> {
  * @property options The plugin options
  * @constructor
  */
-class PipelineAssemblerWithPlugin<T : Document>(
-    val pluginClass: KClass<PipelineAssemblerPlugin<T>>,
-    val options: PipelineAssemblerPlugin<T>.() -> Unit = {}
-) : PipelineAssembler<T>()
+class AssemblerWithCallable<T : Document>(
+    val pluginClass: KClass<PipelineAssemblerCallable<T>>,
+    val options: PipelineAssemblerCallable<T>.() -> Unit = {}
+) : Assembler<T>()
 
 /**
  * Pipeline assembler with inline function
@@ -66,6 +66,6 @@ class PipelineAssemblerWithPlugin<T : Document>(
  * @property function [PipelineAssemblerFunction] The assembler function
  * @constructor
  */
-class PipelineAssemblerWithFunction<T : Document>(
+class AssemblerWithFunction<T : Document>(
     val function: PipelineAssemblerFunction<T>
-) : PipelineAssembler<T>()
+) : Assembler<T>()

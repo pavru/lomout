@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.createCsvCell
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook

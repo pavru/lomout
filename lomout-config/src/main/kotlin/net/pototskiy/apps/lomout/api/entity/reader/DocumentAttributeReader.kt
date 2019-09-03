@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.reader
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell

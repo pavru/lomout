@@ -17,34 +17,9 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
-
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import org.apache.logging.log4j.Logger
-import java.io.File
+package net.pototskiy.apps.lomout.api.callable
 
 /**
- * Plugin context
- *
- * @property lomoutScript Config
- * @property logger Logger
+ * Plugins base class
  */
-interface PluginContextInterface {
-    /**
-     * Context configuration
-     */
-    var lomoutScript: LomoutScript
-    /**
-     * Context logger
-     */
-    var logger: Logger
-    /**
-     * Main script file
-     */
-    var scriptFile: File
-    /**
-     * Entity repository
-     */
-    var repository: EntityRepositoryInterface
-}
+abstract class Callable : CallableContextInterface by CallableContext

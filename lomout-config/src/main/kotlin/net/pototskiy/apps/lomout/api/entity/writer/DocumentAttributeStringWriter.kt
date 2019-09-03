@@ -22,7 +22,7 @@ package net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeSheet
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell

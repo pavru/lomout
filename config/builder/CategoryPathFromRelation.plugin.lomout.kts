@@ -19,8 +19,7 @@
 
 import MageCategory_lomout.MageCategory
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.plugable.AttributeBuilder
-import net.pototskiy.apps.lomout.api.plugable.PluginContext.repository
+import net.pototskiy.apps.lomout.api.callable.AttributeBuilder
 import org.apache.commons.collections4.map.LRUMap
 import org.bson.types.ObjectId
 import java.lang.ref.WeakReference

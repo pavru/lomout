@@ -23,7 +23,7 @@ import kotlinx.coroutines.ObsoleteCoroutinesApi
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.api.script.LomoutScript
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -78,8 +78,8 @@ internal class DataLoadingInProductionWayTest {
         println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         lomoutScript = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
         repository = EntityRepository(lomoutScript.database, Level.ERROR)
-        PluginContext.lomoutScript = lomoutScript
-        PluginContext.repository = repository
+        CallableContext.lomoutScript = lomoutScript
+        CallableContext.repository = repository
     }
 
     @AfterAll

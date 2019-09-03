@@ -24,7 +24,12 @@
 import GroupPathFromRelation_plugin_lomout.GroupPathFromRelation
 import GroupToCategoryPath_plugin_lomout.GroupToCategoryPath
 import OnecGroupToLong_plugin_lomout.OnecGroupToLong
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Key
 import org.bson.codecs.pojo.annotations.BsonIgnore
+import org.jetbrains.kotlin.script.util.Import
 
 class OnecGroup : Document() {
     @Key
@@ -40,6 +45,6 @@ class OnecGroup : Document() {
 
     companion object : DocumentMetadata(OnecGroup::class) {
         val transformedPathBuilder = GroupToCategoryPath()
-        val pathBuilder = GroupPathFromRelation("/","/Root Catalog/Default Category/Каталог/")
+        val pathBuilder = GroupPathFromRelation("/", "/Root Catalog/Default Category/Каталог/")
     }
 }

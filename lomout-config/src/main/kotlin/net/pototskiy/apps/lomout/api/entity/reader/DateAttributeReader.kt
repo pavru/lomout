@@ -21,7 +21,7 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import java.time.LocalDate
 

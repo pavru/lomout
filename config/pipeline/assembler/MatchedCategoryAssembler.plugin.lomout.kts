@@ -21,13 +21,17 @@
 import ImportCategory_lomout.ImportCategory
 import MageCategory_lomout.MageCategory
 import OnecGroup_lomout.OnecGroup
+import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.callable.PipelineAssembler
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.emptyDocumentData
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.jetbrains.kotlin.script.util.Import
 import kotlin.collections.set
 import kotlin.reflect.KClass
 
-class MatchedCategoryAssembler : PipelineAssemblerPlugin<ImportCategory>() {
+class MatchedCategoryAssembler : PipelineAssembler<ImportCategory>() {
     override fun assemble(entities: EntityCollection): ImportCategory {
         val data = ImportCategory()
         try {

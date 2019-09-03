@@ -30,7 +30,7 @@ import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.api.script.ScriptBuilderFromDSL
 import net.pototskiy.apps.lomout.jcommander.CommandHelp
 import net.pototskiy.apps.lomout.jcommander.CommandMain
@@ -75,13 +75,13 @@ fun main(args: Array<String>) {
         Level.toLevel(mainCommand.sqlLogLevel)
     )
     setupPluginContext(File(mainCommand.configFile.first()))
-    PluginContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
-    PluginContext.repository = repository
+    CallableContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
+    CallableContext.repository = repository
 
     scriptBuilder.lomoutScript.loader?.let { DataLoader.load(repository, scriptBuilder.lomoutScript) }
-    PluginContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
+    CallableContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     scriptBuilder.lomoutScript.mediator?.let { DataMediator.mediate(repository, scriptBuilder.lomoutScript) }
-    PluginContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
+    CallableContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
     scriptBuilder.lomoutScript.printer?.let { DataPrinter.print(repository, scriptBuilder.lomoutScript) }
 //    MediatorFactory.create(MediatorType.CATEGORY).merge()
     val duration = Duration.between(startTime, LocalDateTime.now()).seconds
@@ -134,6 +134,6 @@ fun setLogLevel(command: CommandMain) {
  * Set plugin context
  */
 fun setupPluginContext(scriptFile: File) {
-    PluginContext.lomoutScript = scriptBuilder.lomoutScript
-    PluginContext.scriptFile = scriptFile
+    CallableContext.lomoutScript = scriptBuilder.lomoutScript
+    CallableContext.scriptFile = scriptFile
 }

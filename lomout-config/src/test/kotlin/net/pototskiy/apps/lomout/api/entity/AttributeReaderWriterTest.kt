@@ -21,14 +21,14 @@ package net.pototskiy.apps.lomout.api.entity
 
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Reader
-import net.pototskiy.apps.lomout.api.plugable.ReaderBuilder
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createReader
-import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.callable.createReader
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvCell
 import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvInputWorkbook

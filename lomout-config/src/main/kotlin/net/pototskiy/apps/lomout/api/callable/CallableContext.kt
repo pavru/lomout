@@ -17,13 +17,13 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
 import net.pototskiy.apps.lomout.api.AppException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.script.LomoutScript
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
@@ -31,7 +31,7 @@ import java.io.File
 /**
  * Plugin context
  */
-object PluginContext : PluginContextInterface {
+object CallableContext : CallableContextInterface {
     /**
      * Context configuration
      */
@@ -54,4 +54,14 @@ object PluginContext : PluginContextInterface {
      * Entity repository
      */
     override lateinit var repository: EntityRepositoryInterface
+
+    /**
+     * Script parameters store.
+     */
+    val scriptParameters = mutableMapOf<String, String>()
+
+    /**
+     * Get script parameters.
+     */
+    override fun getParameter(key: String): String? = scriptParameters[key]
 }

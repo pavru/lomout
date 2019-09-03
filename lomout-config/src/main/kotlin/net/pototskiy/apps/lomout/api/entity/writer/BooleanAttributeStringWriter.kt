@@ -19,7 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**

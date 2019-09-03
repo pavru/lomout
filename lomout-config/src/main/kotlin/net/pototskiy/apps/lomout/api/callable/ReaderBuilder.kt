@@ -17,21 +17,17 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
-
-import net.pototskiy.apps.lomout.api.document.Document
+package net.pototskiy.apps.lomout.api.callable
 
 /**
- * Base class for any attribute builder plugins
+ * Attribute reader builder interface
  *
- * @param R The type builder return
  */
-abstract class AttributeBuilder<R : Any?> : Plugin() {
+interface ReaderBuilder {
     /**
-     * Builder function
+     * Builder reader
      *
-     * @param entity DbEntity The entity to build value
-     * @return R? The value type to return
+     * @return AttributeReader<out Any?>
      */
-    abstract fun build(entity: Document): R
+    fun build(): AttributeReader<out Any?>
 }

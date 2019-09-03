@@ -20,15 +20,14 @@
 package net.pototskiy.apps.lomout.api.script.mediator
 
 import net.pototskiy.apps.lomout.api.PublicApi
+import net.pototskiy.apps.lomout.api.callable.PipelineAssembler
+import net.pototskiy.apps.lomout.api.callable.PipelineAssemblerFunction
+import net.pototskiy.apps.lomout.api.callable.PipelineClassifierFunction
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerFunction
-import net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin
-import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierFunction
-import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin
 import net.pototskiy.apps.lomout.api.script.LomoutDsl
-import net.pototskiy.apps.lomout.api.script.pipeline.PipelineClassifier
-import net.pototskiy.apps.lomout.api.script.pipeline.PipelineClassifierWithFunction
-import net.pototskiy.apps.lomout.api.script.pipeline.PipelineClassifierWithPlugin
+import net.pototskiy.apps.lomout.api.script.pipeline.Classifier
+import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierWithFunction
+import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierWithPlugin
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -44,9 +43,9 @@ import kotlin.reflect.KClass
  */
 data class Pipeline<T : Document>(
     val dataClass: List<CLASS>,
-    val classifier: PipelineClassifier,
+    val classifier: Classifier,
     val pipelines: List<Pipeline<T>>,
-    val assembler: PipelineAssembler<T>?
+    val assembler: Assembler<T>?
 ) {
     /**
      * Internal unique pipeline id
@@ -91,11 +90,11 @@ data class Pipeline<T : Document>(
         /**
          * Pipeline classifier, **do not use in DSL**
          */
-        var classifier: PipelineClassifier? = null
+        var classifier: Classifier? = null
         /**
          * Pipeline assembler, **do not use in DSL**
          */
-        var assembler: PipelineAssembler<T>? = null
+        var assembler: Assembler<T>? = null
         private var pipelines = mutableListOf<Pipeline<T>>()
 
         /**
@@ -115,7 +114,7 @@ data class Pipeline<T : Document>(
         @JvmName("classifier__function")
         @PublicApi
         fun classifier(block: PipelineClassifierFunction) {
-            classifier = PipelineClassifierWithFunction(block)
+            classifier = ClassifierWithFunction(block)
         }
 
         /**
@@ -128,15 +127,20 @@ data class Pipeline<T : Document>(
          *  }
          * ...
          * ```
-         * [ClassifierPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin] — classifier
+         * [ClassifierPluginClass][net.pototskiy.apps.lomout.api.callable.PipelineClassifier] — classifier
          *      plugin class
          *
          * @param block The classifier options
          */
         @JvmName("classifier__plugin")
-        inline fun <reified P : PipelineClassifierPlugin> classifier(noinline block: P.() -> Unit = {}) {
+        inline fun <reified P : net.pototskiy.apps.lomout.api.callable.PipelineClassifier> classifier(
+            noinline block: P.() -> Unit = {}
+        ) {
             @Suppress("UNCHECKED_CAST")
-            classifier = PipelineClassifierWithPlugin(P::class, block as (PipelineClassifierPlugin.() -> Unit))
+            classifier = ClassifierWithPlugin(
+                P::class,
+                block as (net.pototskiy.apps.lomout.api.callable.PipelineClassifier.() -> Unit)
+            )
         }
 
         /**
@@ -157,7 +161,7 @@ data class Pipeline<T : Document>(
         @JvmName("assembler__function")
         @PublicApi
         fun assembler(block: PipelineAssemblerFunction<T>) {
-            assembler = PipelineAssemblerWithFunction(block)
+            assembler = AssemblerWithFunction(block)
         }
 
         /**
@@ -170,17 +174,17 @@ data class Pipeline<T : Document>(
          *  }
          * ...
          * ```
-         * * [AssemblerPluginClass][net.pototskiy.apps.lomout.api.plugable.PipelineAssemblerPlugin] — assembler
+         * * [AssemblerPluginClass][net.pototskiy.apps.lomout.api.callable.PipelineAssembler] — assembler
          *      plugin class, **mandatory**
          *
          * @param block The assembler options
          */
         @JvmName("assembler__plugin")
-        inline fun <reified P : PipelineAssemblerPlugin<T>> assembler(noinline block: P.() -> Unit = {}) {
+        inline fun <reified P : PipelineAssembler<T>> assembler(noinline block: P.() -> Unit = {}) {
             @Suppress("UNCHECKED_CAST")
-            assembler = PipelineAssemblerWithPlugin(
-                P::class as KClass<PipelineAssemblerPlugin<T>>,
-                block as (PipelineAssemblerPlugin<T>.() -> Unit)
+            assembler = AssemblerWithCallable(
+                P::class as KClass<PipelineAssembler<T>>,
+                block as (PipelineAssembler<T>.() -> Unit)
             )
         }
 
@@ -212,7 +216,7 @@ data class Pipeline<T : Document>(
         fun build(): Pipeline<T> {
             return Pipeline(
                 dataClass,
-                classifier ?: PipelineClassifierWithFunction { it.match() },
+                classifier ?: ClassifierWithFunction { it.match() },
                 pipelines,
                 assembler
             )

@@ -19,6 +19,8 @@
 
 import OnecGroupRelation_lomout.OnecGroupRelation
 import OnecGroup_lomout.OnecGroup
+import net.pototskiy.apps.lomout.api.callable.AttributeBuilder
+import net.pototskiy.apps.lomout.api.document.Document
 import org.litote.kmongo.eq
 
 class RelationGroupNameFromGroup : AttributeBuilder<String?>() {

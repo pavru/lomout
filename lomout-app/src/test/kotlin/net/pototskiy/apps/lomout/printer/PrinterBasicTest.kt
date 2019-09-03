@@ -28,11 +28,11 @@ import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.CallableContext
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import net.pototskiy.apps.lomout.loader.DataLoader
@@ -58,13 +58,13 @@ internal class PrinterBasicTest {
         File("../tmp/$outputName").parentFile.mkdirs()
         val config = createConfiguration()
 
-        PluginContext.lomoutScript = config
-        PluginContext.scriptFile = File("no-file.lomout.kts")
+        CallableContext.lomoutScript = config
+        CallableContext.scriptFile = File("no-file.lomout.kts")
 
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
         val repository = EntityRepository(config.database, Level.ERROR)
-        PluginContext.repository = repository
+        CallableContext.repository = repository
         repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
         repository.getIDs(Entity2::class).forEach { repository.delete(Entity2::class, it) }
         repository.getIDs(ImportData::class).forEach { repository.delete(ImportData::class, it) }

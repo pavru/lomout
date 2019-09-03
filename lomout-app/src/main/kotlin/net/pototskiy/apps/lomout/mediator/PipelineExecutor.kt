@@ -35,7 +35,7 @@ import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.errorMessageFromException
 import net.pototskiy.apps.lomout.api.script.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.script.mediator.PipelineAssembler
+import net.pototskiy.apps.lomout.api.script.mediator.Assembler
 import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
@@ -106,7 +106,7 @@ class PipelineExecutor(
         }
 
     private suspend fun ProducerScope<Document>.sendElement(
-        assembler: PipelineAssembler<out Document>,
+        assembler: Assembler<out Document>,
         element: ClassifierElement
     ) {
         assembler(element.entities)?.let { entity ->

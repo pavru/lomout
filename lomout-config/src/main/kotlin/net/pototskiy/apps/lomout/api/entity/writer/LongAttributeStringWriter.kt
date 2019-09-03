@@ -21,7 +21,7 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.values.longToString
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**

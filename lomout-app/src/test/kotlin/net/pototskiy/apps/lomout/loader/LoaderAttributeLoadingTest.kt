@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.script.loader.Load
@@ -71,8 +71,8 @@ internal class LoaderAttributeLoadingTest {
         val util = LoadingDataTestPrepare()
         lomoutScript = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.lomout.kts")
         repository = EntityRepository(lomoutScript.database, Level.ERROR)
-        PluginContext.lomoutScript = lomoutScript
-        PluginContext.repository = repository
+        CallableContext.lomoutScript = lomoutScript
+        CallableContext.repository = repository
         @Suppress("UNCHECKED_CAST")
         entityType = lomoutScript.findEntityType("Test_lomout${'$'}TestEntityAttributes")!!
         repository.getIDs(entityType).forEach { repository.delete(entityType, it) }

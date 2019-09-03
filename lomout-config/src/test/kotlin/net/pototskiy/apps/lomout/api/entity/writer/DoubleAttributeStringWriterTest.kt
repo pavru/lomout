@@ -20,15 +20,15 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -108,6 +108,7 @@ internal class DoubleAttributeStringWriterTest {
         (attr.writer as AttributeWriter<Double>).write(111.123456, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("111.123")
+        @Suppress("UNCHECKED_CAST")
         (attr.writer as AttributeWriter<Double>).write(111.123656, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("111.124")

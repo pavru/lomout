@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
 import net.pototskiy.apps.lomout.api.document.ExtraAttributeData
 import kotlin.reflect.KClass

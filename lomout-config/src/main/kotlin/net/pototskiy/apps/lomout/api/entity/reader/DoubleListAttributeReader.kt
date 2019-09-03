@@ -26,7 +26,7 @@ import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.DEFAULT_DOUBLE_SCALE
 import net.pototskiy.apps.lomout.api.entity.values.stringToDouble
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType

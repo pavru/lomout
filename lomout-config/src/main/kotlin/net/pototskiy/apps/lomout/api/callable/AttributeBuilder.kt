@@ -17,26 +17,21 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
-import net.pototskiy.apps.lomout.api.PublicApi
-import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
+import net.pototskiy.apps.lomout.api.document.Document
 
 /**
- * Base class for any pipeline classifiers
+ * Base class for any attribute builder plugins
+ *
+ * @param R The type builder return
  */
-@PublicApi
-abstract class PipelineClassifierPlugin : Plugin() {
+abstract class AttributeBuilder<R : Any?> : Callable() {
     /**
-     * Classifier function
+     * Builder function
      *
-     * @param element ClassifierElement The element to classify
-     * @return ClassifierElement
+     * @param entity DbEntity The entity to build value
+     * @return R? The value type to return
      */
-    abstract fun classify(element: ClassifierElement): ClassifierElement
+    abstract fun build(entity: Document): R
 }
-
-/**
- * Function type for inline pipeline classifier
- */
-typealias PipelineClassifierFunction = PluginContextInterface.(element: ClassifierElement) -> ClassifierElement

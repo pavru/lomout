@@ -19,6 +19,7 @@
 
 package net.pototskiy.apps.lomout.jcommander
 
+import com.beust.jcommander.DynamicParameter
 import com.beust.jcommander.Parameter
 import com.beust.jcommander.Parameters
 
@@ -58,11 +59,16 @@ class CommandMain {
         description = "Directory where cached script store",
         arity = 1
     )
-    var scriptCacheDir: String = "tmp/config/cache"
+    var scriptCacheDir: String = "tmp/script/cache"
     @Parameter(
         names = ["--do-not-use-cache", "-n"],
         description = "Do not use cached script",
         arity = 0
     )
     var doNotUseScriptCache: Boolean = false
+    @DynamicParameter(
+        names = ["-S"],
+        description = "Script parameter in format name=value"
+    )
+    var scriptParameters: MutableMap<String, String> = mutableMapOf()
 }

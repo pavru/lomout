@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
@@ -25,7 +25,7 @@ import net.pototskiy.apps.lomout.api.entity.EntityCollection
 /**
  * Base class for any pipeline assemblers
  */
-abstract class PipelineAssemblerPlugin<out T : Document> : Plugin() {
+abstract class PipelineAssembler<out T : Document> : Callable() {
     /**
      * Assembler function
      *
@@ -39,4 +39,4 @@ abstract class PipelineAssemblerPlugin<out T : Document> : Plugin() {
  * Function type for inline pipeline assembler
  */
 typealias PipelineAssemblerFunction<T> =
-        PluginContextInterface.(entities: EntityCollection) -> T?
+        CallableContextInterface.(entities: EntityCollection) -> T?

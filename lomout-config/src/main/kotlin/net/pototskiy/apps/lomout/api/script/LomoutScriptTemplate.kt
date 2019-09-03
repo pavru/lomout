@@ -89,7 +89,7 @@ object LomoutScriptCompilationConfiguration : ScriptCompilationConfiguration({
         "net.pototskiy.apps.lomout.api.script.mediator.*",
         "net.pototskiy.apps.lomout.api.script.pipeline.*",
         "net.pototskiy.apps.lomout.api.script.printer.*",
-        "net.pototskiy.apps.lomout.api.plugable.*",
+        "net.pototskiy.apps.lomout.api.callable.*",
         "net.pototskiy.apps.lomout.api.entity.*",
         "net.pototskiy.apps.lomout.api.entity.reader.*",
         "net.pototskiy.apps.lomout.api.entity.type.*",

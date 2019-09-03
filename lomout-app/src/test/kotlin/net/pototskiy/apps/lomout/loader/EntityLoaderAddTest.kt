@@ -26,10 +26,10 @@ import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
-import net.pototskiy.apps.lomout.api.plugable.Reader
-import net.pototskiy.apps.lomout.api.plugable.ReaderBuilder
-import net.pototskiy.apps.lomout.api.plugable.createReader
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.callable.createReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.logging.log4j.Level
 import org.assertj.core.api.Assertions.assertThat

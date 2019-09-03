@@ -19,16 +19,16 @@
 
 package net.pototskiy.apps.lomout.api.script.pipeline
 
-import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierFunction
-import net.pototskiy.apps.lomout.api.plugable.PipelineClassifierPlugin
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.callable.CallableContext
+import net.pototskiy.apps.lomout.api.callable.PipelineClassifierFunction
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+import net.pototskiy.apps.lomout.api.callable.PipelineClassifier as PipelineClassifierCallable
 
 /**
  * Abstract pipeline classifier
  */
-sealed class PipelineClassifier {
+sealed class Classifier {
     /**
      * Classifier function
      *
@@ -37,11 +37,11 @@ sealed class PipelineClassifier {
      */
     operator fun invoke(element: ClassifierElement): ClassifierElement {
         return when (this) {
-            is PipelineClassifierWithPlugin -> pluginClass.createInstance().let {
+            is ClassifierWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)
                 it.classify(element)
             }
-            is PipelineClassifierWithFunction -> PluginContext.function(element)
+            is ClassifierWithFunction -> CallableContext.function(element)
         }
     }
 }
@@ -53,10 +53,10 @@ sealed class PipelineClassifier {
  * @property options The classifier options
  * @constructor
  */
-class PipelineClassifierWithPlugin(
-    val pluginClass: KClass<out PipelineClassifierPlugin>,
-    val options: PipelineClassifierPlugin.() -> Unit = {}
-) : PipelineClassifier()
+class ClassifierWithPlugin(
+    val pluginClass: KClass<out PipelineClassifierCallable>,
+    val options: PipelineClassifierCallable.() -> Unit = {}
+) : Classifier()
 
 /**
  * Pipeline classifier with function
@@ -64,4 +64,4 @@ class PipelineClassifierWithPlugin(
  * @property function The classifier function
  * @constructor
  */
-class PipelineClassifierWithFunction(val function: PipelineClassifierFunction) : PipelineClassifier()
+class ClassifierWithFunction(val function: PipelineClassifierFunction) : Classifier()
