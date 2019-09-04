@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.values.longToString
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
@@ -34,7 +35,7 @@ open class LongAttributeStringWriter : AttributeWriter<Long?>() {
     var locale: String? = null
     var groupingUsed: Boolean = false
 
-    override fun write(value: Long?, cell: Cell) {
+    override operator fun invoke(value: Long?, cell: Cell, context: LomoutContext) {
         value?.let { cell.setCellValue(it.longToString(locale?.createLocale() ?: cell.locale, groupingUsed)) }
     }
 }

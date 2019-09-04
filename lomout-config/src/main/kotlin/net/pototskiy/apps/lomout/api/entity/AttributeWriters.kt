@@ -24,8 +24,8 @@ import net.pototskiy.apps.lomout.api.MessageBundle.message
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.writer.defaultWriters
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Writer
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.Writer
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.isSubtypeOf
 

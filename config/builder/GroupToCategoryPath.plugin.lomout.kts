@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,15 +19,20 @@
 
 import OnecGroupExtended_lomout.OnecGroupExtended
 import OnecGroup_lomout.OnecGroup
+import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.callable.AttributeBuilder
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.litote.kmongo.eq
 
 open class GroupToCategoryPath : AttributeBuilder<String?>() {
-    override fun build(entity: Document): String? {
+    override operator fun invoke(entity: Document, context: LomoutContext): String? {
         try {
             entity as OnecGroup
             val extendedInfo = OnecGroupExtended::class
             val groupId = entity.group_code
-            val entityExtInfo = repository.get(
+            val entityExtInfo = context.repository.get(
                 extendedInfo,
                 OnecGroupExtended::group_code eq groupId
             ) as? OnecGroupExtended

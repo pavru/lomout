@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
@@ -35,6 +36,6 @@ open class LongAttributeReader : AttributeReader<Long?>() {
     var locale: String? = null
     var groupingUsed = false
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Long? =
+    override operator fun invoke(attribute: DocumentMetadata.Attribute, input: Cell, context: LomoutContext): Long? =
         input.readLong(locale?.createLocale(), groupingUsed)?.let { it }
 }

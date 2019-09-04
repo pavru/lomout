@@ -30,7 +30,7 @@ class DocumentData(private val data: MutableMap<DocumentMetadata.Attribute, Any>
     MutableMap<DocumentMetadata.Attribute, Any> by data {
     /**
      * Get attribute value.
-     * 
+     *
      * @param property The document property(attribute).
      */
     operator fun get(property: KMutableProperty1<out Document, *>): Any? = data[property.toAttribute()]

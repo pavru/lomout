@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 
@@ -37,7 +38,11 @@ open class StringListAttributeReader : AttributeReader<List<String>?>() {
     var delimiter: Char = ','
     var escape: Char? = null
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<String>? {
+    override operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext
+    ): List<String>? {
         return when (input.cellType) {
             CellType.BLANK -> null
             else -> {

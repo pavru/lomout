@@ -18,20 +18,20 @@
  */
 
 import MageCategory_lomout.MageCategory
+import net.pototskiy.apps.lomout.api.callable.AttributeBuilder
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.plugable.AttributeBuilder
-import net.pototskiy.apps.lomout.api.plugable.PluginContext.repository
 import org.apache.commons.collections4.map.LRUMap
 import org.bson.types.ObjectId
 import java.lang.ref.WeakReference
 import java.util.Collections.*
 
-class CategoryPathFromRelation (
+class CategoryPathFromRelation(
     private val separator: String = "/",
     private val root: String = ""
-): AttributeBuilder<String?>() {
+) : AttributeBuilder<String?>() {
 
-    override fun build(entity: Document): String? {
+    override operator fun invoke(entity: Document, context: LomoutContext): String? {
         entity as MageCategory
         val cachedPath = pathCache[entity._id]?.get()
         if (cachedPath != null) return cachedPath
@@ -42,7 +42,7 @@ class CategoryPathFromRelation (
             path.add(name)
             val parentId = current.parent_id
             current = current.let {
-                repository.get(
+                context.repository.get(
                     MageCategory::class,
                     mapOf(MageCategory.attributes.getValue("parent_id") to parentId)
                 ) as? MageCategory

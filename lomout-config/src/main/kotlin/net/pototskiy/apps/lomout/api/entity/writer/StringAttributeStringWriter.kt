@@ -19,14 +19,15 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
  * Default attribute writer for [String] attribute
  */
 open class StringAttributeStringWriter : AttributeWriter<String?>() {
-    override fun write(value: String?, cell: Cell) {
+    override operator fun invoke(value: String?, cell: Cell, context: LomoutContext) {
         value?.let { cell.setCellValue(it) }
     }
 }

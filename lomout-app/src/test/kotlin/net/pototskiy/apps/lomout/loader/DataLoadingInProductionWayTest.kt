@@ -20,10 +20,12 @@
 package net.pototskiy.apps.lomout.loader
 
 import kotlinx.coroutines.ObsoleteCoroutinesApi
+import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.createContext
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
 import net.pototskiy.apps.lomout.api.script.LomoutScript
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -44,6 +46,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Load data in production way")
@@ -60,7 +63,7 @@ internal class DataLoadingInProductionWayTest {
     internal fun initAll() {
         System.setSecurityManager(NoExitSecurityManager())
         val logger = LogManager.getLogger(ROOT_LOG_NAME) as Logger
-        Configurator.setLevel(ROOT_LOG_NAME,Level.TRACE)
+        Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val layout = PatternLayout.newBuilder()
             .withPattern("%level,")
             .build()
@@ -78,8 +81,12 @@ internal class DataLoadingInProductionWayTest {
         println("config file: ${System.getenv("PRODUCTION_CONFIG")}")
         lomoutScript = util.loadConfiguration(System.getenv("PRODUCTION_CONFIG"))
         repository = EntityRepository(lomoutScript.database, Level.ERROR)
-        PluginContext.lomoutScript = lomoutScript
-        PluginContext.repository = repository
+        LomoutContext.setContext(createContext {
+            script = lomoutScript
+            scriptFile = File(System.getenv("PRODUCTION_CONFIG"))
+            this.logger = LogManager.getLogger(LOADER_LOG_NAME)
+            this.repository = this@DataLoadingInProductionWayTest.repository
+        })
     }
 
     @AfterAll
@@ -92,7 +99,7 @@ internal class DataLoadingInProductionWayTest {
     @Test
     @DisplayName("Load data according production config")
     internal fun loadDataTest() {
-        DataLoader.load(repository, lomoutScript)
+        DataLoader().load()
         assertThat(logOut.toString()).isEmpty()
     }
 

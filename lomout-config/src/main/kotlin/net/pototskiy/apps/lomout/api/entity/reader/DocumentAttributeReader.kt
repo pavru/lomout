@@ -22,10 +22,11 @@ package net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.AppConfigException
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.reader
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -52,7 +53,11 @@ open class DocumentAttributeReader : AttributeReader<Document?>() {
     var valueDelimiter: Char = '='
     var valueEscape: Char? = '\\'
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Document? {
+    override operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext
+    ): Document? {
         return when (input.cellType) {
             CellType.STRING -> {
                 if (input.stringValue.isBlank()) return null
@@ -80,7 +85,10 @@ open class DocumentAttributeReader : AttributeReader<Document?>() {
                     if (cell != null) {
                         val attrName = cell.stringValue
                         metaData.attributes[attrName]?.let {
-                            doc.setAttribute(cell.stringValue, it.reader.read(it, values.getOrEmptyCell(c)))
+                            doc.setAttribute(
+                                cell.stringValue,
+                                it.reader(it, values.getOrEmptyCell(c))
+                            )
                         }
                     }
                 }

@@ -17,17 +17,27 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
+
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
 
 /**
- * Attribute writer builder interface
- *
+ * Base class for any pipeline assemblers
  */
-interface WriterBuilder {
+abstract class PipelineAssembler<out T : Document> {
     /**
-     * Build writer
+     * Assembler function
      *
-     * @return AttributeWriter<out Any?>
+     * @param entities The pipeline entity collection
+     * @return The transient document
      */
-    fun build(): AttributeWriter<out Any?>
+    abstract operator fun invoke(entities: EntityCollection, context: LomoutContext = LomoutContext.getContext()): T?
 }
+
+/**
+ * Function type for inline pipeline assembler
+ */
+typealias PipelineAssemblerFunction<T> =
+        LomoutContext.(entities: EntityCollection) -> T?

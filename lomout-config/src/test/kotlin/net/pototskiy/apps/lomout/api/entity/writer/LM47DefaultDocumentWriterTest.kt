@@ -21,10 +21,10 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -97,7 +97,7 @@ internal class LM47DefaultDocumentWriterTest {
             valueDelimiter = '='
             valueEscape = '\\'
         }
-        writer.write(doc, outputCell)
+        writer(doc, outputCell)
         assertThat(outputCell.stringValue).isEqualTo("attr1=value1\\,value1.1,attr2=value2")
     }
 
@@ -115,7 +115,7 @@ internal class LM47DefaultDocumentWriterTest {
             valueDelimiter = '='
             valueEscape = null
         }
-        writer.write(doc, outputCell)
+        writer(doc, outputCell)
         assertThat(outputCell.stringValue).isEqualTo("\"attr1=value1,value1.1\",attr2=value2")
     }
 }

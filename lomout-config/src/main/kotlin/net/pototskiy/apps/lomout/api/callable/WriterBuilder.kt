@@ -17,34 +17,17 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
-
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import org.apache.logging.log4j.Logger
-import java.io.File
+package net.pototskiy.apps.lomout.api.callable
 
 /**
- * Plugin context
+ * Attribute writer builder interface
  *
- * @property lomoutScript Config
- * @property logger Logger
  */
-interface PluginContextInterface {
+interface WriterBuilder {
     /**
-     * Context configuration
+     * Build writer
+     *
+     * @return AttributeWriter<out Any?>
      */
-    var lomoutScript: LomoutScript
-    /**
-     * Context logger
-     */
-    var logger: Logger
-    /**
-     * Main script file
-     */
-    var scriptFile: File
-    /**
-     * Entity repository
-     */
-    var repository: EntityRepositoryInterface
+    fun build(): AttributeWriter<out Any?>
 }

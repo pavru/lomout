@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import java.time.LocalDateTime
 
@@ -35,7 +36,11 @@ open class DateTimeAttributeReader : AttributeReader<LocalDateTime?>() {
     var locale: String? = null
     var pattern: String? = null
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): LocalDateTime? =
+    override operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext
+    ): LocalDateTime? =
         (pattern?.let { input.readeDateTimeWithPattern(attribute, it) }
             ?: input.readeDateTimeWithLocale(attribute, locale?.createLocale()))?.let { it }
 }

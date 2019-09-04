@@ -20,24 +20,27 @@
 package net.pototskiy.apps.lomout.printer
 
 import net.pototskiy.apps.lomout.LogCatcher
+import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
-import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.createContext
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import net.pototskiy.apps.lomout.loader.DataLoader
 import net.pototskiy.apps.lomout.mediator.DataMediator
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -45,6 +48,7 @@ import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
 import java.io.File
 
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 @Suppress("ComplexMethod", "MagicNumber")
 internal class PrinterBasicTest {
     private val helper = ScriptBuildHelper()
@@ -56,29 +60,31 @@ internal class PrinterBasicTest {
     @Test
     internal fun printerBasicTest() {
         File("../tmp/$outputName").parentFile.mkdirs()
-        val config = createConfiguration()
-
-        PluginContext.lomoutScript = config
-        PluginContext.scriptFile = File("no-file.lomout.kts")
+        val script = createConfiguration()
 
         System.setProperty("mediation.line.cache.size", "4")
         System.setProperty("printer.line.cache.size", "4")
-        val repository = EntityRepository(config.database, Level.ERROR)
-        PluginContext.repository = repository
-        repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
-        repository.getIDs(Entity2::class).forEach { repository.delete(Entity2::class, it) }
-        repository.getIDs(ImportData::class).forEach { repository.delete(ImportData::class, it) }
-        DataLoader.load(repository, config)
-        DataMediator.mediate(repository, config)
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("no-file.lomout.kts")
+            this.repository = repository
+            logger = LogManager.getLogger(PRINTER_LOG_NAME)
+        })
+        repository.getIDs(PrinterBasicEntity1::class).forEach { repository.delete(PrinterBasicEntity1::class, it) }
+        repository.getIDs(PrinterBasicEntity2::class).forEach { repository.delete(PrinterBasicEntity2::class, it) }
+        repository.getIDs(PrinterBasicImportData::class).forEach { repository.delete(PrinterBasicImportData::class, it) }
+        DataLoader().load()
+        DataMediator().mediate()
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataPrinter.print(repository, config)
+        DataPrinter().print()
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(log).doesNotContain("[ERROR]")
         @Suppress("UNCHECKED_CAST")
-        val entities = repository.get(ImportData::class) as List<ImportData>
+        val entities = repository.get(PrinterBasicImportData::class) as List<PrinterBasicImportData>
         WorkbookFactory.create(File(outputName).toURI().toURL()).use { workbook ->
             val sheet = workbook["test"]
             assertThat(sheet).isNotNull
@@ -108,7 +114,7 @@ internal class PrinterBasicTest {
          * @param value T? The value to write
          * @param cell Cell The cell to write value
          */
-        override fun write(value: Long?, cell: Cell) {
+        override operator fun invoke(value: Long?, cell: Cell, context: LomoutContext) {
             cell.setCellValue(value!!)
         }
 
@@ -122,7 +128,7 @@ internal class PrinterBasicTest {
          * @param value T? The value to write
          * @param cell Cell The cell to write value
          */
-        override fun write(value: Double?, cell: Cell) {
+        override operator fun invoke(value: Double?, cell: Cell, context: LomoutContext) {
             cell.setCellValue(value!!)
         }
 
@@ -130,7 +136,7 @@ internal class PrinterBasicTest {
     }
 
     @Suppress("PropertyName")
-    internal open class Entity1 : Document() {
+    internal open class PrinterBasicEntity1 : Document() {
         @Key
         @Writer(SimpleLongWriter::class)
         var sku: Long = 0L
@@ -141,21 +147,21 @@ internal class PrinterBasicTest {
         open val corrected_amount: Double
             get() = amount * 11.0
 
-        companion object : DocumentMetadata(Entity1::class)
+        companion object : DocumentMetadata(PrinterBasicEntity1::class)
     }
 
-    internal class Entity2 : Entity1() {
+    internal class PrinterBasicEntity2 : PrinterBasicEntity1() {
         override val corrected_amount: Double
             get() = amount * 13.0
 
-        companion object : DocumentMetadata(Entity2::class)
+        companion object : DocumentMetadata(PrinterBasicEntity2::class)
     }
 
-    internal class ImportData : Entity1() {
+    internal class PrinterBasicImportData : PrinterBasicEntity1() {
         @Writer(SimpleDoubleWriter::class)
         override var corrected_amount: Double = 0.0
 
-        companion object : DocumentMetadata(ImportData::class)
+        companion object : DocumentMetadata(PrinterBasicImportData::class)
     }
 
     @Suppress("LongMethod")
@@ -173,7 +179,7 @@ internal class PrinterBasicTest {
             files {
                 file("test-data") { path(fileName) }
             }
-            load<Entity1> {
+            load<PrinterBasicEntity1> {
                 fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
                 rowsToSkip(1)
                 keepAbsentForDays(1)
@@ -185,7 +191,7 @@ internal class PrinterBasicTest {
                     }
                 }
             }
-            load<Entity2> {
+            load<PrinterBasicEntity2> {
                 fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
                 rowsToSkip(1)
                 keepAbsentForDays(1)
@@ -199,31 +205,31 @@ internal class PrinterBasicTest {
             }
         }
         mediator {
-            produce<ImportData> {
+            produce<PrinterBasicImportData> {
                 input {
-                    entity(Entity1::class)
-                    entity(Entity2::class)
+                    entity(PrinterBasicEntity1::class)
+                    entity(PrinterBasicEntity2::class)
                 }
                 pipeline {
                     classifier { element ->
-                        var entity = element.entities.getOrNull(Entity1::class)
+                        var entity = element.entities.getOrNull(PrinterBasicEntity1::class)
                         if (entity != null) {
-                            val partnerType = Entity2::class
+                            val partnerType = PrinterBasicEntity2::class
                             val partner = repository.get(
                                 partnerType,
-                                mapOf(Entity2.attributes.getValue("sku") to entity.getAttribute("sku")!!)
+                                mapOf(PrinterBasicEntity2.attributes.getValue("sku") to entity.getAttribute("sku")!!)
                             )
                             if (partner != null) {
                                 element.match(partner)
                             } else {
                                 element.mismatch()
                             }
-                        } else if (element.entities.getOrNull(Entity2::class) != null) {
-                            entity = element.entities[Entity2::class]
-                            val partnerType = Entity1::class
+                        } else if (element.entities.getOrNull(PrinterBasicEntity2::class) != null) {
+                            entity = element.entities[PrinterBasicEntity2::class]
+                            val partnerType = PrinterBasicEntity1::class
                             val partner = repository.get(
                                 partnerType,
-                                mapOf(Entity1.attributes.getValue("sku") to entity.getAttribute("sku")!!)
+                                mapOf(PrinterBasicEntity1.attributes.getValue("sku") to entity.getAttribute("sku")!!)
                             )
                             if (partner != null) {
                                 element.skip()
@@ -236,31 +242,31 @@ internal class PrinterBasicTest {
                     }
                     pipeline(Pipeline.CLASS.MATCHED) {
                         assembler { entities ->
-                            val e1 = entities[0] as Entity1
-                            val ip = ImportData()
+                            val e1 = entities[0] as PrinterBasicEntity1
+                            val ip = PrinterBasicImportData()
                             ip.sku = e1.sku
                             ip.desc = e1.desc
                             ip.amount = e1.amount
-                            ip.corrected_amount = (entities[0] as Entity1).corrected_amount
+                            ip.corrected_amount = (entities[0] as PrinterBasicEntity1).corrected_amount
                             ip
                         }
                     }
                     pipeline(Pipeline.CLASS.UNMATCHED) {
                         classifier {
                             val entities = it.entities
-                            if (entities[0].documentMetadata.klass == Entity2::class) {
+                            if (entities[0].documentMetadata.klass == PrinterBasicEntity2::class) {
                                 it.match()
                             } else {
                                 it.mismatch()
                             }
                         }
                         assembler { entities ->
-                            val ip = ImportData()
-                            val e2 = entities[0] as Entity2
+                            val ip = PrinterBasicImportData()
+                            val e2 = entities[0] as PrinterBasicEntity2
                             ip.sku = e2.sku
                             ip.desc = e2.desc
                             ip.amount = e2.amount
-                            ip.corrected_amount = (entities[0] as Entity2).corrected_amount
+                            ip.corrected_amount = (entities[0] as PrinterBasicEntity2).corrected_amount
 
                             ip
                         }
@@ -272,9 +278,9 @@ internal class PrinterBasicTest {
             files {
                 file("output") { path(outputName) }
             }
-            print<ImportData> {
+            print<PrinterBasicImportData> {
                 input {
-                    entity(ImportData::class)
+                    entity(PrinterBasicImportData::class)
                 }
                 output {
                     file { file("output"); sheet("test") }
@@ -292,7 +298,7 @@ internal class PrinterBasicTest {
                 }
                 pipeline {
                     classifier { it.match() }
-                    assembler { it.first() as ImportData }
+                    assembler { it.first() as PrinterBasicImportData }
                 }
             }
         }

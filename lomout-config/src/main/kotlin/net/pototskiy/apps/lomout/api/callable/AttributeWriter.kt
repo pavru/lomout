@@ -17,21 +17,33 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
 
-import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.source.workbook.Cell
+import kotlin.reflect.full.createInstance
 
 /**
- * Base class for any attribute builder plugins
+ * Base class for any attribute writer plugins
  *
- * @param R The type builder return
+ * @param T The attribute value to write to cell
  */
-abstract class AttributeBuilder<R : Any?> : Plugin() {
+abstract class AttributeWriter<T : Any?> {
     /**
-     * Builder function
+     * Writer function
      *
-     * @param entity DbEntity The entity to build value
-     * @return R? The value type to return
+     * @param value T? The value to write
+     * @param cell Cell The cell to write value
      */
-    abstract fun build(entity: Document): R
+    abstract operator fun invoke(value: T, cell: Cell, context: LomoutContext = LomoutContext.getContext())
+}
+
+/**
+ * Create attribute writer and apply parameters
+ *
+ * @param parameter Parameters set block
+ * @return W
+ */
+inline fun <reified W : AttributeWriter<*>> createWriter(parameter: W.() -> Unit = {}): W {
+    return W::class.createInstance().apply(parameter)
 }

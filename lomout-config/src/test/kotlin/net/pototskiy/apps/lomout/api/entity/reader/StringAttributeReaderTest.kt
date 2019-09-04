@@ -19,13 +19,16 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createCsvCell
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initStringValue
 import net.pototskiy.apps.lomout.api.document.toAttribute
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
@@ -38,14 +41,19 @@ internal class StringAttributeReaderTest {
         companion object : DocumentMetadata(TestType::class)
     }
 
+    @BeforeEach
+    internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
+    }
+
     @Test
     internal fun readBoolTest() {
         var cell = createCsvCell("true")
         assertThat(cell.cellType).isEqualTo(CellType.BOOL)
         val reader = StringAttributeReader()
-        assertThat(reader.read(TestType::attr.toAttribute(),cell)).isEqualTo("1")
+        assertThat(reader(TestType::attr.toAttribute(),cell)).isEqualTo("1")
         cell = createCsvCell("false")
-        assertThat(reader.read(TestType::attr.toAttribute(),cell)).isEqualTo("0")
+        assertThat(reader(TestType::attr.toAttribute(),cell)).isEqualTo("0")
     }
 
     @Test
@@ -53,9 +61,9 @@ internal class StringAttributeReaderTest {
         val cell = createCsvCell(3L.toString())
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
         val reader = StringAttributeReader()
-        assertThat(reader.read(TestType::attr.toAttribute(),cell)).isEqualTo("3")
+        assertThat(reader(TestType::attr.toAttribute(),cell)).isEqualTo("3")
         reader.locale = "en_EN"
-        assertThat(reader.read(TestType::attr.toAttribute(),cell)).isEqualTo("3")
+        assertThat(reader(TestType::attr.toAttribute(),cell)).isEqualTo("3")
     }
 
     @Test
@@ -63,8 +71,8 @@ internal class StringAttributeReaderTest {
         val cell = createCsvCell(3.3.toString())
         assertThat(cell.cellType).isEqualTo(CellType.DOUBLE)
         val reader = StringAttributeReader()
-        assertThat(reader.read(TestType::attr.toAttribute(),cell)).isEqualTo("3.3")
+        assertThat(reader(TestType::attr.toAttribute(),cell)).isEqualTo("3.3")
         reader.locale = "en_EN"
-        assertThat(reader.read(TestType::attr.toAttribute(),cell)).isEqualTo("3.3")
+        assertThat(reader(TestType::attr.toAttribute(),cell)).isEqualTo("3.3")
     }
 }

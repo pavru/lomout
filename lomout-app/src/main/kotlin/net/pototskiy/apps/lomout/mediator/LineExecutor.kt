@@ -29,15 +29,16 @@ import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.AppException
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.DocumentData
+import net.pototskiy.apps.lomout.api.errorMessageFromException
 import net.pototskiy.apps.lomout.api.script.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
-import net.pototskiy.apps.lomout.api.document.DocumentData
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.errorMessageFromException
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.Logger
 
-abstract class LineExecutor(protected val repository: EntityRepositoryInterface) {
+abstract class LineExecutor(protected val context: LomoutContext) {
+    protected val repository = context.repository
     private lateinit var line: AbstractLine
 
     protected abstract val logger: Logger
@@ -52,7 +53,7 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
         this.line = line
         processedRows = 0L
         try {
-            runBlocking {
+            runBlocking(context.asCoroutineContext()) {
                 val pipeline = preparePipelineExecutor(line)
                 val inputChannel: Channel<ClassifierElement> = Channel()
                 jobs.add(launch(Dispatchers.IO) {
@@ -85,7 +86,9 @@ abstract class LineExecutor(protected val repository: EntityRepositoryInterface)
                 do {
                     val items = repository.getIDs(input.entity, PAGE_SIZE, pageNumber, input.includeDeleted)
                     items.forEach {
-                        yield(ClassifierElement.Mismatched(repository.get(input.entity, it, input.includeDeleted)!!))
+                        yield(
+                            ClassifierElement.Mismatched(repository.get(input.entity, it, input.includeDeleted)!!)
+                        )
                     }
                     pageNumber++
                 } while (items.isNotEmpty())

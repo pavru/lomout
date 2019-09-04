@@ -22,7 +22,10 @@ package net.pototskiy.apps.lomout
 import com.ginsberg.junit.exit.ExpectSystemExitWithStatus
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.ResourceAccessMode
+import org.junit.jupiter.api.parallel.ResourceLock
 
+@ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class MainKtTest {
 
     @BeforeEach
@@ -35,6 +38,7 @@ internal class MainKtTest {
         main(arrayOf(""))
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun productionWayMainTest() {
         main(arrayOf("--process", System.getenv("PRODUCTION_CONFIG")))

@@ -19,19 +19,23 @@
 
 package net.pototskiy.apps.lomout.loader
 
+import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.createContext
+import net.pototskiy.apps.lomout.api.callable.createReader
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.reader.DocumentAttributeReader
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
-import net.pototskiy.apps.lomout.api.plugable.Reader
-import net.pototskiy.apps.lomout.api.plugable.ReaderBuilder
-import net.pototskiy.apps.lomout.api.plugable.createReader
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -39,6 +43,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
+import java.io.File
 
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
 internal class NestedFieldLoadingTest {
@@ -48,14 +53,21 @@ internal class NestedFieldLoadingTest {
         Configurator.setLevel(ROOT_LOG_NAME, Level.WARN)
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun loadNestedFieldsWithoutErrorsTest() {
-        val config = createConfStopEmptyRow()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity::class).forEach { repository.delete(Entity::class, it) }
-        DataLoader.load(repository, config)
+        val script = createConfStopEmptyRow()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("NestedFieldLoadingTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(NestedFieldLoadingEntity::class).forEach { repository.delete(NestedFieldLoadingEntity::class, it) }
+        DataLoader().load()
         @Suppress("UNCHECKED_CAST")
-        val entities = repository.get(Entity::class) as List<Entity>
+        val entities = repository.get(NestedFieldLoadingEntity::class) as List<NestedFieldLoadingEntity>
         Assertions.assertThat(entities).hasSize(2)
         assertThat(entities[0].key).isEqualTo(1L)
         assertThat(entities[0].parent.parent2.parent3.attr1).isEqualTo("a1")
@@ -64,11 +76,11 @@ internal class NestedFieldLoadingTest {
         repository.close()
     }
 
-    internal class NestedOne : Document() {
+    internal class NestedFieldLoadingNestedOne : Document() {
         @Reader(Parent2Reader::class)
-        var parent2: NestedTwo = NestedTwo()
+        var parent2: NestedFieldLoadingNestedTwo = NestedFieldLoadingNestedTwo()
 
-        companion object : DocumentMetadata(NestedOne::class)
+        companion object : DocumentMetadata(NestedFieldLoadingNestedOne::class)
 
         class Parent2Reader : ReaderBuilder {
             override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
@@ -78,12 +90,12 @@ internal class NestedFieldLoadingTest {
         }
     }
 
-    internal class NestedTwo : Document() {
+    internal class NestedFieldLoadingNestedTwo : Document() {
         var attr3: String = ""
         @Reader(Parent3Reader::class)
-        var parent3: NestedThree = NestedThree()
+        var parent3: NestedFieldLoadingNestedThree = NestedFieldLoadingNestedThree()
 
-        companion object : DocumentMetadata(NestedTwo::class)
+        companion object : DocumentMetadata(NestedFieldLoadingNestedTwo::class)
 
         class Parent3Reader : ReaderBuilder {
             override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
@@ -92,20 +104,20 @@ internal class NestedFieldLoadingTest {
         }
     }
 
-    internal class NestedThree : Document() {
+    internal class NestedFieldLoadingNestedThree : Document() {
         var attr1: String = ""
         var attr2: String = ""
 
-        companion object : DocumentMetadata(NestedThree::class)
+        companion object : DocumentMetadata(NestedFieldLoadingNestedThree::class)
     }
 
-    internal open class Entity : Document() {
+    internal open class NestedFieldLoadingEntity : Document() {
         @Key
         var key: Long = 0L
         @Reader(ParentReader::class)
-        var parent: NestedOne = NestedOne()
+        var parent: NestedFieldLoadingNestedOne = NestedFieldLoadingNestedOne()
 
-        companion object : DocumentMetadata(Entity::class)
+        companion object : DocumentMetadata(NestedFieldLoadingEntity::class)
 
         class ParentReader : ReaderBuilder {
             override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
@@ -115,11 +127,11 @@ internal class NestedFieldLoadingTest {
         }
     }
 
-    internal class Output : Entity() {
-        companion object : DocumentMetadata(Output::class)
+    internal class NestedFieldLoadingOutput : NestedFieldLoadingEntity() {
+        companion object : DocumentMetadata(NestedFieldLoadingOutput::class)
     }
 
-    @Suppress("LongMethod")
+    @Suppress("LongMethod", "MagicNumber")
     private fun createConfStopEmptyRow(): LomoutScript {
         return LomoutScript.Builder(helper).apply {
             database {
@@ -140,7 +152,7 @@ internal class NestedFieldLoadingTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-nested-attribute-test.xls") }
                 }
-                load<Entity> {
+                load<NestedFieldLoadingEntity> {
                     fromSources { source { file("test-data"); sheet("Sheet1"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -153,12 +165,12 @@ internal class NestedFieldLoadingTest {
                 }
             }
             mediator {
-                produce<Output> {
+                produce<NestedFieldLoadingOutput> {
                     input {
-                        entity(Entity::class)
+                        entity(NestedFieldLoadingEntity::class)
                     }
                     pipeline {
-                        assembler { Output() }
+                        assembler { NestedFieldLoadingOutput() }
                     }
                 }
             }

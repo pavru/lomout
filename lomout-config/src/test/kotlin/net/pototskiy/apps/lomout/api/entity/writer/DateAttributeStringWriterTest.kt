@@ -25,10 +25,10 @@ import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.entity.values.dateToString
 import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -88,7 +88,7 @@ internal class DateAttributeStringWriterTest {
         val now = LocalDate.now()
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LocalDate>).write(now, cell)
+        (attr.writer as AttributeWriter<LocalDate>)(now, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue)
             .isEqualTo(now.format(DateTimeFormatter.ofPattern("d.M.uu")))
@@ -100,7 +100,7 @@ internal class DateAttributeStringWriterTest {
         val now = LocalDate.now()
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LocalDate>).write(now, cell)
+        (attr.writer as AttributeWriter<LocalDate>)(now, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue)
             .isEqualTo(
@@ -113,7 +113,7 @@ internal class DateAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr2")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<LocalDate?>).write(null, cell)
+        (attr.writer as AttributeWriter<LocalDate?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

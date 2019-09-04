@@ -21,11 +21,12 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.stringToDateTime
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
@@ -46,7 +47,11 @@ open class DateTimeListAttributeReader : AttributeReader<List<LocalDateTime>?>()
     var quotes: Char? = null
     var delimiter: Char = ','
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<LocalDateTime>? =
+    override operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext
+    ): List<LocalDateTime>? =
         when (input.cellType) {
             CellType.STRING -> {
                 input.stringValue.reader().use { reader ->

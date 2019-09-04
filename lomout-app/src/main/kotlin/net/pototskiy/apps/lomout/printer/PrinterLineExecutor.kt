@@ -20,16 +20,16 @@
 package net.pototskiy.apps.lomout.printer
 
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.script.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.script.printer.PrinterLine
-import net.pototskiy.apps.lomout.api.document.DocumentData
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.mediator.LineExecutor
 import net.pototskiy.apps.lomout.mediator.PipelineExecutor
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
-class PrinterLineExecutor(repository: EntityRepositoryInterface) : LineExecutor(repository) {
+class PrinterLineExecutor(context: LomoutContext) : LineExecutor(context) {
 
     override val logger: Logger = LogManager.getLogger(PRINTER_LOG_NAME)
     private lateinit var printer: EntityPrinter
@@ -42,6 +42,7 @@ class PrinterLineExecutor(repository: EntityRepositoryInterface) : LineExecutor(
         }
 
     override fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor = PipelineExecutor(
+        context,
         line.pipeline,
         line.inputEntities,
         line.inputEntities.first().entity

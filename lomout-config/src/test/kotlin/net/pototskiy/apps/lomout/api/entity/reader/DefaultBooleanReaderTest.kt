@@ -20,10 +20,12 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -60,6 +62,7 @@ internal class DefaultBooleanReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -78,10 +81,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(true)
+        assertThat(reader(attr, inputCell)).isEqualTo(true)
         xlsTestDataCell.setCellValue(0.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(false)
+        assertThat(reader(attr, inputCell)).isEqualTo(false)
     }
 
     @Test
@@ -89,10 +92,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         var cell = createCsvCell(1L.toString())
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)).isEqualTo(true)
+        assertThat(reader(attr, cell)).isEqualTo(true)
         cell = createCsvCell(0L.toString())
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)).isEqualTo(false)
+        assertThat(reader(attr, cell)).isEqualTo(false)
     }
 
     @Test
@@ -100,10 +103,10 @@ internal class DefaultBooleanReaderTest {
         val reader = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(true)
+        assertThat(reader(attr, inputCell)).isEqualTo(true)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(false)
+        assertThat(reader(attr, inputCell)).isEqualTo(false)
     }
 
     @Test
@@ -111,10 +114,10 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("true")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(true)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(true)
         xlsTestDataCell.setCellValue("false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(false)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(false)
     }
 
     @Test
@@ -122,7 +125,7 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("not boolean")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }
+        assertThatThrownBy { readerEnUs(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Value 'not boolean' cannot be converted to boolean.")
     }
@@ -132,10 +135,10 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("истИНа")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(true)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(true)
         xlsTestDataCell.setCellValue("Ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(false)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(false)
     }
 
     @Test
@@ -143,7 +146,7 @@ internal class DefaultBooleanReaderTest {
         val readerEnUs = BooleanAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("какая-то строка")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }
+        assertThatThrownBy { readerEnUs(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("Value 'какая-то строка' cannot be converted to boolean.")
     }
@@ -152,7 +155,7 @@ internal class DefaultBooleanReaderTest {
     internal fun readBlankCellTest() {
         val readerEnUs = BooleanAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setBlank()
-        assertThat(readerEnUs.read(attr, inputCell)).isNull()
+        assertThat(readerEnUs(attr, inputCell)).isNull()
     }
 
     @Test

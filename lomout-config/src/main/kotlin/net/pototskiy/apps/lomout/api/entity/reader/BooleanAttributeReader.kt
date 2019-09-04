@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
@@ -32,6 +33,6 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 open class BooleanAttributeReader : AttributeReader<Boolean?>() {
     var locale: String? = null
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Boolean? =
+    override operator fun invoke(attribute: DocumentMetadata.Attribute, input: Cell, context: LomoutContext): Boolean? =
         input.readBoolean(locale?.createLocale())?.let { it }
 }

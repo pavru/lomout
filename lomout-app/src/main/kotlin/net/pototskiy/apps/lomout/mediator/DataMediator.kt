@@ -21,35 +21,35 @@ package net.pototskiy.apps.lomout.mediator
 
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.script.mediator.ProductionLine
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.errorMessageFromException
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.mediator.ProductionLine
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.*
 
-object DataMediator {
-    private const val DEFAULT_MAX_AGE = 10
+class DataMediator {
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
     private val logger = LogManager.getLogger(PRINTER_LOG_NAME)
     private val processedRows = AtomicLong(0L)
 
-    fun mediate(repository: EntityRepositoryInterface, lomoutScript: LomoutScript) {
-        lomoutScript.mediator ?: return
+    fun mediate() {
+        val context = LomoutContext.getContext()
+        context.script.mediator ?: return
         statusLog.info(message("message.info.mediator.started"))
         val startTime = LocalDateTime.now()
-        sortProductionLines(lomoutScript).forEach { line ->
+        sortProductionLines(context.script).forEach { line ->
             logger.debug(message("message.debug.mediator.start_entity"), line.outputEntity.qualifiedName)
             val eType = line.outputEntity
             @Suppress("TooGenericExceptionCaught")
             val rows = try {
-                ProductionLineExecutor(repository).executeLine(line)
+                ProductionLineExecutor(context).executeLine(line)
             } catch (e: Exception) {
                 AppDataException(
                     suspectedLocation(),
@@ -58,9 +58,9 @@ object DataMediator {
                 ).errorMessageFromException(logger)
                 0L
             }
-            repository.markEntitiesAsRemoved(eType)
-            repository.updateAbsentDays(eType)
-            repository.removeOldEntities(eType, DEFAULT_MAX_AGE)
+            context.repository.markEntitiesAsRemoved(eType)
+            context.repository.updateAbsentDays(eType)
+            context.repository.removeOldEntities(eType, DEFAULT_MAX_AGE)
             processedRows.addAndGet(rows)
             logger.debug(message("message.debug.mediator.finish_entity"), line.outputEntity.qualifiedName)
         }
@@ -87,5 +87,9 @@ object DataMediator {
             list.forEach { if (!sorted.contains(it)) sorted.add(it) }
         }
         return sorted
+    }
+
+    companion object {
+        private const val DEFAULT_MAX_AGE = 10
     }
 }

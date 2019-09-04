@@ -48,6 +48,9 @@ import OnecGroupExtended_lomout.OnecGroupExtended
 import OnecGroupRelation_lomout.OnecGroupRelation
 import OnecGroup_lomout.OnecGroup
 import OnecProduct_lomout.OnecProduct
+import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.script.script
+import org.jetbrains.kotlin.script.util.Import
 
 script {
     database {

@@ -19,12 +19,15 @@
 
 import OnecGroupRelation_lomout.OnecGroupRelation
 import OnecGroup_lomout.OnecGroup
+import net.pototskiy.apps.lomout.api.callable.AttributeBuilder
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.Document
 import org.litote.kmongo.eq
 
 class RelationGroupNameFromGroup : AttributeBuilder<String?>() {
-    override fun build(entity: Document): String? {
+    override operator fun invoke(entity: Document, context: LomoutContext): String? {
         entity as OnecGroupRelation
-        return repository.get(
+        return context.repository.get(
             OnecGroup::class,
             OnecGroup::group_code eq entity.group_code
         )?.let { (it as OnecGroup).group_name }

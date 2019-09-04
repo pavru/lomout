@@ -19,21 +19,24 @@
 
 package net.pototskiy.apps.lomout.api.entity
 
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.callable.Writer
+import net.pototskiy.apps.lomout.api.callable.WriterBuilder
+import net.pototskiy.apps.lomout.api.callable.createReader
+import net.pototskiy.apps.lomout.api.callable.createWriter
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
-import net.pototskiy.apps.lomout.api.plugable.Reader
-import net.pototskiy.apps.lomout.api.plugable.ReaderBuilder
-import net.pototskiy.apps.lomout.api.plugable.Writer
-import net.pototskiy.apps.lomout.api.plugable.WriterBuilder
-import net.pototskiy.apps.lomout.api.plugable.createReader
-import net.pototskiy.apps.lomout.api.plugable.createWriter
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvCell
 import net.pototskiy.apps.lomout.api.source.workbook.csv.CsvInputWorkbook
 import org.apache.commons.csv.CSVFormat
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
@@ -43,7 +46,11 @@ import org.junit.jupiter.api.parallel.ExecutionMode
 internal class AttributeReaderWriterTest {
 
     class TestReader : AttributeReader<Long?>() {
-        override fun read(attribute: DocumentMetadata.Attribute, input: Cell): Long? {
+        override operator fun invoke(
+            attribute: DocumentMetadata.Attribute,
+            input: Cell,
+            context: LomoutContext
+        ): Long? {
             return input.asString().toLong()
         }
     }
@@ -53,7 +60,7 @@ internal class AttributeReaderWriterTest {
     }
 
     class TestWriter : AttributeWriter<Long?>() {
-        override fun write(value: Long?, cell: Cell) {
+        override operator fun invoke(value: Long?, cell: Cell, context: LomoutContext) {
             testVal = value!!
         }
     }
@@ -78,13 +85,18 @@ internal class AttributeReaderWriterTest {
         }
     }
 
+    @BeforeEach
+    internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
+    }
+
     @Test
     internal fun attributeWithReaderPluginTest() {
         val attr = EntityType.attributes.getValue("test")
         assertThat(attr.reader).isNotNull.isInstanceOf(AttributeReader::class.java)
         @Suppress("UNCHECKED_CAST")
         assertThat(
-            (attr.reader as AttributeReader<Long>).read(attr, createCsvCell("123"))
+            (attr.reader as AttributeReader<Long>)(attr, createCsvCell("123"))
         ).isEqualTo(123L)
     }
 
@@ -94,7 +106,7 @@ internal class AttributeReaderWriterTest {
         assertThat(attr.writer).isNotNull.isInstanceOf(AttributeWriter::class.java)
         assertThat(testVal).isEqualTo(0)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Long>).write(123L, createCsvCell("123"))
+        (attr.writer as AttributeWriter<Long>)(123L, createCsvCell("123"))
         assertThat(testVal).isEqualTo(123L)
     }
 

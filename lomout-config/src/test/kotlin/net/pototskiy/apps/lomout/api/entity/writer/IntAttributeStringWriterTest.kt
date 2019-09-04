@@ -20,12 +20,12 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.plugable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -76,18 +76,18 @@ internal class IntAttributeStringWriterTest {
         val value = 111
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Int>).write(value, cell)
+        (attr.writer as AttributeWriter<Int>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("111")
 
-        IntAttributeStringWriter().write(111222, cell)
+        IntAttributeStringWriter()(111222, cell)
         assertThat(cell.stringValue).isEqualTo("111222")
-        LongAttributeStringWriter().apply { groupingUsed = true }.write(111222, cell)
+        LongAttributeStringWriter().apply { groupingUsed = true }(111222, cell)
         assertThat(cell.stringValue).isEqualTo("111,222")
         IntAttributeStringWriter().apply {
             groupingUsed = true
             locale = "ru_RU"
-        }.write(111222, cell)
+        }(111222, cell)
         assertThat(cell.stringValue).isEqualTo("111 222")
     }
 
@@ -96,7 +96,7 @@ internal class IntAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Int?>).write(null, cell)
+        (attr.writer as AttributeWriter<Int?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

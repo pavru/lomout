@@ -17,17 +17,29 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api.callable
+
+import net.pototskiy.apps.lomout.api.document.ExtraAttributeData
+import kotlin.reflect.KClass
 
 /**
- * Attribute reader builder interface
+ * Attribute reader.
  *
+ * @property klass The attribute reader class
+ * @constructor
  */
-interface ReaderBuilder {
-    /**
-     * Builder reader
-     *
-     * @return AttributeReader<out Any?>
-     */
-    fun build(): AttributeReader<out Any?>
-}
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.PROPERTY)
+@ExtraAttributeData
+annotation class Reader(val klass: KClass<out ReaderBuilder>)
+
+/**
+ * Attribute writer.
+ *
+ * @property klass The attribute writer class
+ * @constructor
+ */
+@Retention(AnnotationRetention.RUNTIME)
+@Target(AnnotationTarget.PROPERTY)
+@ExtraAttributeData
+annotation class Writer(val klass: KClass<out WriterBuilder>)

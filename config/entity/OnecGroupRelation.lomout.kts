@@ -20,14 +20,18 @@
 @file:Import("../builder/RelationGroupNameFromGroup.plugin.lomout.kts")
 
 import RelationGroupNameFromGroup_plugin_lomout.RelationGroupNameFromGroup
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.Key
 import org.bson.codecs.pojo.annotations.BsonIgnore
+import org.jetbrains.kotlin.script.util.Import
 
 class OnecGroupRelation : Document() {
     @Key
     var group_code: Long = 0L
     var group_parent_code: Long? = null
     @get:BsonIgnore
-    val group_name: String by lazy { nameBuilder.build(this)!! }
+    val group_name: String by lazy { nameBuilder(this)!! }
 
     companion object : DocumentMetadata(OnecGroupRelation::class) {
         val nameBuilder = RelationGroupNameFromGroup()

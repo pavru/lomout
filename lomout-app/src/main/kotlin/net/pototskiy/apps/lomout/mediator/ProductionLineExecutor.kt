@@ -20,15 +20,15 @@
 package net.pototskiy.apps.lomout.mediator
 
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.script.mediator.AbstractLine
 import net.pototskiy.apps.lomout.api.script.mediator.ProductionLine
-import net.pototskiy.apps.lomout.api.document.DocumentData
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.loader.EntityUpdater
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
-class ProductionLineExecutor(repository: EntityRepositoryInterface) : LineExecutor(repository) {
+class ProductionLineExecutor(context: LomoutContext) : LineExecutor(context) {
 
     override val logger: Logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
     private lateinit var entityUpdater: EntityUpdater
@@ -43,6 +43,7 @@ class ProductionLineExecutor(repository: EntityRepositoryInterface) : LineExecut
     override fun preparePipelineExecutor(line: AbstractLine): PipelineExecutor {
         line as ProductionLine<*>
         return PipelineExecutor(
+            context,
             line.pipeline,
             line.inputEntities,
             line.outputEntity
@@ -53,7 +54,7 @@ class ProductionLineExecutor(repository: EntityRepositoryInterface) : LineExecut
     override fun executeLine(line: AbstractLine): Long {
         line as ProductionLine<*>
         val targetEntityType = line.outputEntity
-        entityUpdater = EntityUpdater(repository, targetEntityType)
+        entityUpdater = EntityUpdater(targetEntityType)
         return super.executeLine(line)
     }
 }

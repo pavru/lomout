@@ -17,10 +17,34 @@
  * under the License.
  */
 
+import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.callable.createReader
 import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
+import net.pototskiy.apps.lomout.api.document.Key
+import net.pototskiy.apps.lomout.api.entity.reader.BooleanListAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DateAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DateListAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DateTimeAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DateTimeListAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DocumentAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DoubleAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.DoubleListAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.LongAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.LongListAttributeReader
+import net.pototskiy.apps.lomout.api.entity.reader.StringListAttributeReader
+import net.pototskiy.apps.lomout.api.script.script
+import net.pototskiy.apps.lomout.api.source.workbook.Cell
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class TestReader : AttributeReader<String?>(), ReaderBuilder {
-    override fun read(attribute: Attribute, input: Cell): String? {
+    override operator fun invoke(attribute: Attribute, input: Cell, context: LomoutContext): String? {
         return "test reader function"
     }
 
@@ -97,59 +121,72 @@ open class OnecProduct : Document() {
 
     @Reader(DateTimeValReaderBuilder::class)
     var datetime_val: LocalDateTime = LocalDateTime.MIN
-    class StringListReaderBuilder: ReaderBuilder {
+
+    class StringListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<StringListAttributeReader> {
             delimiter = ';'
             quotes = null
             escape = '\\'
         }
     }
+
     @Reader(StringListReaderBuilder::class)
     var string_list: List<String> = emptyList()
-    class BoolListReaderBuilder: ReaderBuilder {
+
+    class BoolListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<BooleanListAttributeReader> {
             delimiter = ','
             quotes = null
         }
     }
+
     @Reader(BoolListReaderBuilder::class)
     var bool_list: List<Boolean> = emptyList()
-    class LongListReaderBuilder: ReaderBuilder {
-        override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader>{
+
+    class LongListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<LongListAttributeReader> {
             delimiter = ','
             quotes = null
         }
     }
+
     @Reader(LongListReaderBuilder::class)
     var long_list: List<Long> = emptyList()
-    class DoubleListReaderBuilder: ReaderBuilder {
+
+    class DoubleListReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DoubleListAttributeReader> {
             locale = "ru_RU"
             delimiter = ','
             quotes = null
         }
     }
+
     @Reader(DoubleListReaderBuilder::class)
     var double_list: List<Double> = emptyList()
-    class DateListReaderBuilder: ReaderBuilder {
-        override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader>{
+
+    class DateListReaderBuilder : ReaderBuilder {
+        override fun build(): AttributeReader<out Any?> = createReader<DateListAttributeReader> {
             delimiter = ','
             quotes = null
             pattern = "d.M.uu"
         }
     }
+
     @Reader(DateListReaderBuilder::class)
     var date_list: List<LocalDate> = emptyList()
-    class DateTimeListReaserBuilder: ReaderBuilder {
+
+    class DateTimeListReaserBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DateTimeListAttributeReader> {
             delimiter = ','
             quotes = null
             pattern = "d.M.uu H:m"
         }
     }
+
     @Reader(DateTimeListReaserBuilder::class)
     var datetime_list: List<LocalDateTime> = emptyList()
-    class CompoundReaderBuilder: ReaderBuilder {
+
+    class CompoundReaderBuilder : ReaderBuilder {
         override fun build(): AttributeReader<out Any?> = createReader<DocumentAttributeReader> {
             delimiter = ','
             quotes = null
@@ -157,6 +194,7 @@ open class OnecProduct : Document() {
             valueQuote = '"'
         }
     }
+
     @Reader(CompoundReaderBuilder::class)
     var compound: NestedType = NestedType()
     var group_code: String? = null

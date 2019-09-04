@@ -20,6 +20,9 @@
 
 import OnecGroupRelation_lomout.OnecGroupRelation
 import OnecGroup_lomout.OnecGroup
+import net.pototskiy.apps.lomout.api.callable.AttributeBuilder
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.document.Document
 import org.apache.commons.collections4.map.LRUMap
 import org.bson.types.ObjectId
 import org.litote.kmongo.eq
@@ -32,13 +35,13 @@ class GroupPathFromRelation(
     private val root: String = ""
 ) : AttributeBuilder<String?>() {
 
-    override fun build(entity: Document): String? {
-        logger.info("test logger")
+    override operator fun invoke(entity: Document, context: LomoutContext): String? {
+        context.logger.info("test logger")
         entity as OnecGroup
         val pathFromCache = pathCache[entity._id]?.get()
         if (pathFromCache != null) return pathFromCache
         val path = mutableListOf<String>()
-        var relationEntity = repository.get(
+        var relationEntity = context.repository.get(
             OnecGroupRelation::class,
             OnecGroupRelation::group_code eq entity.group_code
         ) as? OnecGroupRelation ?: return null
@@ -46,7 +49,7 @@ class GroupPathFromRelation(
         while (name != null) {
             path.add(name)
             val parent = relationEntity.group_parent_code ?: break
-            relationEntity = repository.get(
+            relationEntity = context.repository.get(
                 OnecGroupRelation::class,
                 OnecGroupRelation::group_code eq parent
             ) as? OnecGroupRelation ?: break

@@ -19,8 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -58,6 +60,7 @@ internal class LM47DefaultDocumentAttributeReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -81,7 +84,7 @@ internal class LM47DefaultDocumentAttributeReaderTest {
             valueEscape = '\\'
         }
         xlsTestDataCell.setCellValue("attr1=value1\\,value1.1,attr2=value2")
-        val list = reader.read(attr, inputCell)
+        val list = reader(attr, inputCell)
         assertThat(list).isNotNull
         list as NestedType
         assertThat(list.attr1).isEqualTo("value1,value1.1")
@@ -98,7 +101,7 @@ internal class LM47DefaultDocumentAttributeReaderTest {
             valueEscape = '\\'
         }
         xlsTestDataCell.setCellValue("attr1=value1,value1.1,attr2=value2")
-        val list = reader.read(attr, inputCell)
+        val list = reader(attr, inputCell)
         assertThat(list).isNotNull
         list as NestedType
         assertThat(list.attr1).isEqualTo("value1")
@@ -115,7 +118,7 @@ internal class LM47DefaultDocumentAttributeReaderTest {
             valueEscape = null
         }
         xlsTestDataCell.setCellValue("'attr1=value1,value1.1',attr2=value2")
-        val list = reader.read(attr, inputCell)
+        val list = reader(attr, inputCell)
         assertThat(list).isNotNull
         list as NestedType
         assertThat(list.attr1).isEqualTo("value1,value1.1")

@@ -20,12 +20,15 @@
 
 import ImportCategory_lomout.ImportCategory
 import MageCategory_lomout.MageCategory
-import net.pototskiy.apps.lomout.api.document.DocumentData
+import net.pototskiy.apps.lomout.api.AppConfigException
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.PipelineAssembler
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
+import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.jetbrains.kotlin.script.util.Import
-import kotlin.reflect.KClass
 
-class MarkCategoryToRemove : PipelineAssemblerPlugin<ImportCategory>() {
-    override fun assemble(entities: EntityCollection): ImportCategory {
+class MarkCategoryToRemove : PipelineAssembler<ImportCategory>() {
+    override operator fun invoke(entities: EntityCollection, context: LomoutContext): ImportCategory? {
         val doc = ImportCategory()
         try {
             val category = entities[MageCategory::class] as MageCategory

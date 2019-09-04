@@ -20,10 +20,12 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -62,6 +64,7 @@ internal class DefaultDocumentAttributeReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -84,7 +87,7 @@ internal class DefaultDocumentAttributeReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setCellValue("attr1='value1',attr2='value2'")
-        val list = reader.read(attr, inputCell)
+        val list = reader(attr, inputCell)
         assertThat(list).isNotNull
         list as NestedType
         assertThat(list.attr1).isEqualTo("value1")
@@ -100,7 +103,7 @@ internal class DefaultDocumentAttributeReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setCellValue(1.1)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThatThrownBy { reader(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test
@@ -112,9 +115,9 @@ internal class DefaultDocumentAttributeReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setCellValue("")
-        assertThat(reader.read(attr, inputCell)).isNull()
+        assertThat(reader(attr, inputCell)).isNull()
         xlsTestDataCell.setCellValue("attr1,attr2")
-        val doc = reader.read(attr, inputCell)
+        val doc = reader(attr, inputCell)
         assertThat(doc).isNotNull
         doc as NestedType
         assertThat(doc.attr1).isEqualTo("")

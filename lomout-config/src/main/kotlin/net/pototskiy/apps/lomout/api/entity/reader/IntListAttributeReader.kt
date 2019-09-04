@@ -21,11 +21,12 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
@@ -47,26 +48,31 @@ open class IntListAttributeReader : AttributeReader<List<Int>?>() {
     var groupingUsed: Boolean = false
     var delimiter: Char = ','
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<Int>? = when (input.cellType) {
-        CellType.STRING -> {
-            input.stringValue.reader().use { reader ->
-                try {
-                    CSVValueFormat(delimiter, quotes, '\\').format
-                        .parse(reader)
-                        .records
-                        .map { it.toList() }.flatten()
-                        .map {
-                            it.stringToLong(locale?.createLocale() ?: input.locale, groupingUsed).toInt()
-                        }
-                } catch (e: ParseException) {
-                    throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
+    override operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext
+    ): List<Int>? =
+        when (input.cellType) {
+            CellType.STRING -> {
+                input.stringValue.reader().use { reader ->
+                    try {
+                        CSVValueFormat(delimiter, quotes, '\\').format
+                            .parse(reader)
+                            .records
+                            .map { it.toList() }.flatten()
+                            .map {
+                                it.stringToLong(locale?.createLocale() ?: input.locale, groupingUsed).toInt()
+                            }
+                    } catch (e: ParseException) {
+                        throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
+                    }
                 }
             }
+            CellType.BLANK -> null
+            CellType.LONG -> listOf(input.longValue.toInt())
+            else -> throw AppDataException(
+                suspectedLocation(input) + attribute, message("message.error.data.int_list.reading_not_supported")
+            )
         }
-        CellType.BLANK -> null
-        CellType.LONG -> listOf(input.longValue.toInt())
-        else -> throw AppDataException(
-            suspectedLocation(input) + attribute, message("message.error.data.int_list.reading_not_supported")
-        )
-    }
 }

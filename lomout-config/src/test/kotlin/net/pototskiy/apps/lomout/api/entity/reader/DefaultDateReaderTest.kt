@@ -20,13 +20,15 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.entity.values.millis
 import net.pototskiy.apps.lomout.api.entity.values.toDate
-import net.pototskiy.apps.lomout.api.plugable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -65,6 +67,7 @@ internal class DefaultDateReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -86,12 +89,12 @@ internal class DefaultDateReaderTest {
         val readerPattern = DateAttributeReader().apply { pattern = "d.M.uu" }
         xlsTestDataCell.setCellValue(HSSFDateUtil.getExcelDate(expected.toDate()))
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
-        assertThat(readerPattern.read(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerPattern(attr, inputCell)).isEqualTo(expected)
     }
 
     @Test
@@ -102,10 +105,10 @@ internal class DefaultDateReaderTest {
         val readerPattern = DateAttributeReader().apply { pattern = "d.M.uu" }
         val cell = createCsvCell(expected.millis.toString())
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(readerEnUs.read(attr, cell)).isEqualTo(expected)
-        assertThat(readerRuRu.read(attr, cell)).isEqualTo(expected)
+        assertThat(readerEnUs(attr, cell)).isEqualTo(expected)
+        assertThat(readerRuRu(attr, cell)).isEqualTo(expected)
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(readerPattern.read(attr, cell)).isEqualTo(expected)
+        assertThat(readerPattern(attr, cell)).isEqualTo(expected)
     }
 
     @Test
@@ -115,13 +118,13 @@ internal class DefaultDateReaderTest {
         val readerWithPattern = DateAttributeReader().apply { pattern = "d.M.uu" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(readerEnUs.read(attr, inputCell)).isNull()
-        assertThat(readerRuRu.read(attr, inputCell)).isNull()
-        assertThat(readerWithPattern.read(attr, inputCell)).isNull()
+        assertThat(readerEnUs(attr, inputCell)).isNull()
+        assertThat(readerRuRu(attr, inputCell)).isNull()
+        assertThat(readerWithPattern(attr, inputCell)).isNull()
         xlsTestDataCell.setBlank()
-        assertThat(readerEnUs.read(attr, inputCell)).isNull()
-        assertThat(readerRuRu.read(attr, inputCell)).isNull()
-        assertThat(readerWithPattern.read(attr, inputCell)).isNull()
+        assertThat(readerEnUs(attr, inputCell)).isNull()
+        assertThat(readerRuRu(attr, inputCell)).isNull()
+        assertThat(readerWithPattern(attr, inputCell)).isNull()
     }
 
     @Test
@@ -136,8 +139,8 @@ internal class DefaultDateReaderTest {
             DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("en_US".createLocale())
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerRuRu(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String '$dateString' cannot be converted to date with the locale 'ru_RU'.")
         val expectedText = expected.format(
@@ -147,10 +150,10 @@ internal class DefaultDateReaderTest {
             expected.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale("ru_RU".createLocale()))
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }
+        assertThatThrownBy { readerEnUs(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String '$expectedText' cannot be converted to date with the locale 'en_US'.")
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
     }
 
     @Test
@@ -161,14 +164,14 @@ internal class DefaultDateReaderTest {
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("M/d/yy")))
         val dateString = expected.format(DateTimeFormatter.ofPattern("M/d/yy"))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerRuRu(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String '$dateString' cannot be converted to date with the pattern 'd.M.yy'.")
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("d.M.yy")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerEnUs(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
     }
 
     @Test

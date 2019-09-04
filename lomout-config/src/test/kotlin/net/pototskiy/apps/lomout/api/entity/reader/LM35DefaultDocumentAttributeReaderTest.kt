@@ -20,8 +20,10 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
@@ -60,6 +62,7 @@ internal class LM35DefaultDocumentAttributeReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -82,7 +85,7 @@ internal class LM35DefaultDocumentAttributeReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setBlank()
-        assertThat(reader.read(attr, inputCell)).isNull()
+        assertThat(reader(attr, inputCell)).isNull()
     }
 
     @Test
@@ -94,6 +97,6 @@ internal class LM35DefaultDocumentAttributeReaderTest {
             valueQuote = '\''
         }
         xlsTestDataCell.setCellValue(1.1)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThatThrownBy { reader(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 }

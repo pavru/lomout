@@ -22,17 +22,20 @@ package net.pototskiy.apps.lomout.mediator
 import net.pototskiy.apps.lomout.LogCatcher
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
+import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
-import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.createContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.plugable.PluginContext
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
 import net.pototskiy.apps.lomout.loader.DataLoader
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -53,28 +56,35 @@ internal class MediatorBasicTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun complexBasicTest() {
-        val config = createConfiguration()
-        PluginContext.lomoutScript = config
-        PluginContext.scriptFile = File("no-file.lomout.kts")
-
+        val script = createConfiguration()
         System.setProperty("mediation.line.cache.size", "4")
-        val repository = EntityRepository(config.database, Level.ERROR)
-        PluginContext.repository = repository
-        repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
-        repository.getIDs(Entity2::class).forEach { repository.delete(Entity2::class, it) }
-        repository.getIDs(ImportData::class).forEach { repository.delete(ImportData::class, it) }
-        repository.getIDs(ImportDataUnion::class).forEach { repository.delete(ImportDataUnion::class, it) }
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("no-file.lomout.kts")
+            this.repository = repository
+            logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
+        })
+        repository.getIDs(MediatorBasicEntity1::class).forEach { repository.delete(MediatorBasicEntity1::class, it) }
+        repository.getIDs(MediatorBasicEntity2::class).forEach { repository.delete(MediatorBasicEntity2::class, it) }
+        repository.getIDs(MediatorBasicImportData::class)
+            .forEach { repository.delete(MediatorBasicImportData::class, it) }
+        repository.getIDs(MediatorBasicImportDataUnion::class)
+            .forEach { repository.delete(MediatorBasicImportDataUnion::class, it) }
 
-        DataLoader.load(repository, config)
+        DataLoader().load()
         Configurator.setLevel(ROOT_LOG_NAME, Level.TRACE)
         Configurator.setLevel(EXPOSED_LOG_NAME, Level.TRACE)
-        DataMediator.mediate(repository, config)
+        LomoutContext.setContext(createContext(LomoutContext.getContext()) {
+            logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
+        })
+        DataMediator().mediate()
         @Suppress("UNCHECKED_CAST")
-        val entities = repository.get(ImportData::class) as List<ImportData>
+        val entities = repository.get(MediatorBasicImportData::class) as List<MediatorBasicImportData>
         @Suppress("UNCHECKED_CAST")
-        val entities1 = repository.get(Entity1::class) as List<Entity1>
+        val entities1 = repository.get(MediatorBasicEntity1::class) as List<MediatorBasicEntity1>
         @Suppress("UNCHECKED_CAST")
-        val entities2 = repository.get(Entity2::class) as List<Entity2>
+        val entities2 = repository.get(MediatorBasicEntity2::class) as List<MediatorBasicEntity2>
         assertThat(entities).hasSize(4)
         val sku3 = entities.find { it.sku == 3L }
         val sku4 = entities.find { it.sku == 4L }
@@ -101,29 +111,34 @@ internal class MediatorBasicTest {
         assertThat(sku22.corrected_amount).isEqualTo(entities2.find { it.sku == 22L }!!.amount * 13.0)
 
         @Suppress("UNCHECKED_CAST") val importEntities2 =
-            repository.get(ImportDataUnion::class) as List<ImportDataUnion>
+            repository.get(MediatorBasicImportDataUnion::class) as List<MediatorBasicImportDataUnion>
         assertThat(importEntities2).hasSize(4)
         assertThat(importEntities2.map { it.sku })
             .containsAnyElementsOf(listOf(21L, 22L, 1L, 2L))
         repository.close()
     }
 
+    @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun multipleLinesTest() {
-        val config = createComplexMediatorConfig()
-        PluginContext.lomoutScript = config
-        PluginContext.scriptFile = File("no-file.lomout.kts")
-        val repository = EntityRepository(config.database, Level.ERROR)
+        val script = createComplexMediatorConfig()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("no-file.lomout.kts")
+            this.repository = repository
+            logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
+        })
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataMediator.mediate(repository, config)
+        DataMediator().mediate()
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(log).isEmpty()
     }
 
-    @Suppress("PropertyName")
-    internal open class Entity1 : Document() {
+    @Suppress("PropertyName", "VariableNaming")
+    internal open class MediatorBasicEntity1 : Document() {
         @Key
         var sku: Long = 0L
         var desc: String = ""
@@ -131,30 +146,30 @@ internal class MediatorBasicTest {
         open val corrected_amount: Double
             get() = amount * 11.0
 
-        companion object : DocumentMetadata(Entity1::class)
+        companion object : DocumentMetadata(MediatorBasicEntity1::class)
     }
 
-    internal class Entity2 : Entity1() {
+    internal class MediatorBasicEntity2 : MediatorBasicEntity1() {
         override val corrected_amount: Double
             get() = amount * 13.0
 
-        companion object : DocumentMetadata(Entity2::class)
+        companion object : DocumentMetadata(MediatorBasicEntity2::class)
     }
 
-    internal class ImportData : Entity1() {
+    internal class MediatorBasicImportData : MediatorBasicEntity1() {
         override var corrected_amount: Double = 0.0
 
-        companion object : DocumentMetadata(ImportData::class)
+        companion object : DocumentMetadata(MediatorBasicImportData::class)
     }
 
-    internal class ImportDataUnion : Entity1() {
+    internal class MediatorBasicImportDataUnion : MediatorBasicEntity1() {
         override var corrected_amount: Double = 0.0
 
-        companion object : DocumentMetadata(ImportDataUnion::class)
+        companion object : DocumentMetadata(MediatorBasicImportDataUnion::class)
     }
 
-    internal class Unknown : Document() {
-        companion object : DocumentMetadata(Unknown::class)
+    internal class MediatorBasicUnknown : Document() {
+        companion object : DocumentMetadata(MediatorBasicUnknown::class)
     }
 
     @Suppress("ComplexMethod", "LongMethod")
@@ -178,7 +193,7 @@ internal class MediatorBasicTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/mediator-test-data.xls") }
                 }
-                load<Entity1> {
+                load<MediatorBasicEntity1> {
                     fromSources { source { file("test-data"); sheet("entity1"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -190,7 +205,7 @@ internal class MediatorBasicTest {
                         }
                     }
                 }
-                load<Entity2> {
+                load<MediatorBasicEntity2> {
                     fromSources { source { file("test-data"); sheet("entity2"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -204,42 +219,42 @@ internal class MediatorBasicTest {
                 }
             }
             mediator {
-                produce<ImportData> {
+                produce<MediatorBasicImportData> {
                     input {
-                        entity(Entity1::class)
-                        entity(Entity2::class)
+                        entity(MediatorBasicEntity1::class)
+                        entity(MediatorBasicEntity2::class)
                     }
                     pipeline {
                         classifier { element ->
                             val entities = element.entities
                             // start test case for pipeline data collection
                             val flag1 = try {
-                                entities[Unknown::class]
+                                entities[MediatorBasicUnknown::class]
                                 false
                             } catch (e: AppDataException) {
                                 true
                             }
-                            val flag2 = entities.getOrNull(Unknown::class) == null &&
-                                    entities.getOrNull(Entity1::class) != null
+                            val flag2 = entities.getOrNull(MediatorBasicUnknown::class) == null &&
+                                    entities.getOrNull(MediatorBasicEntity1::class) != null
                             // finish test case for pipeline data collection
-                            val entityOne = entities.getOrNull(Entity1::class)
+                            val entityOne = entities.getOrNull(MediatorBasicEntity1::class)
                             if (entityOne != null) {
-                                val typeTwo = Entity2::class
+                                val typeTwo = MediatorBasicEntity2::class
                                 val entityTwo = repository.get(
                                     typeTwo,
-                                    Entity2::sku eq entityOne.getAttribute("sku")!!
+                                    MediatorBasicEntity2::sku eq entityOne.getAttribute("sku")!!
                                 )
                                 if (entityTwo != null && flag1 && flag2) {
                                     element.match(entityTwo)
                                 } else {
                                     element.mismatch()
                                 }
-                            } else if (entities.getOrNull(Entity2::class) != null) {
-                                val entityTwo = entities[Entity2::class]
-                                val typeOne = Entity1::class
+                            } else if (entities.getOrNull(MediatorBasicEntity2::class) != null) {
+                                val entityTwo = entities[MediatorBasicEntity2::class]
+                                val typeOne = MediatorBasicEntity1::class
                                 val partner = repository.get(
                                     typeOne,
-                                    Entity1::sku eq entityTwo.getAttribute("sku")!!
+                                    MediatorBasicEntity1::sku eq entityTwo.getAttribute("sku")!!
                                 )
                                 if (partner != null) {
                                     element.skip()
@@ -252,9 +267,9 @@ internal class MediatorBasicTest {
                         }
                         pipeline(Pipeline.CLASS.MATCHED) {
                             assembler { entities ->
-                                val e1 = entities[0] as Entity1
-                                val e2 = entities[1] as Entity2
-                                val ip = ImportData()
+                                val e1 = entities[0] as MediatorBasicEntity1
+                                val e2 = entities[1] as MediatorBasicEntity2
+                                val ip = MediatorBasicImportData()
 
                                 ip.sku = e1.sku
                                 ip.desc = e2.desc
@@ -267,15 +282,15 @@ internal class MediatorBasicTest {
                         pipeline(Pipeline.CLASS.UNMATCHED) {
                             classifier {
                                 val entities = it.entities
-                                if (entities[0].documentMetadata.klass == Entity2::class) {
+                                if (entities[0].documentMetadata.klass == MediatorBasicEntity2::class) {
                                     it.match()
                                 } else {
                                     it.mismatch()
                                 }
                             }
                             assembler { entities ->
-                                val e2 = entities[0] as Entity2
-                                val ip = ImportData()
+                                val e2 = entities[0] as MediatorBasicEntity2
+                                val ip = MediatorBasicImportData()
 
                                 ip.sku = e2.sku
                                 ip.desc = e2.desc
@@ -287,10 +302,10 @@ internal class MediatorBasicTest {
                         }
                     }
                 }
-                produce<ImportDataUnion> {
+                produce<MediatorBasicImportDataUnion> {
                     input {
-                        entity(Entity1::class)
-                        entity(Entity2::class)
+                        entity(MediatorBasicEntity1::class)
+                        entity(MediatorBasicEntity2::class)
                     }
                     pipeline {
                         classifier {
@@ -302,14 +317,14 @@ internal class MediatorBasicTest {
                             }
                         }
                         assembler { entities ->
-                            val idu = ImportDataUnion()
+                            val idu = MediatorBasicImportDataUnion()
                             idu.sku = entities[0].getAttribute("sku") as Long
                             idu.desc = entities[0].getAttribute("desc") as String
                             idu.amount = entities[0].getAttribute("amount") as Double
-                            idu.corrected_amount = if (entities[0] is Entity1) {
-                                (entities[0] as Entity1).corrected_amount
+                            idu.corrected_amount = if (entities[0] is MediatorBasicEntity1) {
+                                (entities[0] as MediatorBasicEntity1).corrected_amount
                             } else {
-                                (entities[0] as Entity2).corrected_amount
+                                (entities[0] as MediatorBasicEntity2).corrected_amount
                             }
                             idu
                         }
@@ -335,36 +350,36 @@ internal class MediatorBasicTest {
                 }
             }
             mediator {
-                produce<Entity1> {
+                produce<MediatorBasicEntity1> {
                     input {
-                        entity(Entity2::class)
+                        entity(MediatorBasicEntity2::class)
                     }
                     pipeline {
-                        assembler { Entity1() }
+                        assembler { MediatorBasicEntity1() }
                     }
                 }
-                produce<Entity1> {
+                produce<MediatorBasicEntity1> {
                     input {
-                        entity(ImportData::class)
+                        entity(MediatorBasicImportData::class)
                     }
                     pipeline {
-                        assembler { Entity1() }
+                        assembler { MediatorBasicEntity1() }
                     }
                 }
-                produce<ImportDataUnion> {
+                produce<MediatorBasicImportDataUnion> {
                     input {
-                        entity(Entity1::class)
+                        entity(MediatorBasicEntity1::class)
                     }
                     pipeline {
-                        assembler { ImportDataUnion() }
+                        assembler { MediatorBasicImportDataUnion() }
                     }
                 }
-                produce<Unknown> {
+                produce<MediatorBasicUnknown> {
                     input {
-                        entity(Entity1::class)
+                        entity(MediatorBasicEntity1::class)
                     }
                     pipeline {
-                        assembler { Unknown() }
+                        assembler { MediatorBasicUnknown() }
                     }
                 }
             }

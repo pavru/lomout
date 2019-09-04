@@ -17,29 +17,25 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
+package net.pototskiy.apps.lomout.api
 
-import net.pototskiy.apps.lomout.api.document.ExtraAttributeData
-import kotlin.reflect.KClass
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
+import java.io.File
 
-/**
- * Attribute reader.
- *
- * @property klass The attribute reader class
- * @constructor
- */
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.PROPERTY)
-@ExtraAttributeData
-annotation class Reader(val klass: KClass<out ReaderBuilder>)
+private val script = LomoutScript.Builder(ScriptBuildHelper()).apply {
+    database {
+        name("lomout_test")
+    }
+}.build()
 
-/**
- * Attribute writer.
- *
- * @property klass The attribute writer class
- * @constructor
- */
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.PROPERTY)
-@ExtraAttributeData
-annotation class Writer(val klass: KClass<out WriterBuilder>)
+val simpleTestContext = LomoutContext(
+    script,
+    LogManager.getLogger(ROOT_LOG_NAME),
+    File("mock.lomout.kts"),
+    EntityRepository(script.database, Level.WARN),
+    emptyMap()
+)

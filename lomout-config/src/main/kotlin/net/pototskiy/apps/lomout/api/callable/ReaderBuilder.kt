@@ -17,26 +17,17 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.plugable
-
-import net.pototskiy.apps.lomout.api.PublicApi
-import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
+package net.pototskiy.apps.lomout.api.callable
 
 /**
- * Base class for any pipeline classifiers
+ * Attribute reader builder interface
+ *
  */
-@PublicApi
-abstract class PipelineClassifierPlugin : Plugin() {
+interface ReaderBuilder {
     /**
-     * Classifier function
+     * Builder reader
      *
-     * @param element ClassifierElement The element to classify
-     * @return ClassifierElement
+     * @return AttributeReader<out Any?>
      */
-    abstract fun classify(element: ClassifierElement): ClassifierElement
+    fun build(): AttributeReader<out Any?>
 }
-
-/**
- * Function type for inline pipeline classifier
- */
-typealias PipelineClassifierFunction = PluginContextInterface.(element: ClassifierElement) -> ClassifierElement
