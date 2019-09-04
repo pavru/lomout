@@ -17,39 +17,25 @@
  * under the License.
  */
 
-package net.pototskiy.apps.lomout.api.callable
+package net.pototskiy.apps.lomout.api
 
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
+import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.script.LomoutScript
-import org.apache.logging.log4j.Logger
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import java.io.File
 
-/**
- * Plugin context
- *
- * @property lomoutScript Config
- * @property logger Logger
- */
-interface CallableContextInterface {
-    /**
-     * Context configuration
-     */
-    var lomoutScript: LomoutScript
-    /**
-     * Context logger
-     */
-    var logger: Logger
-    /**
-     * Main script file
-     */
-    var scriptFile: File
-    /**
-     * Entity repository
-     */
-    var repository: EntityRepositoryInterface
+private val script = LomoutScript.Builder(ScriptBuildHelper()).apply {
+    database {
+        name("lomout_test")
+    }
+}.build()
 
-    /**
-     * Get script parameter
-     */
-    fun getParameter(key: String): String?
-}
+val simpleTestContext = LomoutContext(
+    script,
+    LogManager.getLogger(ROOT_LOG_NAME),
+    File("mock.lomout.kts"),
+    EntityRepository(script.database, Level.WARN),
+    emptyMap()
+)

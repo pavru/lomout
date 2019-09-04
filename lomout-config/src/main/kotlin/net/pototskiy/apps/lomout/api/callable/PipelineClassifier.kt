@@ -19,6 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.callable
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.PublicApi
 import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
 
@@ -26,17 +27,20 @@ import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
  * Base class for any pipeline classifiers
  */
 @PublicApi
-abstract class PipelineClassifier : Callable() {
+abstract class PipelineClassifier {
     /**
      * Classifier function
      *
      * @param element ClassifierElement The element to classify
      * @return ClassifierElement
      */
-    abstract fun classify(element: ClassifierElement): ClassifierElement
+    abstract operator fun invoke(
+        element: ClassifierElement,
+        context: LomoutContext = LomoutContext.getContext()
+    ): ClassifierElement
 }
 
 /**
  * Function type for inline pipeline classifier
  */
-typealias PipelineClassifierFunction = CallableContextInterface.(element: ClassifierElement) -> ClassifierElement
+typealias PipelineClassifierFunction = LomoutContext.(element: ClassifierElement) -> ClassifierElement

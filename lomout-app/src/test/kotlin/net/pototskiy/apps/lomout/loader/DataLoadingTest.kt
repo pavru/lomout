@@ -22,17 +22,20 @@ package net.pototskiy.apps.lomout.loader
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.api.EXPOSED_LOG_NAME
+import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.createContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.Documents
 import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.script.loader.Load
 import net.pototskiy.apps.lomout.api.source.workbook.excel.ExcelWorkbook
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
@@ -47,9 +50,11 @@ import org.junit.jupiter.api.parallel.Execution
 import org.junit.jupiter.api.parallel.ExecutionMode
 import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
+import java.io.File
 import java.time.LocalDateTime
 import kotlin.reflect.KClass
 
+@Suppress("MagicNumber")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("Loading entity from source file")
 @Execution(ExecutionMode.SAME_THREAD)
@@ -66,7 +71,12 @@ internal class DataLoadingTest {
         val util = LoadingDataTestPrepare()
         lomoutScript = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.lomout.kts")
         repository = EntityRepository(lomoutScript.database, Level.ERROR)
-        CallableContext.lomoutScript = lomoutScript
+        LomoutContext.setContext(createContext {
+            script = lomoutScript
+            scriptFile = File("${System.getenv("TEST_DATA_DIR")}/test.lomout.kts")
+            this.logger = LogManager.getLogger(LOADER_LOG_NAME)
+            this.repository = this@DataLoadingTest.repository
+        })
         @Suppress("UNCHECKED_CAST")
         entityType = lomoutScript.findEntityType("Test_lomout${'$'}TestEntityAttributes")!!
         repository.getIDs(entityType, includeDeleted = true).forEach { repository.delete(entityType, it) }
@@ -96,6 +106,9 @@ internal class DataLoadingTest {
             repository.close()
             runBlocking { delay(1000L) }
             repository = EntityRepository(lomoutScript.database, Level.ERROR)
+            LomoutContext.setContext(createContext(LomoutContext.getContext()) {
+                this.repository = this@DataLoadingTest.repository
+            })
             timestampTwo = Documents.timestamp
             println("timestampTwo: $timestampTwo")
 
@@ -136,6 +149,9 @@ internal class DataLoadingTest {
                 repository.close()
                 runBlocking { delay(1000L) }
                 repository = EntityRepository(lomoutScript.database, Level.ERROR)
+                LomoutContext.setContext(createContext(LomoutContext.getContext()) {
+                    repository = this@DataLoadingTest.repository
+                })
                 timestampThree = Documents.timestamp
                 println("timestampThree: $timestampThree")
 
@@ -202,6 +218,12 @@ internal class DataLoadingTest {
                     repository.close()
                     runBlocking { delay(1000L) }
                     repository = EntityRepository(lomoutScript.database, Level.ERROR)
+                    LomoutContext.setContext(
+                        createContext(
+                            LomoutContext.getContext()
+                        ) {
+                            repository = this@DataLoadingTest.repository
+                        })
                     timestampFour = Documents.timestamp
                     println("timestampFour: $timestampFour")
 
@@ -238,6 +260,12 @@ internal class DataLoadingTest {
                         repository.close()
                         runBlocking { delay(1000L) }
                         repository = EntityRepository(lomoutScript.database, Level.ERROR)
+                        LomoutContext.setContext(
+                            createContext(
+                                LomoutContext.getContext()
+                            ) {
+                                this.repository = this@DataLoadingTest.repository
+                            })
                         timestampFive = Documents.timestamp
                         println("timestampFive: $timestampFive")
 
@@ -272,7 +300,6 @@ internal class DataLoadingTest {
         excelWorkbook.use { workbook ->
             val excelSheet = workbook.sheetIterator().asSequence().find { sheetDef.isMatch(it.sheetName) }!!
             val loader = EntityLoader(
-                repository,
                 load,
                 EmptyRowBehavior.STOP,
                 ExcelWorkbook(excelWorkbook)[excelSheet.sheetName]

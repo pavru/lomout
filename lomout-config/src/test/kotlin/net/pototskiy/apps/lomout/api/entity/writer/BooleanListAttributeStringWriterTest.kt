@@ -96,7 +96,7 @@ internal class BooleanListAttributeStringWriterTest {
         val value = listOf(true, false)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as BooleanListAttributeStringWriter).write(value, cell)
+        (attr.writer as BooleanListAttributeStringWriter)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("1,0")
     }
@@ -107,7 +107,7 @@ internal class BooleanListAttributeStringWriterTest {
         val value = listOf(true, false)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as BooleanListAttributeStringWriter).write(value, cell)
+        (attr.writer as BooleanListAttributeStringWriter)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("1,0")
     }
@@ -117,7 +117,7 @@ internal class BooleanListAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr3")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Boolean?>).write(null, cell)
+        (attr.writer as AttributeWriter<Boolean?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

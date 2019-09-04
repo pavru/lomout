@@ -69,7 +69,7 @@ open class MageCategory : Document() {
     @Reader(GenProductsReader::class)
     var gen_products: List<Long>? = null
     @get:BsonIgnore
-    val __path: String by lazy { pathBuilder.build(this)!! }
+    val __path: String by lazy { pathBuilder(this)!! }
 
     companion object : DocumentMetadata(MageCategory::class) {
         val pathBuilder = CategoryPathFromRelation("/","/")

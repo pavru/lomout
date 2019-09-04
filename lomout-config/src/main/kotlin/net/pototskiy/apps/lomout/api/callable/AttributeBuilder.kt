@@ -19,6 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.callable
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 
 /**
@@ -26,12 +27,12 @@ import net.pototskiy.apps.lomout.api.document.Document
  *
  * @param R The type builder return
  */
-abstract class AttributeBuilder<R : Any?> : Callable() {
+abstract class AttributeBuilder<R : Any?> {
     /**
      * Builder function
      *
      * @param entity DbEntity The entity to build value
      * @return R? The value type to return
      */
-    abstract fun build(entity: Document): R
+    abstract operator fun invoke(entity: Document, context: LomoutContext = LomoutContext.getContext()): R
 }

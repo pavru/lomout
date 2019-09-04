@@ -21,11 +21,13 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createCsvCell
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -58,6 +60,7 @@ internal class DefaultLongReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -75,7 +78,7 @@ internal class DefaultLongReaderTest {
     internal fun readBlankCellTest() {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setBlank()
-        assertThat(reader.read(attr, inputCell)).isNull()
+        assertThat(reader(attr, inputCell)).isNull()
     }
 
     @Test
@@ -83,10 +86,10 @@ internal class DefaultLongReaderTest {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(2.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(2)
+        assertThat(reader(attr, inputCell)).isEqualTo(2)
         xlsTestDataCell.setCellValue(2.2)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(TypeCastException::class.java)
+        assertThatThrownBy { reader(attr, inputCell) }.isInstanceOf(TypeCastException::class.java)
     }
 
     @Test
@@ -94,7 +97,7 @@ internal class DefaultLongReaderTest {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         val cell = createCsvCell("11")
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)).isEqualTo(11)
+        assertThat(reader(attr, cell)).isEqualTo(11)
     }
 
     @Test
@@ -102,10 +105,10 @@ internal class DefaultLongReaderTest {
         val reader = LongAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1)
+        assertThat(reader(attr, inputCell)).isEqualTo(1)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(0)
+        assertThat(reader(attr, inputCell)).isEqualTo(0)
     }
 
     @Test
@@ -114,12 +117,12 @@ internal class DefaultLongReaderTest {
         val readerRuRu = LongAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("11")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(11L)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(11L)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(11L)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(11L)
         @Suppress("GraziInspection", "SpellCheckingInspection")
         xlsTestDataCell.setCellValue("xxxx")
         assertThatThrownBy {
-            readerEnUs.read(attr, inputCell)
+            readerEnUs(attr, inputCell)
         }.isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String cannot be parsed to long.")
     }
@@ -130,7 +133,7 @@ internal class DefaultLongReaderTest {
         val reader = LongAttributeReader().apply {
             locale = null
         }
-        assertThat(reader.read(attr, inputCell)).isEqualTo(3L)
+        assertThat(reader(attr, inputCell)).isEqualTo(3L)
     }
 
     @Test

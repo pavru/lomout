@@ -20,13 +20,15 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.entity.values.millis
 import net.pototskiy.apps.lomout.api.entity.values.toDate
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -67,6 +69,7 @@ internal class DefaultDateTimeReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -92,9 +95,9 @@ internal class DefaultDateTimeReaderTest {
         val readerWithPattern = DateTimeAttributeReader().apply { pattern = "d.M.yy h:m" }
         xlsTestDataCell.setCellValue(HSSFDateUtil.getExcelDate(expected.toDate()))
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
-        assertThat(readerWithPattern.read(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
+        assertThat(readerWithPattern(attr, inputCell)).isEqualTo(expected)
     }
 
     @Test
@@ -109,9 +112,9 @@ internal class DefaultDateTimeReaderTest {
         val readerWithPattern = DateTimeAttributeReader().apply { pattern = "d.M.yy h:m" }
         val cell = createCsvCell(expected.millis.toString())
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(readerEnUs.read(attr, cell)).isEqualTo(expected)
-        assertThat(readerRuRu.read(attr, cell)).isEqualTo(expected)
-        assertThat(readerWithPattern.read(attr, cell)).isEqualTo(expected)
+        assertThat(readerEnUs(attr, cell)).isEqualTo(expected)
+        assertThat(readerRuRu(attr, cell)).isEqualTo(expected)
+        assertThat(readerWithPattern(attr, cell)).isEqualTo(expected)
     }
 
     @Test
@@ -130,16 +133,16 @@ internal class DefaultDateTimeReaderTest {
             expected.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("en_US".createLocale()))
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerRuRu(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String '$expectedText' cannot be converted to date-time with the locale 'ru_RU'.")
         xlsTestDataCell.setCellValue(
             expected.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale("ru_RU".createLocale()))
         )
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerEnUs(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
     }
 
     @Test
@@ -154,14 +157,14 @@ internal class DefaultDateTimeReaderTest {
         val datetimeString = expected.format(DateTimeFormatter.ofPattern("M/d/uu a h:m"))
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("M/d/uu a h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(expected)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerRuRu(attr, inputCell) }
             .isInstanceOf(AppDataException::class.java)
             .hasMessageContaining("String '$datetimeString' cannot be converted to date with the pattern 'd.M.uu a h:m'.")
         xlsTestDataCell.setCellValue(expected.format(DateTimeFormatter.ofPattern("d.M.uu a h:m")))
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
-        assertThat(readerRuRu.read(attr, inputCell)).isEqualTo(expected)
+        assertThatThrownBy { readerEnUs(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThat(readerRuRu(attr, inputCell)).isEqualTo(expected)
     }
 
     @Test
@@ -169,11 +172,11 @@ internal class DefaultDateTimeReaderTest {
         xlsTestDataCell.setCellValue(true)
         val readerEnUs = DateTimeAttributeReader().apply { pattern = "M/d/uu a h:m" }
         val readerRuRu = DateTimeAttributeReader().apply { pattern = "d.M.uu a h:m" }
-        assertThat(readerEnUs.read(attr, inputCell)).isNull()
-        assertThat(readerRuRu.read(attr, inputCell)).isNull()
+        assertThat(readerEnUs(attr, inputCell)).isNull()
+        assertThat(readerRuRu(attr, inputCell)).isNull()
         xlsTestDataCell.setBlank()
-        assertThat(readerEnUs.read(attr, inputCell)).isNull()
-        assertThat(readerRuRu.read(attr, inputCell)).isNull()
+        assertThat(readerEnUs(attr, inputCell)).isNull()
+        assertThat(readerRuRu(attr, inputCell)).isNull()
     }
 
     @Test

@@ -20,12 +20,13 @@
 
 import ImportCategory_lomout.ImportCategory
 import OnecGroup_lomout.OnecGroup
-import net.pototskiy.apps.lomout.api.entity.EntityCollection
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.callable.PipelineAssembler
+import net.pototskiy.apps.lomout.api.entity.EntityCollection
 import org.jetbrains.kotlin.script.util.Import
 
 class CategoryFromGroupAssembler : PipelineAssembler<ImportCategory>() {
-    override fun assemble(entities: EntityCollection): ImportCategory {
+    override operator fun invoke(entities: EntityCollection, context: LomoutContext): ImportCategory? {
         val data = ImportCategory()
         entities.getOrNull(OnecGroup::class)?.let { onec ->
             data.documentMetadata.attributes.values.forEach { attr ->

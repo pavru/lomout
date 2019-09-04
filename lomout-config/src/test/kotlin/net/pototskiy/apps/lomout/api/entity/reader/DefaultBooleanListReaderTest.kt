@@ -20,10 +20,12 @@
 package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -58,6 +60,7 @@ internal class DefaultBooleanListReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         @Suppress("UNCHECKED_CAST")
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
@@ -77,7 +80,7 @@ internal class DefaultBooleanListReaderTest {
         val reader = BooleanListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.0)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThatThrownBy { reader(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test
@@ -85,7 +88,7 @@ internal class DefaultBooleanListReaderTest {
         val readerEnUs = BooleanListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("true,false, false")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell))
+        assertThat(readerEnUs(attr, inputCell))
             .hasSize(3)
             .containsExactlyElementsOf(listOf(true, false, false))
     }
@@ -95,7 +98,7 @@ internal class DefaultBooleanListReaderTest {
         val readerEnUs = BooleanListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("string, string, string")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(ParseException::class.java)
+        assertThatThrownBy { readerEnUs(attr, inputCell) }.isInstanceOf(ParseException::class.java)
     }
 
     @Test
@@ -104,7 +107,7 @@ internal class DefaultBooleanListReaderTest {
         @Suppress("GraziInspection")
         xlsTestDataCell.setCellValue("иСтина,Ложь, ложь")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerRuRU.read(attr, inputCell))
+        assertThat(readerRuRU(attr, inputCell))
             .hasSize(3)
             .containsExactlyElementsOf(listOf(true, false, false))
     }

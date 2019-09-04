@@ -37,11 +37,11 @@ class OnecGroup : Document() {
     var group_code: Long = 0L
     var group_name: String = ""
     @get: BsonIgnore
-    val __path: String by lazy { pathBuilder.build(this)!! }
+    val __path: String by lazy { pathBuilder(this)!! }
     val entity_id: Long
         get() = group_code
     @get:BsonIgnore
-    val transformed_path: String by lazy { transformedPathBuilder.build(this)!! }
+    val transformed_path: String by lazy { transformedPathBuilder(this)!! }
 
     companion object : DocumentMetadata(OnecGroup::class) {
         val transformedPathBuilder = GroupToCategoryPath()

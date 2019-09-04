@@ -20,22 +20,27 @@
 package net.pototskiy.apps.lomout.loader
 
 import net.pototskiy.apps.lomout.LogCatcher
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
+import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.createContext
+import net.pototskiy.apps.lomout.api.callable.createReader
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.Key
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
-import net.pototskiy.apps.lomout.api.callable.Reader
-import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
-import net.pototskiy.apps.lomout.api.callable.createReader
+import net.pototskiy.apps.lomout.api.script.LomoutScript
+import net.pototskiy.apps.lomout.api.script.ScriptBuildHelper
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
+import java.io.File
 
 @Suppress("MagicNumber")
 @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
@@ -45,11 +50,17 @@ internal class EntityLoaderAddTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun ignoreEmptyRowTest() {
-        val config = createConfIgnoreEmptyRow()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
-        DataLoader.load(repository, config)
-        val entities = repository.get(Entity1::class)
+        val script = createConfIgnoreEmptyRow()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("EntityLoaderAddTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(EntityLoaderAddEntity1::class).forEach { repository.delete(EntityLoaderAddEntity1::class, it) }
+        DataLoader().load()
+        val entities = repository.get(EntityLoaderAddEntity1::class)
         assertThat(entities).hasSize(5)
         repository.close()
     }
@@ -57,11 +68,17 @@ internal class EntityLoaderAddTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun stopOnEmptyRowTest() {
-        val config = createConfStopEmptyRow()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
-        DataLoader.load(repository, config)
-        val entities = repository.get(Entity1::class)
+        val script = createConfStopEmptyRow()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("EntityLoaderAddTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(EntityLoaderAddEntity1::class).forEach { repository.delete(EntityLoaderAddEntity1::class, it) }
+        DataLoader().load()
+        val entities = repository.get(EntityLoaderAddEntity1::class)
         assertThat(entities).hasSize(3)
         repository.close()
     }
@@ -69,13 +86,19 @@ internal class EntityLoaderAddTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryToLoadNullToNotNullTest() {
-        val config = createConfWithSecondField()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity2::class).forEach { repository.delete(Entity2::class, it) }
+        val script = createConfWithSecondField()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("EntityLoaderAddTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(EntityLoaderAddEntity2::class).forEach { repository.delete(EntityLoaderAddEntity2::class, it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataLoader.load(repository, config)
-        val entities = repository.get(Entity2::class)
+        DataLoader().load()
+        val entities = repository.get(EntityLoaderAddEntity2::class)
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
@@ -93,13 +116,19 @@ internal class EntityLoaderAddTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryWithWrongReaderTest() {
-        val config = createConfZeroDivision()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity3::class).forEach { repository.delete(Entity3::class, it) }
+        val script = createConfZeroDivision()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("EntityLoaderAddTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(EntityLoaderAddEntity3::class).forEach { repository.delete(EntityLoaderAddEntity3::class, it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.TRACE)
-        DataLoader.load(repository, config)
-        val entities = repository.get(Entity3::class)
+        DataLoader().load()
+        val entities = repository.get(EntityLoaderAddEntity3::class)
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
@@ -113,13 +142,19 @@ internal class EntityLoaderAddTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryWithTwoFieldSetsTest() {
-        val config = createConfWithTwoFieldSets()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity1::class).forEach { repository.delete(Entity1::class, it) }
+        val script = createConfWithTwoFieldSets()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("EntityLoaderAddTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(EntityLoaderAddEntity1::class).forEach { repository.delete(EntityLoaderAddEntity1::class, it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataLoader.load(repository, config)
-        val entities = repository.get(Entity1::class)
+        DataLoader().load()
+        val entities = repository.get(EntityLoaderAddEntity1::class)
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(0)
@@ -137,13 +172,19 @@ internal class EntityLoaderAddTest {
     @ResourceLock(value = "DB", mode = ResourceAccessMode.READ_WRITE)
     @Test
     internal fun tryWithBlankKeyFieldTest() {
-        val config = createConfBlankKeyField()
-        val repository = EntityRepository(config.database, Level.ERROR)
-        repository.getIDs(Entity4::class).forEach { repository.delete(Entity4::class, it) }
+        val script = createConfBlankKeyField()
+        val repository = EntityRepository(script.database, Level.ERROR)
+        LomoutContext.setContext(createContext {
+            this.script = script
+            scriptFile = File("EntityLoaderAddTest.kt")
+            this.repository = repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
+        repository.getIDs(EntityLoaderAddEntity4::class).forEach { repository.delete(EntityLoaderAddEntity4::class, it) }
         val catcher = LogCatcher()
         catcher.startToCatch(Level.OFF, Level.ERROR)
-        DataLoader.load(repository, config)
-        val entities = repository.get(Entity4::class)
+        DataLoader().load()
+        val entities = repository.get(EntityLoaderAddEntity4::class)
         val log = catcher.log
         catcher.stopToCatch()
         assertThat(entities).hasSize(2)
@@ -157,19 +198,19 @@ internal class EntityLoaderAddTest {
     }
 
     @Suppress("unused")
-    internal open class Entity1 : Document() {
+    internal open class EntityLoaderAddEntity1 : Document() {
         @Key
         var key: Long = 0L
         var data: String = ""
 
-        companion object : DocumentMetadata(Entity1::class)
+        companion object : DocumentMetadata(EntityLoaderAddEntity1::class)
     }
 
-    internal class Output1 : Entity1() {
-        companion object : DocumentMetadata(Output1::class)
+    internal class EntityLoaderAddOutput1 : EntityLoaderAddEntity1() {
+        companion object : DocumentMetadata(EntityLoaderAddOutput1::class)
     }
 
-    internal open class Entity2 : Document() {
+    internal open class EntityLoaderAddEntity2 : Document() {
         @Suppress("unused")
         @Key
         var key: Long = 0L
@@ -178,14 +219,14 @@ internal class EntityLoaderAddTest {
         @Suppress("unused")
         var second: String = ""
 
-        companion object : DocumentMetadata(Entity2::class)
+        companion object : DocumentMetadata(EntityLoaderAddEntity2::class)
     }
 
-    internal class Output2 : Entity2() {
-        companion object : DocumentMetadata(Output2::class)
+    internal class EntityLoaderAddOutput2 : EntityLoaderAddEntity2() {
+        companion object : DocumentMetadata(EntityLoaderAddOutput2::class)
     }
 
-    internal open class Entity3 : Document() {
+    internal open class EntityLoaderAddEntity3 : Document() {
         @Suppress("unused")
         @Key
         var key: Long = 0L
@@ -193,21 +234,21 @@ internal class EntityLoaderAddTest {
         @Reader(DivByZeroReader::class)
         var data: String = ""
 
-        companion object : DocumentMetadata(Entity3::class)
+        companion object : DocumentMetadata(EntityLoaderAddEntity3::class)
     }
 
-    internal class Output3 : Entity3() {
-        companion object : DocumentMetadata(Output3::class)
+    internal class EntityLoaderAddOutput3 : EntityLoaderAddEntity3() {
+        companion object : DocumentMetadata(EntityLoaderAddOutput3::class)
     }
 
-    internal open class Entity4 : Document() {
+    internal open class EntityLoaderAddEntity4 : Document() {
         @Suppress("unused")
         @Key
         var key: String = ""
         @Suppress("unused")
         var data: String = ""
 
-        companion object : DocumentMetadata(Entity4::class)
+        companion object : DocumentMetadata(EntityLoaderAddEntity4::class)
     }
 
     private fun createConfIgnoreEmptyRow(): LomoutScript {
@@ -230,22 +271,22 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                load<Entity1> {
+                load<EntityLoaderAddEntity1> {
                     fromSources { source { file("test-data"); sheet("default"); ignoreEmptyRows() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
                     sourceFields {
                         main("entity") {
                             field("key") { column(0) }
-                            field("data") { column(1) } toAttr Entity1::data
+                            field("data") { column(1) } toAttr EntityLoaderAddEntity1::data
                         }
                     }
                 }
             }
             mediator {
-                produce<Output1> {
+                produce<EntityLoaderAddOutput1> {
                     input {
-                        entity(Entity1::class)
+                        entity(EntityLoaderAddEntity1::class)
                     }
                     pipeline {
                         assembler { null }
@@ -275,7 +316,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                load<Entity1> {
+                load<EntityLoaderAddEntity1> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -288,9 +329,9 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                produce<Output1> {
+                produce<EntityLoaderAddOutput1> {
                     input {
-                        entity(Entity1::class)
+                        entity(EntityLoaderAddEntity1::class)
                     }
                     pipeline {
                         assembler { null }
@@ -320,7 +361,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                load<Entity2> {
+                load<EntityLoaderAddEntity2> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -334,9 +375,9 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                produce<Output2> {
+                produce<EntityLoaderAddOutput2> {
                     input {
-                        entity(Entity2::class)
+                        entity(EntityLoaderAddEntity2::class)
                     }
                     pipeline {
                         assembler { null }
@@ -354,7 +395,11 @@ internal class EntityLoaderAddTest {
          * @param input Cell The cell to read attribute value
          * @return T? The read value
          */
-        override fun read(attribute: DocumentMetadata.Attribute, input: Cell): String? {
+        override operator fun invoke(
+            attribute: DocumentMetadata.Attribute,
+            input: Cell,
+            context: LomoutContext
+        ): String? {
             val v = 1
             val c = v / v - v
             @Suppress("DIVISION_BY_ZERO")
@@ -384,7 +429,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                load<Entity3> {
+                load<EntityLoaderAddEntity3> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -397,9 +442,9 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                produce<Output3> {
+                produce<EntityLoaderAddOutput3> {
                     input {
-                        entity(Entity3::class)
+                        entity(EntityLoaderAddEntity3::class)
                     }
                     pipeline {
                         assembler { null }
@@ -429,7 +474,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test-blank-key.csv") }
                 }
-                load<Entity4> {
+                load<EntityLoaderAddEntity4> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -442,9 +487,9 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                produce<Output1> {
+                produce<EntityLoaderAddOutput1> {
                     input {
-                        entity(Entity4::class)
+                        entity(EntityLoaderAddEntity4::class)
                     }
                     pipeline {
                         assembler { null }
@@ -474,7 +519,7 @@ internal class EntityLoaderAddTest {
                     val testDataDir = System.getenv("TEST_DATA_DIR")
                     file("test-data") { path("$testDataDir/entity-loader-add-test.csv") }
                 }
-                load<Entity1> {
+                load<EntityLoaderAddEntity1> {
                     fromSources { source { file("test-data"); sheet("default"); stopOnEmptyRow() } }
                     rowsToSkip(1)
                     keepAbsentForDays(1)
@@ -491,9 +536,9 @@ internal class EntityLoaderAddTest {
                 }
             }
             mediator {
-                produce<Output1> {
+                produce<EntityLoaderAddOutput1> {
                     input {
-                        entity(Entity1::class)
+                        entity(EntityLoaderAddEntity1::class)
                     }
                     pipeline {
                         assembler { null }

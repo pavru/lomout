@@ -19,7 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.script.pipeline
 
-import net.pototskiy.apps.lomout.api.callable.CallableContext
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.callable.PipelineClassifierFunction
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -35,13 +35,13 @@ sealed class Classifier {
      * @param element ClassifierElement Element to classify
      * @return ClassifierElement
      */
-    operator fun invoke(element: ClassifierElement): ClassifierElement {
-        return when (this) {
+    operator fun invoke(context: LomoutContext, element: ClassifierElement): ClassifierElement {
+        return when (this@Classifier) {
             is ClassifierWithPlugin -> pluginClass.createInstance().let {
                 it.apply(options)
-                it.classify(element)
+                it(element)
             }
-            is ClassifierWithFunction -> CallableContext.function(element)
+            is ClassifierWithFunction -> function(context, element)
         }
     }
 }

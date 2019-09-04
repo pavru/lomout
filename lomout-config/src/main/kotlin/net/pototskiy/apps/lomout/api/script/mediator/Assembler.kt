@@ -19,7 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.script.mediator
 
-import net.pototskiy.apps.lomout.api.callable.CallableContext
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.callable.PipelineAssemblerFunction
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
@@ -38,13 +38,13 @@ sealed class Assembler<T : Document> {
      * @return Map<AnyTypeAttribute, Type?> The target entity attributes
      */
     @Suppress("UNCHECKED_CAST")
-    operator fun invoke(entities: EntityCollection): Document? = when (this) {
+    operator fun invoke(context: LomoutContext, entities: EntityCollection): Document? = when (this@Assembler) {
         is AssemblerWithCallable<*> -> (pluginClass as KClass<PipelineAssemblerCallable<T>>)
             .createInstance().let {
                 it.apply(options as (PipelineAssemblerCallable<T>.() -> Unit))
-                it.assemble(entities)
+                it(entities)
             }
-        is AssemblerWithFunction<*> -> CallableContext.function(entities)
+        is AssemblerWithFunction<*> -> function(context, entities)
     }
 }
 

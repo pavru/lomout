@@ -27,9 +27,8 @@ import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.runBlocking
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
-import net.pototskiy.apps.lomout.api.script.LomoutScript
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.values.secondWithFractions
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.LogManager
@@ -37,14 +36,15 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.*
 
-object DataLoader {
+class DataLoader {
     private val processedRows = AtomicLong(0)
     private val log = LogManager.getLogger(LOADER_LOG_NAME)
     private val statusLog = LogManager.getLogger(STATUS_LOG_NAME)
 
     @ObsoleteCoroutinesApi
-    fun load(repository: EntityRepositoryInterface, lomoutScript: LomoutScript) = runBlocking {
-        val loader = lomoutScript.loader ?: return@runBlocking
+    fun load() = runBlocking(LomoutContext.getContext().asCoroutineContext()) {
+        val context = LomoutContext.getContext()
+        val loader = context.script.loader ?: return@runBlocking
         statusLog.info(message("message.info.loader.started"))
         val startTime = LocalDateTime.now()
         val jobs = mutableListOf<Job>()
@@ -52,7 +52,7 @@ object DataLoader {
             load.sources.map { it.file to load }
         }.flatten().groupBy { it.first }
         orderedLoads.keys.forEach { file ->
-            launch(newSingleThreadContext(file.id)) {
+            launch(newSingleThreadContext(file.id) + context.asCoroutineContext()) {
                 log.debug(message("message.debug.loader.start_file"), file.id)
                 orderedLoads[file]?.forEach { (_, load) ->
                     val source = load.sources.find { it.file == file }!!
@@ -65,7 +65,7 @@ object DataLoader {
                         } else {
                             workbook.filter { source.sheet.isMatch(it.name) }.forEach {
                                 log.debug(message("message.debug.loader.start_sheet"), it.name, file.id)
-                                EntityLoader(repository, load, source.emptyRowBehavior, it).apply {
+                                EntityLoader(load, source.emptyRowBehavior, it).apply {
                                     load()
                                     this@DataLoader.processedRows.addAndGet(processedRows)
                                 }

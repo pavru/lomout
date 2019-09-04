@@ -29,8 +29,9 @@ import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
 import net.pototskiy.apps.lomout.api.PRINTER_LOG_NAME
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
 import net.pototskiy.apps.lomout.api.STATUS_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.createContext
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
-import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.api.script.ScriptBuilderFromDSL
 import net.pototskiy.apps.lomout.jcommander.CommandHelp
 import net.pototskiy.apps.lomout.jcommander.CommandMain
@@ -74,16 +75,24 @@ fun main(args: Array<String>) {
         scriptBuilder.lomoutScript.database,
         Level.toLevel(mainCommand.sqlLogLevel)
     )
-    setupPluginContext(File(mainCommand.configFile.first()))
-    CallableContext.logger = LogManager.getLogger(LOADER_LOG_NAME)
-    CallableContext.repository = repository
+    val context = createContext {
+        script = scriptBuilder.lomoutScript
+        logger = LogManager.getLogger(LOADER_LOG_NAME)
+        scriptFile = File(mainCommand.configFile.first())
+        this.repository = repository
+        parameters = mainCommand.scriptParameters
+    }
 
-    scriptBuilder.lomoutScript.loader?.let { DataLoader.load(repository, scriptBuilder.lomoutScript) }
-    CallableContext.logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
-    scriptBuilder.lomoutScript.mediator?.let { DataMediator.mediate(repository, scriptBuilder.lomoutScript) }
-    CallableContext.logger = LogManager.getLogger(PRINTER_LOG_NAME)
-    scriptBuilder.lomoutScript.printer?.let { DataPrinter.print(repository, scriptBuilder.lomoutScript) }
-//    MediatorFactory.create(MediatorType.CATEGORY).merge()
+    LomoutContext.setContext(context)
+    scriptBuilder.lomoutScript.loader?.let { DataLoader().load() }
+    LomoutContext.setContext(createContext(context) {
+        logger = LogManager.getLogger(MEDIATOR_LOG_NAME)
+    })
+    scriptBuilder.lomoutScript.mediator?.let { DataMediator().mediate() }
+    LomoutContext.setContext(createContext(context) {
+        logger = LogManager.getLogger(PRINTER_LOG_NAME)
+    })
+    scriptBuilder.lomoutScript.printer?.let { DataPrinter().print() }
     val duration = Duration.between(startTime, LocalDateTime.now()).seconds
     statusLog.info(message("message.info.app.finished", duration))
 }
@@ -128,12 +137,4 @@ private fun parseArguments(
  */
 fun setLogLevel(command: CommandMain) {
     Configurator.setLevel(ROOT_LOG_NAME, Level.toLevel(command.logLevel))
-}
-
-/**
- * Set plugin context
- */
-fun setupPluginContext(scriptFile: File) {
-    CallableContext.lomoutScript = scriptBuilder.lomoutScript
-    CallableContext.scriptFile = scriptFile
 }

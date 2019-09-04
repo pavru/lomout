@@ -19,18 +19,21 @@
 
 package net.pototskiy.apps.lomout.loader
 
+import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.ROOT_LOG_NAME
+import net.pototskiy.apps.lomout.api.createContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.document.documentMetadata
 import net.pototskiy.apps.lomout.api.entity.EntityRepository
 import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
-import net.pototskiy.apps.lomout.api.callable.CallableContext
 import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
 import net.pototskiy.apps.lomout.api.script.LomoutScript
 import net.pototskiy.apps.lomout.api.script.loader.Load
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import org.apache.logging.log4j.Level
+import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.config.Configurator
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
@@ -44,6 +47,7 @@ import org.junit.jupiter.api.parallel.ResourceAccessMode
 import org.junit.jupiter.api.parallel.ResourceLock
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -71,8 +75,12 @@ internal class LoaderAttributeLoadingTest {
         val util = LoadingDataTestPrepare()
         lomoutScript = util.loadConfiguration("${System.getenv("TEST_DATA_DIR")}/test.lomout.kts")
         repository = EntityRepository(lomoutScript.database, Level.ERROR)
-        CallableContext.lomoutScript = lomoutScript
-        CallableContext.repository = repository
+        LomoutContext.setContext(createContext {
+            script = lomoutScript
+            scriptFile = File("${System.getenv("TEST_DATA_DIR")}/test.lomout.kts")
+            repository = this@LoaderAttributeLoadingTest.repository
+            logger = LogManager.getLogger(LOADER_LOG_NAME)
+        })
         @Suppress("UNCHECKED_CAST")
         entityType = lomoutScript.findEntityType("Test_lomout${'$'}TestEntityAttributes")!!
         repository.getIDs(entityType).forEach { repository.delete(entityType, it) }
@@ -322,7 +330,7 @@ internal class LoaderAttributeLoadingTest {
         val sheetDef = load.sources.first().sheet
         WorkbookFactory.create(file.toURI().toURL(), locale).use { workbook ->
             val sheet = workbook.find { sheetDef.isMatch(it.name) }!!
-            val loader = EntityLoader(repository, load, EmptyRowBehavior.STOP, sheet)
+            val loader = EntityLoader(load, EmptyRowBehavior.STOP, sheet)
             loader.load()
         }
 //        @Suppress("UNCHECKED_CAST")

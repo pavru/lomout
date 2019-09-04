@@ -21,10 +21,12 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -60,6 +62,7 @@ internal class DefaultDoubleReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -77,7 +80,7 @@ internal class DefaultDoubleReaderTest {
     internal fun readBlankCellTest() {
         val reader = DoubleAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setBlank()
-        assertThat(reader.read(attr, inputCell)).isNull()
+        assertThat(reader(attr, inputCell)).isNull()
     }
 
     @Test
@@ -85,7 +88,7 @@ internal class DefaultDoubleReaderTest {
         val reader = DoubleAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.1)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.1)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.1)
     }
 
     @Test
@@ -93,15 +96,15 @@ internal class DefaultDoubleReaderTest {
         val reader = DoubleAttributeReader().apply { locale = "en_US"; scale = 3 }
         xlsTestDataCell.setCellValue(1.1)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.1)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.1)
         xlsTestDataCell.setCellValue(1.1234)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.123)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.123)
         xlsTestDataCell.setCellValue(1.1236)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.124)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.124)
         xlsTestDataCell.setCellValue("1.1234")
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.123)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.123)
         xlsTestDataCell.setCellValue("1.1236")
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.124)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.124)
     }
 
     @Test
@@ -109,7 +112,7 @@ internal class DefaultDoubleReaderTest {
         val reader = DoubleAttributeReader().apply { locale = "en_US" }
         val cell = createCsvCell("11")
         assertThat(cell.cellType).isEqualTo(CellType.LONG)
-        assertThat(reader.read(attr, cell)).isEqualTo(11.0)
+        assertThat(reader(attr, cell)).isEqualTo(11.0)
     }
 
     @Test
@@ -117,10 +120,10 @@ internal class DefaultDoubleReaderTest {
         val reader = DoubleAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(true)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(1.0)
+        assertThat(reader(attr, inputCell)).isEqualTo(1.0)
         xlsTestDataCell.setCellValue(false)
         assertThat(inputCell.cellType).isEqualTo(CellType.BOOL)
-        assertThat(reader.read(attr, inputCell)).isEqualTo(0.0)
+        assertThat(reader(attr, inputCell)).isEqualTo(0.0)
     }
 
     @Test
@@ -129,8 +132,8 @@ internal class DefaultDoubleReaderTest {
         val readerRuRu = DoubleAttributeReader().apply { locale = "ru_RU" }
         xlsTestDataCell.setCellValue("1.1")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell)).isEqualTo(1.1)
-        assertThatThrownBy { readerRuRu.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThat(readerEnUs(attr, inputCell)).isEqualTo(1.1)
+        assertThatThrownBy { readerRuRu(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test
@@ -139,7 +142,7 @@ internal class DefaultDoubleReaderTest {
         val reader = DoubleAttributeReader().apply {
             locale = null
         }
-        assertThat(reader.read(attr, inputCell)).isEqualTo(3.3)
+        assertThat(reader(attr, inputCell)).isEqualTo(3.3)
     }
 
     @Test

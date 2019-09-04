@@ -19,24 +19,25 @@
 
 package net.pototskiy.apps.lomout.api.callable
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.EntityCollection
 
 /**
  * Base class for any pipeline assemblers
  */
-abstract class PipelineAssembler<out T : Document> : Callable() {
+abstract class PipelineAssembler<out T : Document> {
     /**
      * Assembler function
      *
      * @param entities The pipeline entity collection
      * @return The transient document
      */
-    abstract fun assemble(entities: EntityCollection): T?
+    abstract operator fun invoke(entities: EntityCollection, context: LomoutContext = LomoutContext.getContext()): T?
 }
 
 /**
  * Function type for inline pipeline assembler
  */
 typealias PipelineAssemblerFunction<T> =
-        CallableContextInterface.(entities: EntityCollection) -> T?
+        LomoutContext.(entities: EntityCollection) -> T?

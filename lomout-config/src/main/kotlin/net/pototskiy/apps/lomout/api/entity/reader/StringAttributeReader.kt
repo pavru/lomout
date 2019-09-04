@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.reader
 
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
@@ -35,6 +36,6 @@ open class StringAttributeReader : AttributeReader<String?>() {
     @Suppress("MemberVisibilityCanBePrivate")
     var numberGroupingUsed: Boolean = false
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): String? =
+    override operator fun invoke(attribute: DocumentMetadata.Attribute, input: Cell, context: LomoutContext): String? =
         input.readString(locale?.createLocale(), numberGroupingUsed)?.let { it }
 }

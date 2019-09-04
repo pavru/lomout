@@ -76,18 +76,18 @@ internal class LongAttributeStringWriterTest {
         val value = 111L
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Long>).write(value, cell)
+        (attr.writer as AttributeWriter<Long>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("111")
 
-        LongAttributeStringWriter().write(111222L, cell)
+        LongAttributeStringWriter()(111222L, cell)
         assertThat(cell.stringValue).isEqualTo("111222")
-        LongAttributeStringWriter().apply { groupingUsed = true }.write(111222L, cell)
+        LongAttributeStringWriter().apply { groupingUsed = true }(111222L, cell)
         assertThat(cell.stringValue).isEqualTo("111,222")
         LongAttributeStringWriter().apply {
             groupingUsed = true
             locale = "ru_RU"
-        }.write(111222L, cell)
+        }(111222L, cell)
         assertThat(cell.stringValue).isEqualTo("111 222")
     }
 
@@ -96,7 +96,7 @@ internal class LongAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Long?>).write(null, cell)
+        (attr.writer as AttributeWriter<Long?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

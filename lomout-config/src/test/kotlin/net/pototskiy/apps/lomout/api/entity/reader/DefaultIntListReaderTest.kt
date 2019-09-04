@@ -21,16 +21,18 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
+import net.pototskiy.apps.lomout.api.callable.Reader
+import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
+import net.pototskiy.apps.lomout.api.callable.createReader
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType
 import net.pototskiy.apps.lomout.api.document.SupportAttributeType.initIntListValue
 import net.pototskiy.apps.lomout.api.document.toAttribute
 import net.pototskiy.apps.lomout.api.entity.reader
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
-import net.pototskiy.apps.lomout.api.callable.Reader
-import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
-import net.pototskiy.apps.lomout.api.callable.createReader
+import net.pototskiy.apps.lomout.api.simpleTestContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -63,6 +65,7 @@ internal class DefaultIntListReaderTest {
 
     @BeforeEach
     internal fun setUp() {
+        LomoutContext.setContext(simpleTestContext)
         xlsWorkbook = HSSFWorkbookFactory.createWorkbook()
         val xlsSheet = xlsWorkbook.createSheet("test-data")
         xlsSheet.isActive = true
@@ -81,7 +84,7 @@ internal class DefaultIntListReaderTest {
         val reader = LongListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue(1.1)
         assertThat(inputCell.cellType).isEqualTo(CellType.DOUBLE)
-        assertThatThrownBy { reader.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThatThrownBy { reader(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test
@@ -89,12 +92,12 @@ internal class DefaultIntListReaderTest {
         val readerEnUs = IntListAttributeReader().apply { locale = "en_US" }
         xlsTestDataCell.setCellValue("11, 22,33")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThat(readerEnUs.read(attr, inputCell))
+        assertThat(readerEnUs(attr, inputCell))
             .hasSize(3)
             .containsExactlyElementsOf(listOf(11, 22, 33))
         xlsTestDataCell.setCellValue("11, 22,A")
         assertThat(inputCell.cellType).isEqualTo(CellType.STRING)
-        assertThatThrownBy { readerEnUs.read(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
+        assertThatThrownBy { readerEnUs(attr, inputCell) }.isInstanceOf(AppDataException::class.java)
     }
 
     @Test
@@ -115,7 +118,7 @@ internal class DefaultIntListReaderTest {
 
         companion object : DocumentMetadata(TestDocParameters::class)
 
-        class TestReaderBuilder: ReaderBuilder {
+        class TestReaderBuilder : ReaderBuilder {
             override fun build(): AttributeReader<out Any?> {
                 return createReader<IntListAttributeReader> {
                     locale = "en_RU"

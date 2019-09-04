@@ -19,12 +19,12 @@
 
 package net.pototskiy.apps.lomout.printer
 
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
+import net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.script.loader.FieldSetCollection
 import net.pototskiy.apps.lomout.api.script.loader.SourceData
 import net.pototskiy.apps.lomout.api.script.loader.SourceSheetDefinition.SourceSheetDefinitionWithName
-import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
-import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Sheet
 import net.pototskiy.apps.lomout.api.source.workbook.WorkbookFactory
 import java.io.Closeable
@@ -64,7 +64,7 @@ class EntityPrinter(
             val cell = row.insertCell(c)
             val attr = fieldSets.mainSet.fieldToAttr[field]
             @Suppress("UNCHECKED_CAST")
-            (attr?.writer as? AttributeWriter<Any?>)?.write(data[attr], cell)
+            (attr?.writer as? AttributeWriter<Any?>)?.invoke(data[attr], cell)
         }
         return (lastRow - currentRow).toLong()
     }
@@ -79,7 +79,7 @@ class EntityPrinter(
                     val cell = row.insertCell(c)
                     val attr = fields.fieldToAttr[field]
                     @Suppress("UNCHECKED_CAST")
-                    (attr?.writer as? AttributeWriter<Any?>)?.write(extData[attr], cell)
+                    (attr?.writer as? AttributeWriter<Any?>)?.invoke(extData[attr], cell)
                 }
                 extraFields[fields.name] = extData
             }

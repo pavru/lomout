@@ -73,7 +73,7 @@ internal class StringAttributeStringWriterTest {
         val value = "test"
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<String>).write(value, cell)
+        (attr.writer as AttributeWriter<String>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("test")
     }
@@ -83,7 +83,7 @@ internal class StringAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<String?>).write(null, cell)
+        (attr.writer as AttributeWriter<String?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

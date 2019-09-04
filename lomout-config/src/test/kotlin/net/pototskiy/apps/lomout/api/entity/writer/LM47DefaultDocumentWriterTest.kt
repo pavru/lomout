@@ -97,7 +97,7 @@ internal class LM47DefaultDocumentWriterTest {
             valueDelimiter = '='
             valueEscape = '\\'
         }
-        writer.write(doc, outputCell)
+        writer(doc, outputCell)
         assertThat(outputCell.stringValue).isEqualTo("attr1=value1\\,value1.1,attr2=value2")
     }
 
@@ -115,7 +115,7 @@ internal class LM47DefaultDocumentWriterTest {
             valueDelimiter = '='
             valueEscape = null
         }
-        writer.write(doc, outputCell)
+        writer(doc, outputCell)
         assertThat(outputCell.stringValue).isEqualTo("\"attr1=value1,value1.1\",attr2=value2")
     }
 }

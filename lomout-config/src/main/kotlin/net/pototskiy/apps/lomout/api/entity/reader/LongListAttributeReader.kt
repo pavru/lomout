@@ -21,11 +21,12 @@ package net.pototskiy.apps.lomout.api.entity.reader
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MessageBundle.message
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
@@ -47,26 +48,31 @@ open class LongListAttributeReader : AttributeReader<List<Long>?>() {
     var groupingUsed: Boolean = false
     var delimiter: Char = ','
 
-    override fun read(attribute: DocumentMetadata.Attribute, input: Cell): List<Long>? = when (input.cellType) {
-        CellType.STRING -> {
-            input.stringValue.reader().use { reader ->
-                try {
-                    CSVValueFormat(delimiter, quotes, '\\').format
-                        .parse(reader)
-                        .records
-                        .map { it.toList() }.flatten()
-                        .map {
-                            it.stringToLong(locale?.createLocale() ?: input.locale, groupingUsed)
-                        }
-                } catch (e: ParseException) {
-                    throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
+    override operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext
+    ): List<Long>? =
+        when (input.cellType) {
+            CellType.STRING -> {
+                input.stringValue.reader().use { reader ->
+                    try {
+                        CSVValueFormat(delimiter, quotes, '\\').format
+                            .parse(reader)
+                            .records
+                            .map { it.toList() }.flatten()
+                            .map {
+                                it.stringToLong(locale?.createLocale() ?: input.locale, groupingUsed)
+                            }
+                    } catch (e: ParseException) {
+                        throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
+                    }
                 }
             }
+            CellType.BLANK -> null
+            CellType.LONG -> listOf(input.longValue)
+            else -> throw AppDataException(
+                suspectedLocation(input) + attribute, message("message.error.data.longlist.reading_not_supported")
+            )
         }
-        CellType.BLANK -> null
-        CellType.LONG -> listOf(input.longValue)
-        else -> throw AppDataException(
-            suspectedLocation(input) + attribute, message("message.error.data.longlist.reading_not_supported")
-        )
-    }
 }

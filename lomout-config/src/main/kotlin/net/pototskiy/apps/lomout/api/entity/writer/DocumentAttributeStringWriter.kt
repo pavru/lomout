@@ -20,9 +20,10 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.CSV_SHEET_NAME
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.entity.writer
-import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeSheet
 import net.pototskiy.apps.lomout.api.source.nested.NestedAttributeWorkbook
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -48,7 +49,7 @@ open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
     @Suppress("MemberVisibilityCanBePrivate")
     var serializeNull: Boolean = true
 
-    override fun write(value: Document?, cell: Cell) {
+    override operator fun invoke(value: Document?, cell: Cell, context: LomoutContext) {
         val workbook = NestedAttributeWorkbook(
             quotes,
             delimiter,
@@ -66,7 +67,7 @@ open class DocumentAttributeStringWriter : AttributeWriter<Document?>() {
             if (attrValue != null || serializeNull) {
                 rows[0].insertCell(column).setCellValue(it.name)
                 @Suppress("UNCHECKED_CAST")
-                (it.writer as AttributeWriter<Any?>).write(attrValue, rows[1].insertCell(column))
+                (it.writer as AttributeWriter<Any?>)(attrValue, rows[1].insertCell(column))
                 column++
             }
         }

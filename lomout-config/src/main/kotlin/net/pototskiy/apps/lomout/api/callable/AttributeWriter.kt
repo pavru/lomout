@@ -19,6 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.callable
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import kotlin.reflect.full.createInstance
 
@@ -27,14 +28,14 @@ import kotlin.reflect.full.createInstance
  *
  * @param T The attribute value to write to cell
  */
-abstract class AttributeWriter<T : Any?> : Callable() {
+abstract class AttributeWriter<T : Any?> {
     /**
      * Writer function
      *
      * @param value T? The value to write
      * @param cell Cell The cell to write value
      */
-    abstract fun write(value: T, cell: Cell)
+    abstract operator fun invoke(value: T, cell: Cell, context: LomoutContext = LomoutContext.getContext())
 }
 
 /**

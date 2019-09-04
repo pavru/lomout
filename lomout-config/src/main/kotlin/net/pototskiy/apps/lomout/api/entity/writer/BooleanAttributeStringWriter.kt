@@ -20,6 +20,7 @@
 package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
@@ -33,7 +34,7 @@ import net.pototskiy.apps.lomout.api.source.workbook.Cell
 open class BooleanAttributeStringWriter : AttributeWriter<Boolean?>() {
     var locale: String? = null
 
-    override fun write(value: Boolean?, cell: Cell) {
+    override operator fun invoke(value: Boolean?, cell: Cell, context: LomoutContext) {
         value?.let { cell.setCellValue(if (it) "1" else "0") }
     }
 }

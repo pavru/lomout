@@ -96,7 +96,7 @@ internal class LongListAttributeStringWriterTest {
         val value = listOf(11L, 33L)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<List<Long>>).write(value, cell)
+        (attr.writer as AttributeWriter<List<Long>>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("11,33")
     }
@@ -107,7 +107,7 @@ internal class LongListAttributeStringWriterTest {
         val value = listOf(11L, 33L)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<List<Long>>).write(value, cell)
+        (attr.writer as AttributeWriter<List<Long>>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("11,33")
     }
@@ -117,7 +117,7 @@ internal class LongListAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr3")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<List<Long>?>).write(null, cell)
+        (attr.writer as AttributeWriter<List<Long>?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

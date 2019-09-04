@@ -28,17 +28,17 @@ import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.LOADER_LOG_NAME
 import net.pototskiy.apps.lomout.api.SuspectedLocation
-import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
-import net.pototskiy.apps.lomout.api.script.loader.FieldSet
-import net.pototskiy.apps.lomout.api.script.loader.Load
+import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.DocumentData
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.document.emptyDocumentData
-import net.pototskiy.apps.lomout.api.entity.EntityRepositoryInterface
 import net.pototskiy.apps.lomout.api.entity.reader
 import net.pototskiy.apps.lomout.api.errorMessageFromException
-import net.pototskiy.apps.lomout.api.callable.AttributeReader
 import net.pototskiy.apps.lomout.api.plus
+import net.pototskiy.apps.lomout.api.script.EmptyRowBehavior
+import net.pototskiy.apps.lomout.api.script.loader.FieldSet
+import net.pototskiy.apps.lomout.api.script.loader.Load
 import net.pototskiy.apps.lomout.api.source.Field
 import net.pototskiy.apps.lomout.api.source.FieldAttributeMap
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
@@ -52,12 +52,12 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 class EntityLoader(
-    private val repository: EntityRepositoryInterface,
     private val loadConfig: Load<*>,
     private val emptyRowBehavior: EmptyRowBehavior,
     private val sheet: Sheet
 ) {
 
+    private val repository = LomoutContext.getContext().repository
     private val logger = LogManager.getLogger(LOADER_LOG_NAME)
     var processedRows = 0L
     private val updateChanel = Channel<UpdaterData>(CHANEL_CAPACITY)
@@ -67,11 +67,11 @@ class EntityLoader(
     private var fieldSets = loadConfig.fieldSets
     private var eType = loadConfig.entity
 
-    fun load() = runBlocking {
+    fun load() = runBlocking(LomoutContext.getContext().asCoroutineContext()) {
         val updaterJob = launch(Dispatchers.IO) {
             updateChanel.consumeEach { updateEntity(it) }
         }
-        updater = EntityUpdater(repository, eType)
+        updater = EntityUpdater(eType)
         processRows()
         updateChanel.close()
         updaterJob.join()
@@ -183,7 +183,7 @@ class EntityLoader(
                         )
                 testFieldRegex(field, cell)
                 @Suppress("UNCHECKED_CAST")
-                (attr.reader as AttributeReader<Any?>).read(attr, cell).also {
+                (attr.reader as AttributeReader<Any?>)(attr, cell).also {
                     if (it == null && (!attr.isNullable || attr.isKey)) {
                         throw AppDataException(
                             suspectedLocation(attr) + field + cell + attr,

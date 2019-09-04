@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.callable.PipelineClassifier
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
@@ -25,7 +26,7 @@ import kotlin.reflect.KClass
 class EntityTypeClassifier : PipelineClassifier() {
     var typeList: List<KClass<out Document>> = emptyList()
 
-    override fun classify(element: ClassifierElement): ClassifierElement {
+    override operator fun invoke(element: ClassifierElement, context: LomoutContext): ClassifierElement {
         return if (element.entities.any { it::class in typeList }) {
             element.match()
         } else {

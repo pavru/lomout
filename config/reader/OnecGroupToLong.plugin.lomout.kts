@@ -19,10 +19,10 @@
 
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.callable.AttributeReader
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.callable.ReaderBuilder
 import net.pototskiy.apps.lomout.api.callable.createReader
 import net.pototskiy.apps.lomout.api.createLocale
-import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata.Attribute
 import net.pototskiy.apps.lomout.api.entity.reader.LongAttributeReader
 import net.pototskiy.apps.lomout.api.entity.values.stringToLong
@@ -32,9 +32,9 @@ import net.pototskiy.apps.lomout.api.suspectedLocation
 import java.text.ParseException
 
 class OnecGroupToLong : LongAttributeReader(), ReaderBuilder {
-    override fun read(attribute: Attribute, input: Cell): Long? {
+    override operator fun invoke(attribute: Attribute, input: Cell, context: LomoutContext): Long? {
         try {
-            return input.asString().drop(1).stringToLong(locale?.createLocale()?: input.locale, false)
+            return input.asString().drop(1).stringToLong(locale?.createLocale() ?: input.locale, false)
         } catch (e: ParseException) {
             throw AppDataException(suspectedLocation(attribute) + input, e.message, e)
         }

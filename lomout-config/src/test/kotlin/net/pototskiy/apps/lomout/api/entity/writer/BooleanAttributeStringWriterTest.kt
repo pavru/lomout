@@ -21,14 +21,14 @@ package net.pototskiy.apps.lomout.api.entity.writer
 
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE
 import net.pototskiy.apps.lomout.api.DEFAULT_LOCALE_STR
-import net.pototskiy.apps.lomout.api.document.Document
-import net.pototskiy.apps.lomout.api.document.DocumentMetadata
-import net.pototskiy.apps.lomout.api.document.SupportAttributeType
-import net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.callable.Writer
 import net.pototskiy.apps.lomout.api.callable.WriterBuilder
 import net.pototskiy.apps.lomout.api.callable.createWriter
+import net.pototskiy.apps.lomout.api.document.Document
+import net.pototskiy.apps.lomout.api.document.DocumentMetadata
+import net.pototskiy.apps.lomout.api.document.SupportAttributeType
+import net.pototskiy.apps.lomout.api.entity.writer
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import net.pototskiy.apps.lomout.api.source.workbook.CellType
 import net.pototskiy.apps.lomout.api.source.workbook.Workbook
@@ -87,11 +87,11 @@ internal class BooleanAttributeStringWriterTest {
         val value = true
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Boolean>).write(value, cell)
+        (attr.writer as AttributeWriter<Boolean>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("1")
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Boolean>).write(false, cell)
+        (attr.writer as AttributeWriter<Boolean>)(false, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("0")
     }
@@ -101,7 +101,7 @@ internal class BooleanAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr2")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<Boolean?>).write(null, cell)
+        (attr.writer as AttributeWriter<Boolean?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

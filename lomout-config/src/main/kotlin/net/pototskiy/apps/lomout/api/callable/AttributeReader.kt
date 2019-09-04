@@ -19,6 +19,7 @@
 
 package net.pototskiy.apps.lomout.api.callable
 
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.DocumentMetadata
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import kotlin.reflect.full.createInstance
@@ -28,7 +29,7 @@ import kotlin.reflect.full.createInstance
  *
  * @param T The value type to return
  */
-abstract class AttributeReader<T : Any?> : Callable() {
+abstract class AttributeReader<T : Any?> {
     /**
      * Reader function
      *
@@ -36,7 +37,11 @@ abstract class AttributeReader<T : Any?> : Callable() {
      * @param input Cell The cell to read attribute value
      * @return T? The read value
      */
-    abstract fun read(attribute: DocumentMetadata.Attribute, input: Cell): T
+    abstract operator fun invoke(
+        attribute: DocumentMetadata.Attribute,
+        input: Cell,
+        context: LomoutContext = LomoutContext.getContext()
+    ): T
 }
 
 /**

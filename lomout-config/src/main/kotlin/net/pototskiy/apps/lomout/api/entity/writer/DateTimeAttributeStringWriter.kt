@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.values.datetimeToString
-import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import java.time.LocalDateTime
 
@@ -35,7 +36,7 @@ open class DateTimeAttributeStringWriter : AttributeWriter<LocalDateTime?>() {
     var locale: String? = null
     var pattern: String? = null
 
-    override fun write(value: LocalDateTime?, cell: Cell) {
+    override operator fun invoke(value: LocalDateTime?, cell: Cell, context: LomoutContext) {
         value?.let { dateValue ->
             cell.setCellValue(
                 pattern?.let {

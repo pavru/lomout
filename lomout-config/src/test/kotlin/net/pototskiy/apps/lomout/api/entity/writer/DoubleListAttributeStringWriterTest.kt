@@ -96,7 +96,7 @@ internal class DoubleListAttributeStringWriterTest {
         val value = listOf(11.22, 33.44)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<List<Double>>).write(value, cell)
+        (attr.writer as AttributeWriter<List<Double>>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("11.22,33.44")
     }
@@ -107,7 +107,7 @@ internal class DoubleListAttributeStringWriterTest {
         val value = listOf(11.22, 33.44)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<List<Double>>).write(value, cell)
+        (attr.writer as AttributeWriter<List<Double>>)(value, cell)
         assertThat(cell.cellType).isEqualTo(CellType.STRING)
         assertThat(cell.stringValue).isEqualTo("11.22,33.44")
     }
@@ -117,7 +117,7 @@ internal class DoubleListAttributeStringWriterTest {
         val attr = TestType.attributes.getValue("attr3")
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
         @Suppress("UNCHECKED_CAST")
-        (attr.writer as AttributeWriter<List<Double>?>).write(null, cell)
+        (attr.writer as AttributeWriter<List<Double>?>)(null, cell)
         assertThat(cell.cellType).isEqualTo(CellType.BLANK)
     }
 

@@ -31,17 +31,19 @@ import kotlinx.coroutines.launch
 import net.pototskiy.apps.lomout.MessageBundle.message
 import net.pototskiy.apps.lomout.api.AppDataException
 import net.pototskiy.apps.lomout.api.MEDIATOR_LOG_NAME
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.document.Document
 import net.pototskiy.apps.lomout.api.errorMessageFromException
+import net.pototskiy.apps.lomout.api.script.mediator.Assembler
 import net.pototskiy.apps.lomout.api.script.mediator.InputEntityCollection
 import net.pototskiy.apps.lomout.api.script.mediator.Pipeline
-import net.pototskiy.apps.lomout.api.script.mediator.Assembler
 import net.pototskiy.apps.lomout.api.script.pipeline.ClassifierElement
 import net.pototskiy.apps.lomout.api.suspectedLocation
 import org.apache.logging.log4j.LogManager
 import kotlin.reflect.KClass
 
 class PipelineExecutor(
+    private val context: LomoutContext,
     private val pipeline: Pipeline<*>,
     private val inputEntities: InputEntityCollection,
     private val targetEntity: KClass<out Document>
@@ -51,22 +53,22 @@ class PipelineExecutor(
 
     @Suppress("ComplexMethod", "TooGenericExceptionCaught")
     suspend fun execute(inputData: Channel<ClassifierElement>): ReceiveChannel<Document> =
-        GlobalScope.produce {
+        GlobalScope.produce(LomoutContext.getContext().asCoroutineContext()) {
             val matchedData: Channel<ClassifierElement> = Channel()
             val nextMatchedPipe = pipeline.pipelines.find {
                 it.isApplicablePipeline(Pipeline.CLASS.MATCHED)
-            }?.let { PipelineExecutor(it, inputEntities, targetEntity) }
+            }?.let { PipelineExecutor(context, it, inputEntities, targetEntity) }
             jobs.add(launch { nextMatchedPipe?.execute(matchedData)?.consumeEach { send(it) } })
 
             val unMatchedData: Channel<ClassifierElement> = Channel()
             val nextUnMatchedPipe = pipeline.pipelines.find {
                 it.isApplicablePipeline(Pipeline.CLASS.UNMATCHED)
-            }?.let { PipelineExecutor(it, inputEntities, targetEntity) }
+            }?.let { PipelineExecutor(context, it, inputEntities, targetEntity) }
             jobs.add(launch { nextUnMatchedPipe?.execute(unMatchedData)?.consumeEach { send(it) } })
 
             inputData.consumeEach { data ->
                 try {
-                    when (val element = pipeline.classifier(data)) {
+                    when (val element = pipeline.classifier(context, data)) {
                         is ClassifierElement.Matched -> {
                             if (nextMatchedPipe != null) {
                                 matchedData.send(element)
@@ -109,7 +111,7 @@ class PipelineExecutor(
         assembler: Assembler<out Document>,
         element: ClassifierElement
     ) {
-        assembler(element.entities)?.let { entity ->
+        assembler(context, element.entities)?.let { entity ->
             if (entity::class != targetEntity) {
                 AppDataException(
                     suspectedLocation(targetEntity),

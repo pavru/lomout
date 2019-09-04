@@ -19,10 +19,11 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.values.CSVValueFormat
 import net.pototskiy.apps.lomout.api.entity.values.longToString
-import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 import java.io.ByteArrayOutputStream
 
@@ -40,7 +41,7 @@ open class LongListAttributeStringWriter : AttributeWriter<List<Long>?>() {
     var delimiter: Char = ','
     var groupingUsed: Boolean = false
 
-    override fun write(value: List<Long>?, cell: Cell) {
+    override operator fun invoke(value: List<Long>?, cell: Cell, context: LomoutContext) {
         value?.let { list ->
             val listValue = ByteArrayOutputStream().use { stream ->
                 stream.writer().use { writer ->

@@ -19,9 +19,10 @@
 
 package net.pototskiy.apps.lomout.api.entity.writer
 
+import net.pototskiy.apps.lomout.api.callable.AttributeWriter
+import net.pototskiy.apps.lomout.api.LomoutContext
 import net.pototskiy.apps.lomout.api.createLocale
 import net.pototskiy.apps.lomout.api.entity.values.doubleToString
-import net.pototskiy.apps.lomout.api.callable.AttributeWriter
 import net.pototskiy.apps.lomout.api.source.workbook.Cell
 
 /**
@@ -35,7 +36,7 @@ open class DoubleAttributeStringWriter : AttributeWriter<Double?>() {
     var groupingUsed: Boolean = false
     var scale: Int = DEFAULT_BUFFER_SIZE
 
-    override fun write(value: Double?, cell: Cell) {
+    override operator fun invoke(value: Double?, cell: Cell, context: LomoutContext) {
         value?.let { cell.setCellValue(it.doubleToString(locale?.createLocale() ?: cell.locale, groupingUsed, scale)) }
     }
 }
